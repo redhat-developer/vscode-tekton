@@ -1,0 +1,44 @@
+{
+  "name": "vscode-tekton",
+  "displayName": "vscode-tekton",
+  "description": "Tekton pipelines integration",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.32.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:tekton.pipelineExplorer"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "tekton.pipelineExplorer",
+          "name": "Tekton Pipelines"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "yarn run compile && node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "typescript": "^3.4.1",
+    "vscode": "^1.1.33",
+    "tslint": "^5.15.0",
+    "@types/node": "^10.12.21",
+    "@types/mocha": "^2.2.42"
+  },
+  "dependencies": {
+    "kubernetes-client":"^6.12.1",
+    "json-stream": "1.0.0"
+  }
+}
