@@ -82,7 +82,7 @@ class ContainerNode implements TektonNode {
   consumeEvent(event: any): boolean {
     const type: WatchEventType = event.type;
     const objectType = event.object.kind;
-    if (this.isPipeline() && (objectType === ObjectType.TASK || objectType === ObjectType.TASKRUN)) {
+    if (this.isPipeline() && (objectType === ObjectType.TASK)) {
       return false;
     }
     switch (type) {
@@ -129,7 +129,7 @@ class ContainerNode implements TektonNode {
 }
 
 class PipelineRunNode implements TektonNode{
-
+  private children: TektonNode[] = [];
   constructor(public resource: Uri, public label: string, public tooltip: string, public state: string) {
   }
 
@@ -153,22 +153,40 @@ class PipelineRunNode implements TektonNode{
   }
 
   get collapsibleState() {
-    return TreeItemCollapsibleState.None;
+    return TreeItemCollapsibleState.Collapsed;
   }
 
   getChildren(): TektonNode[] {
-    return [];
+    return this.children;
   }
 
   consumeEvent(event: any): boolean {
     const type: WatchEventType = event.type;
-    if(type !== WatchEventType.UPDATE || event.object.kind !== ObjectType.PIPELINERUN ||  event.object.metadata.name !== this.label){
-      return false;
+    switch (type) {
+      case WatchEventType.UPDATE:
+      if( event.object.kind === ObjectType.PIPELINERUN &&  event.object.metadata.name === this.label){
+        this.label =  event.object.metadata.name;
+        this.tooltip = `[${event.object.metadata.namespace}]-${event.object.metadata.name}`;
+        this.state = event.object.status ? event.object.status.conditions[0].status: '';
+        return true;
+      }
+      break;
+      case WatchEventType.ADD:
+      if (event.object.kind === ObjectType.TASKRUN && event.object.metadata.ownerReferences[0].name === this.label){
+        const taskrun = new TaskRunNode(Uri.parse('tekton:/pipeline/pipelinerun/taksrun'),event.object.metadata.name,
+        `[${event.object.metadata.namespace}]-${event.object.metadata.name}`,event.object.status.conditions[0].status );
+        this.children.push(taskrun);
+        return true;
+      }
+      break;
+      case WatchEventType.DELETE:
+      if (event.object.kind === ObjectType.TASKRUN) {
+        this.children = this.children.filter((elem) => { return event.object.metadata.name !== elem.label; });
+        return true;
+      }
+      break;
     }
-    this.label =  event.object.metadata.name;
-    this.tooltip = `[${event.object.metadata.namespace}]-${event.object.metadata.name}`;
-    this.state = event.object.status ? event.object.status.conditions[0].status: '';
-    return true;
+    return false;
 
   }
 
@@ -226,7 +244,7 @@ class PipelineNode implements TektonNode{
   constructor(public resource: Uri, public label: string, public tooltip: string) { }
 
   get iconPath() {
-    return '';
+    return getIcon('pipe.png');
   }
 
   get command() {
@@ -255,14 +273,12 @@ class PipelineNode implements TektonNode{
           this.children.push(node);
           return true;
         }
-        console.log(`unexpected object type ${event.object.kind}`);
         break;
       case WatchEventType.DELETE:
         if (event.object.kind === ObjectType.PIPELINERUN) {
           this.children = this.children.filter((elem) => { return event.object.metadata.name !== elem.label; });
           return true;
         }
-        console.log(`unexpected object type ${event.object.kind}`);
         break;
       case WatchEventType.UPDATE:
         if (event.object.kind === ObjectType.PIPELINE) {
@@ -282,18 +298,15 @@ class PipelineNode implements TektonNode{
     }
     return false;
 
-  }}
-
-
+  }
 }
 
 class TaskNode implements TektonNode {
-  private children: TektonNode[] = [];
 
   constructor(public resource: Uri, public label: string, public tooltip: string) { }
 
   get iconPath() {
-    return '';
+    return getIcon('task.png');
   }
 
   get command() {
@@ -305,37 +318,18 @@ class TaskNode implements TektonNode {
   }
 
   get collapsibleState() {
-    return this.children.length > 0? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
+    return TreeItemCollapsibleState.None;
   }
 
   getChildren(): TektonNode[] {
-    return this.children;
+    return [];
   }
 
   consumeEvent(event: any): boolean {
     const type: WatchEventType = event.type;
-    if (event.object.spec.taskRef.name !== this.label) {
-      return false;
-    }
     switch (type) {
-      case WatchEventType.ADD:
-        if (event.object.kind === ObjectType.TASKRUN) {
-          const node = new TaskRunNode(Uri.parse('tekton:/task/taskrun'), event.object.metadata.name,
-            `[${event.object.metadata.namespace}]-${event.object.metadata.name}`,event.object.status.conditions[0].status);
-          this.children.push(node);
-          return true;
-        }
-        console.log(`unexpected object type ${event.object.kind} at TaskNode`);
-        break;
-      case WatchEventType.DELETE:
-        if (event.object.kind === ObjectType.TASKRUN) {
-          this.children = this.children.filter((elem) => { return event.object.metadata.name !== elem.label; });
-          return true;
-        }
-        console.log(`unexpected object type ${event.object.kind} at TaskNode`);
-        break;
       case WatchEventType.UPDATE:
-        if (event.object.kind === ObjectType.TASK) {
+        if (event.object.kind === ObjectType.TASK && event.object.metadata.name === this.label)  {
           this.resource = Uri.parse(`tekton:task`);
           this.label = event.object.metadata.name;
           this.tooltip = `[${event.object.metadata.namespace}]-${event.object.metadata.name}`;
@@ -345,13 +339,7 @@ class TaskNode implements TektonNode {
       default:
         break;
     }
-    for (const node of this.children) {
-      if (node.consumeEvent(event)) {
-        return true;
-      }
-    }
     return false;
-
   }
 }
 
@@ -397,10 +385,11 @@ class PipelineResourcesWatcher extends events.EventEmitter {
   }
 
   private async wireStreams(client: k8s.ApiRoot) {
-    const watchList = [client.apis['tekton.dev'].v1alpha1.watch.tasks
-                        client.apis['tekton.dev'].v1alpha1.watch.taskruns,
-    client.apis['tekton.dev'].v1alpha1.watch.pipelines,
-    client.apis['tekton.dev'].v1alpha1.watch.pipelineruns
+    const watchList = [
+        client.apis['tekton.dev'].v1alpha1.watch.pipelines,
+        client.apis['tekton.dev'].v1alpha1.watch.pipelineruns,
+        client.apis['tekton.dev'].v1alpha1.watch.taskruns,
+        client.apis['tekton.dev'].v1alpha1.watch.tasks
     ];
     for (const resource of watchList) {
 
@@ -408,7 +397,8 @@ class PipelineResourcesWatcher extends events.EventEmitter {
       const jsonStream = new JSONStream();
       stream.pipe(jsonStream);
       jsonStream.on('data', (event: any) => {
-      this.emit('tekton_event', event);
+        console.log('Received event :' + JSON.stringify(event));
+        this.emit('tekton_event', event);
       });
     }
   }
