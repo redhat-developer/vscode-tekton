@@ -378,7 +378,20 @@ class PipelineModel {
 class PipelineResourcesWatcher extends events.EventEmitter {
 
   async startListening() {
-    const client = new Client({ config: config.fromKubeconfig() });
+    let clientConfig = null;
+    try {
+      const kubeConfig = config.loadKubeconfig();
+      if(kubeConfig){
+        clientConfig = config.fromKubeconfig(kubeConfig);
+      }
+    } catch (error) {
+        // ignore errors to allow loading inCluster
+    }
+    if(!clientConfig){
+      clientConfig = config.getInCluster();
+    }
+
+    const client = new Client({ config: clientConfig });
     await client.loadSpec();
     await this.loadCrds(client);
     await this.wireStreams(client);
