@@ -2,7 +2,7 @@ import * as events from "events";
 import * as k8s from 'kubernetes-client';
 import { Uri, Event, EventEmitter, TreeItemCollapsibleState } from 'vscode';
 import {getIcon} from '../icon-utils';
-import *  as JSONStream from 'json-stream';
+import {JSONStream} from 'json-stream';
 
 const Client = k8s.Client1_10;
 const config = k8s.config;
