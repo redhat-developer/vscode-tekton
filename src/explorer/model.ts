@@ -170,7 +170,7 @@ get label() {
     this.children.push(pipe);
   }
   addNewClusterTask(object: any): void {
-    const clustertask = new PipelineNode(Uri.parse(`tekton:clustertask`), object.metadata.name, `[${object.metadata.namespace}]-${object.metadata.name}`);
+    const clustertask = new ClusterTaskNode(Uri.parse(`tekton:clustertask`), object.metadata.name, `[${object.metadata.namespace}]-${object.metadata.name}`);
     this.children.push(clustertask);
 }
 
@@ -220,11 +220,16 @@ class PipelineRunNode implements TektonNode{
       }
       break;
       case WatchEventType.ADD:
-      if (event.object.kind === ObjectType.TASKRUN && event.object.metadata.ownerReferences[0].name === this.label){
-        const taskrun = new TaskRunNode(Uri.parse('tekton:/pipeline/pipelinerun/taksrun'),event.object.metadata.name,
-        `[${event.object.metadata.namespace}]-${event.object.metadata.name}`,event.object.status.conditions[0].status );
-        this.children.push(taskrun);
-        return true;
+      if (event.object.kind === ObjectType.TASKRUN) {
+        if (!event.object.metadata.ownerReferences) {
+          return false;
+        }
+        if( event.object.metadata.ownerReferences[0].name === this.label){
+          const taskrun = new TaskRunNode(Uri.parse('tekton:/pipeline/pipelinerun/taksrun'),event.object.metadata.name,
+          `[${event.object.metadata.namespace}]-${event.object.metadata.name}`,event.object.status.conditions[0].status );
+          this.children.push(taskrun);
+          return true;
+        }
       }
       break;
       case WatchEventType.DELETE:
