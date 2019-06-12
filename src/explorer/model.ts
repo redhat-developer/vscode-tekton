@@ -448,7 +448,7 @@ class ClusterTaskNode implements TektonNode {
   constructor(public resource: Uri, public label: string, public tooltip: string) { }
 
   get iconPath() {
-    return getIcon('task.png');
+    return getIcon('clustertask.png');
   }
 
   get command() {
