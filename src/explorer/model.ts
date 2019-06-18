@@ -13,7 +13,7 @@ enum WatchEventType {
   DELETE = 'DELETED'
 }
 
-enum ConatinerType {
+enum ContainerType {
   PIPELINE,
   TASK,
   CLUSTERTASK
@@ -45,7 +45,7 @@ class ContainerNode implements TektonNode {
 
   private children: TektonNode[] = [];
 
-  constructor(private type: ConatinerType) {
+  constructor(private type: ContainerType) {
   }
 
   get resource() {
@@ -103,11 +103,11 @@ get label() {
   }
 
   private isPipeline(): boolean {
-    return this.type === ConatinerType.PIPELINE;
+    return this.type === ContainerType.PIPELINE;
   }
 
   private isTask(): boolean {
-    return this.type === ConatinerType.TASK;
+    return this.type === ContainerType.TASK;
   }
 
   getChildren(): TektonNode[] {
@@ -353,25 +353,23 @@ class PipelineNode implements TektonNode{
     return this.tooltip.substring(this.tooltip.indexOf("-") +1);
   }
 
-  parseEventName(event: any): string {
-    return event.object.metadata.name.substring(0, event.object.metadata.name.lastIndexOf("-run"))
-  }
-
   consumeEvent(event: any): boolean {
     const type: WatchEventType = event.type;
     switch (type) {
       case WatchEventType.ADD:
-        if (event.object.kind === ObjectType.PIPELINERUN && this.parseEventName(event) === this.parseToolTip()) {
-          const status = event.object.status ? event.object.status.conditions[0].status : '';
-          const node = new PipelineRunNode(Uri.parse('tekton:pipeline/pipelinerun'), event.object.metadata.name,
-          `[${event.object.metadata.namespace}]-${event.object.metadata.name}`,status, event.object.metadata.creationTimestamp);
-          this.children.push(node);
-          this.children.sort((a,b) => {
-            if(a.creationTime < b.creationTime) { return -1; }
-            if(a.creationTime > b.creationTime) { return 1; }
-            return 0;
-          });
-          return true;
+        if (event.object.kind === ObjectType.PIPELINERUN){
+          if(event.object.spec.pipelineRef.name === this.parseToolTip()) {
+            const status = event.object.status ? event.object.status.conditions[0].status : '';
+            const node = new PipelineRunNode(Uri.parse('tekton:pipeline/pipelinerun'), event.object.metadata.name,
+            `[${event.object.metadata.namespace}]-${event.object.metadata.name}`, status, event.object.metadata.creationTimestamp);
+            this.children.push(node);
+            this.children.sort((a,b) => {
+              if(a.creationTime < b.creationTime) { return -1; }
+              if(a.creationTime > b.creationTime) { return 1; }
+              return 0;
+            });
+            return true;
+          }
         }
         break;
       case WatchEventType.DELETE:
@@ -491,7 +489,7 @@ class ClusterTaskNode implements TektonNode {
 
 class PipelineModel {
 
-  private children: TektonNode[] = [new ContainerNode(ConatinerType.PIPELINE), new ContainerNode(ConatinerType.TASK), new ContainerNode(ConatinerType.CLUSTERTASK)];
+  private children: TektonNode[] = [new ContainerNode(ContainerType.PIPELINE), new ContainerNode(ContainerType.TASK), new ContainerNode(ContainerType.CLUSTERTASK)];
 
   private _onDidChangeTreeData: EventEmitter<any> = new EventEmitter<any>();
 
