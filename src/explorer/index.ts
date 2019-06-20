@@ -1,14 +1,11 @@
-import { Disposable, window } from 'vscode';
-import {PipelineTreeDataProvider} from './provider';
+import { Disposable, window, commands } from 'vscode';
+import {PipelineExplorer} from '../pipeline/pipelineExplorer';
 import { PipelineModel } from './model';
 
 
 function createPipelineExplorer(): Disposable[] {
   const pipelineModel = new PipelineModel();
-  const pipelineProvider = new PipelineTreeDataProvider(pipelineModel);
-  return [
-    window.registerTreeDataProvider('tekton.pipelineExplorer',pipelineProvider)
-  ];
+  return new PipelineExplorer(pipelineModel);
 }
 
 export{

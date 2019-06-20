@@ -1,19 +1,159 @@
 {
   "name": "vscode-tekton",
-  "displayName": "vscode-tekton",
+  "displayName": "Tekton",
   "description": "Tekton pipelines integration",
   "version": "0.0.1",
+  "publisher": "redhat",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/redhat-developer/vscode-tekton.git"
+  },
+  "bugs": "https://github.com/redhat-developer/vscode-tekton/issues",
   "engines": {
     "vscode": "^1.32.0"
   },
   "categories": [
     "Other"
   ],
+  "icon": "images/tekton.png",
   "activationEvents": [
     "onView:tekton.pipelineExplorer"
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Tekton configuration",
+      "properties": {
+        "tekton": {
+          "type": "object",
+          "description": "Tekton configuration",
+          "properties": {
+            "vs-kubernetes.namespace": {
+              "type": "string",
+              "description": "The namespace to use for all commands"
+            },
+            "vs-kubernetes.kubectl-path": {
+              "type": "string",
+              "description": "File path to a kubectl binary."
+            },
+            "vs-kubernetes.draft-path": {
+              "type": "string",
+              "description": "File path to a draft binary."
+            },
+            "vs-kubernetes.kubectl-path.windows": {
+              "type": "string",
+              "description": "File path to a kubectl binary."
+            },
+            "vs-kubernetes.draft-path.windows": {
+              "type": "string",
+              "description": "File path to a draft binary."
+            },
+            "vs-kubernetes.kubectl-path.mac": {
+              "type": "string",
+              "description": "File path to a kubectl binary."
+            },
+            "vs-kubernetes.kubectl-path.linux": {
+              "type": "string",
+              "description": "File path to a kubectl binary."
+            },
+            "vs-kubernetes.draft-path.linux": {
+              "type": "string",
+              "description": "File path to a draft binary."
+            },
+            "vs-kubernetes.kubectlVersioning": {
+              "type": "string",
+              "enum": [
+                "user-provided",
+                "infer"
+              ],
+              "description": "Whether to use the kubectl binary you provide ('user-provided'), or to automatically download the right version of kubectl for each cluster ('infer')."
+            },
+            "vs-kubernetes.kubeconfig": {
+              "type": "string",
+              "description": "File path to the kubeconfig file."
+            },
+            "vs-kubernetes.knownKubeconfigs": {
+              "type": "array",
+              "description": "File paths to kubeconfig files from which you can select."
+            },
+            "vs-kubernetes.autoCleanupOnDebugTerminate": {
+              "type": "boolean",
+              "description": "Once the debug session is terminated, automatically clean up the created Deployment and associated Pod by the command \"Kubernetes: Debug (Launch)\"."
+            },
+            "vs-kubernetes.outputFormat": {
+              "enum": [
+                "json",
+                "yaml"
+              ],
+              "type": "string",
+              "description": "Output format for Kubernetes specs. One of 'json' or 'yaml' (default)."
+            },
+            "vs-kubernetes.nodejs-autodetect-remote-root": {
+              "type": "boolean",
+              "description": "If true will try to automatically get the root location of the source code in the container (nodejs)."
+            },
+            "vs-kubernetes.nodejs-remote-root": {
+              "type": "string",
+              "description": "The root location of the source code in the container (nodejs)."
+            },
+            "vs-kubernetes.nodejs-debug-port": {
+              "type": "number",
+              "description": "Remote debugging port for nodejs. Usually 9229."
+            },
+            "checkForMinikubeUpgrade": {
+              "type": "boolean",
+              "description": "Notify on startup if update is available for minikube"
+            },
+            "disable-lint": {
+              "type": "boolean",
+              "description": "Disable all linting of Kubernetes files"
+            },
+            "disable-linters": {
+              "type": "array",
+              "description": "List of linters by name to disable"
+            },
+            "resource-commands-on-files": {
+              "type": "boolean",
+              "description": "If true, show Kubernetes resource commands on file context menu for all YAML files"
+            },
+            "imageBuildTool": {
+              "type": "string",
+              "enum": [
+                "Docker",
+                "Buildah"
+              ],
+              "description": "Container image build tool. By default, Docker."
+            },
+            "vs-kubernetes.python-autodetect-remote-root": {
+              "type": "boolean",
+              "description": "If true will try to automatically get the root location of the source code in the container (Python)."
+            },
+            "vs-kubernetes.python-remote-root": {
+              "type": "string",
+              "description": "The root location of the source code in the container (Python)."
+            },
+            "vs-kubernetes.python-debug-port": {
+              "type": "number",
+              "description": "Remote debugging port for Python. Usually 5678."
+            }
+          },
+          "default": {
+            "tekton.namespace": "",
+            "tekton.tkn-path": "",
+            "tekton.draft-path": "",
+            "tekton.kubectlVersioning": "user-provided",
+            "tekton.outputFormat": "yaml",
+            "tekton.kubeconfig": "",
+            "tekton.autoCleanupOnDebugTerminate": false,
+            "vs-kubernetes.nodejs-autodetect-remote-root": true,
+            "vs-kubernetes.nodejs-remote-root": "",
+            "vs-kubernetes.nodejs-debug-port": 9229,
+            "imageBuildTool": "Docker"
+          }
+        }
+      }
+    },
     "views": {
       "explorer": [
         {
@@ -24,6 +164,7 @@
     }
   },
   "scripts": {
+    "verify": "node ./out/build/verify-tools.js",
     "vscode:prepublish": "yarn run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
@@ -34,11 +175,25 @@
     "typescript": "^3.4.1",
     "vscode": "^1.1.33",
     "tslint": "^5.15.0",
+    "@types/fs-extra": "^5.0.5",
+    "@types/mkdirp": "^0.5.2",
+    "@types/mocha": "^2.2.42",
     "@types/node": "^10.12.21",
-    "@types/mocha": "^2.2.42"
+    "@types/request": "^2.48.1"
   },
   "dependencies": {
-    "kubernetes-client":"^6.12.1",
-    "json-stream": "1.0.0"
+    "fs-extra": "^7.0.1",
+    "hasha": "^5.0.0",
+    "json-stream": "1.0.0",
+    "kubernetes-client": "^6.12.1",
+    "mkdirp": "^0.5.1",
+    "open": "^6.2.0",
+    "semver": "^6.0.0",
+    "shelljs": "^0.8.3",
+    "request": "^2.88.0",
+    "request-progress": "^3.0.0",
+    "yaml-ast-parser": "^0.0.40",
+    "yamljs": "0.2.10",
+    "yarn": "^1.16.0"
   }
 }
