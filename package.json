@@ -17,140 +17,81 @@
   ],
   "icon": "images/tekton.png",
   "activationEvents": [
-    "onView:tekton.pipelineExplorer"
+    "onView:tekton.pipelineExplorer",
+    "onCommand:tekton.pipeline.start",
+    "onCommand:tekton.pipeline.list",
+    "onCommand:tekton.pipeline.describe",
+    "onCommand:tekton.pipelinerun.list",
+    "onCommand:tekton.pipelinerun.describe",
+    "onCommand:tekton.task.list",
+    "onCommand:tekton.task.describe",
+    "onCommand:tekton.taskrun.list",
+    "onCommand:tekton.taskrun.describe"
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "commands": [
+      {
+        "command": "tekton.pipeline.start",
+        "title": "Start Pipeline",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipeline.list",
+        "title": "List Pipelines",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipeline.describe",
+        "title": "Describe Pipelines",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipelinerun.list",
+        "title": "List Pipelineruns",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipelinerun.describe",
+        "title": "Describe Pipelineruns",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.task.list",
+        "title": "List Tasks",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.task.describe",
+        "title": "Describe Tasks",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.taskrun.list",
+        "title": "List Taskrunss",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.taskrun.describe",
+        "title": "Describe Taskruns",
+        "category": "Tekton"
+      }
+    ],
     "configuration": {
       "type": "object",
       "title": "Tekton configuration",
       "properties": {
-        "tekton": {
-          "type": "object",
-          "description": "Tekton configuration",
-          "properties": {
-            "vs-kubernetes.namespace": {
-              "type": "string",
-              "description": "The namespace to use for all commands"
-            },
-            "vs-kubernetes.kubectl-path": {
-              "type": "string",
-              "description": "File path to a kubectl binary."
-            },
-            "vs-kubernetes.draft-path": {
-              "type": "string",
-              "description": "File path to a draft binary."
-            },
-            "vs-kubernetes.kubectl-path.windows": {
-              "type": "string",
-              "description": "File path to a kubectl binary."
-            },
-            "vs-kubernetes.draft-path.windows": {
-              "type": "string",
-              "description": "File path to a draft binary."
-            },
-            "vs-kubernetes.kubectl-path.mac": {
-              "type": "string",
-              "description": "File path to a kubectl binary."
-            },
-            "vs-kubernetes.kubectl-path.linux": {
-              "type": "string",
-              "description": "File path to a kubectl binary."
-            },
-            "vs-kubernetes.draft-path.linux": {
-              "type": "string",
-              "description": "File path to a draft binary."
-            },
-            "vs-kubernetes.kubectlVersioning": {
-              "type": "string",
-              "enum": [
-                "user-provided",
-                "infer"
-              ],
-              "description": "Whether to use the kubectl binary you provide ('user-provided'), or to automatically download the right version of kubectl for each cluster ('infer')."
-            },
-            "vs-kubernetes.kubeconfig": {
-              "type": "string",
-              "description": "File path to the kubeconfig file."
-            },
-            "vs-kubernetes.knownKubeconfigs": {
-              "type": "array",
-              "description": "File paths to kubeconfig files from which you can select."
-            },
-            "vs-kubernetes.autoCleanupOnDebugTerminate": {
-              "type": "boolean",
-              "description": "Once the debug session is terminated, automatically clean up the created Deployment and associated Pod by the command \"Kubernetes: Debug (Launch)\"."
-            },
-            "vs-kubernetes.outputFormat": {
-              "enum": [
-                "json",
-                "yaml"
-              ],
-              "type": "string",
-              "description": "Output format for Kubernetes specs. One of 'json' or 'yaml' (default)."
-            },
-            "vs-kubernetes.nodejs-autodetect-remote-root": {
-              "type": "boolean",
-              "description": "If true will try to automatically get the root location of the source code in the container (nodejs)."
-            },
-            "vs-kubernetes.nodejs-remote-root": {
-              "type": "string",
-              "description": "The root location of the source code in the container (nodejs)."
-            },
-            "vs-kubernetes.nodejs-debug-port": {
-              "type": "number",
-              "description": "Remote debugging port for nodejs. Usually 9229."
-            },
-            "checkForMinikubeUpgrade": {
-              "type": "boolean",
-              "description": "Notify on startup if update is available for minikube"
-            },
-            "disable-lint": {
-              "type": "boolean",
-              "description": "Disable all linting of Kubernetes files"
-            },
-            "disable-linters": {
-              "type": "array",
-              "description": "List of linters by name to disable"
-            },
-            "resource-commands-on-files": {
-              "type": "boolean",
-              "description": "If true, show Kubernetes resource commands on file context menu for all YAML files"
-            },
-            "imageBuildTool": {
-              "type": "string",
-              "enum": [
-                "Docker",
-                "Buildah"
-              ],
-              "description": "Container image build tool. By default, Docker."
-            },
-            "vs-kubernetes.python-autodetect-remote-root": {
-              "type": "boolean",
-              "description": "If true will try to automatically get the root location of the source code in the container (Python)."
-            },
-            "vs-kubernetes.python-remote-root": {
-              "type": "string",
-              "description": "The root location of the source code in the container (Python)."
-            },
-            "vs-kubernetes.python-debug-port": {
-              "type": "number",
-              "description": "Remote debugging port for Python. Usually 5678."
-            }
-          },
-          "default": {
-            "tekton.namespace": "",
-            "tekton.tkn-path": "",
-            "tekton.draft-path": "",
-            "tekton.kubectlVersioning": "user-provided",
-            "tekton.outputFormat": "yaml",
-            "tekton.kubeconfig": "",
-            "tekton.autoCleanupOnDebugTerminate": false,
-            "vs-kubernetes.nodejs-autodetect-remote-root": true,
-            "vs-kubernetes.nodejs-remote-root": "",
-            "vs-kubernetes.nodejs-debug-port": 9229,
-            "imageBuildTool": "Docker"
-          }
+        "tektonPipeline.showChannelOutput": {
+          "title": "Show channel on output",
+          "type": "boolean",
+          "default": "false",
+          "description": "Show Tekton Pipeline output channel when new text added to ouput stream"
+        },
+        "tektonPipeline.outputVerbosityLevel": {
+          "title": "Output Verbosity Level",
+          "type": "number",
+          "default": 0,
+          "description": "Output verbosity level (value between 0 and 9) for Tekton Pipeline Start, Push and Watch commands in output channel and integrated terminal."
         }
       }
     },

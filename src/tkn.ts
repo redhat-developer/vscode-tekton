@@ -21,7 +21,6 @@ export interface TektonNode extends QuickPickItem {
     readonly tooltip: string;
     readonly iconPath: string | Uri ;
     readonly command: string;
-    comptype ?: string;
     getChildren(): ProviderResult<TektonNode[]>;
     getParent(): TektonNode;
     getName(): string;
@@ -54,6 +53,10 @@ function verbose(_target: any, key: string, descriptor: any) {
 }
 
 export class Command {
+    @verbose
+    static startPipeline(name: string) {
+        return `tkn pipeline start ${name}`;
+    }
     static listPipelines() {
         return 'tkn pipeline list';
     }
@@ -151,6 +154,7 @@ export class TektonNodeImpl implements TektonNode {
 }
 
 export interface Tkn {
+    startPipeline(project: string): Promise<TektonNode[]>;
     getPipelines(pipeline: TektonNode): Promise<TektonNode[]>;
     getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]>;
     getTasks(task: TektonNode): Promise<TektonNode[]>;
@@ -190,10 +194,10 @@ export class TknImpl implements Tkn {
     }
 
     async getPipelines(pipeline: TektonNode): Promise<TektonNode[]> {
-        if (!this.cache.has(pipeline)) {
-            this.cache.set(pipeline, await this._getPipelines(pipeline));
+        if (!this.cache.has(this.ROOT)) {
+            this.cache.set(this.ROOT, await this._getPipelines(pipeline));
         }
-        return this.cache.get(pipeline);
+        return this.cache.get(this.ROOT);
     }
 
     public async _getPipelines(pipeline: TektonNode): Promise<TektonNode[]> {
@@ -222,6 +226,9 @@ export class TknImpl implements Tkn {
         throw new Error("Method not implemented.");
     }
     getClusterTasks(clusterTask: TektonNode): Promise<TektonNode[]> {
+        throw new Error("Method not implemented.");
+    }
+    startPipeline(pipdline: string): Promise<TektonNode[]> {
         throw new Error("Method not implemented.");
     }
 
