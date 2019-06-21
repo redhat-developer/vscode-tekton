@@ -13,7 +13,7 @@ enum WatchEventType {
   DELETE = 'DELETED'
 }
 
-enum ConatinerType {
+enum ContainerType {
   PIPELINE,
   TASK,
   CLUSTERTASK
@@ -35,6 +35,7 @@ interface TektonNode {
   readonly tooltip: string;
   readonly iconPath: string | Uri ;
   readonly command: string;
+  readonly creationTime: string;
   getChildren(): TektonNode[];
   consumeEvent(event: any): boolean;
 }
@@ -44,7 +45,7 @@ class ContainerNode implements TektonNode {
 
   private children: TektonNode[] = [];
 
-  constructor(private type: ConatinerType) {
+  constructor(private type: ContainerType) {
   }
 
   get resource() {
@@ -97,12 +98,16 @@ get label() {
     return '';
   }
 
+  get creationTime() {
+    return '';
+  }
+
   private isPipeline(): boolean {
-    return this.type === ConatinerType.PIPELINE;
+    return this.type === ContainerType.PIPELINE;
   }
 
   private isTask(): boolean {
-    return this.type === ConatinerType.TASK;
+    return this.type === ContainerType.TASK;
   }
 
   getChildren(): TektonNode[] {
@@ -162,23 +167,38 @@ get label() {
   }
 
   addNewTask(object: any): void {
-    const task = new TaskNode(Uri.parse(`tekton:task`), object.metadata.name, `[${object.metadata.namespace}]-${object.metadata.name}`);
+    const task = new TaskNode(Uri.parse(`tekton:task`), object.metadata.name, `[${object.metadata.namespace}]-${object.metadata.name}`, object.metadata.creationTimestamp);
     this.children.push(task);
+    this.children.sort((a,b) => {
+      if (a.label < b.label) { return -1; }
+      if (a.label > b.label) { return 1; }
+      return 0;
+    });
   }
   addNewPipeline(object: any): void {
-    const pipe = new PipelineNode(Uri.parse(`tekton:pipeline`), object.metadata.name, `[${object.metadata.namespace}]-${object.metadata.name}`);
+    const pipe = new PipelineNode(Uri.parse(`tekton:pipeline`), object.metadata.name, `[${object.metadata.namespace}]-${object.metadata.name}`, object.spec.tasks);
     this.children.push(pipe);
+    this.children.sort((a,b) => {
+      if (a.label < b.label) { return -1; }
+      if (a.label > b.label) { return 1; }
+      return 0;
+    });
   }
   addNewClusterTask(object: any): void {
     const clustertask = new ClusterTaskNode(Uri.parse(`tekton:clustertask`), object.metadata.name, `[${object.metadata.namespace}]-${object.metadata.name}`);
     this.children.push(clustertask);
+    this.children.sort((a,b) => {
+      if (a.label < b.label) { return -1; }
+      if (a.label > b.label) { return 1; }
+      return 0;
+    });
 }
 
 }
 
 class PipelineRunNode implements TektonNode{
   private children: TektonNode[] = [];
-  constructor(public resource: Uri, public label: string, public tooltip: string, public state: string) {
+  constructor(public resource: Uri, public label: string, public tooltip: string, public state: string, public creationTime: string) {
   }
 
   get iconPath() {
@@ -226,8 +246,13 @@ class PipelineRunNode implements TektonNode{
         }
         if( event.object.metadata.ownerReferences[0].name === this.label){
           const taskrun = new TaskRunNode(Uri.parse('tekton:/pipeline/pipelinerun/taksrun'),event.object.metadata.name,
-          `[${event.object.metadata.namespace}]-${event.object.metadata.name}`,event.object.status.conditions[0].status );
+          `[${event.object.metadata.namespace}]-${event.object.metadata.name}`, event.object.status.conditions[0].status, event.object.metadata.creationTimestamp );
           this.children.push(taskrun);
+          this.children.sort((a,b) => {
+            if(a.creationTime < b.creationTime){ return -1; }
+            if(a.creationTime > b.creationTime){ return 1; }
+            return 0;
+          });
           return true;
         }
       }
@@ -247,7 +272,7 @@ class PipelineRunNode implements TektonNode{
 }
 class TaskRunNode implements TektonNode {
 
-  constructor(public resource: Uri, public label: string, public tooltip: string, public state: string) {
+  constructor(public resource: Uri, public label: string, public tooltip: string, public state: string, public creationTime: string) {
   }
 
   get iconPath() {
@@ -294,7 +319,7 @@ class TaskRunNode implements TektonNode {
 class PipelineNode implements TektonNode{
   private children: TektonNode[] = [];
 
-  constructor(public resource: Uri, public label: string, public tooltip: string) { }
+  constructor(public resource: Uri, public label: string, public tooltip: string, public pipelineTasks: string[]) { }
 
   get iconPath() {
     return getIcon('pipe.png');
@@ -312,19 +337,39 @@ class PipelineNode implements TektonNode{
     return this.children.length > 0? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
   }
 
+  get creationTime() {
+    return '';
+  }
+
   getChildren(): TektonNode[] {
     return this.children;
   }
+
+  getPipelineTasks(): string[] {
+    return this.pipelineTasks;
+  }
+
+  parseToolTip(): string {
+    return this.tooltip.substring(this.tooltip.indexOf("-") +1);
+  }
+
   consumeEvent(event: any): boolean {
     const type: WatchEventType = event.type;
     switch (type) {
       case WatchEventType.ADD:
-        if (event.object.kind === ObjectType.PIPELINERUN) {
-          const status = event.object.status ? event.object.status.conditions[0].status : '';
-          const node = new PipelineRunNode(Uri.parse('tekton:pipeline/pipelinerun'), event.object.metadata.name,
-            `[${event.object.metadata.namespace}]-${event.object.metadata.name}`,status);
-          this.children.push(node);
-          return true;
+        if (event.object.kind === ObjectType.PIPELINERUN){
+          if(event.object.spec.pipelineRef.name === this.parseToolTip()) {
+            const status = event.object.status ? event.object.status.conditions[0].status : '';
+            const node = new PipelineRunNode(Uri.parse('tekton:pipeline/pipelinerun'), event.object.metadata.name,
+            `[${event.object.metadata.namespace}]-${event.object.metadata.name}`, status, event.object.metadata.creationTimestamp);
+            this.children.push(node);
+            this.children.sort((a,b) => {
+              if(a.creationTime < b.creationTime) { return -1; }
+              if(a.creationTime > b.creationTime) { return 1; }
+              return 0;
+            });
+            return true;
+          }
         }
         break;
       case WatchEventType.DELETE:
@@ -356,7 +401,7 @@ class PipelineNode implements TektonNode{
 
 class TaskNode implements TektonNode {
 
-  constructor(public resource: Uri, public label: string, public tooltip: string) { }
+  constructor(public resource: Uri, public label: string, public tooltip: string, public creationTime: string) { }
 
   get iconPath() {
     return getIcon('task.png');
@@ -401,7 +446,7 @@ class ClusterTaskNode implements TektonNode {
   constructor(public resource: Uri, public label: string, public tooltip: string) { }
 
   get iconPath() {
-    return getIcon('task.png');
+    return getIcon('clustertask.png');
   }
 
   get command() {
@@ -414,6 +459,10 @@ class ClusterTaskNode implements TektonNode {
 
   get collapsibleState() {
     return TreeItemCollapsibleState.None;
+  }
+
+  get creationTime() {
+    return '';
   }
 
   getChildren(): TektonNode[] {
@@ -440,7 +489,7 @@ class ClusterTaskNode implements TektonNode {
 
 class PipelineModel {
 
-  private children: TektonNode[] = [new ContainerNode(ConatinerType.PIPELINE), new ContainerNode(ConatinerType.TASK), new ContainerNode(ConatinerType.CLUSTERTASK)];
+  private children: TektonNode[] = [new ContainerNode(ContainerType.PIPELINE), new ContainerNode(ContainerType.TASK), new ContainerNode(ContainerType.CLUSTERTASK)];
 
   private _onDidChangeTreeData: EventEmitter<any> = new EventEmitter<any>();
 
