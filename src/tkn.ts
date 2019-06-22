@@ -5,22 +5,16 @@ import { CliExitData } from './cli';
 import * as path from 'path';
 import { ToolsConfig } from './tools';
 import format =  require('string-format');
-import { OpenShiftExplorer } from './explorer';
+import { PipelineExplorer } from './explorer';
 import { wait } from './util/async';
 import { statSync } from 'fs';
 import bs = require('binary-search');
 import { Platform } from './util/platform';
-import { TektonNode } from './explorer/model';
 import { pipeline } from 'stream';
 
 export interface TektonNode extends QuickPickItem {
-    readonly resource: Uri;
-    readonly collapsibleState: TreeItemCollapsibleState;
-    readonly label: string;
-    readonly contextValue: string;
-    readonly tooltip: string;
-    readonly iconPath: string | Uri ;
-    readonly command: string;
+    contextValue: string;
+    comptype ?: string;
     getChildren(): ProviderResult<TektonNode[]>;
     getParent(): TektonNode;
     getName(): string;
@@ -46,14 +40,13 @@ function verbose(_target: any, key: string, descriptor: any) {
 	}
 
 	descriptor[fnKey] = function (...args: any[]) {
-        const v = workspace.getConfiguration('openshiftConnector').get('outputVerbosityLevel');
+        const v = workspace.getConfiguration('tektonPipelines').get('outputVerbosityLevel');
         const command = fn!.apply(this, args);
         return command + (v > 0 ? ` -v ${v}` : '');
 	};
 }
 
 export class Command {
-    @verbose
     static startPipeline(name: string) {
         return `tkn pipeline start ${name}`;
     }
@@ -94,7 +87,7 @@ export class TektonNodeImpl implements TektonNode {
         pipeline: {
             icon: 'pipe.png',
             tooltip: 'Application: {label}',
-            getChildren: () => this.tkn.getPipelines(this)
+            getChildren: () => this.tkn.getPipelines()
         },
         pipelineRun: {
             icon: 'pipe.png',
@@ -119,7 +112,6 @@ export class TektonNodeImpl implements TektonNode {
     };
 
     constructor(private parent: TektonNode,
-        public readonly resource: Uri,
         public readonly name: string,
         public readonly contextValue: ContextType,
         private readonly tkn: Tkn,
@@ -127,7 +119,7 @@ export class TektonNodeImpl implements TektonNode {
         public readonly comptype?: string) {
 
     }
- 
+    
     get iconPath(): Uri {
         return Uri.file(path.join(__dirname, "../../images/", this.CONTEXT_DATA[this.contextValue].icon));
     }
@@ -155,7 +147,7 @@ export class TektonNodeImpl implements TektonNode {
 
 export interface Tkn {
     startPipeline(project: string): Promise<TektonNode[]>;
-    getPipelines(pipeline: TektonNode): Promise<TektonNode[]>;
+    getPipelines(): Promise<TektonNode[]>;
     getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]>;
     getTasks(task: TektonNode): Promise<TektonNode[]>;
     getTaskRuns(taskRun: TektonNode): Promise<TektonNode[]>;
@@ -193,14 +185,14 @@ export class TknImpl implements Tkn {
         return TknImpl.instance;
     }
 
-    async getPipelines(pipeline: TektonNode): Promise<TektonNode[]> {
+    async getPipelines(): Promise<TektonNode[]> {
         if (!this.cache.has(this.ROOT)) {
-            this.cache.set(this.ROOT, await this._getPipelines(pipeline));
+            this.cache.set(this.ROOT, await this._getPipelines());
         }
         return this.cache.get(this.ROOT);
     }
 
-    public async _getPipelines(pipeline: TektonNode): Promise<TektonNode[]> {
+    public async _getPipelines(): Promise<TektonNode[]> {
         const result: cliInstance.CliExitData = await this.execute(Command.listPipelines());
         let data: any[] = [];
         try {
@@ -311,19 +303,6 @@ export class TknImpl implements Tkn {
             toolLocation ? command.replace(cmd, `"${toolLocation}"`).replace(new RegExp(`&& ${cmd}`, 'g'), `&& "${toolLocation}"`) : command,
             cwd ? {cwd} : { }
         ).then(async (result) => result.error && fail ?  Promise.reject(result.error) : result).catch((err) => fail ? Promise.reject(err) : Promise.resolve({error: null, stdout: '', stderr: ''}));
-    }
-
-    private insertAndReveal(array: TektonNode[], item: TektonNode): TektonNode {
-        const i = bs(array, item, compareNodes);
-        array.splice(Math.abs(i)-1, 0, item);
-        OpenShiftExplorer.getInstance().reveal(item);
-        return item;
-    }
-
-    private deleteAndRefresh(array: TektonNode[], item: TektonNode): TektonNode {
-        array.splice(array.indexOf(item), 1);
-        OpenShiftExplorer.getInstance().refresh(item.getParent());
-        return item;
     }
 
     clearCache() {

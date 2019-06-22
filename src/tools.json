@@ -8,7 +8,6 @@
         "version": "0.1.2",
         "versionRange": "0.1.2",
         "versionRangeLabel": "v0.1.2",
-        "cmdFileName": "tkn",
         "filePrefix": "",
         "platform": {
             "win32": {

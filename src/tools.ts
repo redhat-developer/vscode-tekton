@@ -1,6 +1,10 @@
+/*-----------------------------------------------------------------------------------------------
+ *  Copyright (c) Red Hat, Inc. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE file in the project root for license information.
+ *-----------------------------------------------------------------------------------------------*/
+
 import { Platform } from "./util/platform";
-import { DownloadUtil } from "./util/download";
-import * as childProcess from 'child_process';
+import { Archive } from "./util/archive";
 import { which } from "shelljs";
 import { DownloadUtil } from "./util/download";
 import hasha = require("hasha");
@@ -11,47 +15,44 @@ import * as fsex from 'fs-extra';
 import * as fs from 'fs';
 import { Cli } from './cli';
 import semver = require('semver');
-import { ExecException, ExecOptions } from 'child_process';
 import configData = require('./tools.json');
 
-export class CliConfig {
-    public static cli: object = CliConfig.loadMetadata(configData, Platform.OS);
+export class ToolsConfig {
+
+    public static tools: object = ToolsConfig.loadMetadata(configData, Platform.OS);
 
     public static loadMetadata(requirements, platform): object {
         const reqs = JSON.parse(JSON.stringify(requirements));
-        for (const object in requirements) {
-            if (reqs[object].platform) {
-                if (reqs[object].platform[platform]) {
-                    Object.assign(reqs[object], reqs[object].platform[platform]);
-                    delete reqs[object].platform;
-                } else {
-                    delete reqs[object];
-                }
+            if (reqs.platform) {
+                if (reqs.platform[platform]) {
+                    Object.assign(reqs, reqs.platform[platform]);
+                    delete reqs.platform;
             }
         }
         return reqs;
     }
+
     public static resetConfiguration(): void {
         ToolsConfig.tools = ToolsConfig.loadMetadata(configData, Platform.OS);
     }
 
-    public static async detectOrDownload(cmd: string): Promise<string> {
+    public static async detectOrDownload(): Promise<string> {
 
-        let toolLocation: string = ToolsConfig.tools[cmd].location;
+        let toolLocation: string = ToolsConfig.tools.location;
 
         if (toolLocation === undefined) {
-            const toolCacheLocation = path.resolve(Platform.getUserHomePath(), '.vs-openshift', ToolsConfig.tools[cmd].cmdFileName);
+            const toolCacheLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tools.cmdFileName);
             const whichLocation = which(cmd);
             const toolLocations: string[] = [whichLocation ? whichLocation.stdout : null, toolCacheLocation];
-            toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tools[cmd].versionRange);
+            toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tools.versionRange);
 
             if (toolLocation === undefined) {
                 // otherwise request permission to download
-                const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-openshift', ToolsConfig.tools[cmd].dlFileName);
-                const installRequest = `Download and install v${ToolsConfig.tools[cmd].version}`;
+                const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tools.dlFileName);
+                const installRequest = `Download and install v${ToolsConfig.tools.version}`;
                 const response = await vscode.window.showInformationMessage(
-                    `Cannot find ${ToolsConfig.tools[cmd].description} ${ToolsConfig.tools[cmd].versionRangeLabel}.`, installRequest, 'Help', 'Cancel');
-                fsex.ensureDirSync(path.resolve(Platform.getUserHomePath(), '.vs-openshift'));
+                    `Cannot find ${ToolsConfig.tools.description} ${ToolsConfig.tools.versionRangeLabel}.`, installRequest, 'Help', 'Cancel');
+                fsex.ensureDirSync(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
                 if (response === installRequest) {
                     let action: string;
                     do {
@@ -59,29 +60,25 @@ export class CliConfig {
                         await vscode.window.withProgress({
                             cancellable: true,
                             location: vscode.ProgressLocation.Notification,
-                            title: `Downloading ${ToolsConfig.tools[cmd].description}`
+                            title: `Downloading ${ToolsConfig.tools.description}`
                             },
                             (progress: vscode.Progress<{increment: number, message: string}>, token: vscode.CancellationToken) => {
                                 return DownloadUtil.downloadFile(
-                                    ToolsConfig.tools[cmd].url,
+                                    ToolsConfig.tools.url,
                                     toolDlLocation,
                                     (dlProgress, increment) => progress.report({ increment, message: `${dlProgress}%`})
                                 );
                         });
                         const sha256sum: string = await hasha.fromFile(toolDlLocation, {algorithm: 'sha256'});
-                        if (sha256sum !== ToolsConfig.tools[cmd].sha256sum) {
+                        if (sha256sum !== ToolsConfig.tools.sha256sum) {
                             fsex.removeSync(toolDlLocation);
-                            action = await vscode.window.showInformationMessage(`Checksum for downloaded ${ToolsConfig.tools[cmd].description} v${ToolsConfig.tools[cmd].version} is not correct.`, 'Download again', 'Cancel');
+                            action = await vscode.window.showInformationMessage(`Checksum for downloaded ${ToolsConfig.tools.description} v${ToolsConfig.tools.version} is not correct.`, 'Download again', 'Cancel');
                         }
 
                     } while (action === 'Download again');
 
                     if (action !== 'Cancel') {
-                        if (toolDlLocation.endsWith('.zip') || toolDlLocation.endsWith('.tar.gz')) {
-                            await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-openshift'), ToolsConfig.tools[cmd].filePrefix);
-                        } else if (toolDlLocation.endsWith('.gz')) {
-                            await Archive.unzip(toolDlLocation, toolCacheLocation, ToolsConfig.tools[cmd].filePrefix);
-                        }
+                        await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), ToolsConfig.tools.filePrefix);
                         fsex.removeSync(toolDlLocation);
                         if (Platform.OS !== 'win32') {
                             fs.chmodSync(toolCacheLocation, 0o765);
@@ -89,11 +86,11 @@ export class CliConfig {
                         toolLocation = toolCacheLocation;
                     }
                 } else if (response === `Help`) {
-                    open('https://github.com/redhat-developer/vscode-openshift-tools#dependencies');
+                    open('https://github.com/redhat-developer/vscode-tekton#dependencies');
                 }
             }
             if (toolLocation) {
-                ToolsConfig.tools[cmd].location = toolLocation;
+                ToolsConfig.tools.location = toolLocation;
             }
         }
         return toolLocation;
@@ -126,9 +123,4 @@ export class CliConfig {
         }
         return result;
     }
-}
-export interface Tkn {
-    checkPresent(errorMessageMode: CheckPresentMessageMode): Promise<boolean>;
-    invoke(command: string, handler?: ShellHandler): Promise<voild>;
-
 }

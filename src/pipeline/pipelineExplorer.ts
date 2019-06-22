@@ -1,16 +1,24 @@
-import { TreeDataProvider, Event, EventEmitter, TreeItem, ProviderResult, Disposable } from "vscode";
-import { PipelineModel, TektonNode } from "../explorer/model";
-import { Tkn, TektonObject, TknImpl } from './tkn';
+import { TreeDataProvider, TreeView, Event, EventEmitter, TreeItem, ProviderResult, Disposable, window } from "vscode";
+import { Tkn, TektonNode, TknImpl } from '../tkn';
+import { WatchUtil, FileContentChangeNotifier } from '../util/watch';
+import { Platform } from '../util/platform';
+import * as path from 'path';
+
 
 
 export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposable {
   private static instance: PipelineExplorer;
   private static tkn: Tkn = TknImpl.Instance;
+  private treeView: TreeView<TektonNode>;
+  private fsw: FileContentChangeNotifier;
   private onDidChangeTreeDataEmitter: EventEmitter<TektonNode | undefined> = new EventEmitter<TektonNode | undefined>();
+  readonly onDidChangeTreeData: Event<TektonNode | undefined> = this.onDidChangeTreeDataEmitter.event;
+
   
-  constructor(private model: PipelineModel) {
-    this.model.onDidChangeTreeData((e) => {this.refresh(e);});
-    this.model.connect();
+  constructor() {
+//    this.fsw = WatchUtil.watchFileForContextChange(kubeConfigFolder, 'config');
+    this.fsw.emitter.on('file-changed', this.refresh.bind(this));
+    this.treeView = window.createTreeView('tektonPipelineExplorer', {treeDataProvider: this});
   }
   static getInstance(): PipelineExplorer {
     if (!PipelineExplorer.instance) {
@@ -18,34 +26,35 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     }
     return PipelineExplorer.instance;
   }
-
-  get onDidChangeTreeData(): Event<any> {
-    return this.model.onDidChangeTreeData;
-  }
   getTreeItem(element: TektonNode): TreeItem | Thenable<TreeItem> {
-    let item: TreeItem = {
-      label: element.label,
-      resourceUri: element.resource,
-      contextValue: element.contextValue,
-      tooltip: element.tooltip,
-      collapsibleState: element.collapsibleState
-    };
-    item.iconPath = element.iconPath;
-    return item;
-  }
-  getChildren(element: TektonNode): ProviderResult<TektonNode[]> {
-    return element ?
-      element.getChildren() :
-      this.model.getChildren(element);
-  }
-  dispose() {
-    throw new Error("Method not implemented.");
+    return element;
   }
   
-  refresh(target?: TektonNode): any {
+  getChildren(element?: TektonNode): ProviderResult<TektonNode[]> {
+    return element ? element.getChildren() : PipelineExplorer.tkn.getPipelines();
+  }
+
+getParent?(element: TektonNode): TektonNode {
+    return element.getParent();
+}
+
+refresh(target?: TektonNode): void {
     if (!target) {
-      PipelineExplorer.tkn.clearCache();
+        PipelineExplorer.tkn.clearCache();
     }
     this.onDidChangeTreeDataEmitter.fire(target);
-  }
+}
+
+dispose(): void {
+    this.fsw.watcher.close();
+    this.treeView.dispose();
+}
+
+async reveal(item: TektonNode): Promise<void> {
+    this.refresh(item.getParent());
+    // double call of reveal is workaround for possible upstream issue
+    // https://github.com/redhat-developer/vscode-openshift-tools/issues/762
+    await this.treeView.reveal(item);
+    this.treeView.reveal(item);
+}
 }

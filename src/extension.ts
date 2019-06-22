@@ -1,14 +1,23 @@
 import * as vscode from 'vscode';
 import {PipelineExplorer} from './pipeline/pipelineExplorer';
-import {createPipelineExplorer} from './explorer';
-
+import {Pipeline} from './tekton/pipeline';
+import {PipelineRun} from './tekton/pipelinerun';
+import {Task} from './tekton/task';
+import {TaskRun} from './tekton/taskrun';
 export function activate(context: vscode.ExtensionContext) {
 
  // vscode.commands.executeCommand('extention.vsKubernetes)
 
   const disposables = [
-    ...createPipelineExplorer(),
-    vscode.commands.registerCommand('pipeline.provider.refresh', (context) =>  execute(createPipelineExplorer.refresh(), context)),
+    vscode.commands.registerCommand('tekton.pipeline.create', (context) =>  execute(Pipeline.create, context)),
+    vscode.commands.registerCommand('tekton.pipeline.list', (context) =>  execute(Pipeline.list, context)),
+    vscode.commands.registerCommand('tekton.pipeline.describe', (context) =>  execute(Pipeline.describe, context)),
+    vscode.commands.registerCommand('tekton.pipelinerun.list', (context) =>  execute(PipelineRun.list, context)),
+    vscode.commands.registerCommand('tekton.pipelinerun.describe', (context) =>  execute(PipelineRun.describe, context)),
+    vscode.commands.registerCommand('tekton.task.list', (context) =>  execute(Task.list, context)),
+    vscode.commands.registerCommand('tekton.task.describe', (context) =>  execute(Task.describe, context)),
+    vscode.commands.registerCommand('tekton.taskrun.list', (context) =>  execute(TaskRun.list, context)),
+    vscode.commands.registerCommand('tekton.taskrun.describe', (context) =>  execute(TaskRun.describe, context)),
     vscode.window.registerTreeDataProvider('tekton.pipelineExplorer',PipelineExplorer.getInstance()),
   ];
   disposables.forEach((e) => context.subscriptions.push(e));
