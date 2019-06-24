@@ -5,7 +5,6 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
-import { window } from 'vscode';
 import { Progress } from '../util/progress';
 
 export class Pipeline extends TektonItem {
@@ -14,12 +13,12 @@ export class Pipeline extends TektonItem {
         const pipeline = await Pipeline.getTektonCmdData(treeItem,
             "In which Project you want to create an Pipeline");
         if (!pipeline) return null;
-        const applicationList: Array<TektonNode> = await TektonItem.tkn.getPipelines(pipeline);
-        const applicationName = await Pipeline.getName('Pipeline name', applicationList);
-        if (!applicationName) return null;
-        return Progress.execFunctionWithProgress(`Creating the Pipeline '${applicationName}'.`, () =>
-            Pipeline.tkn.createPipeline(pipeline, applicationName)
-                .then(() => `Pipeline '${applicationName}' successfully created`)
+        const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelines();
+        const pipelineName = await Pipeline.getName('Pipeline name', pipelineList);
+        if (!pipelineName) return null;
+        return Progress.execFunctionWithProgress(`Creating the Pipeline '${pipelineName}'.`, () =>
+            Pipeline.tkn.startPipeline(pipeline)
+                .then(() => `Pipeline '${pipelineName}' successfully created`)
                 .catch((error) => Promise.reject(`Failed to create Pipeline with error '${error}'`)));
     }
 

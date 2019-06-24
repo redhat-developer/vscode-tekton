@@ -16,11 +16,17 @@ export class PipelineRun extends TektonItem {
     }
     
     static async list(treeItem: TektonNode): Promise<void> {
-        const application = await PipelineRun.getTektonCmdData(treeItem,
+        const pipelinerun = await PipelineRun.getTektonCmdData(treeItem,
             "From which project you want to describe PipelineRun",
             "Select PipelineRun you want to describe");
-            //Maybe it's better to specify the pipeline?
-        if (application) PipelineRun.tkn.executeInTerminal(Command.listPipelineRuns());
+        if (pipelinerun) PipelineRun.tkn.executeInTerminal(Command.listPipelineRuns());
+    }
+
+    static async logs(treeItem: TektonNode): Promise<void> {
+        const pipelinerun = await PipelineRun.getTektonCmdData(treeItem,
+            "From which project you want to describe PipelineRun",
+            "Select PipelineRun you want to describe");
+        if (pipelinerun) PipelineRun.tkn.executeInTerminal(Command.showPipelineRunLogs(pipelinerun.getParent().getName()));
     }
 
 }

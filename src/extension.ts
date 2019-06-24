@@ -14,10 +14,10 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('tekton.pipeline.describe', (context) =>  execute(Pipeline.describe, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.list', (context) =>  execute(PipelineRun.list, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.describe', (context) =>  execute(PipelineRun.describe, context)),
+    vscode.commands.registerCommand('tekton.pipelinerun.logs', (context) =>  execute(PipelineRun.logs, context)),
     vscode.commands.registerCommand('tekton.task.list', (context) =>  execute(Task.list, context)),
-    vscode.commands.registerCommand('tekton.task.describe', (context) =>  execute(Task.describe, context)),
     vscode.commands.registerCommand('tekton.taskrun.list', (context) =>  execute(TaskRun.list, context)),
-    vscode.commands.registerCommand('tekton.taskrun.describe', (context) =>  execute(TaskRun.describe, context)),
+    vscode.commands.registerCommand('tekton.taskrun.logs', (context) =>  execute(TaskRun.logs, context)),
     vscode.window.registerTreeDataProvider('tekton.pipelineExplorer',PipelineExplorer.getInstance()),
   ];
   disposables.forEach((e) => context.subscriptions.push(e));

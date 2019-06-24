@@ -48,7 +48,7 @@ function verbose(_target: any, key: string, descriptor: any) {
 
 export class Command {
     static startPipeline(name: string) {
-        return `tkn pipeline start ${name}`;
+        return 'tkn pipeline start ${name}';
     }
     static listPipelines() {
         return 'tkn pipeline list';
@@ -63,16 +63,19 @@ export class Command {
         return 'tkn pipelinerun describe ${name}';
     }
     static showPipelineRunLogs(name: string) {
-        return `tkn pipelinerun logs ${name}`;
+        return 'tkn pipelinerun logs ${name}';
     }
-    static listTasks() {
-        return 'tkn task list';
+    static listTasks(name: string) {
+        return 'tkn task list ${name}';
     }
-    static listTaskRuns() {
-        return 'tkn taskrun list';
+    static listTaskRuns(name: string) {
+        return 'tkn taskrun list ${name}';
     }
+/*     static describeTaskRuns(name: string) {
+        return 'tkn taskrun list ${name}';
+    } */
     static showTaskRunLogs(name: string) {
-        return `tkn taskrun logs ${name}`;
+        return 'tkn taskrun logs ${name}';
     }
     static printTknVersion() {
         return 'tkn version';
@@ -146,13 +149,21 @@ export class TektonNodeImpl implements TektonNode {
 }
 
 export interface Tkn {
-    startPipeline(project: string): Promise<TektonNode[]>;
+    startPipeline(pipeline: TektonNode): Promise<TektonNode[]>;
     getPipelines(): Promise<TektonNode[]>;
+    describePipeline(pipeline: TektonNode): Promise<TektonNode[]>;
     getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]>;
+    getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]>;
+    describePipelineRun(pipelineRun: TektonNode): Promise<TektonNode[]>;
+    getPipelineRunLogs(pipelineRun: TektonNode): Promise<TektonNode[]>;
     getTasks(task: TektonNode): Promise<TektonNode[]>;
+//    describeTask(task: TektonNode): Promise<TektonNode[]>;
     getTaskRuns(taskRun: TektonNode): Promise<TektonNode[]>;
+    getTaskRunLogs(taskRun: TektonNode): Promise<TektonNode[]>;
+//    describeTaskRuns(taskRun: TektonNode): Promise<TektonNode[]>;
     getComponentTypeVersions(componentName: string): Promise<string[]>;
     getClusterTasks(clusterTask: TektonNode): Promise<TektonNode[]>;
+    describeClusterTasks(clusterTask: TektonNode): Promise<TektonNode[]>;
     execute(command: string, cwd?: string, fail?: boolean): Promise<CliExitData>;
     executeInTerminal(command: string, cwd?: string): void;
     clearCache?(): void;
@@ -170,7 +181,6 @@ function compareNodes(a, b): number {
 }
 
 export class TknImpl implements Tkn {
-
     private ROOT: TektonNode = new TektonNodeImpl(undefined, 'root', undefined, undefined);
     private cache: Map<TektonNode, TektonNode[]> = new Map();
     private static cli: cliInstance.ICli = cliInstance.Cli.getInstance();
@@ -220,9 +230,25 @@ export class TknImpl implements Tkn {
     getClusterTasks(clusterTask: TektonNode): Promise<TektonNode[]> {
         throw new Error("Method not implemented.");
     }
-    startPipeline(pipdline: string): Promise<TektonNode[]> {
+    startPipeline(pipeline: TektonNode): Promise<TektonNode[]> {
         throw new Error("Method not implemented.");
     }
+    describePipeline(pipeline: TektonNode): Promise<TektonNode[]> {
+        throw new Error("Method not implemented.");
+    }
+    describePipelineRun(pipelineRun: TektonNode): Promise<TektonNode[]> {
+        throw new Error("Method not implemented.");
+    }
+    getPipelineRunLogs(pipelineRun: TektonNode): Promise<TektonNode[]> {
+        throw new Error("Method not implemented.");
+    }
+    getTaskRunLogs(taskRun: TektonNode): Promise<TektonNode[]> {
+        throw new Error("Method not implemented.");
+    }
+    describeClusterTasks(clusterTask: TektonNode): Promise<TektonNode[]> {
+        throw new Error("Method not implemented.");
+    }
+
 
     public async getApplicationChildren(application: TektonNode): Promise<TektonNode[]> {
         if (!this.cache.has(application)) {
