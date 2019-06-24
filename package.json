@@ -2,6 +2,8 @@
   "name": "vscode-tekton",
   "displayName": "Tekton",
   "description": "Tekton pipelines integration",
+  "version": "v0.1.2",
+  "license": "Apache-2.0",
   "publisher": "redhat",
   "repository": {
     "type": "git",
@@ -22,12 +24,12 @@
     "onCommand:tekton.pipeline.describe",
     "onCommand:tekton.pipelinerun.list",
     "onCommand:tekton.pipelinerun.describe",
+    "onCommand:tekton.pipelinerun.logs",
     "onCommand:tekton.task.list",
-    "onCommand:tekton.task.describe",
     "onCommand:tekton.taskrun.list",
-    "onCommand:tekton.taskrun.describe"
+    "onCommand:tekton.taskrun.logs"
   ],
-  "main": "./out/extension.js",
+  "main": "./out/src/extension",
   "contributes": {
     "commands": [
       {
@@ -56,24 +58,30 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.pipelinerun.logs",
+        "title": "Show Pipelinerun logs",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.task.list",
         "title": "List Tasks",
         "category": "Tekton"
       },
       {
-        "command": "tekton.task.describe",
-        "title": "Describe Tasks",
-        "category": "Tekton"
-      },
-      {
         "command": "tekton.taskrun.list",
-        "title": "List Taskrunss",
+        "title": "List Taskruns",
         "category": "Tekton"
       },
       {
-        "command": "tekton.taskrun.describe",
-        "title": "Describe Taskruns",
+        "command": "tekton.taskrun.logs",
+        "title": "Show Taskrun logs",
         "category": "Tekton"
+      },
+      {
+        "command": "tekton.explorer.refresh",
+        "title": "Refresh View",
+        "category": "Tekton",
+        "icon": "images/refresh.png"
       }
     ],
     "configuration": {
@@ -99,6 +107,101 @@
         {
           "id": "tekton.pipelineExplorer",
           "name": "Tekton Pipelines"
+        }
+      ]
+    },
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "tekton.pipeline.folder.create"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "tekton.pipeline.start",
+          "when": "view == tekton.pipelineExplorer"
+        },
+        {
+          "command": "tekton.pipeline.describe",
+          "when": "view == tekton.pipelineExplorer"
+        },
+        {
+          "command": "tekton.pipeline.list",
+          "when": "view == tekton.pipelineExplorer"
+        },
+        {
+          "command": "tekton.pipelinerun.list",
+          "when": "view == tekton.pipelineExplorer"
+        },
+        {
+          "command": "tekton.pipelinerun.describe",
+          "when": "view == tekton.pipelineExplorer"
+        },
+        {
+          "command": "tekton.pipelinerun.logs",
+          "when": "view == tekton.pipelineExplorer"
+        },
+        {
+          "command": "tekton.task.list",
+          "when": "view == tekton.pipelineExplorer"
+        },
+        {
+          "command": "tekton.taskrun.list",
+          "when": "view == tekton.pipelineExplorer"
+        },
+        {
+          "command": "tekton.taskrun.logs",
+          "when": "view == tekton.pipelineExplorer"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "tekton.explorer.refresh",
+          "when": "view == tekton.pipelineExplorer",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "tekton.pipeline.start",
+          "when": "view == tekton.pipelineExplorer && viewItem == pipeline",
+          "group": "c1"
+        },
+        {
+          "command": "tekton.pipeline.list",
+          "when": "view == tekton.pipelineExplorer && viewItem == pipeline",
+          "group": "c2@1"
+        },
+        {
+          "command": "tekton.pipeline.describe",
+          "when": "view == tekton.pipelineExplorer && viewItem == pipeline",
+          "group": "c2@2"
+        },
+        {
+          "command": "tekton.pipelinerun.list",
+          "when": "view == tekton.pipelineExplorer && viewItem == pipelinerun",
+          "group": "p1"
+        },
+        {
+          "command": "tekton.pipelinerun.describe",
+          "when": "view == tekton.pipelineExplorer && viewItem == pipelinerun",
+          "group": "p2"
+        },
+        {
+          "command": "tekton.pipelinerun.logs",
+          "when": "view == tekton.pipelineExplorer && viewItem == pipelinerun",
+          "group": "p3"
+        },
+        {
+          "command": "tekton.task.list",
+          "when": "view == tekton.pipelineExplorer && viewItem == task",
+          "group": "a1"
+        },
+        {
+          "command": "tekton.taskrun.logs",
+          "when": "view == tekton.pipelineExplorer && viewItem == taskrun",
+          "group": "s1"
         }
       ]
     }

@@ -4,8 +4,12 @@ import {Pipeline} from './tekton/pipeline';
 import {PipelineRun} from './tekton/pipelinerun';
 import {Task} from './tekton/task';
 import {TaskRun} from './tekton/taskrun';
+
+export let contextGlobalState: vscode.ExtensionContext;
+
 export function activate(context: vscode.ExtensionContext) {
 
+    contextGlobalState = context;
  // vscode.commands.executeCommand('extention.vsKubernetes)
 
   const disposables = [
@@ -18,9 +22,10 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('tekton.task.list', (context) =>  execute(Task.list, context)),
     vscode.commands.registerCommand('tekton.taskrun.list', (context) =>  execute(TaskRun.list, context)),
     vscode.commands.registerCommand('tekton.taskrun.logs', (context) =>  execute(TaskRun.logs, context)),
-    vscode.window.registerTreeDataProvider('tekton.pipelineExplorer',PipelineExplorer.getInstance()),
+    PipelineExplorer.getInstance()
   ];
   disposables.forEach((e) => context.subscriptions.push(e));
+
 }
 
 function execute<T>(command: (...args: T[]) => Promise<any> | void, ...params: T[]) {

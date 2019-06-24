@@ -38,20 +38,20 @@ export class ToolsConfig {
 
     public static async detectOrDownload(): Promise<string> {
 
-        let toolLocation: string = ToolsConfig.tools.location;
+        let toolLocation: string = ToolsConfig.tools['tkn'].location;
 
         if (toolLocation === undefined) {
-            const toolCacheLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tools.cmdFileName);
-            const whichLocation = which(cmd);
+            const toolCacheLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tools['tkn'].FileName);
+            const whichLocation = which('tkn');
             const toolLocations: string[] = [whichLocation ? whichLocation.stdout : null, toolCacheLocation];
-            toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tools.versionRange);
+            toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tools['tkn'].versionRange);
 
             if (toolLocation === undefined) {
                 // otherwise request permission to download
-                const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tools.dlFileName);
-                const installRequest = `Download and install v${ToolsConfig.tools.version}`;
+                const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tools['tkn'].dlFileName);
+                const installRequest = `Download and install v${ToolsConfig.tools['tkn'].version}`;
                 const response = await vscode.window.showInformationMessage(
-                    `Cannot find ${ToolsConfig.tools.description} ${ToolsConfig.tools.versionRangeLabel}.`, installRequest, 'Help', 'Cancel');
+                    `Cannot find ${ToolsConfig.tools['tkn'].description} ${ToolsConfig.tools['tkn'].versionRangeLabel}.`, installRequest, 'Help', 'Cancel');
                 fsex.ensureDirSync(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
                 if (response === installRequest) {
                     let action: string;
@@ -60,25 +60,25 @@ export class ToolsConfig {
                         await vscode.window.withProgress({
                             cancellable: true,
                             location: vscode.ProgressLocation.Notification,
-                            title: `Downloading ${ToolsConfig.tools.description}`
+                            title: `Downloading ${ToolsConfig.tools['tkn'].description}`
                             },
                             (progress: vscode.Progress<{increment: number, message: string}>, token: vscode.CancellationToken) => {
                                 return DownloadUtil.downloadFile(
-                                    ToolsConfig.tools.url,
+                                    ToolsConfig.tools['tkn'].url,
                                     toolDlLocation,
                                     (dlProgress, increment) => progress.report({ increment, message: `${dlProgress}%`})
                                 );
                         });
                         const sha256sum: string = await hasha.fromFile(toolDlLocation, {algorithm: 'sha256'});
-                        if (sha256sum !== ToolsConfig.tools.sha256sum) {
+                        if (sha256sum !== ToolsConfig.tools['tkn'].sha256sum) {
                             fsex.removeSync(toolDlLocation);
-                            action = await vscode.window.showInformationMessage(`Checksum for downloaded ${ToolsConfig.tools.description} v${ToolsConfig.tools.version} is not correct.`, 'Download again', 'Cancel');
+                            action = await vscode.window.showInformationMessage(`Checksum for downloaded ${ToolsConfig.tools['tkn'].description} v${ToolsConfig.tools['tkn'].version} is not correct.`, 'Download again', 'Cancel');
                         }
 
                     } while (action === 'Download again');
 
                     if (action !== 'Cancel') {
-                        await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), ToolsConfig.tools.filePrefix);
+                        await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), ToolsConfig.tools['tkn'].filePrefix);
                         fsex.removeSync(toolDlLocation);
                         if (Platform.OS !== 'win32') {
                             fs.chmodSync(toolCacheLocation, 0o765);
@@ -90,7 +90,7 @@ export class ToolsConfig {
                 }
             }
             if (toolLocation) {
-                ToolsConfig.tools.location = toolLocation;
+                ToolsConfig.tools['tkn'].location = toolLocation;
             }
         }
         return toolLocation;

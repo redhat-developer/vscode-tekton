@@ -5,7 +5,7 @@ import { CliExitData } from './cli';
 import * as path from 'path';
 import { ToolsConfig } from './tools';
 import format =  require('string-format');
-import { PipelineExplorer } from './explorer';
+import { PipelineExplorer } from './pipeline/pipelineExplorer';
 import { wait } from './util/async';
 import { statSync } from 'fs';
 import bs = require('binary-search');
@@ -22,10 +22,10 @@ export interface TektonNode extends QuickPickItem {
 
 export enum ContextType {
     TASK = 'task',
-    TASKRUN = 'taskRun',
+    TASKRUN = 'taskrun',
     PIPELINE = 'pipeline',
-    PIPELINERUN = 'pipelineRun',
-    CLUSTERTASK = 'clusterTask'
+    PIPELINERUN = 'pipelinerun',
+    CLUSTERTASK = 'clustertask'
 }
 
 function verbose(_target: any, key: string, descriptor: any) {
@@ -40,7 +40,7 @@ function verbose(_target: any, key: string, descriptor: any) {
 	}
 
 	descriptor[fnKey] = function (...args: any[]) {
-        const v = workspace.getConfiguration('tektonPipelines').get('outputVerbosityLevel');
+        const v = workspace.getConfiguration('tektonPipeline').get('outputVerbosityLevel');
         const command = fn!.apply(this, args);
         return command + (v > 0 ? ` -v ${v}` : '');
 	};
@@ -80,6 +80,12 @@ export class Command {
     static printTknVersion() {
         return 'tkn version';
     }
+    static addNewPipelineFromFolder(pipeline: TektonNode, path: string) {}
+    static addNewTaskFromFolder(task: TektonNode, path: string) {}
+    static addNewClusterTaskFromFolder(clusterTask: TektonNode, path: string) {}
+    static pushPipeline(pipeline: TektonNode): string {
+        return "A string";
+    }
     //TODO: Watch components as per odo so that we can reconcile pipeline view properly
     //TODO: Create and delete pipelines
     //TODO: Should Clustertasks also be found by tkn?
@@ -89,28 +95,33 @@ export class TektonNodeImpl implements TektonNode {
     private readonly CONTEXT_DATA = {
         pipeline: {
             icon: 'pipe.png',
+            contextValue: 'tekton.pipeline',
             tooltip: 'Application: {label}',
             getChildren: () => this.tkn.getPipelines()
         },
-        pipelineRun: {
+        pipelinerun: {
             icon: 'pipe.png',
+            contextValue: 'tekton.pipelinerun',
             tooltip: 'Component: {label}',
             getChildren: () => this.tkn.getPipelineRuns(this)
         },
         task: {
             icon: 'task.png',
+            contextValue: 'tekton.task',
             tooltip: 'Service: {label}',
-            getChildren: () => []
+            getChildren: () => this.tkn.getTasks(this)
         },
-        taskRun: {
+        taskrun: {
             icon: 'task.png',
+            contextValue: 'tekton.task',
             tooltip: 'Storage: {label}',
-            getChildren: () => []
+            getChildren: () => this.tkn.getTaskRuns(this)
         },
-        clusterTask: {
+        clustertask: {
             icon: 'clustertask.png',
+            contextValue: 'tekton.clustertask',
             tooltip: 'Cannot connect to the cluster',
-            getChildren: () => []
+            getChildren: () => this.tkn.getClusterTasks(this)
         }
     };
 
@@ -153,19 +164,21 @@ export interface Tkn {
     getPipelines(): Promise<TektonNode[]>;
     describePipeline(pipeline: TektonNode): Promise<TektonNode[]>;
     getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]>;
-    getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]>;
     describePipelineRun(pipelineRun: TektonNode): Promise<TektonNode[]>;
-    getPipelineRunLogs(pipelineRun: TektonNode): Promise<TektonNode[]>;
+    showPipelineRunLogs(pipelineRun: TektonNode): Promise<TektonNode[]>;
     getTasks(task: TektonNode): Promise<TektonNode[]>;
 //    describeTask(task: TektonNode): Promise<TektonNode[]>;
     getTaskRuns(taskRun: TektonNode): Promise<TektonNode[]>;
-    getTaskRunLogs(taskRun: TektonNode): Promise<TektonNode[]>;
+    showTaskRunLogs(taskRun: TektonNode): Promise<TektonNode[]>;
 //    describeTaskRuns(taskRun: TektonNode): Promise<TektonNode[]>;
     getComponentTypeVersions(componentName: string): Promise<string[]>;
     getClusterTasks(clusterTask: TektonNode): Promise<TektonNode[]>;
     describeClusterTasks(clusterTask: TektonNode): Promise<TektonNode[]>;
     execute(command: string, cwd?: string, fail?: boolean): Promise<CliExitData>;
     executeInTerminal(command: string, cwd?: string): void;
+    addPipelineFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
+    addTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
+    addClusterTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
     clearCache?(): void;
 }
 
@@ -174,13 +187,28 @@ export function getInstance(): Tkn {
 }
 
 function compareNodes(a, b): number {
-    if (!a.contextValue) return -1;
-    if (!b.contextValue) return 1;
+    if (!a.contextValue) { return -1; }
+    if (!b.contextValue) { return 1; }
     const t = a.contextValue.localeCompare(b.contextValue);
     return t ? t : a.label.localeCompare(b.label);
 }
 
 export class TknImpl implements Tkn {
+    showPipelineRunLogs(pipelineRun: TektonNode): Promise<TektonNode[]> {
+        throw new Error("Method not implemented.");
+    }
+    showTaskRunLogs(taskRun: TektonNode): Promise<TektonNode[]> {
+        throw new Error("Method not implemented.");
+    }
+    addTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode> {
+        throw new Error("Method not implemented.");
+    }
+    addClusterTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode> {
+        throw new Error("Method not implemented.");
+    }
+    pushPipeline(pipeline: TektonNode) {
+        throw new Error("Method not implemented.");
+    }
     private ROOT: TektonNode = new TektonNodeImpl(undefined, 'root', undefined, undefined);
     private cache: Map<TektonNode, TektonNode[]> = new Map();
     private static cli: cliInstance.ICli = cliInstance.Cli.getInstance();
@@ -203,6 +231,8 @@ export class TknImpl implements Tkn {
     }
 
     public async _getPipelines(): Promise<TektonNode[]> {
+        throw new Error("Not implemented.");
+    /* 
         const result: cliInstance.CliExitData = await this.execute(Command.listPipelines());
         let data: any[] = [];
         try {
@@ -213,7 +243,7 @@ export class TknImpl implements Tkn {
         }
         let apps: string[] = data.map((value) => value.metadata.name);
         apps = [...new Set(apps)]; // remove duplicates form array
-        return apps.map<TektonNode>((value) => new TektonNodeImpl(project, value, ContextType.PIPELINE, TknImpl.instance)).sort(compareNodes);
+        return apps.map<TektonNode>((value) => new TektonNodeImpl(project, value, ContextType.PIPELINE, TknImpl.instance)).sort(compareNodes); */
     }
     getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]> {
         throw new Error("Method not implemented.");
@@ -249,71 +279,9 @@ export class TknImpl implements Tkn {
         throw new Error("Method not implemented.");
     }
 
-
-    public async getApplicationChildren(application: TektonNode): Promise<TektonNode[]> {
-        if (!this.cache.has(application)) {
-            this.cache.set(application,  await this._getApplicationChildren(application));
-        }
-        return this.cache.get(application);
-    }
-
-    async _getApplicationChildren(application: TektonNode): Promise<TektonNode[]> {
-        return [... await this._getComponents(application), ... await this._getServices(application)].sort(compareNodes);
-    }
-
-    async getComponents(application: TektonNode): Promise<TektonNode[]> {
-        return (await this.getApplicationChildren(application)).filter((value) => value.contextValue === ContextType.COMPONENT);
-    }
-
-    public async _getComponents(application: TektonNode): Promise<TektonNode[]> {
-        const result: cliInstance.CliExitData = await this.execute(Command.listComponents(application.getParent().getName(), application.getName()), Platform.getUserHomePath());
-        let data: any[] = [];
-        try {
-            data = JSON.parse(result.stdout).items;
-        } catch (ignore) {
-            // show no apps if output is not correct json
-            // see https://github.com/openshift/odo/issues/1521
-        }
-        const componentObject = data.map(value => ({ name: value.metadata.name, source: value.spec.source }));
-
-        return componentObject.map<TektonNode>((value) => {
-            let compSource: string = '';
-            try {
-                if (value.source.startsWith('https://')) {
-                    compSource = 'git';
-                } else if (statSync(Uri.parse(value.source).fsPath).isFile()) {
-                    compSource = 'binary';
-                } else if (statSync(Uri.parse(value.source).fsPath).isDirectory()) {
-                    compSource = 'folder';
-                }
-            } catch (ignore) {
-                // treat component as local in case of error when calling statSync
-                // for not existing file or folder
-                compSource = 'folder';
-            }
-            return new TektonNodeImpl(application, value.name, ContextType.COMPONENT, this, TreeItemCollapsibleState.Collapsed, compSource);
-        });
-    }
-
-    public async getComponentTypes(): Promise<string[]> {
-        const result: cliInstance.CliExitData = await this.execute(Command.listCatalogComponents());
-        return result.stdout.trim().split('\n').slice(1).map((value) => value.replace(/\*/g, '').trim().replace(/\s{1,}/g, '|').split('|')[0]);
-    }
-
-    public async getComponentChildren(component: TektonNode): Promise<TektonNode[]> {
-        if (!this.cache.has(component)) {
-            this.cache.set(component, await this._getComponentChildren(component));
-        }
-        return this.cache.get(component);
-    }
-
-    async _getComponentChildren(component: TektonNode): Promise<TektonNode[]> {
-        return [... await this._getStorageNames(component), ... await this._getRoutes(component)].sort(compareNodes);
-    }
-
     public async executeInTerminal(command: string, cwd: string = process.cwd(), name: string = 'Tekton') {
         const cmd = command.split(' ')[0];
-        let toolLocation = await ToolsConfig.detectOrDownload(cmd);
+        let toolLocation = await ToolsConfig.detectOrDownload();
         if (toolLocation) {
             toolLocation = path.dirname(toolLocation);
         }
@@ -323,12 +291,24 @@ export class TknImpl implements Tkn {
     }
 
     public async execute(command: string, cwd?: string, fail: boolean = true): Promise<CliExitData> {
-        const cmd = command.split(' ')[0];
-        const toolLocation = await ToolsConfig.detectOrDownload(cmd);
-        return OdoImpl.cli.execute(
-            toolLocation ? command.replace(cmd, `"${toolLocation}"`).replace(new RegExp(`&& ${cmd}`, 'g'), `&& "${toolLocation}"`) : command,
+        const toolLocation = await ToolsConfig.detectOrDownload();
+        return TknImpl.cli.execute(
+            toolLocation ? command.replace('tkn', `"${toolLocation}"`).replace(new RegExp(`&& tkb`, 'g'), `&& "${toolLocation}"`) : command,
             cwd ? {cwd} : { }
         ).then(async (result) => result.error && fail ?  Promise.reject(result.error) : result).catch((err) => fail ? Promise.reject(err) : Promise.resolve({error: null, stdout: '', stderr: ''}));
+}
+
+    private insertAndReveal(array: TektonNode[], item: TektonNode): TektonNode {
+        const i = bs(array, item, compareNodes);
+        array.splice(Math.abs(i) - 1, 0, item);
+        PipelineExplorer.getInstance().reveal(item);
+        return item;
+    }
+
+    public async addPipelineFromFolder(application: TektonNode, path: string): Promise<TektonNode> {
+        await this.execute(Command.startPipeline(application.getParent().getName()));
+        this.executeInTerminal(Command.pushPipeline(application), "randomstring1", "randomstring2");
+        return this.insertAndReveal(await this.getPipelines(), new TektonNodeImpl(application, "test", ContextType.PIPELINE, this, TreeItemCollapsibleState.Collapsed, 'folder'));
     }
 
     clearCache() {
