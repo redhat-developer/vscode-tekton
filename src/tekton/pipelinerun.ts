@@ -19,7 +19,7 @@ export class PipelineRun extends TektonItem {
         const pipelinerun = await PipelineRun.getTektonCmdData(treeItem,
             "From which project you want to describe PipelineRun",
             "Select PipelineRun you want to describe");
-        if (pipelinerun) PipelineRun.tkn.executeInTerminal(Command.listPipelineRuns());
+        if (pipelinerun) PipelineRun.tkn.executeInTerminal(Command.listPipelineRuns(pipelinerun.getName()));
     }
 
     static async logs(treeItem: TektonNode): Promise<void> {

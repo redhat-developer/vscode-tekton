@@ -20,6 +20,7 @@
   "activationEvents": [
     "onView:tekton.pipelineExplorer",
     "onCommand:tekton.pipeline.start",
+    "onCommand:tekton.pipeline.create.local",
     "onCommand:tekton.pipeline.list",
     "onCommand:tekton.pipeline.describe",
     "onCommand:tekton.pipelinerun.list",
@@ -35,6 +36,11 @@
       {
         "command": "tekton.pipeline.start",
         "title": "Start Pipeline",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipeline.create.local",
+        "title": "New Pipeline from local folder",
         "category": "Tekton"
       },
       {
@@ -84,23 +90,21 @@
         "icon": "images/refresh.png"
       }
     ],
-    "configuration": {
-      "type": "object",
-      "title": "Tekton configuration",
-      "properties": {
-        "tektonPipeline.showChannelOutput": {
-          "title": "Show channel on output",
-          "type": "boolean",
-          "default": "false",
-          "description": "Show Tekton Pipeline output channel when new text added to ouput stream"
-        },
-        "tektonPipeline.outputVerbosityLevel": {
-          "title": "Output Verbosity Level",
-          "type": "number",
-          "default": 0,
-          "description": "Output verbosity level (value between 0 and 9) for Tekton Pipeline Start, Push and Watch commands in output channel and integrated terminal."
-        }
+    "keybindings": [
+      {
+        "command": "tekton.explorer.refresh",
+        "key": "alt+shift+r",
+        "mac": "ctrl+shift+r"
       }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "tektonView",
+          "title": "Tekton Piepelines",
+          "icon": "images/tekton.svg"
+        }
+      ]
     },
     "views": {
       "explorer": [
@@ -111,12 +115,6 @@
       ]
     },
     "menus": {
-      "explorer/context": [
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "tekton.pipeline.folder.create"
-        }
-      ],
       "commandPalette": [
         {
           "command": "tekton.pipeline.start",
@@ -204,6 +202,24 @@
           "group": "s1"
         }
       ]
+    }
+  },
+  "configuration": {
+    "type": "object",
+    "title": "Tekton configuration",
+    "properties": {
+      "tektonPipeline.showChannelOutput": {
+        "title": "Show channel on output",
+        "type": "boolean",
+        "default": "false",
+        "description": "Show Tekton Pipeline output channel when new text added to ouput stream"
+      },
+      "tektonPipeline.outputVerbosityLevel": {
+        "title": "Output Verbosity Level",
+        "type": "number",
+        "default": 0,
+        "description": "Output verbosity level (value between 0 and 9) for Tekton Pipeline Start, Push and Watch commands in output channel and integrated terminal."
+      }
     }
   },
   "extensionDependencies": [],

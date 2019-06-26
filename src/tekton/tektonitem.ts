@@ -21,8 +21,8 @@ export abstract class TektonItem {
     protected static readonly explorer: PipelineExplorer = PipelineExplorer.getInstance();
 
     static validateUniqueName(data: Array<TektonNode>, value: string) {
-        const tektonObject =  data.find((tektonObject) =>  tektonObject.getName() === value);
-        return tektonObject && `This name is already used, please enter different name.`;
+        const tektonNode =  data.find((tektonNode) =>  tektonNode.getName() === value);
+        return tektonNode && `This name is already used, please enter different name.`;
     }
 
     static async getName(message: string, data: Array<TektonNode>, offset?: string): Promise<string> {
@@ -52,11 +52,6 @@ export abstract class TektonItem {
 
     static validateMatches(message: string, value: string) {
         return (validator.matches(value, '^[a-z]([-a-z0-9]*[a-z0-9])*$')) ? null : message;
-    }
-
-    static clusterURL(value: string) {
-        const urlRegex = value.match('(https?:\/\/[^ ]*)');
-        return (urlRegex) ? urlRegex[0] : null;
     }
 
     static async getPipelineNames(): Promise<TektonNode[]> {
