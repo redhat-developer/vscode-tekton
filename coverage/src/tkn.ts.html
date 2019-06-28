@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/tkn.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">src/</a> tkn.ts
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">26.19% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>33/126</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">12.5% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>4/32</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">7.84% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>4/51</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">27.5% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>33/120</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import * as cliInstance from './cli';
+import { ProviderResult, TreeItemCollapsibleState, window, Terminal, Uri, commands, QuickPickItem, workspace } from 'vscode';
+import { WindowUtil } from './util/windowUtils';
+import { CliExitData } from './cli';
+import * as path from 'path';
+import { ToolsConfig } from './tools';
+import format =  require('string-format');
+import { PipelineExplorer } from './pipeline/pipelineExplorer';
+import { wait } from './util/async';
+import { statSync } from 'fs';
+import bs = require('binary-search');
+import { Platform } from './util/platform';
+import { pipeline } from 'stream';
+&nbsp;
+export interface TektonNode extends QuickPickItem {
+    contextValue: string;
+    comptype ?: string;
+    getChildren(): ProviderResult&lt;TektonNode[]&gt;;
+    getParent(): TektonNode;
+    getName(): string;
+}
+&nbsp;
+export enum ContextType {
+    TASK = 'task',
+    TASKRUN = 'taskrun',
+    PIPELINE = 'pipeline',
+    PIPELINERUN = 'pipelinerun',
+    CLUSTERTASK = 'clustertask'
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >function verbose(_target: any, key: string, descriptor: any)</span> {
+<span class="cstat-no" title="statement not covered" >	let fnKey: string | undefined;</span>
+<span class="cstat-no" title="statement not covered" >	let fn: Function | undefined;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	if (typeof descriptor.value === 'function') {</span>
+<span class="cstat-no" title="statement not covered" >		fnKey = 'value';</span>
+<span class="cstat-no" title="statement not covered" >		fn = descriptor.value;</span>
+	} else {
+<span class="cstat-no" title="statement not covered" >		throw new Error('not supported');</span>
+	}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	descriptor[fnKey] = <span class="fstat-no" title="function not covered" >function (...args: any[])</span> {</span>
+<span class="cstat-no" title="statement not covered" >        const v = workspace.getConfiguration('tektonPipeline').get('outputVerbosityLevel');</span>
+<span class="cstat-no" title="statement not covered" >        const command = fn!.apply(this, args);</span>
+<span class="cstat-no" title="statement not covered" >        return command + (v &gt; 0 ? ` -v ${v}` : '');</span>
+	};
+}
+&nbsp;
+export class Command {
+    static startPipeline<span class="fstat-no" title="function not covered" >(name: string)</span> {
+<span class="cstat-no" title="statement not covered" >        return 'tkn pipeline start ${name}';</span>
+    }
+    static listPipelines<span class="fstat-no" title="function not covered" >() {</span>
+<span class="cstat-no" title="statement not covered" >        return 'tkn pipeline list';</span>
+    }
+    static describePipelines<span class="fstat-no" title="function not covered" >(name: string)</span> {
+<span class="cstat-no" title="statement not covered" >        return 'tkn pipeline describe';</span>
+    }
+    static listPipelineRuns<span class="fstat-no" title="function not covered" >(name: string)</span> {
+<span class="cstat-no" title="statement not covered" >        return 'tkn pipelinerun list';</span>
+    }
+    static describePipelineRuns<span class="fstat-no" title="function not covered" >(name: string)</span> {
+<span class="cstat-no" title="statement not covered" >        return 'tkn pipelinerun describe ${name}';</span>
+    }
+    static showPipelineRunLogs<span class="fstat-no" title="function not covered" >(name: string)</span> {
+<span class="cstat-no" title="statement not covered" >        return 'tkn pipelinerun logs ${name}';</span>
+    }
+    static listTasks<span class="fstat-no" title="function not covered" >(name: string)</span> {
+<span class="cstat-no" title="statement not covered" >        return 'tkn task list ${name}';</span>
+    }
+    static listTaskRuns<span class="fstat-no" title="function not covered" >(name: string)</span> {
+<span class="cstat-no" title="statement not covered" >        return 'tkn taskrun list ${name}';</span>
+    }
+/*     static describeTaskRuns(name: string) {
+        return 'tkn taskrun list ${name}';
+    } */
+    static showTaskRunLogs<span class="fstat-no" title="function not covered" >(name: string)</span> {
+<span class="cstat-no" title="statement not covered" >        return 'tkn taskrun logs ${name}';</span>
+    }
+    static printTknVersion<span class="fstat-no" title="function not covered" >() {</span>
+<span class="cstat-no" title="statement not covered" >        return 'tkn version';</span>
+    }
+    static addNewPipelineFromFolder<span class="fstat-no" title="function not covered" >(pipeline: TektonNode, path: string)</span> {
+<span class="cstat-no" title="statement not covered" >        return 'tkn pipeline start path';</span>
+    }
+    static pushPipeline<span class="fstat-no" title="function not covered" >(pipeline: TektonNode)</span>: string {
+<span class="cstat-no" title="statement not covered" >        return "A string";</span>
+    }
+    //TODO: Watch components as per odo so that we can reconcile pipeline view properly
+    //TODO: Create and delete pipelines
+    //TODO: Should Clustertasks also be found by tkn?
+}
+&nbsp;
+export class TektonNodeImpl implements TektonNode {
+    private readonly CONTEXT_DATA = {
+        pipeline: {
+            icon: 'pipe.png',
+            contextApi: 'tekton.pipeline',
+            tooltip: 'Pipeline: {label}',
+            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >this.tkn.getPipelines()</span>
+        },
+        pipelinerun: {
+            icon: 'pipe.png',
+            contextApi: 'tekton.pipelinerun',
+            tooltip: 'PipelineRun: {label}',
+            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >this.tkn.getPipelineRuns(this)</span>
+        },
+        task: {
+            icon: 'task.png',
+            contextApi: 'tekton.task',
+            tooltip: 'Task: {label}',
+            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >this.tkn.getTasks(this)</span>
+        },
+        taskrun: {
+            icon: 'task.png',
+            contextApi: 'tekton.taskrun',
+            tooltip: 'TaskRun: {label}',
+            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >this.tkn.getTaskRuns(this)</span>
+        },
+        clustertask: {
+            icon: 'clustertask.png',
+            contextApi: 'tekton.clustertask',
+            tooltip: 'Clustertask: {label}',
+            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >this.tkn.getClusterTasks(this)</span>
+        }
+    };
+&nbsp;
+    constructor(private parent: TektonNode,
+        public readonly name: string,
+        public readonly context: ContextType,
+        private readonly tkn: Tkn,
+        public readonly collapsibleState: TreeItemCollapsibleState = TreeItemCollapsibleState.Collapsed,
+        public readonly comptype?: string) {
+&nbsp;
+    }
+    
+    get iconPath<span class="fstat-no" title="function not covered" >(): Uri {</span>
+<span class="cstat-no" title="statement not covered" >        return Uri.file(path.join(__dirname, "../images", this.CONTEXT_DATA[this.context].icon));</span>
+    }
+&nbsp;
+    get tooltip<span class="fstat-no" title="function not covered" >(): string {</span>
+<span class="cstat-no" title="statement not covered" >        return format(this.CONTEXT_DATA[this.context].tooltip, this);</span>
+    }
+&nbsp;
+    get label<span class="fstat-no" title="function not covered" >(): string {</span>
+<span class="cstat-no" title="statement not covered" >        return this.name;</span>
+    }
+&nbsp;
+    get contextValue<span class="fstat-no" title="function not covered" >() {</span>
+<span class="cstat-no" title="statement not covered" >        return this.CONTEXT_DATA[this.context].contextApi;</span>
+    }
+&nbsp;
+    getName<span class="fstat-no" title="function not covered" >(): string {</span>
+<span class="cstat-no" title="statement not covered" >        return this.name;</span>
+    }
+&nbsp;
+    getChildren<span class="fstat-no" title="function not covered" >(): ProviderResult&lt;TektonNode[]&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        return this.CONTEXT_DATA[this.context].getChildren();</span>
+    }
+&nbsp;
+    getParent<span class="fstat-no" title="function not covered" >(): TektonNode {</span>
+<span class="cstat-no" title="statement not covered" >        return this.parent;</span>
+    }
+}
+&nbsp;
+export interface Tkn {
+    startPipeline(pipeline: TektonNode): Promise&lt;TektonNode[]&gt;;
+    getPipelines(): Promise&lt;TektonNode[]&gt;;
+    describePipeline(pipeline: TektonNode): Promise&lt;TektonNode[]&gt;;
+    getPipelineRuns(pipelineRun: TektonNode): Promise&lt;TektonNode[]&gt;;
+    describePipelineRun(pipelineRun: TektonNode): Promise&lt;TektonNode[]&gt;;
+    showPipelineRunLogs(pipelineRun: TektonNode): Promise&lt;TektonNode[]&gt;;
+    getTasks(task: TektonNode): Promise&lt;TektonNode[]&gt;;
+//    describeTask(task: TektonNode): Promise&lt;TektonNode[]&gt;;
+    getTaskRuns(taskRun: TektonNode): Promise&lt;TektonNode[]&gt;;
+    showTaskRunLogs(taskRun: TektonNode): Promise&lt;TektonNode[]&gt;;
+//    describeTaskRuns(taskRun: TektonNode): Promise&lt;TektonNode[]&gt;;
+    getComponentTypeVersions(componentName: string): Promise&lt;string[]&gt;;
+    getClusterTasks(clusterTask: TektonNode): Promise&lt;TektonNode[]&gt;;
+    describeClusterTasks(clusterTask: TektonNode): Promise&lt;TektonNode[]&gt;;
+    execute(command: string, cwd?: string, fail?: boolean): Promise&lt;CliExitData&gt;;
+    executeInTerminal(command: string, cwd?: string): void;
+    addPipelineFromFolder(pipeline: TektonNode, path: string): Promise&lt;TektonNode&gt;;
+    addTaskFromFolder(pipeline: TektonNode, path: string): Promise&lt;TektonNode&gt;;
+    addClusterTaskFromFolder(pipeline: TektonNode, path: string): Promise&lt;TektonNode&gt;;
+    clearCache?(): void;
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >export function getInstance(</span>): Tkn {
+<span class="cstat-no" title="statement not covered" >    return TknImpl.Instance;</span>
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >function compareNodes(a, b)</span>: number {
+<span class="cstat-no" title="statement not covered" >    if (!a.contextValue) { <span class="cstat-no" title="statement not covered" >return -1; </span>}</span>
+<span class="cstat-no" title="statement not covered" >    if (!b.contextValue) { <span class="cstat-no" title="statement not covered" >return 1; </span>}</span>
+<span class="cstat-no" title="statement not covered" >    const t = a.contextValue.localeCompare(b.contextValue);</span>
+<span class="cstat-no" title="statement not covered" >    return t ? t : a.label.localeCompare(b.label);</span>
+}
+&nbsp;
+export class TknImpl implements Tkn {
+&nbsp;
+    private ROOT: TektonNode = new TektonNodeImpl(undefined, 'root', undefined, undefined);
+    private cache: Map&lt;TektonNode, TektonNode[]&gt; = new Map();
+    private static cli: cliInstance.ICli = cliInstance.Cli.getInstance();
+    private static instance: Tkn;
+&nbsp;
+    private constructor() {}
+&nbsp;
+    public static get Instance(): Tkn {
+        if (!TknImpl.instance) {
+            TknImpl.instance = new TknImpl();
+        }
+        return TknImpl.instance;
+    }
+&nbsp;
+    //probably need to verify cluster is up first--kube
+    async getPipelines<span class="fstat-no" title="function not covered" >(): Promise&lt;TektonNode[]&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        if (!this.cache.has(this.ROOT)) {</span>
+<span class="cstat-no" title="statement not covered" >            this.cache.set(this.ROOT, await this._getPipelines());</span>
+        }
+<span class="cstat-no" title="statement not covered" >        return this.cache.get(this.ROOT);</span>
+    }
+&nbsp;
+    public async _getPipelines<span class="fstat-no" title="function not covered" >(): Promise&lt;TektonNode[]&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        let data: any[] = []; </span>
+<span class="cstat-no" title="statement not covered" >        const result: cliInstance.CliExitData = await this.execute(Command.listPipelines(), process.cwd(), false);</span>
+<span class="cstat-no" title="statement not covered" >        if (result.stderr) {</span>
+<span class="cstat-no" title="statement not covered" >            console.log(result);</span>
+<span class="cstat-no" title="statement not covered" >            return[new TektonNodeImpl(null, result.stderr, ContextType.PIPELINE, TknImpl.instance, TreeItemCollapsibleState.Expanded)];</span>
+        }
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            data = JSON.parse(result.stdout).items;</span>
+        } catch (ignore) {
+            //show no pipelines if output is not correct json
+        }
+<span class="cstat-no" title="statement not covered" >        let pipelines: string[] = data.map((value) =&gt; <span class="cstat-no" title="statement not covered" >value.metadata.name)</span>;</span>
+<span class="cstat-no" title="statement not covered" >        pipelines = [...new Set(pipelines)];</span>
+<span class="cstat-no" title="statement not covered" >        const treeState = pipelines.length&gt; 0? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;</span>
+<span class="cstat-no" title="statement not covered" >        return pipelines.map&lt;TektonNode&gt;((value)=&gt; <span class="cstat-no" title="statement not covered" >new TektonNodeImpl(undefined, value, ContextType.PIPELINE, TknImpl.instance, treeState))</span>.sort(compareNodes);</span>
+    }
+&nbsp;
+    getPipelineRuns<span class="fstat-no" title="function not covered" >(pipelineRun: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    getTasks<span class="fstat-no" title="function not covered" >(task: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    getTaskRuns<span class="fstat-no" title="function not covered" >(taskRun: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    getComponentTypeVersions<span class="fstat-no" title="function not covered" >(componentName: string)</span>: Promise&lt;string[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    getClusterTasks<span class="fstat-no" title="function not covered" >(clusterTask: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    startPipeline<span class="fstat-no" title="function not covered" >(pipeline: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    describePipeline<span class="fstat-no" title="function not covered" >(pipeline: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    describePipelineRun<span class="fstat-no" title="function not covered" >(pipelineRun: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    getPipelineRunLogs<span class="fstat-no" title="function not covered" >(pipelineRun: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    getTaskRunLogs<span class="fstat-no" title="function not covered" >(taskRun: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    describeClusterTasks<span class="fstat-no" title="function not covered" >(clusterTask: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+&nbsp;
+    public async executeInTerminal<span class="fstat-no" title="function not covered" >(command: string, cwd: string = process.cwd(), name: string = 'Tekton')</span> {
+<span class="cstat-no" title="statement not covered" >        const cmd = command.split(' ')[0];</span>
+<span class="cstat-no" title="statement not covered" >        let toolLocation = await ToolsConfig.detectOrDownload();</span>
+<span class="cstat-no" title="statement not covered" >        if (toolLocation) {</span>
+<span class="cstat-no" title="statement not covered" >            toolLocation = path.dirname(toolLocation);</span>
+        }
+<span class="cstat-no" title="statement not covered" >        const terminal: Terminal = WindowUtil.createTerminal(name, cwd, toolLocation);</span>
+<span class="cstat-no" title="statement not covered" >        terminal.sendText(command, true);</span>
+<span class="cstat-no" title="statement not covered" >        terminal.show();</span>
+    }
+&nbsp;
+    public async execute<span class="fstat-no" title="function not covered" >(command: string, cwd?: string, fail: boolean = true)</span>: Promise&lt;CliExitData&gt; {
+<span class="cstat-no" title="statement not covered" >        const toolLocation = await ToolsConfig.detectOrDownload();</span>
+<span class="cstat-no" title="statement not covered" >        return TknImpl.cli.execute(</span>
+            toolLocation ? command.replace('tkn', `"${toolLocation}"`).replace(new RegExp(`&amp;&amp; tkb`, 'g'), `&amp;&amp; "${toolLocation}"`) : command,
+            cwd ? {cwd} : { }
+        ).then(async (result) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > <span class="cstat-no" title="statement not covered" ></span>result.error &amp;&amp; fail ?  Promise.reject(result.error) : result)</span></span>.catch((err) =&gt; <span class="cstat-no" title="statement not covered" >fail ? Promise.reject(err) : Promise.resolve({error: null, stdout: '', stderr: ''}))</span>;
+}
+&nbsp;
+    private insertAndReveal<span class="fstat-no" title="function not covered" >(array: TektonNode[], item: TektonNode)</span>: TektonNode {
+<span class="cstat-no" title="statement not covered" >        const i = bs(array, item, compareNodes);</span>
+<span class="cstat-no" title="statement not covered" >        array.splice(Math.abs(i) - 1, 0, item);</span>
+<span class="cstat-no" title="statement not covered" >        PipelineExplorer.getInstance().reveal(item);</span>
+<span class="cstat-no" title="statement not covered" >        return item;</span>
+    }
+    showPipelineRunLogs<span class="fstat-no" title="function not covered" >(pipelineRun: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    showTaskRunLogs<span class="fstat-no" title="function not covered" >(taskRun: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    addTaskFromFolder<span class="fstat-no" title="function not covered" >(pipeline: TektonNode, path: string)</span>: Promise&lt;TektonNode&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    addClusterTaskFromFolder<span class="fstat-no" title="function not covered" >(pipeline: TektonNode, path: string)</span>: Promise&lt;TektonNode&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    pushPipeline<span class="fstat-no" title="function not covered" >(pipeline: TektonNode)</span> {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    public async addPipelineFromFolder<span class="fstat-no" title="function not covered" >(application: TektonNode, path: string)</span>: Promise&lt;TektonNode&gt; {
+<span class="cstat-no" title="statement not covered" >        await this.execute(Command.startPipeline(application.getParent().getName()));</span>
+<span class="cstat-no" title="statement not covered" >        this.executeInTerminal(Command.pushPipeline(application), "randomstring1", "randomstring2");</span>
+<span class="cstat-no" title="statement not covered" >        return this.insertAndReveal(await this.getPipelines(), new TektonNodeImpl(application, "test", ContextType.PIPELINE, this, TreeItemCollapsibleState.Collapsed, 'folder'));</span>
+    }
+&nbsp;
+    clearCache<span class="fstat-no" title="function not covered" >() {</span>
+<span class="cstat-no" title="statement not covered" >        this.cache.clear();</span>
+    }
+}</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Jun 28 2019 16:59:59 GMT-0400 (EDT)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

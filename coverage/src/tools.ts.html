@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/tools.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">src/</a> tools.ts
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">25% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>18/72</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">3.13% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>1/32</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">20% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>1/5</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">25% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>18/72</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/*-----------------------------------------------------------------------------------------------
+ *  Copyright (c) Red Hat, Inc. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE file in the project root for license information.
+ *-----------------------------------------------------------------------------------------------*/
+&nbsp;
+import { Platform } from "./util/platform";
+import { Archive } from "./util/archive";
+import { which } from "shelljs";
+import { DownloadUtil } from "./util/download";
+import hasha = require("hasha");
+import open = require("open");
+import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fsex from 'fs-extra';
+import * as fs from 'fs';
+import { Cli } from './cli';
+import semver = require('semver');
+import configData = require('./tools.json');
+&nbsp;
+export class ToolsConfig {
+&nbsp;
+    public static tools: object = ToolsConfig.loadMetadata(configData, Platform.OS);
+&nbsp;
+    public static loadMetadata(requirements, platform): object {
+        const reqs = JSON.parse(JSON.stringify(requirements));
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (reqs.platform) {
+<span class="cstat-no" title="statement not covered" >                if (reqs.platform[platform]) {</span>
+<span class="cstat-no" title="statement not covered" >                    Object.assign(reqs, reqs.platform[platform]);</span>
+<span class="cstat-no" title="statement not covered" >                    delete reqs.platform;</span>
+            }
+        }
+        return reqs;
+    }
+&nbsp;
+    public static resetConfiguration<span class="fstat-no" title="function not covered" >(): void {</span>
+<span class="cstat-no" title="statement not covered" >        ToolsConfig.tools = ToolsConfig.loadMetadata(configData, Platform.OS);</span>
+    }
+&nbsp;
+    public static async detectOrDownload<span class="fstat-no" title="function not covered" >(): Promise&lt;string&gt; {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        let toolLocation: string = ToolsConfig.tools['tkn'].location;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (toolLocation === undefined) {</span>
+<span class="cstat-no" title="statement not covered" >            const toolCacheLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tools['tkn'].FileName);</span>
+<span class="cstat-no" title="statement not covered" >            const whichLocation = which('tkn');</span>
+<span class="cstat-no" title="statement not covered" >            const toolLocations: string[] = [whichLocation ? whichLocation.stdout : null, toolCacheLocation];</span>
+<span class="cstat-no" title="statement not covered" >            toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tools['tkn'].versionRange);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if (toolLocation === undefined) {</span>
+                // otherwise request permission to download
+<span class="cstat-no" title="statement not covered" >                const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tools['tkn'].dlFileName);</span>
+<span class="cstat-no" title="statement not covered" >                const installRequest = `Download and install v${ToolsConfig.tools['tkn'].version}`;</span>
+<span class="cstat-no" title="statement not covered" >                const response = await vscode.window.showInformationMessage(</span>
+                    `Cannot find ${ToolsConfig.tools['tkn'].description} ${ToolsConfig.tools['tkn'].versionRangeLabel}.`, installRequest, 'Help', 'Cancel');
+<span class="cstat-no" title="statement not covered" >                fsex.ensureDirSync(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));</span>
+<span class="cstat-no" title="statement not covered" >                if (response === installRequest) {</span>
+<span class="cstat-no" title="statement not covered" >                    let action: string;</span>
+<span class="cstat-no" title="statement not covered" >                    do {</span>
+<span class="cstat-no" title="statement not covered" >                        action = undefined;</span>
+<span class="cstat-no" title="statement not covered" >                        await vscode.window.withProgress({</span>
+                            cancellable: true,
+                            location: vscode.ProgressLocation.Notification,
+                            title: `Downloading ${ToolsConfig.tools['tkn'].description}`
+                            },
+                            (progress: vscode.Progress&lt;{increment: number, message: string}&gt;, token: vscode.CancellationToken) =&gt; {
+<span class="cstat-no" title="statement not covered" >                                return DownloadUtil.downloadFile(</span>
+                                    ToolsConfig.tools['tkn'].url,
+                                    toolDlLocation,
+                                    (dlProgress, increment) =&gt; <span class="cstat-no" title="statement not covered" >progress.report({ increment, message: `${dlProgress}%`})</span>
+                                );
+                        });
+<span class="cstat-no" title="statement not covered" >                        const sha256sum: string = await hasha.fromFile(toolDlLocation, {algorithm: 'sha256'});</span>
+<span class="cstat-no" title="statement not covered" >                        if (sha256sum !== ToolsConfig.tools['tkn'].sha256sum) {</span>
+<span class="cstat-no" title="statement not covered" >                            fsex.removeSync(toolDlLocation);</span>
+<span class="cstat-no" title="statement not covered" >                            action = await vscode.window.showInformationMessage(`Checksum for downloaded ${ToolsConfig.tools['tkn'].description} v${ToolsConfig.tools['tkn'].version} is not correct.`, 'Download again', 'Cancel');</span>
+                        }
+&nbsp;
+                    } while (action === 'Download again');
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                    if (action !== 'Cancel') {</span>
+<span class="cstat-no" title="statement not covered" >                        await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), ToolsConfig.tools['tkn'].filePrefix);</span>
+<span class="cstat-no" title="statement not covered" >                        fsex.removeSync(toolDlLocation);</span>
+<span class="cstat-no" title="statement not covered" >                        if (Platform.OS !== 'win32') {</span>
+<span class="cstat-no" title="statement not covered" >                            fs.chmodSync(toolCacheLocation, 0o765);</span>
+                        }
+<span class="cstat-no" title="statement not covered" >                        toolLocation = toolCacheLocation;</span>
+                    }
+                } else <span class="cstat-no" title="statement not covered" >if (response === `Help`) {</span>
+<span class="cstat-no" title="statement not covered" >                    open('https://github.com/redhat-developer/vscode-tekton#dependencies');</span>
+                }
+            }
+<span class="cstat-no" title="statement not covered" >            if (toolLocation) {</span>
+<span class="cstat-no" title="statement not covered" >                ToolsConfig.tools['tkn'].location = toolLocation;</span>
+            }
+        }
+<span class="cstat-no" title="statement not covered" >        return toolLocation;</span>
+    }
+&nbsp;
+    public static async getVersion<span class="fstat-no" title="function not covered" >(location: string, cmd: string = path.parse(location).name)</span>: Promise&lt;string&gt; {
+<span class="cstat-no" title="statement not covered" >        let detectedVersion: string;</span>
+<span class="cstat-no" title="statement not covered" >        if (fs.existsSync(location)) {</span>
+<span class="cstat-no" title="statement not covered" >            const version = new RegExp(`${cmd.toLocaleLowerCase()} v((([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?).*`);</span>
+<span class="cstat-no" title="statement not covered" >            const result = await Cli.getInstance().execute(`"${location}" version`);</span>
+<span class="cstat-no" title="statement not covered" >            if (result.stdout) {</span>
+<span class="cstat-no" title="statement not covered" >                const toolVersion: string[] = result.stdout.trim().split('\n').filter((value) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                    return value.match(version);</span>
+                }).map((value)=&gt;<span class="cstat-no" title="statement not covered" >version.exec(value)[1])</span>;
+<span class="cstat-no" title="statement not covered" >                if (toolVersion.length) {</span>
+<span class="cstat-no" title="statement not covered" >                    detectedVersion = toolVersion[0];</span>
+                }
+            }
+        }
+<span class="cstat-no" title="statement not covered" >        return detectedVersion;</span>
+    }
+&nbsp;
+    public static async selectTool<span class="fstat-no" title="function not covered" >(locations: string[], versionRange: string)</span>: Promise&lt;string&gt; {
+<span class="cstat-no" title="statement not covered" >        let result;</span>
+<span class="cstat-no" title="statement not covered" >        for (const location of locations) {</span>
+<span class="cstat-no" title="statement not covered" >            if (location &amp;&amp; semver.satisfies(await ToolsConfig.getVersion(location), versionRange)) {</span>
+<span class="cstat-no" title="statement not covered" >                result = location;</span>
+<span class="cstat-no" title="statement not covered" >                break;</span>
+            }
+        }
+<span class="cstat-no" title="statement not covered" >        return result;</span>
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Jun 28 2019 16:59:59 GMT-0400 (EDT)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>
