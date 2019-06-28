@@ -52,11 +52,16 @@ export class Pipeline extends TektonItem {
         Pipeline.explorer.refresh();
     }
 
+
+    static about(): void {
+        Pipeline.tkn.executeInTerminal(Command.printTknVersion());
+    }
+
     static async showTektonOutput(): Promise<void> {
         Cli.getInstance().showOutputChannel();
     }
 
-    static async tektonConsole(context: TektonNode): Promise<void> {
+/*     static async tektonConsole(context: TektonNode): Promise<void> {
         if (context) {
             open(`${context.getName()}/console`);
         } else {
@@ -67,7 +72,7 @@ export class Pipeline extends TektonItem {
                 window.showErrorMessage(result[0].getName());
             }
         }
-    }
+    } */
 
     static async describe(context: TektonNode): Promise<void> {
         const pipeline = await Pipeline.getTektonCmdData(context,

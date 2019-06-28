@@ -46,10 +46,6 @@ export abstract class TektonItem {
         return validator.isLength(value, 2, 63 - offset) ? null : message;
     }
 
-    static validateUrl(message: string, value: string) {
-        return validator.isURL(value) ? null : message;
-    }
-
     static validateMatches(message: string, value: string) {
         return (validator.matches(value, '^[a-z]([-a-z0-9]*[a-z0-9])*$')) ? null : message;
     }

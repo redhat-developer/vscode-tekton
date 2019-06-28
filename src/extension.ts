@@ -17,6 +17,7 @@ export async function activate(context: vscode.ExtensionContext) {
  // vscode.commands.executeCommand('extention.vsKubernetes)
 
   const disposables = [
+    vscode.commands.registerCommand('tekton.about', (context) =>  execute(Pipeline.about, context)),
     vscode.commands.registerCommand('tekton.explorer.refresh', (context) =>  execute(PipelineExplorer.getInstance().refresh, context)),
     vscode.commands.registerCommand('tekton.pipeline.start', (context) =>  execute(Pipeline.start, context)),
     vscode.commands.registerCommand('tekton.pipeline.create.local', (context) => execute(Pipeline.createFromFolder, context)),

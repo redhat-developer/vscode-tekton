@@ -28,11 +28,17 @@
     "onCommand:tekton.pipelinerun.logs",
     "onCommand:tekton.task.list",
     "onCommand:tekton.taskrun.list",
-    "onCommand:tekton.taskrun.logs"
+    "onCommand:tekton.taskrun.logs",
+    "onCommand:tekton.about"
   ],
   "main": "./out/src/extension",
   "contributes": {
     "commands": [
+      {
+        "command": "tekton.about",
+        "title": "About",
+        "category": "Tekton"
+      },
       {
         "command": "tekton.pipeline.start",
         "title": "Start Pipeline",
@@ -175,6 +181,11 @@
           "command": "tekton.pipeline.describe",
           "when": "view == tekton.pipelineExplorer && viewItem == pipeline",
           "group": "c2@2"
+        },
+        {
+          "command": "tekton.about",
+          "when": "view == tekton.pipelineExplorer && viewItem == pipeline",
+          "group": "c3"
         },
         {
           "command": "tekton.pipelinerun.list",

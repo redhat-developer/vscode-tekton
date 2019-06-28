@@ -225,7 +225,8 @@ export class TknImpl implements Tkn {
         let data: any[] = []; 
         const result: cliInstance.CliExitData = await this.execute(Command.listPipelines(), process.cwd(), false);
         if (result.stderr) {
-            return[new TektonNodeImpl(null, result.stderr, ContextType.PIPELINE, TknImpl.instance, TreeItemCollapsibleState.None)];
+            console.log(result);
+            return[new TektonNodeImpl(null, result.stderr, ContextType.PIPELINE, TknImpl.instance, TreeItemCollapsibleState.Expanded)];
         }
         try {
             data = JSON.parse(result.stdout).items;
@@ -234,7 +235,8 @@ export class TknImpl implements Tkn {
         }
         let pipelines: string[] = data.map((value) => value.metadata.name);
         pipelines = [...new Set(pipelines)];
-        return pipelines.map<TektonNode>((value)=> new TektonNodeImpl(undefined, value, ContextType.PIPELINE, TknImpl.instance)).sort(compareNodes);
+        const treeState = pipelines.length> 0? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
+        return pipelines.map<TektonNode>((value)=> new TektonNodeImpl(undefined, value, ContextType.PIPELINE, TknImpl.instance, treeState)).sort(compareNodes);
     }
 
     getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]> {
