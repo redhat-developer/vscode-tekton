@@ -16,7 +16,7 @@ import * as fs from 'fs';
 import * as fsex from 'fs-extra';
 import hasha = require("hasha");
 
-suite("tools configuration", () => {
+suite("tool configuration", () => {
     let sb: sinon.SinonSandbox;
     let chmodSyncStub: sinon.SinonStub;
 
@@ -78,7 +78,7 @@ suite("tools configuration", () => {
         test('returns path to tool detected form PATH ltknations if detected version is correct', async () => {
             sb.stub(shelljs, 'which').returns(<string & shelljs.ShellReturnValue>{stdout: 'tkn'});
             sb.stub(fs, 'existsSync').returns(false);
-            sb.stub(ToolsConfig, 'getVersion').returns(ToolsConfig.tools['tkn'].version);
+            sb.stub(ToolsConfig, 'getVersion').returns(ToolsConfig.tool['tkn'].version);
             const toolLtknation = await ToolsConfig.detectOrDownload();
             assert.equal(toolLtknation, 'tkn');
         });
@@ -86,28 +86,28 @@ suite("tools configuration", () => {
         test('returns path to previously downloaded tool if detected version is correct', async () => {
             sb.stub(shelljs, 'which');
             sb.stub(fs, 'existsSync').returns(true);
-            sb.stub(ToolsConfig, 'getVersion').returns(ToolsConfig.tools['tkn'].version);
+            sb.stub(ToolsConfig, 'getVersion').returns(ToolsConfig.tool['tkn'].version);
             const toolLtknation = await ToolsConfig.detectOrDownload();
-            assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tools['tkn'].cmdFileName));
+            assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
         });
 
         test('ask to downloads tool if previously downloaded version is not correct and download if requested by user', async () => {
             sb.stub(shelljs, 'which');
             sb.stub(fs, 'existsSync').returns(true);
             sb.stub(ToolsConfig, 'getVersion').resolves('0.0.0');
-            const showInfo = sb.stub(vscode.window, 'showInformationMessage').resolves(`Download and install v${ToolsConfig.tools['tkn'].version}`);
-            const stub = sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tools['tkn'].sha256sum);
-            stub.onSecondCall().returns(ToolsConfig.tools['tkn'].sha256sum);
+            const showInfo = sb.stub(vscode.window, 'showInformationMessage').resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
+            const stub = sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tool['tkn'].sha256sum);
+            stub.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
             sb.stub(Archive, 'unzip').resolves();
             let toolLtknation = await ToolsConfig.detectOrDownload();
             assert.ok(showInfo.calledOnce);
             assert.ok(withProgress.calledOnce);
-            assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tools['tkn'].cmdFileName));
-            showInfo.resolves(`Download and install v${ToolsConfig.tools['tkn'].version}`);
+            assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
+            showInfo.resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
             toolLtknation = await ToolsConfig.detectOrDownload();
             assert.ok(showInfo.calledTwice);
             assert.ok(withProgress.calledTwice);
-            assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tools['tkn'].cmdFileName));
+            assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
         });
 
         test('ask to downloads tool if previously downloaded version is not correct and skip download if canceled by user', async () => {
@@ -124,26 +124,26 @@ suite("tools configuration", () => {
             sb.stub(shelljs, 'which');
             sb.stub(fs, 'existsSync').returns(true);
             sb.stub(ToolsConfig, 'getVersion').resolves('0.0.0');
-            const showInfo = sb.stub(vscode.window, 'showInformationMessage').onFirstCall().resolves(`Download and install v${ToolsConfig.tools['tkn'].version}`);
+            const showInfo = sb.stub(vscode.window, 'showInformationMessage').onFirstCall().resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
             showInfo.onSecondCall().resolves('Download again');
             const fromFile = sb.stub(hasha, 'fromFile').onFirstCall().resolves('not really sha256');
-            fromFile.onSecondCall().returns(ToolsConfig.tools['tkn'].sha256sum);
+            fromFile.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
             sb.stub(fsex, 'removeSync');
             sb.stub(Archive, 'unzip').resolves();
             const toolLtknation = await ToolsConfig.detectOrDownload();
             assert.ok(withProgress.calledTwice);
             assert.ok(showInfo.calledTwice);
-            assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tools['tkn'].cmdFileName));
+            assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
         });
 
         test('downloads tool, ask to download again if checksum does not match and exits if canceled', async () => {
             sb.stub(shelljs, 'which');
             sb.stub(fs, 'existsSync').returns(true);
             sb.stub(ToolsConfig, 'getVersion').resolves('0.0.0');
-            const showInfo = sb.stub(vscode.window, 'showInformationMessage').onFirstCall().resolves(`Download and install v${ToolsConfig.tools['tkn'].version}`);
+            const showInfo = sb.stub(vscode.window, 'showInformationMessage').onFirstCall().resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
             showInfo.onSecondCall().resolves('Cancel');
             const fromFile = sb.stub(hasha, 'fromFile').onFirstCall().resolves('not really sha256');
-            fromFile.onSecondCall().returns(ToolsConfig.tools['tkn'].sha256sum);
+            fromFile.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
             sb.stub(fsex, 'removeSync');
             sb.stub(Archive, 'unzip').resolves();
             const toolLtknation = await ToolsConfig.detectOrDownload();
@@ -166,9 +166,9 @@ suite("tools configuration", () => {
                 sb.stub(fs, 'existsSync').returns(true);
                 sb.stub(fsex, 'ensureDirSync').returns();
                 sb.stub(ToolsConfig, 'getVersion').resolves('0.0.0');
-                sb.stub(vscode.window, 'showInformationMessage').resolves(`Download and install v${ToolsConfig.tools['tkn'].version}`);
-                const stub = sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tools['tkn'].sha256sum);
-                stub.onSecondCall().returns(ToolsConfig.tools['tkn'].sha256sum);
+                sb.stub(vscode.window, 'showInformationMessage').resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
+                const stub = sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tool['tkn'].sha256sum);
+                stub.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
                 sb.stub(Archive, 'unzip').resolves();
                 await ToolsConfig.detectOrDownload();
                 assert.ok(!chmodSyncStub.called);
@@ -188,8 +188,8 @@ suite("tools configuration", () => {
                 sb.stub(fs, 'existsSync').returns(false);
                 sb.stub(fsex, 'ensureDirSync').returns();
                 sb.stub(ToolsConfig, 'getVersion').resolves('0.0.0');
-                sb.stub(vscode.window, 'showInformationMessage').resolves(`Download and install v${ToolsConfig.tools['tkn'].version}`);
-                sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tools['tkn'].sha256sum);
+                sb.stub(vscode.window, 'showInformationMessage').resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
+                sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tool['tkn'].sha256sum);
                 sb.stub(Archive, 'unzip').resolves();
                 await ToolsConfig.detectOrDownload();
                 assert.ok(chmodSyncStub.called);

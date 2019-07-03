@@ -1,13 +1,14 @@
 
 {
-    "tekton": {
+    "tkn": {
         "description": "A CLI for interacting with Tekton",
         "vendor": "",
         "name": "tkn",
-        "cmdFileName": "tkn",
         "version": "0.1.2",
         "versionRange": "0.1.2",
         "versionRangeLabel": "v0.1.2",
+        "dlFileName": "tkn",
+        "cmdFileName": "tkn",
         "filePrefix": "",
         "platform": {
             "win32": {

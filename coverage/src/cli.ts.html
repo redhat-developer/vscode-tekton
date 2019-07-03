@@ -20,28 +20,28 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">25.81% </span>
+        <span class="strong">87.1% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>8/31</span>
+        <span class='fraction'>27/31</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">25% </span>
+        <span class="strong">62.5% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>2/8</span>
+        <span class='fraction'>5/8</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">33.33% </span>
+        <span class="strong">77.78% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>3/9</span>
+        <span class='fraction'>7/9</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">26.67% </span>
+        <span class="strong">86.67% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>8/30</span>
+        <span class='fraction'>26/30</span>
       </div>
     </div>
   </div>
-  <div class='status-line low'></div>
+  <div class='status-line high'></div>
 <pre><table class="coverage">
 <tr><td class="line-count quiet">1
 2
@@ -153,10 +153,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">5×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">5×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -164,19 +164,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -199,22 +199,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">9×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -251,20 +251,20 @@ export class Cli implements ICli {
 <span class="cstat-no" title="statement not covered" >        this.tknChannel.show();</span>
     }
 &nbsp;
-    async execute<span class="fstat-no" title="function not covered" >(cmd: string, opts: ExecOptions = {})</span>: Promise&lt;CliExitData&gt; {
-<span class="cstat-no" title="statement not covered" >        return new Promise&lt;CliExitData&gt;(async (resolve, reject) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span>
-<span class="cstat-no" title="statement not covered" >            this.tknChannel.print(cmd);</span>
-<span class="cstat-no" title="statement not covered" >            if (opts.maxBuffer === undefined) {</span>
-<span class="cstat-no" title="statement not covered" >                opts.maxBuffer = 2*1024*1024;</span>
+    async execute(cmd: string, opts: ExecOptions = {}): Promise&lt;CliExitData&gt; {
+        return new Promise&lt;CliExitData&gt;(async (resolve, reject) =&gt; {
+            this.tknChannel.print(cmd);
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (opts.maxBuffer === undefined) {
+                opts.maxBuffer = 2*1024*1024;
             }
-<span class="cstat-no" title="statement not covered" >            childProcess.exec(cmd, opts, (error: ExecException, stdout: string, stderr: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                const stdoutFiltered = stdout.replace(/---[\s\S]*$/g, '').trim();</span>
-<span class="cstat-no" title="statement not covered" >                this.tknChannel.print(stdoutFiltered);</span>
-<span class="cstat-no" title="statement not covered" >                this.tknChannel.print(stderr);</span>
+            childProcess.exec(cmd, opts, (error: ExecException, stdout: string, stderr: string) =&gt; {
+                const stdoutFiltered = stdout.replace(/---[\s\S]*$/g, '').trim();
+                this.tknChannel.print(stdoutFiltered);
+                this.tknChannel.print(stderr);
                 // do not reject it here, because caller in some cases need the error and the streams
                 // to make a decision
                 // Filter update message text which starts with `---`
-<span class="cstat-no" title="statement not covered" >                resolve({ error, stdout: stdoutFiltered, stderr });</span>
+                resolve({ error, stdout: stdoutFiltered, stderr });
             });
         });
     }
@@ -286,23 +286,23 @@ class TknChannelImpl implements TknChannel {
 <span class="cstat-no" title="statement not covered" >        this.channel.show();</span>
     }
 &nbsp;
-    prettifyJson<span class="fstat-no" title="function not covered" >(str: string)</span> {
-<span class="cstat-no" title="statement not covered" >        let jsonData: string;</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            jsonData = JSON.stringify(JSON.parse(str), null, 2);</span>
+    prettifyJson(str: string) {
+        let jsonData: string;
+        try {
+            jsonData = JSON.stringify(JSON.parse(str), null, 2);
         } catch (ignore) {
-<span class="cstat-no" title="statement not covered" >            return str;</span>
+            return str;
         }
 <span class="cstat-no" title="statement not covered" >        return jsonData;</span>
     }
 &nbsp;
-    print<span class="fstat-no" title="function not covered" >(text: string)</span>: void {
-<span class="cstat-no" title="statement not covered" >        const textData = this.prettifyJson(text);</span>
-<span class="cstat-no" title="statement not covered" >        this.channel.append(textData);</span>
-<span class="cstat-no" title="statement not covered" >        if (textData.charAt(textData.length - 1) !== '\n') {</span>
-<span class="cstat-no" title="statement not covered" >            this.channel.append('\n');</span>
+    print(text: string): void {
+        const textData = this.prettifyJson(text);
+        this.channel.append(textData);
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (textData.charAt(textData.length - 1) !== '\n') {
+            this.channel.append('\n');
         }
-<span class="cstat-no" title="statement not covered" >        if (vscode.workspace.getConfiguration('tektonPipelines').get&lt;boolean&gt;('showChannelOnOutput')) {</span>
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (vscode.workspace.getConfiguration('tektonPipelines').get&lt;boolean&gt;('showChannelOnOutput')) {
 <span class="cstat-no" title="statement not covered" >            this.channel.show();</span>
         }
     }
@@ -313,7 +313,7 @@ class TknChannelImpl implements TknChannel {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Jun 28 2019 16:59:59 GMT-0400 (EDT)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Jul 03 2019 13:26:25 GMT-0400 (EDT)
 </div>
 </div>
 <script src="../prettify.js"></script>

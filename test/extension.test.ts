@@ -29,7 +29,7 @@ suite('tekton connector Extension', async () => {
     setup(async () => {
         sandbox = sinon.createSandbox();
         const stub = sandbox.stub(Pipeline, 'about');
-        await vscode.commands.executeCommand('openshift.about');
+        await vscode.commands.executeCommand('tekton.about');
         stub.restore();
     });
 
@@ -38,7 +38,7 @@ suite('tekton connector Extension', async () => {
     });
 
     test('Extension should be present', () => {
-		assert.ok(vscode.extensions.getExtension('redhat.vscode-tekton'));
+		assert.ok(vscode.extensions.getExtension('redhat-developers.vscode-tekton'));
 	});
 
     async function getStaticMethodsToStub(tekton: string[]): Promise<string[]> {

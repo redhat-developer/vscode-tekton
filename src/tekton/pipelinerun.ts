@@ -12,7 +12,7 @@ export class PipelineRun extends TektonItem {
         const pipelinerun = await PipelineRun.getTektonCmdData(treeItem,
             "From which project you want to describe PipelineRun",
             "Select PipelineRun you want to describe");
-        if (pipelinerun) PipelineRun.tkn.executeInTerminal(Command.describePipelineRuns(pipelinerun.getParent().getName()));
+        if (pipelinerun) PipelineRun.tkn.executeInTerminal(Command.describePipelineRuns(pipelinerun.getName()));
     }
     
     static async list(treeItem: TektonNode): Promise<void> {
@@ -26,7 +26,7 @@ export class PipelineRun extends TektonItem {
         const pipelinerun = await PipelineRun.getTektonCmdData(treeItem,
             "From which project you want to describe PipelineRun",
             "Select PipelineRun you want to describe");
-        if (pipelinerun) PipelineRun.tkn.executeInTerminal(Command.showPipelineRunLogs(pipelinerun.getParent().getName()));
+        if (pipelinerun) PipelineRun.tkn.executeInTerminal(Command.showPipelineRunLogs(pipelinerun.getName()));
     }
 
 }

@@ -107,7 +107,7 @@
       "activitybar": [
         {
           "id": "tektonView",
-          "title": "Tekton Piepelines",
+          "title": "Tekton Pipelines",
           "icon": "images/tekton.svg"
         }
       ]
@@ -217,8 +217,40 @@
   },
   "configuration": {
     "type": "object",
-    "title": "Tekton configuration",
+    "title": "Tekton",
     "properties": {
+      "vs-tekton": {
+        "type": "object",
+        "description": "Tekton Configuration",
+        "properties": {
+          "vs-tekton.namespace": {
+            "type": "string",
+            "description": "The namespace to use for all commands"
+          },
+          "vs-tekton.tkn-path": {
+            "type": "string",
+            "description": "File path to a tkn binary."
+          },
+          "vs-tekton.tkn-path.windows": {
+            "type": "string",
+            "description": "File path to a tkn binary."
+          },
+          "vs-tekton.tkn-path.mac": {
+            "type": "string",
+            "description": "File path to a tkn binary."
+          },
+          "vs-tekton.tkn-path.linux": {
+            "type": "string",
+            "description": "File path to a tkn binary."
+          }
+        },
+        "default": {
+          "vs-tekton.namespace": "tekton-pipelines",
+          "vs-tekton.tkn-path": "",
+          "vs-tekton.tknVersioning": "user-provided",
+          "vs-tekton.outputFormat": "yaml"
+        }
+      },
       "tektonPipeline.showChannelOutput": {
         "title": "Show channel on output",
         "type": "boolean",
@@ -254,7 +286,7 @@
     "@types/js-yaml": "^3.12.1",
     "@types/mkdirp": "^0.5.2",
     "@types/mocha": "^5.2.6",
-    "@types/node": "^11.13.8",
+    "@types/node": "^11.13.15",
     "@types/request": "^2.48.1",
     "@types/semver": "^6.0.1",
     "@types/shelljs": "^0.8.5",
@@ -276,9 +308,9 @@
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "tmp": "0.0.33",
-    "tslint": "^5.16.0",
-    "typescript": "^3.4.5",
-    "vscode": "^1.1.33",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.2",
+    "vscode": "^1.1.35",
     "walker": "^1.0.7"
   },
   "dependencies": {
@@ -292,10 +324,10 @@
     "hasha": "^5.0.0",
     "js-yaml": "^3.13.1",
     "mkdirp": "^0.5.1",
-    "open": "^6.2.0",
+    "open": "^6.4.0",
     "request": "^2.88.0",
     "request-progress": "^3.0.0",
-    "semver": "^6.0.0",
+    "semver": "^6.2.0",
     "shelljs": "^0.8.3",
     "string-format": "^2.0.0",
     "targz": "^1.0.1",

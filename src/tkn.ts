@@ -47,41 +47,52 @@ function verbose(_target: any, key: string, descriptor: any) {
 }
 
 export class Command {
+    @verbose
     static startPipeline(name: string) {
         return 'tkn pipeline start ${name}';
     }
+    @verbose
     static listPipelines() {
         return 'tkn pipeline list';
     }
+    @verbose
     static describePipelines(name: string) {
         return 'tkn pipeline describe';
     }
+    @verbose
     static listPipelineRuns(name: string) {
         return 'tkn pipelinerun list';
     }
+    @verbose
     static describePipelineRuns(name: string) {
         return 'tkn pipelinerun describe ${name}';
     }
+    @verbose
     static showPipelineRunLogs(name: string) {
         return 'tkn pipelinerun logs ${name}';
     }
+    @verbose
     static listTasks(name: string) {
         return 'tkn task list ${name}';
     }
+    @verbose
     static listTaskRuns(name: string) {
         return 'tkn taskrun list ${name}';
     }
 /*     static describeTaskRuns(name: string) {
         return 'tkn taskrun list ${name}';
     } */
+    @verbose
     static showTaskRunLogs(name: string) {
         return 'tkn taskrun logs ${name}';
     }
+    @verbose
     static printTknVersion() {
         return 'tkn version';
     }
+    @verbose
     static addNewPipelineFromFolder(pipeline: TektonNode, path: string) {
-        return 'tkn pipeline start path';
+        return 'tkn pipeline start ${path}';
     }
     static pushPipeline(pipeline: TektonNode): string {
         return "A string";
@@ -274,7 +285,6 @@ export class TknImpl implements Tkn {
     }
 
     public async executeInTerminal(command: string, cwd: string = process.cwd(), name: string = 'Tekton') {
-        const cmd = command.split(' ')[0];
         let toolLocation = await ToolsConfig.detectOrDownload();
         if (toolLocation) {
             toolLocation = path.dirname(toolLocation);
@@ -287,10 +297,10 @@ export class TknImpl implements Tkn {
     public async execute(command: string, cwd?: string, fail: boolean = true): Promise<CliExitData> {
         const toolLocation = await ToolsConfig.detectOrDownload();
         return TknImpl.cli.execute(
-            toolLocation ? command.replace('tkn', `"${toolLocation}"`).replace(new RegExp(`&& tkb`, 'g'), `&& "${toolLocation}"`) : command,
+            toolLocation ? command.replace('tkn', `"${toolLocation}"`).replace(new RegExp(`&& tkn`, 'g'), `&& "${toolLocation}"`) : command,
             cwd ? {cwd} : { }
         ).then(async (result) => result.error && fail ?  Promise.reject(result.error) : result).catch((err) => fail ? Promise.reject(err) : Promise.resolve({error: null, stdout: '', stderr: ''}));
-}
+    }
 
     private insertAndReveal(array: TektonNode[], item: TektonNode): TektonNode {
         const i = bs(array, item, compareNodes);

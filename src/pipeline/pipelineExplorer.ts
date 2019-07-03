@@ -4,7 +4,7 @@ import { WatchUtil, FileContentChangeNotifier } from '../util/watch';
 import { Platform } from '../util/platform';
 import * as path from 'path';
 
-
+const kubeConfigFolder: string = path.join(Platform.getUserHomePath(), '.kube');
 
 export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposable {
   private static instance: PipelineExplorer;
@@ -16,7 +16,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
 
   
   constructor() {
-//    this.fsw = WatchUtil.watchFileForContextChange(kubeConfigFolder, 'config');
+    this.fsw = WatchUtil.watchFileForContextChange(kubeConfigFolder, 'config');
     this.fsw.emitter.on('file-changed', this.refresh.bind(this));
     this.treeView = window.createTreeView('tektonPipelineExplorer', {treeDataProvider: this});
   }
