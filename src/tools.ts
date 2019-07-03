@@ -49,7 +49,7 @@ export class ToolsConfig {
 
             if (toolLocation === undefined) {
                 // otherwise request permission to download
-                const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].dlFileName);
+                const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].platform[Platform.getOS()].dlFileName);
                 const installRequest = `Download and install v${ToolsConfig.tool['tkn'].version}`;
                 const response = await vscode.window.showInformationMessage(
                     `Cannot find ${ToolsConfig.tool['tkn'].description} ${ToolsConfig.tool['tkn'].versionRangeLabel}.`, installRequest, 'Help', 'Cancel');
@@ -79,10 +79,10 @@ export class ToolsConfig {
                     } while (action === 'Download again');
 
                     if (action !== 'Cancel') {
-                        await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), ToolsConfig.tool['tkn'].filePrefix);
+                        await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), "");
                         fsex.removeSync(toolDlLocation);
                         if (Platform.OS !== 'win32') {
-                            fs.chmodSync(toolCacheLocation, 0o765);
+                            fs.chmodSync(toolCacheLocation, '765');
                         }
                         toolLocation = toolCacheLocation;
                     }
