@@ -18,7 +18,8 @@
   ],
   "icon": "images/tekton.png",
   "activationEvents": [
-    "onView:tekton.pipelineExplorer",
+    "onView:tektonPipelineExplorer",
+    "onView:extension.vsKubernetesExplorer",
     "onCommand:tekton.pipeline.start",
     "onCommand:tekton.pipeline.create.local",
     "onCommand:tekton.pipeline.list",
@@ -29,6 +30,7 @@
     "onCommand:tekton.task.list",
     "onCommand:tekton.taskrun.list",
     "onCommand:tekton.taskrun.logs",
+    "onCommand:tekton.explorer.refresh",
     "onCommand:tekton.about"
   ],
   "main": "./out/src/extension",
@@ -115,7 +117,11 @@
     "views": {
       "explorer": [
         {
-          "id": "tekton.pipelineExplorer",
+          "id": "extension.vsKubernetesExplorer",
+          "name": "Clusters"
+        },
+        {
+          "id": "tektonPipelineExplorer",
           "name": "Tekton Pipelines"
         }
       ]
@@ -124,92 +130,92 @@
       "commandPalette": [
         {
           "command": "tekton.pipeline.start",
-          "when": "view == tekton.pipelineExplorer"
+          "when": "view == tektonPipelineExplorer"
         },
         {
           "command": "tekton.pipeline.describe",
-          "when": "view == tekton.pipelineExplorer"
+          "when": "view == tektonPipelineExplorer"
         },
         {
           "command": "tekton.pipeline.list",
-          "when": "view == tekton.pipelineExplorer"
+          "when": "view == tektonPipelineExplorer"
         },
         {
           "command": "tekton.pipelinerun.list",
-          "when": "view == tekton.pipelineExplorer"
+          "when": "view == tektonPipelineExplorer"
         },
         {
           "command": "tekton.pipelinerun.describe",
-          "when": "view == tekton.pipelineExplorer"
+          "when": "view == tektonPipelineExplorer"
         },
         {
           "command": "tekton.pipelinerun.logs",
-          "when": "view == tekton.pipelineExplorer"
+          "when": "view == tektonPipelineExplorer"
         },
         {
           "command": "tekton.task.list",
-          "when": "view == tekton.pipelineExplorer"
+          "when": "view == tektonPipelineExplorer"
         },
         {
           "command": "tekton.taskrun.list",
-          "when": "view == tekton.pipelineExplorer"
+          "when": "view == tektonPipelineExplorer"
         },
         {
           "command": "tekton.taskrun.logs",
-          "when": "view == tekton.pipelineExplorer"
+          "when": "view == tektonPipelineExplorer"
         }
       ],
       "view/title": [
         {
           "command": "tekton.explorer.refresh",
-          "when": "view == tekton.pipelineExplorer",
+          "when": "view == tektonPipelineExplorer",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
           "command": "tekton.pipeline.start",
-          "when": "view == tekton.pipelineExplorer && viewItem == pipeline",
+          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
           "group": "c1"
         },
         {
           "command": "tekton.pipeline.list",
-          "when": "view == tekton.pipelineExplorer && viewItem == pipeline",
+          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
           "group": "c2@1"
         },
         {
           "command": "tekton.pipeline.describe",
-          "when": "view == tekton.pipelineExplorer && viewItem == pipeline",
+          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
           "group": "c2@2"
         },
         {
           "command": "tekton.about",
-          "when": "view == tekton.pipelineExplorer && viewItem == pipeline",
+          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
           "group": "c3"
         },
         {
           "command": "tekton.pipelinerun.list",
-          "when": "view == tekton.pipelineExplorer && viewItem == pipelinerun",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
           "group": "p1"
         },
         {
           "command": "tekton.pipelinerun.describe",
-          "when": "view == tekton.pipelineExplorer && viewItem == pipelinerun",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
           "group": "p2"
         },
         {
           "command": "tekton.pipelinerun.logs",
-          "when": "view == tekton.pipelineExplorer && viewItem == pipelinerun",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
           "group": "p3"
         },
         {
           "command": "tekton.task.list",
-          "when": "view == tekton.pipelineExplorer && viewItem == task",
+          "when": "view == tektonPipelineExplorer && viewItem == task",
           "group": "a1"
         },
         {
           "command": "tekton.taskrun.logs",
-          "when": "view == tekton.pipelineExplorer && viewItem == taskrun",
+          "when": "view == tektonPipelineExplorer && viewItem == taskrun",
           "group": "s1"
         }
       ]
@@ -251,13 +257,13 @@
           "vs-tekton.outputFormat": "yaml"
         }
       },
-      "tektonPipeline.showChannelOutput": {
+      "vs-tekton.showChannelOutput": {
         "title": "Show channel on output",
         "type": "boolean",
         "default": "false",
         "description": "Show Tekton Pipeline output channel when new text added to ouput stream"
       },
-      "tektonPipeline.outputVerbosityLevel": {
+      "vs-tekton.outputVerbosityLevel": {
         "title": "Output Verbosity Level",
         "type": "number",
         "default": 0,

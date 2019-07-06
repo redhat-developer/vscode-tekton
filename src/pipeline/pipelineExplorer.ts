@@ -22,7 +22,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
   }
   static getInstance(): PipelineExplorer {
     if (!PipelineExplorer.instance) {
-      PipelineExplorer.instance = PipelineExplorer.instance;
+      PipelineExplorer.instance = new PipelineExplorer();
     }
     return PipelineExplorer.instance;
   }

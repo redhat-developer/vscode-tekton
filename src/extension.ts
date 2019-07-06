@@ -9,8 +9,11 @@ import path = require('path');
 import fsx = require('fs-extra');
 import * as k8s from 'vscode-kubernetes-tools-api';
 import { ClusterExplorerV1 } from 'vscode-kubernetes-tools-api';
+import { TektonItem } from './tekton/tektonitem';
+import { TektonNodeImpl } from './tkn';
 
 export let contextGlobalState: vscode.ExtensionContext;
+let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -20,7 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const disposables = [
         vscode.commands.registerCommand('tekton.about', (context) => execute(Pipeline.about, context)),
-        vscode.commands.registerCommand('tekton.explorer.refresh', (context) => execute(PipelineExplorer.getInstance().refresh, context)),
+        vscode.commands.registerCommand('tekton.explorer.refresh', (context) => execute(Pipeline.refresh , context)),
         vscode.commands.registerCommand('tekton.pipeline.start', (context) => execute(Pipeline.start, context)),
         vscode.commands.registerCommand('tekton.pipeline.create.local', (context) => execute(Pipeline.createFromFolder, context)),
         vscode.commands.registerCommand('tekton.pipeline.list', (context) => execute(Pipeline.list, context)),
@@ -35,19 +38,23 @@ export async function activate(context: vscode.ExtensionContext) {
     ];
     disposables.forEach((e) => context.subscriptions.push(e));
 
-    const tektonExplorer = await k8s.extension.clusterExplorer.v1;
-    if (tektonExplorer.available) {
+
+    const tektonExplorerAPI = await k8s.extension.clusterExplorer.v1;
+    if (tektonExplorerAPI.available) {
+        tektonExplorer = tektonExplorerAPI.api;
         const nodeContributors = [
-            tektonExplorer.api.nodeSources.resourceFolder("Pipelines", "Pipelines", "Pipeline", "pipeline").if(isTekton).at(undefined),
-            tektonExplorer.api.nodeSources.resourceFolder("Pipelineruns", "Pipelineruns", "Pipelinerun", "pipelinerun").if(isTekton).at(undefined),
-            tektonExplorer.api.nodeSources.resourceFolder("Tasks", "Tasks", "Task", "task").if(isTekton).at(undefined),
-            tektonExplorer.api.nodeSources.resourceFolder("Taskruns", "Taskruns", "Taskrun", "taskrun").if(isTekton).at(undefined),
-            tektonExplorer.api.nodeSources.resourceFolder("Clustertasks", "Clustertasks", "Clustertask", "clustertask").if(isTekton).at(undefined)
+            tektonExplorer.nodeSources.resourceFolder("Pipelines", "Pipelines", "Pipeline", "pipelines").if(isTekton).at(undefined),
+            tektonExplorer.nodeSources.resourceFolder("Pipelineruns", "Pipelineruns", "Pipelinerun", "pipelineruns").if(isTekton).at("Pipelines"),
+            tektonExplorer.nodeSources.resourceFolder("Taskruns", "Taskruns", "Taskrun", "taskruns").if(isTekton).at("Pipelineruns"),
+            tektonExplorer.nodeSources.resourceFolder("Tasks", "Tasks", "Task", "task").if(isTekton).at("Taskruns"),
+            tektonExplorer.nodeSources.resourceFolder("Clustertasks", "Clustertasks", "Clustertask", "clustertask").if(isTekton).at(undefined)
         ];
         nodeContributors.forEach(element => {
-            tektonExplorer.api.registerNodeContributor(element);
+            tektonExplorer.registerNodeContributor(element);
         });
-        tektonExplorer.api.registerNodeUICustomizer({ customize });
+        tektonExplorer.registerNodeUICustomizer({ customize });
+    } else {
+        vscode.window.showErrorMessage('Command not available: ${tektonExplorer.reason}');
     }
 }
 

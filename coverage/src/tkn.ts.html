@@ -20,24 +20,24 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">41.91% </span>
+        <span class="strong">37.25% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>57/136</span>
+        <span class='fraction'>57/153</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">18.75% </span>
+        <span class="strong">17.65% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>6/32</span>
+        <span class='fraction'>6/34</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">19.61% </span>
+        <span class="strong">17.86% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>10/51</span>
+        <span class='fraction'>10/56</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">43.85% </span>
+        <span class="strong">39.31% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>57/130</span>
+        <span class='fraction'>57/145</span>
       </div>
     </div>
   </div>
@@ -377,7 +377,42 @@
 332
 333
 334
-335</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -576,6 +611,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2×</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -603,6 +641,41 @@
 <span class="cline-any cline-yes">3×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -628,9 +701,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
@@ -753,7 +823,7 @@ function verbose(_target: any, key: string, descriptor: any) {
 	}
 &nbsp;
 	descriptor[fnKey] = function (...args: any[]) {
-        const v = workspace.getConfiguration('tektonPipeline').get('outputVerbosityLevel');
+        const v = workspace.getConfiguration('vs-tekton').get('outputVerbosityLevel');
         const command = fn!.apply(this, args);
         return command + (v &gt; 0 ? <span class="branch-0 cbranch-no" title="branch not covered" >` -v ${v}` </span>: '');
 	};
@@ -821,31 +891,31 @@ export class TektonNodeImpl implements TektonNode {
             icon: 'pipe.png',
             contextApi: 'tekton.pipeline',
             tooltip: 'Pipeline: {label}',
-            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >this.tkn.getPipelines()</span>
+            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >this.tkn.getPipelineChildren(this)</span>
         },
         pipelinerun: {
             icon: 'pipe.png',
             contextApi: 'tekton.pipelinerun',
             tooltip: 'PipelineRun: {label}',
-            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >this.tkn.getPipelineRuns(this)</span>
+            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >this.tkn.getPipelineRunChildren(this)</span>
         },
         task: {
             icon: 'task.png',
             contextApi: 'tekton.task',
             tooltip: 'Task: {label}',
-            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >this.tkn.getTasks(this)</span>
+            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >[]</span>
         },
         taskrun: {
             icon: 'task.png',
             contextApi: 'tekton.taskrun',
             tooltip: 'TaskRun: {label}',
-            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >this.tkn.getTaskRuns(this)</span>
+            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >this.tkn.getTaskRunChildren(this)</span>
         },
         clustertask: {
             icon: 'clustertask.png',
             contextApi: 'tekton.clustertask',
             tooltip: 'Clustertask: {label}',
-            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >this.tkn.getClusterTasks(this)</span>
+            getChildren: () =&gt; <span class="cstat-no" title="statement not covered" >[]</span>
         }
     };
 &nbsp;
@@ -907,6 +977,9 @@ export interface Tkn {
     addPipelineFromFolder(pipeline: TektonNode, path: string): Promise&lt;TektonNode&gt;;
     addTaskFromFolder(pipeline: TektonNode, path: string): Promise&lt;TektonNode&gt;;
     addClusterTaskFromFolder(pipeline: TektonNode, path: string): Promise&lt;TektonNode&gt;;
+    getPipelineChildren(pipeline: TektonNode): Promise&lt;TektonNode[]&gt;;
+    getPipelineRunChildren(pipelinerun: TektonNode): Promise&lt;TektonNode[]&gt;;
+    getTaskRunChildren(taskrun: TektonNode): Promise&lt;TektonNode[]&gt;;
     clearCache?(): void;
 }
 &nbsp;
@@ -936,6 +1009,41 @@ export class TknImpl implements Tkn {
         }
         return TknImpl.instance;
     }
+    public async getPipelineChildren<span class="fstat-no" title="function not covered" >(pipeline: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        if(!this.cache.has(pipeline)) {</span>
+<span class="cstat-no" title="statement not covered" >            this.cache.set(pipeline, await this._getPipelineChildren(pipeline));</span>
+        }
+<span class="cstat-no" title="statement not covered" >        return this.cache.get(pipeline);</span>
+    }
+    async _getPipelineChildren<span class="fstat-no" title="function not covered" >(pipeline: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        return [...await this._getPipelineRuns(pipeline)].sort(compareNodes);</span>
+    }
+    async getPipelineRuns<span class="fstat-no" title="function not covered" >(pipeline: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        return (await this.getPipelineChildren(pipeline)).filter((value) =&gt; <span class="cstat-no" title="statement not covered" >value.contextValue === ContextType.PIPELINERUN)</span>;</span>
+    }
+&nbsp;
+    async _getPipelineRuns<span class="fstat-no" title="function not covered" >(pipeline: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        const pipe = pipeline.getParent();</span>
+<span class="cstat-no" title="statement not covered" >        const result = cliInstance.CliExitData = await this.execute(Command.listPipelineRuns(pipe.getParent().getName()));</span>
+<span class="cstat-no" title="statement not covered" >        console.log(result);</span>
+<span class="cstat-no" title="statement not covered" >        let data: any[] = [];</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            data = JSON.parse(result.stdout).items;</span>
+        }catch (ignore) {
+&nbsp;
+        }
+<span class="cstat-no" title="statement not covered" >        const pipelinerunObject= data.map(value =&gt; (<span class="cstat-no" title="statement not covered" >{ name: value.metadata.name, source: value.spec.source})</span>);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return pipelinerunObject.map&lt;TektonNode&gt;((value) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            return new TektonNodeImpl(pipeline, value.name, ContextType.PIPELINERUN, this, TreeItemCollapsibleState.Collapsed);</span>
+        });
+    }
+    public async getPipelineRunChildren<span class="fstat-no" title="function not covered" >(pipelinerun: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
+    public async getTaskRunChildren<span class="fstat-no" title="function not covered" >(taskrun: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
+<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
+    }
 &nbsp;
     //probably need to verify cluster is up first--kube
     async getPipelines<span class="fstat-no" title="function not covered" >(): Promise&lt;TektonNode[]&gt; {</span>
@@ -963,9 +1071,6 @@ export class TknImpl implements Tkn {
 <span class="cstat-no" title="statement not covered" >        return pipelines.map&lt;TektonNode&gt;((value)=&gt; <span class="cstat-no" title="statement not covered" >new TektonNodeImpl(undefined, value, ContextType.PIPELINE, TknImpl.instance, treeState))</span>.sort(compareNodes);</span>
     }
 &nbsp;
-    getPipelineRuns<span class="fstat-no" title="function not covered" >(pipelineRun: TektonNode)</span>: Promise&lt;TektonNode[]&gt; {
-<span class="cstat-no" title="statement not covered" >        throw new Error("Method not implemented.");</span>
-    }
     getTasks(task: TektonNode): Promise&lt;TektonNode[]&gt; {
         throw new Error("Method not implemented.");
     }
@@ -1051,7 +1156,7 @@ export class TknImpl implements Tkn {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Jul 03 2019 13:26:25 GMT-0400 (EDT)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Jul 05 2019 18:25:03 GMT-0400 (EDT)
 </div>
 </div>
 <script src="../prettify.js"></script>

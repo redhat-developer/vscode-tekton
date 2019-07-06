@@ -81,7 +81,7 @@ class TknChannelImpl implements TknChannel {
         if (textData.charAt(textData.length - 1) !== '\n') {
             this.channel.append('\n');
         }
-        if (vscode.workspace.getConfiguration('tektonPipelines').get<boolean>('showChannelOnOutput')) {
+        if (vscode.workspace.getConfiguration('vs-tekton').get<boolean>('showChannelOnOutput')) {
             this.channel.show();
         }
     }

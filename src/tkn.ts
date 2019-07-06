@@ -40,7 +40,7 @@ function verbose(_target: any, key: string, descriptor: any) {
 	}
 
 	descriptor[fnKey] = function (...args: any[]) {
-        const v = workspace.getConfiguration('tektonPipeline').get('outputVerbosityLevel');
+        const v = workspace.getConfiguration('vs-tekton').get('outputVerbosityLevel');
         const command = fn!.apply(this, args);
         return command + (v > 0 ? ` -v ${v}` : '');
 	};
@@ -49,50 +49,50 @@ function verbose(_target: any, key: string, descriptor: any) {
 export class Command {
     @verbose
     static startPipeline(name: string) {
-        return 'tkn pipeline start ${name}';
+        return `tkn pipeline start ${name}`;
     }
     @verbose
     static listPipelines() {
-        return 'tkn pipeline list';
+        return `tkn pipeline list -o json`;
     }
     @verbose
     static describePipelines(name: string) {
-        return 'tkn pipeline describe';
+        return `tkn pipeline describe`;
     }
     @verbose
     static listPipelineRuns(name: string) {
-        return 'tkn pipelinerun list';
+        return `tkn pipelinerun list -o json`;
     }
     @verbose
     static describePipelineRuns(name: string) {
-        return 'tkn pipelinerun describe ${name}';
+        return `tkn pipelinerun describe ${name}`;
     }
     @verbose
     static showPipelineRunLogs(name: string) {
-        return 'tkn pipelinerun logs ${name}';
+        return `tkn pipelinerun logs ${name}`;
     }
     @verbose
     static listTasks(name: string) {
-        return 'tkn task list ${name}';
+        return `tkn task list ${name} -o json`;
     }
     @verbose
     static listTaskRuns(name: string) {
-        return 'tkn taskrun list ${name}';
+        return `tkn taskrun list ${name} -o json`;
     }
 /*     static describeTaskRuns(name: string) {
         return 'tkn taskrun list ${name}';
     } */
     @verbose
     static showTaskRunLogs(name: string) {
-        return 'tkn taskrun logs ${name}';
+        return `tkn taskrun logs ${name}`;
     }
     @verbose
     static printTknVersion() {
-        return 'tkn version';
+        return `tkn version`;
     }
     @verbose
     static addNewPipelineFromFolder(pipeline: TektonNode, path: string) {
-        return 'tkn pipeline start ${path}';
+        return `tkn pipeline start ${path}`;
     }
     static pushPipeline(pipeline: TektonNode): string {
         return "A string";
@@ -108,31 +108,31 @@ export class TektonNodeImpl implements TektonNode {
             icon: 'pipe.png',
             contextApi: 'tekton.pipeline',
             tooltip: 'Pipeline: {label}',
-            getChildren: () => this.tkn.getPipelines()
+            getChildren: () => this.tkn.getPipelineChildren(this)
         },
         pipelinerun: {
             icon: 'pipe.png',
             contextApi: 'tekton.pipelinerun',
             tooltip: 'PipelineRun: {label}',
-            getChildren: () => this.tkn.getPipelineRuns(this)
+            getChildren: () => this.tkn.getPipelineRunChildren(this)
         },
         task: {
             icon: 'task.png',
             contextApi: 'tekton.task',
             tooltip: 'Task: {label}',
-            getChildren: () => this.tkn.getTasks(this)
+            getChildren: () => []
         },
         taskrun: {
             icon: 'task.png',
             contextApi: 'tekton.taskrun',
             tooltip: 'TaskRun: {label}',
-            getChildren: () => this.tkn.getTaskRuns(this)
+            getChildren: () => this.tkn.getTaskRunChildren(this)
         },
         clustertask: {
             icon: 'clustertask.png',
             contextApi: 'tekton.clustertask',
             tooltip: 'Clustertask: {label}',
-            getChildren: () => this.tkn.getClusterTasks(this)
+            getChildren: () => []
         }
     };
 
@@ -194,6 +194,9 @@ export interface Tkn {
     addPipelineFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
     addTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
     addClusterTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
+    getPipelineChildren(pipeline: TektonNode): Promise<TektonNode[]>;
+    getPipelineRunChildren(pipelinerun: TektonNode): Promise<TektonNode[]>;
+    getTaskRunChildren(taskrun: TektonNode): Promise<TektonNode[]>;
     clearCache?(): void;
 }
 
@@ -223,6 +226,41 @@ export class TknImpl implements Tkn {
         }
         return TknImpl.instance;
     }
+    public async getPipelineChildren(pipeline: TektonNode): Promise<TektonNode[]> {
+        if(!this.cache.has(pipeline)) {
+            this.cache.set(pipeline, await this._getPipelineChildren(pipeline));
+        }
+        return this.cache.get(pipeline);
+    }
+    async _getPipelineChildren(pipeline: TektonNode): Promise<TektonNode[]> {
+        return [...await this._getPipelineRuns(pipeline)].sort(compareNodes);
+    }
+    async getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> {
+        return (await this.getPipelineChildren(pipeline)).filter((value) => value.contextValue === ContextType.PIPELINERUN);
+    }
+
+    async _getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> {
+        const pipe = pipeline.getParent();
+        const result: cliInstance.CliExitData = await this.execute(Command.listPipelineRuns(pipe.getName()));
+        console.log(result);
+        let data: any[] = [];
+        try {
+            data = JSON.parse(result.stdout).items;
+        }catch (ignore) {
+
+        }
+        const pipelinerunObject= data.map(value => ({ name: value.metadata.name, source: value.spec.source}));
+
+        return pipelinerunObject.map<TektonNode>((value) => {
+            return new TektonNodeImpl(pipeline, value.name, ContextType.PIPELINERUN, this, TreeItemCollapsibleState.Collapsed);
+        });
+    }
+    public async getPipelineRunChildren(pipelinerun: TektonNode): Promise<TektonNode[]> {
+        throw new Error("Method not implemented.");
+    }
+    public async getTaskRunChildren(taskrun: TektonNode): Promise<TektonNode[]> {
+        throw new Error("Method not implemented.");
+    }
 
     //probably need to verify cluster is up first--kube
     async getPipelines(): Promise<TektonNode[]> {
@@ -233,11 +271,18 @@ export class TknImpl implements Tkn {
     }
 
     public async _getPipelines(): Promise<TektonNode[]> {
-        let data: any[] = []; 
+        let pipelines: TektonNode[] = await this.getPipelinesWithTkn();
+        if (pipelines.length === 0) {
+            console.log("No pipelines detected");
+        } 
+        return pipelines;
+    }
+    private async getPipelinesWithTkn(): Promise<TektonNode[]> {
+        let data: TektonNode[] = [];
         const result: cliInstance.CliExitData = await this.execute(Command.listPipelines(), process.cwd(), false);
         if (result.stderr) {
-            console.log(result);
-            return[new TektonNodeImpl(null, result.stderr, ContextType.PIPELINE, TknImpl.instance, TreeItemCollapsibleState.Expanded)];
+            console.log(result+" Std.err when processing pipelines");
+            return[new TektonNodeImpl(this.ROOT, result.stderr, ContextType.PIPELINE, this, TreeItemCollapsibleState.Expanded)];
         }
         try {
             data = JSON.parse(result.stdout).items;
@@ -246,13 +291,11 @@ export class TknImpl implements Tkn {
         }
         let pipelines: string[] = data.map((value) => value.metadata.name);
         pipelines = [...new Set(pipelines)];
+        console.log(pipelines);
         const treeState = pipelines.length> 0? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
-        return pipelines.map<TektonNode>((value)=> new TektonNodeImpl(undefined, value, ContextType.PIPELINE, TknImpl.instance, treeState)).sort(compareNodes);
+        return pipelines.map<TektonNode>((value)=> new TektonNodeImpl(this.ROOT, value, ContextType.PIPELINE, this, treeState)).sort(compareNodes);
     }
 
-    getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]> {
-        throw new Error("Method not implemented.");
-    }
     getTasks(task: TektonNode): Promise<TektonNode[]> {
         throw new Error("Method not implemented.");
     }
