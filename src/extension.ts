@@ -46,7 +46,7 @@ export async function activate(context: vscode.ExtensionContext) {
             tektonExplorer.nodeSources.resourceFolder("Pipelines", "Pipelines", "Pipeline", "pipelines").if(isTekton).at(undefined),
             tektonExplorer.nodeSources.resourceFolder("Pipelineruns", "Pipelineruns", "Pipelinerun", "pipelineruns").if(isTekton).at("Pipelines"),
             tektonExplorer.nodeSources.resourceFolder("Taskruns", "Taskruns", "Taskrun", "taskruns").if(isTekton).at("Pipelineruns"),
-            tektonExplorer.nodeSources.resourceFolder("Tasks", "Tasks", "Task", "task").if(isTekton).at("Taskruns"),
+            tektonExplorer.nodeSources.resourceFolder("Tasks", "Tasks", "Task", "task").if(isTekton).at(undefined),
             tektonExplorer.nodeSources.resourceFolder("Clustertasks", "Clustertasks", "Clustertask", "clustertask").if(isTekton).at(undefined)
         ];
         nodeContributors.forEach(element => {
