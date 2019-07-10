@@ -228,17 +228,16 @@ export class TknImpl implements Tkn {
     }
 
     public async _getPipelineResources(): Promise<TektonNode[]> {
-        let pipelineTree: any[] = [];
+        let pipelineTree: TektonNode[] = [];
         let pipelineNode = new TektonNodeImpl(this.ROOT, "Pipelines", ContextType.PIPELINE, this, TreeItemCollapsibleState.Collapsed);
         let taskNode = new TektonNodeImpl(this.ROOT, "Tasks", ContextType.TASK, this, TreeItemCollapsibleState.Collapsed);
         //let clustertaskNode = new TektonNodeImpl(this.ROOT, "Clustertasks", ContextType.CLUSTERTASK, this, TreeItemCollapsibleState.Collapsed);
-        this.cache.set(this.ROOT, pipelineTree);
         pipelineTree.push(pipelineNode,taskNode);
         this.cache.set(pipelineNode, await this.getPipelines(pipelineNode));
         this.cache.set(taskNode, await this.getTasks(taskNode));
-  //      let clustertasks: TektonNode[] = await this.getClusterTasks();
-  //      tree.push(clustertasks);
-        return this.cache.get(this.ROOT);
+  //    this.cache.set(custertaskNode, await this.getClusterTasks(clustertaskNode));
+        this.cache.set(this.ROOT, pipelineTree);
+        return pipelineTree;
 
     }
 
@@ -303,10 +302,14 @@ export class TknImpl implements Tkn {
             return new TektonNodeImpl(pipelinerun, value.name, ContextType.TASKRUN, this, TreeItemCollapsibleState.None);
         });
     }
-//TODO: Account for empty tasks
+
     async _getTasks(task: TektonNode): Promise<TektonNode[]> {
-        const result: cliInstance.CliExitData = await this.execute(Command.listTasks(""));
-        let data: any[] = [];
+        let data: TektonNode[] = [];
+        const result: cliInstance.CliExitData = await this.execute(Command.listTasks(""), process.cwd(), false);
+        if (result.stderr) {
+            console.log(result + "Std.err when processing tasks");
+            return [new TektonNodeImpl(task, result.stderr, ContextType.TASK, this, TreeItemCollapsibleState.Expanded)];
+        }
         try {
             data = JSON.parse(result.stdout).items;
         } catch (ignore) {
@@ -315,7 +318,11 @@ export class TknImpl implements Tkn {
         let tasks: string[] = data.map((value) => value.metadata.name); 
         tasks = [...new Set(tasks)];
         const treeState = tasks.length>0?TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
-        return tasks.map<TektonNode>((value) => new TektonNodeImpl(task, value, ContextType.TASK, this, treeState)).sort(compareNodes);
+        const taskNode = tasks.map<TektonNode>((value) => new TektonNodeImpl(task, value, ContextType.TASK, this, treeState)).sort(compareNodes);
+        if (taskNode.length === 0 ){
+            console.log("No Tasks detected");
+        }
+        return taskNode;
     }
 
     async getPipelines(pipeline: TektonNode): Promise<TektonNode[]> {
