@@ -100,7 +100,7 @@ suite('TektonItem', () => {
 
         test('returns an array of task names for the pipelinerunlication if there is at least one task', async ()=> {
             sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskItem]);
-            const taskNames = await TektonItem.getTaskNames(pipelinerunItem);
+            const taskNames = await TektonItem.getTaskNames();
             expect(taskNames[0].getName()).equals('task');
 
         });
@@ -108,7 +108,7 @@ suite('TektonItem', () => {
         test('throws error if there are no tasks available', async ()=> {
             sandbox.stub(TknImpl.prototype, 'getTasks').resolves([]);
             try {
-                await TektonItem.getTaskNames(pipelineItem);
+                await TektonItem.getTaskNames();
             } catch (err) {
                 expect(err.message).equals('You need at least one Task available. Please create new Tekton Task and try again.');
                 return;
@@ -150,7 +150,7 @@ suite('TektonItem', () => {
         test('throws error if there are no tasks available', async ()=> {
             sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([]);
             try {
-                await TektonItem.getTaskNames(taskItem);
+                await TektonItem.getTaskNames();
             } catch (err) {
                 expect(err.message).equals('You need at least one Task available. Please create new Tekton Task and try again.');
                 return;

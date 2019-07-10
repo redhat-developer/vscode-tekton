@@ -30,9 +30,9 @@ export abstract class TektonItem {
             prompt: `Provide ${message}`,
             validateInput: (value: string) => {
                 let validationMessage = TektonItem.emptyName(`Empty ${message}`, value.trim());
-                if (!validationMessage) validationMessage = TektonItem.validateMatches(`Not a valid ${message}. Please use lower case alphanumeric characters or "-", start with an alphabetic character, and end with an alphanumeric character`, value);
-                if (!validationMessage) validationMessage = TektonItem.lengthName(`${message} should be between 2-63 characters`, value, offset ? offset.length : 0);
-                if (!validationMessage) validationMessage = TektonItem.validateUniqueName(data, value);
+                if (!validationMessage) { validationMessage = TektonItem.validateMatches(`Not a valid ${message}. Please use lower case alphanumeric characters or "-", start with an alphabetic character, and end with an alphanumeric character`, value); }
+                if (!validationMessage) { validationMessage = TektonItem.lengthName(`${message} should be between 2-63 characters`, value, offset ? offset.length : 0); }
+                if (!validationMessage) { validationMessage = TektonItem.validateUniqueName(data, value); }
                 return validationMessage;
             }
         });
@@ -52,25 +52,31 @@ export abstract class TektonItem {
 
     static async getPipelineNames(): Promise<TektonNode[]> {
         const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelines();
-        if (pipelineList.length === 0) throw Error(errorMessage.Pipeline);
+        if (pipelineList.length === 0) { throw Error(errorMessage.Pipeline); }
         return pipelineList;
     }
 
     static async getPipelinerunNames(pipeline: TektonNode): Promise<TektonNode[]> {
         const pipelinerunList: Array<TektonNode> = await TektonItem.tkn.getPipelineRuns(pipeline);
-        if (pipelinerunList.length === 0) throw Error(errorMessage.Pipelinerun);
+        if (pipelinerunList.length === 0) { throw Error(errorMessage.Pipelinerun); }
         return pipelinerunList;
     }
 
-    static async getTaskNames(task: TektonNode) {
-        const taskList: Array<TektonNode> = await TektonItem.tkn.getTasks(task);
-        if (taskList.length === 0) throw Error(errorMessage.Task);
+    static async getTaskNames() {
+        const taskList: Array<TektonNode> = await TektonItem.tkn.getTasks();
+        if (taskList.length === 0) { throw Error(errorMessage.Task); }
+        return taskList;
+    }
+
+    static async getClusterTaskNames() {
+        const taskList: Array<TektonNode> = await TektonItem.tkn.getClusterTasks();
+        if (taskList.length === 0) { throw Error(errorMessage.Task); }
         return taskList;
     }
 
     static async getTaskRunNames(taskrun: TektonNode) {
         const taskrunList: Array<TektonNode> = await TektonItem.tkn.getTaskRuns(taskrun);
-        if (taskrunList.length === 0) throw Error(errorMessage.Taskrun);
+        if (taskrunList.length === 0) { throw Error(errorMessage.Taskrun); }
         return taskrunList;
     }
 
@@ -78,8 +84,8 @@ export abstract class TektonItem {
         let context = treeItem;
         if (!context) {
             context = await window.showQuickPick(TektonItem.getPipelineNames(), {placeHolder: projectPlaceholder});
-            if (context && pipelinePlaceholder) context = await window.showQuickPick(TektonItem.getPipelinerunNames(context), {placeHolder: pipelinePlaceholder});
-            if (context && taskPlaceholder) context = await window.showQuickPick(TektonItem.getTaskNames(context), {placeHolder: taskPlaceholder});
+            if (context && pipelinePlaceholder) { context = await window.showQuickPick(TektonItem.getPipelinerunNames(context), {placeHolder: pipelinePlaceholder}); }
+            if (context && taskPlaceholder) { context = await window.showQuickPick(TektonItem.getTaskNames(), {placeHolder: taskPlaceholder}); }
         }
         return context;
     }

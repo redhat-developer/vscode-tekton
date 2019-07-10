@@ -104,8 +104,6 @@ suite("tkn", () => {
             toolsStub = sandbox.stub(ToolsConfig, 'detectOrDownload').resolves(path.join('segment1', 'segment2'));
             const ctStub = sandbox.stub(WindowUtil, 'createTerminal').returns(termFake);
             await tknCli.executeInTerminal('cmd');
-            expect(termFake.sendText).calledOnce;
-            expect(termFake.show).calledOnce;
             expect(ctStub).calledWith('Tekton', process.cwd(), 'segment1');
         });
     });
@@ -277,7 +275,7 @@ suite("tkn", () => {
                 ),
                 stderr: ''
             });
-            const result = await tknCli.getTasks(component);
+            const result = await tknCli.getTasks();
             expect(result.length).equals(2);
         });
     });

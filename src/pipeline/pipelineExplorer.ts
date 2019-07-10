@@ -31,7 +31,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
   }
   
   getChildren(element?: TektonNode): ProviderResult<TektonNode[]> {
-    return element ? element.getChildren() : PipelineExplorer.tkn.getPipelines();
+    return element ? element.getChildren() : PipelineExplorer.tkn.getPipelineResources();
   }
 
 getParent?(element: TektonNode): TektonNode {

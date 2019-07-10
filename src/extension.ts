@@ -11,6 +11,7 @@ import * as k8s from 'vscode-kubernetes-tools-api';
 import { ClusterExplorerV1 } from 'vscode-kubernetes-tools-api';
 import { TektonItem } from './tekton/tektonitem';
 import { TektonNodeImpl } from './tkn';
+import { ClusterTask } from './tekton/clustertask';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -32,6 +33,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('tekton.pipelinerun.describe', (context) => execute(PipelineRun.describe, context)),
         vscode.commands.registerCommand('tekton.pipelinerun.logs', (context) => execute(PipelineRun.logs, context)),
         vscode.commands.registerCommand('tekton.task.list', (context) => execute(Task.list, context)),
+        vscode.commands.registerCommand('tekton.clustertask.list', (context) => execute(ClusterTask.list, context)),
         vscode.commands.registerCommand('tekton.taskrun.list', (context) => execute(TaskRun.list, context)),
         vscode.commands.registerCommand('tekton.taskrun.logs', (context) => execute(TaskRun.logs, context)),
         PipelineExplorer.getInstance()
