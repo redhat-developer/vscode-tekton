@@ -17,12 +17,12 @@ export class Pipeline extends TektonItem {
 
     static async getTektonData(context: TektonNode): Promise<TektonNode> {
         return await Pipeline.getTektonCmdData(context,
-            "In which Project you want to create an Pipeline"
+            "In which Project do you want to create an Pipeline"
             );
     }
     static async start(context: TektonNode): Promise<string> {
         const pipeline = await Pipeline.getTektonData(context);
-        if (!pipeline) return null;
+        if (!pipeline) { return null; }
         const sourceTypes: QuickPickItem[] = [
             {
                 label: 'Workspace Directory',
@@ -32,13 +32,13 @@ export class Pipeline extends TektonItem {
         const componentSource = await window.showQuickPick(sourceTypes, {
             placeHolder: "Select source type for Pipeline"
         });
-        if (!componentSource) return null;
+        if (!componentSource) { return null; }
 
         let command: Promise<string>;
         command = Pipeline.createFromLocal(pipeline)
-        const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelines();
+        const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelines(pipeline);
         const pipelineName = await Pipeline.getName('Pipeline name', pipelineList);
-        if (!pipelineName) return null;
+        if (!pipelineName) { return null; }
         return Progress.execFunctionWithProgress(`Creating the Pipeline '${pipelineName}'.`, () =>
             Pipeline.tkn.startPipeline(pipeline)
                 .then(() => `Pipeline '${pipelineName}' successfully created`)
@@ -78,14 +78,14 @@ export class Pipeline extends TektonItem {
         const pipeline = await Pipeline.getTektonCmdData(context,
             "Which Pipeline do you want to describe",
             "Select Pipeline you want to describe");
-        if (pipeline) Pipeline.tkn.executeInTerminal(Command.describePipelines(pipeline.getName()));
+        if (pipeline) { Pipeline.tkn.executeInTerminal(Command.describePipelines(pipeline.getName())); }
     }
 
     static async list(treeItem: TektonNode): Promise<void> {
         const pipeline = await Pipeline.getTektonCmdData(treeItem,
-            "From which project you want to describe Pipeline",
+            "From which project do you want to describe Pipeline",
             "Select Pipeline you want to describe");
-        if (pipeline) Pipeline.tkn.executeInTerminal(Command.listPipelines());
+        if (pipeline) { Pipeline.tkn.executeInTerminal(Command.listPipelines()); }
     }
 
 }

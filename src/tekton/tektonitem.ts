@@ -50,8 +50,8 @@ export abstract class TektonItem {
         return (validator.matches(value, '^[a-z]([-a-z0-9]*[a-z0-9])*$')) ? null : message;
     }
 
-    static async getPipelineNames(): Promise<TektonNode[]> {
-        const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelines();
+    static async getPipelineNames(pipeline: TektonNode): Promise<TektonNode[]> {
+        const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelines(pipeline);
         if (pipelineList.length === 0) { throw Error(errorMessage.Pipeline); }
         return pipelineList;
     }
@@ -62,14 +62,14 @@ export abstract class TektonItem {
         return pipelinerunList;
     }
 
-    static async getTaskNames() {
-        const taskList: Array<TektonNode> = await TektonItem.tkn.getTasks();
+    static async getTaskNames(task: TektonNode): Promise<TektonNode[]> {
+        const taskList: Array<TektonNode> = await TektonItem.tkn.getTasks(task);
         if (taskList.length === 0) { throw Error(errorMessage.Task); }
         return taskList;
     }
 
-    static async getClusterTaskNames() {
-        const taskList: Array<TektonNode> = await TektonItem.tkn.getClusterTasks();
+    static async getClusterTaskNames(clustertask: TektonNode): Promise<TektonNode[]> {
+        const taskList: Array<TektonNode> = await TektonItem.tkn.getClusterTasks(clustertask);
         if (taskList.length === 0) { throw Error(errorMessage.Task); }
         return taskList;
     }
@@ -83,9 +83,9 @@ export abstract class TektonItem {
     static async getTektonCmdData(treeItem: TektonNode, projectPlaceholder: string, pipelinePlaceholder?: string, taskPlaceholder?: string) {
         let context = treeItem;
         if (!context) {
-            context = await window.showQuickPick(TektonItem.getPipelineNames(), {placeHolder: projectPlaceholder});
+            context = await window.showQuickPick(TektonItem.getPipelineNames(treeItem), {placeHolder: projectPlaceholder});
             if (context && pipelinePlaceholder) { context = await window.showQuickPick(TektonItem.getPipelinerunNames(context), {placeHolder: pipelinePlaceholder}); }
-            if (context && taskPlaceholder) { context = await window.showQuickPick(TektonItem.getTaskNames(), {placeHolder: taskPlaceholder}); }
+            if (context && taskPlaceholder) { context = await window.showQuickPick(TektonItem.getTaskNames(treeItem), {placeHolder: taskPlaceholder}); }
         }
         return context;
     }

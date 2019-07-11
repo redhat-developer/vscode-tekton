@@ -9,10 +9,9 @@ import { TektonNode, Command } from '../tkn';
 export class Task extends TektonItem {
 
     static async list(treeItem: TektonNode): Promise<void> {
-        const tasks = await Task.getTektonCmdData(treeItem,
-            "From which pipeline you want to list Tasks",
-            "Select Pipeline you want to describe");
-        if (tasks) Task.tkn.executeInTerminal(Command.listTasks(tasks.getName()));
+        const task = await Task.getTektonCmdData(treeItem,
+            "Which task do you want to list");
+        if (task) Task.tkn.executeInTerminal(Command.listTasks(task.getName()));
     }
 
 }
