@@ -249,11 +249,11 @@ export class TknImpl implements Tkn {
         let pipelineTree: TektonNode[] = [];
         let pipelineNode = new TektonNodeImpl(this.ROOT, "Pipelines", ContextType.PIPELINENODE, this, TreeItemCollapsibleState.Collapsed);
         let taskNode = new TektonNodeImpl(this.ROOT, "Tasks", ContextType.TASKNODE, this, TreeItemCollapsibleState.Collapsed);
-        //let clustertaskNode = new TektonNodeImpl(this.ROOT, "Clustertasks", ContextType.CLUSTERTASKNODE, this, TreeItemCollapsibleState.Collapsed);
+ //       let clustertaskNode = new TektonNodeImpl(this.ROOT, "Clustertasks", ContextType.CLUSTERTASKNODE, this, TreeItemCollapsibleState.Collapsed);
         pipelineTree.push(pipelineNode, taskNode);
         this.cache.set(pipelineNode, await this.getPipelines(pipelineNode));
         this.cache.set(taskNode, await this.getTasks(taskNode));
-  //    this.cache.set(custertaskNode, await this.getClusterTasks(clustertaskNode));
+//        this.cache.set(clustertaskNode, await this.getClusterTasks(clustertaskNode));
         return pipelineTree;
 
     }
@@ -399,8 +399,7 @@ export class TknImpl implements Tkn {
         }
         let tasks: string[] = data.map((value) => value.metadata.name); 
         tasks = [...new Set(tasks)];
-        const treeState = tasks.length>0?TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
-        return tasks.map<TektonNode>((value) => new TektonNodeImpl(clustertask, value, ContextType.TASK, this, treeState)).sort(compareNodes);
+        return tasks.map<TektonNode>((value) => new TektonNodeImpl(clustertask, value, ContextType.CLUSTERTASK, this, TreeItemCollapsibleState.None)).sort(compareNodes);
     }
 
     startPipeline(pipeline: TektonNode): Promise<TektonNode[]> {
