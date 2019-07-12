@@ -1,0 +1,33 @@
+
+{
+    "tkn": {
+        "description": "A CLI for interacting with Tekton",
+        "vendor": "",
+        "name": "tkn",
+        "version": "0.1.2",
+        "versionRange": "0.1.2",
+        "versionRangeLabel": "v0.1.2",
+        "dlFileName": "tkn",
+        "cmdFileName": "tkn",
+        "filePrefix": "",
+        "platform": {
+            "win32": {
+                "url": "https://github.com/tektoncd/cli/releases/download/v0.1.2/tkn_0.1.2_Windows_x86_64.tar.gz",
+                "sha256sum": "099648adf9a2a2b8cec2805b7ed0a61ed98c2a7abd143d8a06727d2397fb1ed1",
+                "dlFileName": "tkn_0.1.2_Linux_arm64.tar.gz",
+                "cmdFileName": "tkn_0.1.2_Linux_arm64.tar.gz"
+            },
+            "darwin": {
+                "url": "https://github.com/tektoncd/cli/releases/download/v0.1.2/tkn_0.1.2_Darwin_x86_64.tar.gz",
+                "sha256sum": "003f02531c4f3c99895cd57cb7cc6009105fb0aa0c6daa268f9f904d2d2243c2",
+                "dlFileName": "tkn_0.1.2_Linux_x86_64.tar.gz"
+            },
+            "linux": {
+                "url": "https://github.com/tektoncd/cli/releases/download/v0.1.2/tkn_0.1.2_Linux_x86_64.tar.gz",
+                "sha256sum": "a2c6e3cdcf4599c02094a92686d4d4d24bac52c692a6d84451334cb96da8844d",
+                "fileName": "tkn_0.1.2_Linux_arm64.tar.gz",
+                "dlFileName": "tkn_0.1.2_Linux_arm64.tar.gz"
+            }
+        }
+    }
+}

@@ -1,44 +1,344 @@
 {
   "name": "vscode-tekton",
-  "displayName": "vscode-tekton",
+  "displayName": "Tekton",
   "description": "Tekton pipelines integration",
-  "version": "0.0.1",
+  "version": "v0.1.2",
+  "license": "Apache-2.0",
+  "publisher": "redhat",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/redhat-developer/vscode-tekton.git"
+  },
+  "bugs": "https://github.com/redhat-developer/vscode-tekton/issues",
   "engines": {
     "vscode": "^1.32.0"
   },
   "categories": [
     "Other"
   ],
+  "icon": "images/tekton.png",
   "activationEvents": [
-    "onView:tekton.pipelineExplorer"
+    "onView:tektonPipelineExplorer",
+    "onView:extension.vsKubernetesExplorer",
+    "onCommand:tekton.pipeline.start",
+    "onCommand:tekton.pipeline.create.local",
+    "onCommand:tekton.pipeline.list",
+    "onCommand:tekton.pipeline.describe",
+    "onCommand:tekton.pipelinerun.list",
+    "onCommand:tekton.pipelinerun.describe",
+    "onCommand:tekton.pipelinerun.logs",
+    "onCommand:tekton.task.list",
+    "onCommand:tekton.taskrun.list",
+    "onCommand:tekton.taskrun.logs",
+    "onCommand:tekton.explorer.refresh",
+    "onCommand:tekton.about"
   ],
-  "main": "./out/extension.js",
+  "main": "./out/src/extension",
   "contributes": {
+    "commands": [
+      {
+        "command": "tekton.about",
+        "title": "About",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipeline.start",
+        "title": "Start Pipeline",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipeline.create.local",
+        "title": "New Pipeline from local folder",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipeline.list",
+        "title": "List Pipelines",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipeline.describe",
+        "title": "Describe Pipelines",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipelinerun.list",
+        "title": "List Pipelineruns",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipelinerun.describe",
+        "title": "Describe Pipelineruns",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipelinerun.logs",
+        "title": "Show Pipelinerun logs",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.task.list",
+        "title": "List Tasks",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.taskrun.list",
+        "title": "List Taskruns",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.taskrun.logs",
+        "title": "Show Taskrun logs",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.explorer.refresh",
+        "title": "Refresh View",
+        "category": "Tekton",
+        "icon": "images/refresh.png"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "tekton.explorer.refresh",
+        "key": "alt+shift+r",
+        "mac": "ctrl+shift+r"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "tektonView",
+          "title": "Tekton Pipelines",
+          "icon": "images/tekton.svg"
+        }
+      ]
+    },
     "views": {
       "explorer": [
         {
-          "id": "tekton.pipelineExplorer",
+          "id": "extension.vsKubernetesExplorer",
+          "name": "Clusters"
+        },
+        {
+          "id": "tektonPipelineExplorer",
           "name": "Tekton Pipelines"
+        }
+      ]
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "tekton.pipeline.start",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.pipeline.describe",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.pipeline.list",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.pipelinerun.list",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.pipelinerun.describe",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.pipelinerun.logs",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.task.list",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.taskrun.list",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.taskrun.logs",
+          "when": "view == tektonPipelineExplorer"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "tekton.explorer.refresh",
+          "when": "view == tektonPipelineExplorer",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "tekton.pipeline.start",
+          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
+          "group": "c1"
+        },
+        {
+          "command": "tekton.pipeline.list",
+          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
+          "group": "c2@1"
+        },
+        {
+          "command": "tekton.pipeline.describe",
+          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
+          "group": "c2@2"
+        },
+        {
+          "command": "tekton.about",
+          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
+          "group": "c3"
+        },
+        {
+          "command": "tekton.pipelinerun.list",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
+          "group": "p1"
+        },
+        {
+          "command": "tekton.pipelinerun.describe",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
+          "group": "p2"
+        },
+        {
+          "command": "tekton.pipelinerun.logs",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
+          "group": "p3"
+        },
+        {
+          "command": "tekton.task.list",
+          "when": "view == tektonPipelineExplorer && viewItem == task",
+          "group": "a1"
+        },
+        {
+          "command": "tekton.taskrun.logs",
+          "when": "view == tektonPipelineExplorer && viewItem == taskrun",
+          "group": "s1"
         }
       ]
     }
   },
+  "configuration": {
+    "type": "object",
+    "title": "Tekton",
+    "properties": {
+      "vs-tekton": {
+        "type": "object",
+        "description": "Tekton Configuration",
+        "properties": {
+          "vs-tekton.namespace": {
+            "type": "string",
+            "description": "The namespace to use for all commands"
+          },
+          "vs-tekton.tkn-path": {
+            "type": "string",
+            "description": "File path to a tkn binary."
+          },
+          "vs-tekton.tkn-path.windows": {
+            "type": "string",
+            "description": "File path to a tkn binary."
+          },
+          "vs-tekton.tkn-path.mac": {
+            "type": "string",
+            "description": "File path to a tkn binary."
+          },
+          "vs-tekton.tkn-path.linux": {
+            "type": "string",
+            "description": "File path to a tkn binary."
+          }
+        },
+        "default": {
+          "vs-tekton.namespace": "tekton-pipelines",
+          "vs-tekton.tkn-path": "",
+          "vs-tekton.tknVersioning": "user-provided",
+          "vs-tekton.outputFormat": "yaml"
+        }
+      },
+      "vs-tekton.showChannelOutput": {
+        "title": "Show channel on output",
+        "type": "boolean",
+        "default": "false",
+        "description": "Show Tekton Pipeline output channel when new text added to ouput stream"
+      },
+      "vs-tekton.outputVerbosityLevel": {
+        "title": "Output Verbosity Level",
+        "type": "number",
+        "default": 0,
+        "description": "Output verbosity level (value between 0 and 9) for Tekton Pipeline Start, Push and Watch commands in output channel and integrated terminal."
+      }
+    }
+  },
+  "extensionDependencies": [],
   "scripts": {
-    "vscode:prepublish": "yarn run compile",
+    "verify": "node ./out/build/verify-tools.js",
+    "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "yarn run compile && node ./node_modules/vscode/bin/test"
+    "clean": "rm -rf out || rmdir out /s /q",
+    "test": "npm run clean && npm run compile && npm run verify && node ./node_modules/vscode/bin/test",
+    "update-deps": "node_modules/.bin/ncu --upgrade --loglevel verbose --packageFile package.json && npm update",
+    "coverage:upload": "codecov -f coverage/coverage-final.json",
+    "build": "npm run clean && tslint -p tslint.json && npm run compile"
   },
   "devDependencies": {
-    "typescript": "^3.4.1",
-    "vscode": "^1.1.33",
-    "tslint": "^5.15.0",
-    "@types/node": "^10.12.21",
-    "@types/mocha": "^2.2.42"
+    "@types/byline": "^4.2.31",
+    "@types/chai": "^4.1.7",
+    "@types/collections": "^5.0.0",
+    "@types/fs-extra": "^5.0.5",
+    "@types/js-yaml": "^3.12.1",
+    "@types/mkdirp": "^0.5.2",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^11.13.15",
+    "@types/request": "^2.48.1",
+    "@types/semver": "^6.0.1",
+    "@types/shelljs": "^0.8.5",
+    "@types/sinon": "^5.0.7",
+    "@types/sinon-chai": "^3.2.2",
+    "@types/string-format": "^2.0.0",
+    "@types/tmp": "0.0.34",
+    "@types/validator": "^10.11.0",
+    "chai": "^4.2.0",
+    "codecov": "^3.3.0",
+    "decache": "^4.5.1",
+    "eslint": "^5.16.0",
+    "glob": "^7.1.3",
+    "istanbul": "^0.4.5",
+    "mocha": "^6.1.4",
+    "mocha-jenkins-reporter": "^0.4.1",
+    "proxyquire": "^2.1.0",
+    "remap-istanbul": "^0.13.0",
+    "sinon": "^7.3.2",
+    "sinon-chai": "^3.3.0",
+    "tmp": "0.0.33",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.2",
+    "vscode": "^1.1.35",
+    "walker": "^1.0.7"
   },
   "dependencies": {
-    "kubernetes-client":"^6.12.1",
-    "json-stream": "1.0.0"
+    "@kubernetes/client-node": "^0.8.2",
+    "binary-search": "^1.3.5",
+    "byline": "^5.0.0",
+    "event-stream": "3.3.4",
+    "fs-extra": "^7.0.1",
+    "git-fetch-pack": "^0.1.1",
+    "git-transport-protocol": "^0.1.0",
+    "hasha": "^5.0.0",
+    "js-yaml": "^3.13.1",
+    "mkdirp": "^0.5.1",
+    "open": "^6.4.0",
+    "request": "^2.88.0",
+    "request-progress": "^3.0.0",
+    "semver": "^6.2.0",
+    "shelljs": "^0.8.3",
+    "string-format": "^2.0.0",
+    "targz": "^1.0.1",
+    "unzip-stream": "^0.3.0",
+    "validator": "^10.11.0",
+    "vscode-kubernetes-tools-api": "0.0.7"
   }
 }

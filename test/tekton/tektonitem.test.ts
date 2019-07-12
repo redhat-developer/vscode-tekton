@@ -1,0 +1,161 @@
+/*-----------------------------------------------------------------------------------------------
+ *  Copyright (c) Red Hat, Inc. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE file in the pipeline root for license information.
+ *-----------------------------------------------------------------------------------------------*/
+
+'use strict';
+
+import * as chai from 'chai';
+import * as sinonChai from 'sinon-chai';
+import sinon = require('sinon');
+import { TektonItem } from '../../src/tekton/tektonitem';
+import { TknImpl } from '../../src/tkn';
+import { wait } from '../../src/util/async';
+import { TestItem } from './testTektonitem';
+import { fail } from 'assert';
+
+const expect = chai.expect;
+chai.use(sinonChai);
+
+suite('TektonItem', () => {
+
+    let sandbox: sinon.SinonSandbox;
+    const pipelineItem = new TestItem(null, 'pipeline');
+    const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerunlication');
+    const taskItem = new TestItem(pipelinerunItem, 'task');
+    const taskrunItem = new TestItem(pipelinerunItem, 'taskrun');
+    const clustertaskItem = new TestItem(taskItem, 'clustertask');
+
+    setup(() => {
+        sandbox = sinon.createSandbox();
+    });
+
+    teardown(() => {
+        sandbox.restore();
+    });
+
+    test('Wait eventually exits', async () => {
+        return wait();
+    });
+
+    suite('getPipelineNames', ()=> {
+
+        test('returns an array of pipelinerunlication names for the pipeline if there is at least one pipeline', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
+            const pipelinerunNames = await TektonItem.getPipelineNames();
+            expect(pipelinerunNames[0].getName()).equals('pipeline');
+
+        });
+
+        test('throws error if there are no pipelines available', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([]);
+            try {
+                await TektonItem.getPipelineNames();
+            } catch (err) {
+                expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
+                return;
+            }
+            fail('should throw error in case pipelines array is empty');
+        });
+    });
+
+    suite('validateMatches', ()=> {
+
+        test('returns validation message if provided value is not in lower case alphanumeric characters or "-"', async ()=> {
+            const message = 'Not a valid PipelineRun name. Please use lower case alphanumeric characters or "-", start with an alphabetic character, and end with an alphanumeric character';
+            let pipelinerunNames = await TektonItem.validateMatches(message, 'Nodejs-pipelinerun');
+            expect(pipelinerunNames).equals(message);
+            pipelinerunNames = await TektonItem.validateMatches(message, '2nodejs-pipelinerun');
+            expect(pipelinerunNames).equals(message);
+        });
+
+        test('returns undefined if provided value is in lower case alphanumeric characters', async ()=> {
+            const validateMatches = await TektonItem.validateMatches(undefined, 'nodejs-pipelinerun');
+            expect(validateMatches).equals(null);
+        });
+    });
+
+    suite('getPipelineRunNames', ()=> {
+
+        test('returns an array of pipelinerunlication names for the pipeline if there is at least one pipelinerunlication', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getPipelineRuns').resolves([pipelinerunItem]);
+            const pipelinerunNames = await TektonItem.getPipelinerunNames(pipelineItem);
+            expect(pipelinerunNames[0].getName()).equals('pipelinerunlication');
+
+        });
+
+        test('throws error if there are no pipelinerunlications available', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getPipelineRuns').resolves([]);
+            try {
+                await TektonItem.getPipelinerunNames(pipelineItem);
+            } catch (err) {
+                expect(err.message).equals('You need at least one PipelineRun available. Please create new Tekton PipelineRun and try again.');
+                return;
+            }
+            fail('should throw error in case pipelinerunlications array is empty');
+        });
+    });
+
+    suite('getTaskNames', ()=> {
+
+        test('returns an array of task names for the pipelinerunlication if there is at least one task', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskItem]);
+            const taskNames = await TektonItem.getTaskNames();
+            expect(taskNames[0].getName()).equals('task');
+
+        });
+
+        test('throws error if there are no tasks available', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getTasks').resolves([]);
+            try {
+                await TektonItem.getTaskNames();
+            } catch (err) {
+                expect(err.message).equals('You need at least one Task available. Please create new Tekton Task and try again.');
+                return;
+            }
+            fail('should throw error in case tasks array is empty');
+        });
+    });
+
+    suite('getTaskrunNames', ()=> {
+
+        test('returns an array of taskrun names for the pipelinerunlication if there is at least one task', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getTaskRuns').resolves([taskrunItem]);
+            const taskrunNames = await TektonItem.getTaskRunNames(pipelinerunItem);
+            expect(taskrunNames[0].getName()).equals('taskrun');
+
+        });
+
+        test('throws error if there are no tasks available', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getTaskRuns').resolves([]);
+            try {
+                await TektonItem.getTaskRunNames(pipelinerunItem);
+            } catch (err) {
+                expect(err.message).equals('You need at least one Taskrun available. Please create new Tekton Taskrun and try again.');
+                return;
+            }
+            fail('should throw error in case tasks array is empty');
+        });
+    });
+
+    suite('getClustertaskNames', ()=> {
+
+        test('returns an array of clustertask names for the task if there is at least one task', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([clustertaskItem]);
+            const clustertaskNames = await TektonItem.getTaskRunNames(taskItem);
+            expect(clustertaskNames[0].getName()).equals('clustertask');
+
+        });
+
+        test('throws error if there are no tasks available', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([]);
+            try {
+                await TektonItem.getTaskNames();
+            } catch (err) {
+                expect(err.message).equals('You need at least one Task available. Please create new Tekton Task and try again.');
+                return;
+            }
+            fail('should throw error in case tasks array is empty');
+        });
+    });
+});

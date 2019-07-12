@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/tools.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">src/</a> tools.ts
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">91.67% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>66/72</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">78.13% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>25/32</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>5/5</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">91.67% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>66/72</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/*-----------------------------------------------------------------------------------------------
+ *  Copyright (c) Red Hat, Inc. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE file in the project root for license information.
+ *-----------------------------------------------------------------------------------------------*/
+&nbsp;
+import { Platform } from "./util/platform";
+import { Archive } from "./util/archive";
+import { which } from "shelljs";
+import { DownloadUtil } from "./util/download";
+import hasha = require("hasha");
+import open = require("open");
+import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fsex from 'fs-extra';
+import * as fs from 'fs';
+import { Cli } from './cli';
+import semver = require('semver');
+import configData = require('./tools.json');
+&nbsp;
+&nbsp;
+export class ToolsConfig {
+&nbsp;
+    public static tool: object = ToolsConfig.loadMetadata(configData, Platform.OS);
+&nbsp;
+    public static loadMetadata(requirements, platform): object {
+        const req = JSON.parse(JSON.stringify(requirements));
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (req.platform) {
+<span class="cstat-no" title="statement not covered" >            if (req.platform[platform]) {</span>
+<span class="cstat-no" title="statement not covered" >                Object.assign(req, req.platform[platform]);</span>
+<span class="cstat-no" title="statement not covered" >                delete req.platform;</span>
+            }
+        }
+        return req;
+    }
+&nbsp;
+    public static resetConfiguration(): void {
+        ToolsConfig.tool = ToolsConfig.loadMetadata(configData, Platform.OS);
+    }
+&nbsp;
+    public static async detectOrDownload(): Promise&lt;string&gt; {
+&nbsp;
+        let toolLocation: string = ToolsConfig.tool['tkn'].location;
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (toolLocation === undefined) {
+            const toolCacheLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName);
+            const whichLocation = which('tkn');
+            const toolLocations: string[] = [whichLocation ? whichLocation.stdout : null, toolCacheLocation];
+            toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tool['tkn'].versionRange);
+&nbsp;
+            if (toolLocation === undefined) {
+                // otherwise request permission to download
+                const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].platform[Platform.getOS()].dlFileName);
+                const installRequest = `Download and install v${ToolsConfig.tool['tkn'].version}`;
+                const response = await vscode.window.showInformationMessage(
+                    `Cannot find ${ToolsConfig.tool['tkn'].description} ${ToolsConfig.tool['tkn'].versionRangeLabel}.`, installRequest, 'Help', 'Cancel');
+                fsex.ensureDirSync(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
+                if (response === installRequest) {
+                    let action: string;
+                    do {
+                        action = undefined;
+                        await vscode.window.withProgress({
+                            cancellable: true,
+                            location: vscode.ProgressLocation.Notification,
+                            title: `Downloading ${ToolsConfig.tool['tkn'].description}`
+                        },
+                            (progress: vscode.Progress&lt;{ increment: number, message: string }&gt;, token: vscode.CancellationToken) =&gt; {
+<span class="cstat-no" title="statement not covered" >                                return DownloadUtil.downloadFile(</span>
+                                    ToolsConfig.tool['tkn'].platform[Platform.getOS()].url,
+                                    toolDlLocation,
+                                    (dlProgress, increment) =&gt; <span class="cstat-no" title="statement not covered" >progress.report({ increment, message: `${dlProgress}%` })</span>
+                                );
+                            });
+                        const sha256sum: string = await hasha.fromFile(toolDlLocation, { algorithm: 'sha256' });
+                        <span class="missing-if-branch" title="else path not taken" >E</span>if (sha256sum !== ToolsConfig.tool['tkn'].platform[Platform.getOS()].sha256sum) {
+                            fsex.removeSync(toolDlLocation);
+                            action = await vscode.window.showInformationMessage(`Checksum for downloaded ${ToolsConfig.tool['tkn'].description} v${ToolsConfig.tool['tkn'].version} is not correct.`, 'Download again', 'Cancel');
+                        }
+&nbsp;
+                    } while (action === 'Download again');
+&nbsp;
+                    if (action !== 'Cancel') {
+                        await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), "");
+                        fsex.removeSync(toolDlLocation);
+                        if (Platform.OS !== 'win32') {
+                            fs.chmodSync(toolCacheLocation, '765');
+                        }
+                        toolLocation = toolCacheLocation;
+                    }
+                } else <span class="missing-if-branch" title="if path not taken" >I</span>if (response === `Help`) {
+<span class="cstat-no" title="statement not covered" >                    open('https://github.com/redhat-developer/vscode-tekton#dependencies');</span>
+                }
+            }
+            if (toolLocation) {
+                ToolsConfig.tool['tkn'].location = toolLocation;
+            }
+        }
+        return toolLocation;
+    }
+&nbsp;
+    public static async getVersion(location: string, cmd: string = path.parse(location).name): Promise&lt;string&gt; {
+        let detectedVersion: string;
+        if (fs.existsSync(location)) {
+            const version = new RegExp(`${cmd.toLocaleLowerCase()} v((([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?).*`);
+            const result = await Cli.getInstance().execute(`"${location}" version`);
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (result.stdout) {
+                const toolVersion: string[] = result.stdout.trim().split('\n').filter((value) =&gt; {
+                    return value.match(version);
+                }).map((value) =&gt; version.exec(value)[1]);
+                if (toolVersion.length) {
+                    detectedVersion = toolVersion[0];
+                }
+            }
+        }
+        return detectedVersion;
+    }
+&nbsp;
+    public static async selectTool(locations: string[], versionRange: string): Promise&lt;string&gt; {
+        let result;
+        for (const location of locations) {
+            if (location &amp;&amp; semver.satisfies(await ToolsConfig.getVersion(location), versionRange)) {
+                result = location;
+                break;
+            }
+        }
+        return result;
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Jul 05 2019 18:25:03 GMT-0400 (EDT)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

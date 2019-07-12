@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/extension.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">src/</a> extension.ts
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">90.59% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>77/85</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">66.67% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>28/42</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">88.89% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>8/9</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">90.36% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>75/83</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import * as vscode from 'vscode';
+import { PipelineExplorer } from './pipeline/pipelineExplorer';
+import { Pipeline } from './tekton/pipeline';
+import { PipelineRun } from './tekton/pipelinerun';
+import { Task } from './tekton/task';
+import { TaskRun } from './tekton/taskrun';
+import { Platform } from './util/platform';
+import path = require('path');
+import fsx = require('fs-extra');
+import * as k8s from 'vscode-kubernetes-tools-api';
+import { ClusterExplorerV1 } from 'vscode-kubernetes-tools-api';
+import { TektonItem } from './tekton/tektonitem';
+import { TektonNodeImpl } from './tkn';
+&nbsp;
+export let contextGlobalState: vscode.ExtensionContext;
+let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
+&nbsp;
+export async function activate(context: vscode.ExtensionContext) {
+&nbsp;
+    contextGlobalState = context;
+    migrateFromTkn018();
+    // vscode.commands.executeCommand('extention.vsKubernetes)
+&nbsp;
+    const disposables = [
+        vscode.commands.registerCommand('tekton.about', (context) =&gt; execute(Pipeline.about, context)),
+        vscode.commands.registerCommand('tekton.explorer.refresh', (context) =&gt; execute(Pipeline.refresh , context)),
+        vscode.commands.registerCommand('tekton.pipeline.start', (context) =&gt; execute(Pipeline.start, context)),
+        vscode.commands.registerCommand('tekton.pipeline.create.local', (context) =&gt; execute(Pipeline.createFromFolder, context)),
+        vscode.commands.registerCommand('tekton.pipeline.list', (context) =&gt; execute(Pipeline.list, context)),
+        vscode.commands.registerCommand('tekton.pipeline.describe', (context) =&gt; execute(Pipeline.describe, context)),
+        vscode.commands.registerCommand('tekton.pipelinerun.list', (context) =&gt; execute(PipelineRun.list, context)),
+        vscode.commands.registerCommand('tekton.pipelinerun.describe', (context) =&gt; execute(PipelineRun.describe, context)),
+        vscode.commands.registerCommand('tekton.pipelinerun.logs', (context) =&gt; execute(PipelineRun.logs, context)),
+        vscode.commands.registerCommand('tekton.task.list', (context) =&gt; execute(Task.list, context)),
+        vscode.commands.registerCommand('tekton.taskrun.list', (context) =&gt; execute(TaskRun.list, context)),
+        vscode.commands.registerCommand('tekton.taskrun.logs', (context) =&gt; execute(TaskRun.logs, context)),
+        PipelineExplorer.getInstance()
+    ];
+    disposables.forEach((e) =&gt; context.subscriptions.push(e));
+&nbsp;
+&nbsp;
+    const tektonExplorerAPI = await k8s.extension.clusterExplorer.v1;
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (tektonExplorerAPI.available) {
+        tektonExplorer = tektonExplorerAPI.api;
+        const nodeContributors = [
+            tektonExplorer.nodeSources.resourceFolder("Pipelines", "Pipelines", "Pipeline", "pipelines").if(isTekton).at(undefined),
+            tektonExplorer.nodeSources.resourceFolder("Pipelineruns", "Pipelineruns", "Pipelinerun", "pipelineruns").if(isTekton).at("Pipelines"),
+            tektonExplorer.nodeSources.resourceFolder("Taskruns", "Taskruns", "Taskrun", "taskruns").if(isTekton).at("Pipelineruns"),
+            tektonExplorer.nodeSources.resourceFolder("Tasks", "Tasks", "Task", "task").if(isTekton).at(undefined),
+            tektonExplorer.nodeSources.resourceFolder("Clustertasks", "Clustertasks", "Clustertask", "clustertask").if(isTekton).at(undefined)
+        ];
+        nodeContributors.forEach(element =&gt; {
+            tektonExplorer.registerNodeContributor(element);
+        });
+        tektonExplorer.registerNodeUICustomizer({ customize });
+    } else {
+<span class="cstat-no" title="statement not covered" >        vscode.window.showErrorMessage('Command not available: ${tektonExplorer.reason}');</span>
+    }
+}
+&nbsp;
+let lastNamespace = '';
+&nbsp;
+function customize(node: ClusterExplorerV1.ClusterExplorerResourceNode, treeItem: vscode.TreeItem): void | Thenable&lt;void&gt; {
+    return customizeAsync(node, treeItem);
+}
+&nbsp;
+async function initNamespaceName(node: ClusterExplorerV1.ClusterExplorerResourceNode) {
+    const kubectl = await k8s.extension.kubectl.v1;
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (kubectl.available) {
+        const result = await kubectl.api.invokeCommand('config view -o json');
+        const config = JSON.parse(result.stdout);
+        const currentContext = (config.contexts || <span class="branch-1 cbranch-no" title="branch not covered" >[])</span>.find((ctx) =&gt; ctx.name === node.name);
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (!currentContext) {
+<span class="cstat-no" title="statement not covered" >            return "";</span>
+        }
+        return currentContext.context.namespace || "default";
+    }
+}
+&nbsp;
+async function customizeAsync(node: ClusterExplorerV1.ClusterExplorerResourceNode, treeItem: vscode.TreeItem): Promise&lt;void&gt; {
+    if ((node as any).nodeType === 'context') {
+        lastNamespace = await initNamespaceName(node);
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (isTekton()) {
+            treeItem.iconPath = vscode.Uri.file(path.join(__dirname, "../images/tekton.png"));
+        }
+    }
+    if (node.nodeType === 'resource' &amp;&amp; node.resourceKind.manifestKind === 'Pipeline') {
+        // assuming now that it’s a project node
+        const pipelineName = node.name;
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (pipelineName === lastNamespace) {
+<span class="cstat-no" title="statement not covered" >            treeItem.label = `* ${treeItem.label}`;</span>
+        } else {
+            treeItem.contextValue = `${treeItem.contextValue || <span class="branch-1 cbranch-no" title="branch not covered" >''}</span>.tekton.inactiveProject`;
+        }
+    }
+}
+&nbsp;
+async function isTekton(): Promise&lt;boolean&gt; {
+    const kubectl = await k8s.extension.kubectl.v1;
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (kubectl.available) {
+        const sr = await kubectl.api.invokeCommand('api-versions');
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (!sr || sr.code !== 0) {
+<span class="cstat-no" title="statement not covered" >            return false;</span>
+        }
+        return sr.stdout.includes("tekton.dev/v1alpha1");  // Naive check to keep example simple!
+    }
+}
+&nbsp;
+// this method is called when your extension is deactivated
+<span class="fstat-no" title="function not covered" >export function deactivate(</span>) {
+}
+&nbsp;
+function execute&lt;T&gt;(command: (...args: T[]) =&gt; Promise&lt;any&gt; | void, ...params: T[]) {
+    try {
+        const res = command.call(null, ...params);
+        return res &amp;&amp; res.then
+            ? res.then((result: any) =&gt; {
+                displayResult(result);
+&nbsp;
+            }).catch((err: any) =&gt; {
+<span class="cstat-no" title="statement not covered" >                vscode.window.showErrorMessage(err.message ? err.message : err);</span>
+            })
+            : undefined;
+    } catch (err) {
+        vscode.window.showErrorMessage(err);
+    }
+}
+&nbsp;
+&nbsp;
+function displayResult(result?: any) {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (result &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >typeof result === 'string')</span> {
+<span class="cstat-no" title="statement not covered" >        vscode.window.showInformationMessage(result);</span>
+    }
+}
+&nbsp;
+&nbsp;
+&nbsp;
+function migrateFromTkn018() {
+    const newCfgDir = path.join(Platform.getUserHomePath(), '.tkn');
+    const newCfg = path.join(newCfgDir, 'tkn-config.yaml');
+    const oldCfg = path.join(Platform.getUserHomePath(), '.kube', 'tkn');
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!fsx.existsSync(newCfg) &amp;&amp; fsx.existsSync(oldCfg)) {
+<span class="cstat-no" title="statement not covered" >        fsx.ensureDirSync(newCfgDir);</span>
+<span class="cstat-no" title="statement not covered" >        fsx.copyFileSync(oldCfg, newCfg);</span>
+    }
+}
+&nbsp;
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Jul 05 2019 18:25:03 GMT-0400 (EDT)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>
