@@ -66,7 +66,7 @@ export class Command {
     }
     @verbose
     static listPipelineRuns(name: string) {
-        return `tkn pipelinerun list -o json`;
+        return `tkn pipelinerun list ${name} -o json`;
     }
     @verbose
     static describePipelineRuns(name: string) {
@@ -201,17 +201,10 @@ export interface Tkn {
     getPipelineResources(): Promise<TektonNode[]>;
     startPipeline(pipeline: TektonNode): Promise<TektonNode[]>;
     getPipelines(pipeline: TektonNode): Promise<TektonNode[]>;
-    describePipeline(pipeline: TektonNode): Promise<TektonNode[]>;
     getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]>;
-    describePipelineRun(pipelineRun: TektonNode): Promise<TektonNode[]>;
-    showPipelineRunLogs(pipelineRun: TektonNode): Promise<TektonNode[]>;
     getTasks(task: TektonNode): Promise<TektonNode[]>;
-    //    describeTask(task: TektonNode): Promise<TektonNode[]>;
     getTaskRuns(taskRun: TektonNode): Promise<TektonNode[]>;
-    showTaskRunLogs(taskRun: TektonNode): Promise<TektonNode[]>;
-    //    describeTaskRuns(taskRun: TektonNode): Promise<TektonNode[]>;
     getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]>;
-    describeClusterTasks(clusterTask: TektonNode): Promise<TektonNode[]>;
     execute(command: string, cwd?: string, fail?: boolean): Promise<CliExitData>;
     executeInTerminal(command: string, cwd?: string): void;
     addPipelineFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
@@ -287,7 +280,7 @@ export class TknImpl implements Tkn {
 
     async _getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> {
         //TODO: use namespace instead of empty string
-        const result: cliInstance.CliExitData = await this.execute(Command.listPipelineRuns(""));
+        const result: cliInstance.CliExitData = await this.execute(Command.listPipelineRuns(pipeline.getName()));
         let data: any[] = [];
         try {
             data = JSON.parse(result.stdout).items;
@@ -392,7 +385,7 @@ export class TknImpl implements Tkn {
     public async getState(name: string, context: string): Promise<boolean> {
         let result: cliInstance.CliExitData;
         if(context === 'pipelinerun'){
-        result = await this.execute(Command.listPipelineRuns(""));
+            result = await this.execute(Command.listPipelineRuns(name));
         }
         if (context === 'taskrun'){
             result = await this.execute(Command.listTaskRuns(""));
@@ -403,10 +396,13 @@ export class TknImpl implements Tkn {
         } catch (ignore) {
 
         }
-        const pipelinerunObject = data.map(value => ({ name: value.metadata.name, status: value.status.conditions[0].status })).filter(function(obj) {
+        if (data){ 
+            const pipelinerunObject = data.map(value => ({ name: value.metadata.name, status: value.status.conditions[0].status })).filter(function(obj) {
             return obj.name === name;
-        });
-        return pipelinerunObject.status;
+            });
+            return pipelinerunObject.status;
+        }
+        return false;
     }
 
     async getTaskRuns(pipelineRun: TektonNode): Promise<TektonNode[]> {
@@ -435,22 +431,7 @@ export class TknImpl implements Tkn {
     startPipeline(pipeline: TektonNode): Promise<TektonNode[]> {
         throw new Error("Method not implemented.");
     }
-    describePipeline(pipeline: TektonNode): Promise<TektonNode[]> {
-        throw new Error("Method not implemented.");
-    }
-    describePipelineRun(pipelineRun: TektonNode): Promise<TektonNode[]> {
-        throw new Error("Method not implemented.");
-    }
-    getPipelineRunLogs(pipelineRun: TektonNode): Promise<TektonNode[]> {
-        throw new Error("Method not implemented.");
-    }
-    getTaskRunLogs(taskRun: TektonNode): Promise<TektonNode[]> {
-        throw new Error("Method not implemented.");
-    }
-    describeClusterTasks(clusterTask: TektonNode): Promise<TektonNode[]> {
-        throw new Error("Method not implemented.");
-    }
-
+ 
     public async executeInTerminal(command: string, cwd: string = process.cwd(), name: string = 'Tekton') {
         let toolLocation = await ToolsConfig.detectOrDownload();
         if (toolLocation) {
@@ -474,12 +455,6 @@ export class TknImpl implements Tkn {
         array.splice(Math.abs(i) - 1, 0, item);
         PipelineExplorer.getInstance().reveal(item);
         return item;
-    }
-    showPipelineRunLogs(pipelineRun: TektonNode): Promise<TektonNode[]> {
-        throw new Error("Method not implemented.");
-    }
-    showTaskRunLogs(taskRun: TektonNode): Promise<TektonNode[]> {
-        throw new Error("Method not implemented.");
     }
     addTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode> {
         throw new Error("Method not implemented.");

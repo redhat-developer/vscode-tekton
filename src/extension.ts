@@ -1,5 +1,8 @@
 import * as vscode from 'vscode';
+import * as yaml from 'js-yaml';
+import * as explainer from './explainer';
 import { PipelineExplorer } from './pipeline/pipelineExplorer';
+import { findParentYaml } from './yaml-navigation';
 import { Pipeline } from './tekton/pipeline';
 import { PipelineRun } from './tekton/pipelinerun';
 import { Task } from './tekton/task';
@@ -8,11 +11,11 @@ import { Platform } from './util/platform';
 import path = require('path');
 import fsx = require('fs-extra');
 import * as k8s from 'vscode-kubernetes-tools-api';
-import { ExternalPipelineNodeContributor } from './pipeline/cluster-pipeline';
-import { ClusterExplorerV1 } from 'vscode-kubernetes-tools-api';
 import { ClusterTask } from './tekton/clustertask';
-import { pipeline } from 'stream';
 
+
+/* let explainActive = false;
+let swaggerSpecPromise: Promise<explainer.SwaggerModel | undefined> | null = null; */
 export let contextGlobalState: vscode.ExtensionContext;
 let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
 
@@ -36,6 +39,10 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('tekton.clustertask.list', (context) => execute(ClusterTask.list, context)),
         vscode.commands.registerCommand('tekton.taskrun.list', (context) => execute(TaskRun.list, context)),
         vscode.commands.registerCommand('tekton.taskrun.logs', (context) => execute(TaskRun.logs, context)),
+/*  //       vscode.languages.registerHoverProvider(
+            { language: 'yaml' },
+            { provideHover: provideHoverYaml },
+        ), */
         PipelineExplorer.getInstance()
     ];
     disposables.forEach((e) => context.subscriptions.push(e));
@@ -44,57 +51,19 @@ export async function activate(context: vscode.ExtensionContext) {
     const tektonExplorerAPI = await k8s.extension.clusterExplorer.v1;
     if (tektonExplorerAPI.available) {
         tektonExplorer = tektonExplorerAPI.api;
-        const nodeContributors = [
-            tektonExplorer.nodeSources.resourceFolder("Pipelines", "Pipelines", "Pipeline", "pipelines").if(isTekton).at("Tekton Pipelines"),
-            tektonExplorer.nodeSources.resourceFolder("Pipelineruns", "Pipelineruns", "Pipelinerun", "pipelineruns").if(isTekton).at("Pipelines"),
-            tektonExplorer.nodeSources.resourceFolder("Taskruns", "Taskruns", "Taskrun", "taskruns").if(isTekton).at("Pipelineruns"),
-            tektonExplorer.nodeSources.resourceFolder("Tasks", "Tasks", "Task", "task").if(isTekton).at("Tekton Pipelines"),
-            tektonExplorer.nodeSources.resourceFolder("Clustertasks", "Clustertasks", "Clustertask", "clustertask").if(isTekton).at("Tekton Pipelines")
-        ];
-        tektonExplorer.registerNodeContributor(new ExternalPipelineNodeContributor());
-        nodeContributors.forEach(element => {
-            tektonExplorer.registerNodeContributor(element);
-        });
-        tektonExplorer.registerNodeUICustomizer({ customize }); 
+        const nodeContributor = tektonExplorer.nodeSources.groupingFolder(
+                "Tekton Pipelines",
+                "context",
+                tektonExplorer.nodeSources.resourceFolder("ClusterTasks", "ClusterTasks", "ClusterTask", "clustertask").if(isTekton),
+                tektonExplorer.nodeSources.resourceFolder("Tasks", "Tasks", "Task", "task").if(isTekton),
+                tektonExplorer.nodeSources.resourceFolder("Taskruns", "Taskruns", "Taskrun", "taskruns").if(isTekton),
+                tektonExplorer.nodeSources.resourceFolder("Pipelines", "Pipelines", "Pipeline", "pipelines").if(isTekton),
+                tektonExplorer.nodeSources.resourceFolder("Pipelineruns", "Pipelineruns", "Pipelinerun", "pipelineruns").if(isTekton),
+                tektonExplorer.nodeSources.resourceFolder("Pipeline Resources", "PipelineResources", "ClusterTask", "clustertask").if(isTekton),
+            ).at(undefined);
+        tektonExplorer.registerNodeContributor(nodeContributor);
     } else {
         vscode.window.showErrorMessage('Command not available: ${tektonExplorer.reason}');
-    }
-}
-
-let lastNamespace = '';
-
-function customize(node: ClusterExplorerV1.ClusterExplorerResourceNode, treeItem: vscode.TreeItem): void | Thenable<void> {
-    return customizeAsync(node, treeItem);
-}
-
-async function initNamespaceName(node: ClusterExplorerV1.ClusterExplorerResourceNode) {
-    const kubectl = await k8s.extension.kubectl.v1;
-    if (kubectl.available) {
-        const result = await kubectl.api.invokeCommand('config view -o json');
-        const config = JSON.parse(result.stdout);
-        const currentContext = (config.contexts || []).find((ctx) => ctx.name === node.name);
-        if (!currentContext) {
-            return "";
-        }
-        return currentContext.context.namespace || "default";
-    }
-}
-
-async function customizeAsync(node: ClusterExplorerV1.ClusterExplorerResourceNode, treeItem: vscode.TreeItem): Promise<void> {
-    if ((node as any).nodeType === 'context') {
-        lastNamespace = await initNamespaceName(node);
-        if (isTekton()) {
-            treeItem.iconPath = vscode.Uri.file(path.join(__dirname, "../images/tekton.png"));
-        }
-    }
-    if (node.nodeType === 'resource' && node.resourceKind.manifestKind === 'Pipeline') {
-        // assuming now that it’s a project node
-        const pipelineName = node.name;
-        if (pipelineName === lastNamespace) {
-            treeItem.label = `* ${treeItem.label}`;
-        } else {
-            treeItem.contextValue = `${treeItem.contextValue || ''}.tekton.inactiveProject`;
-        }
     }
 }
 
@@ -136,6 +105,18 @@ function displayResult(result?: any) {
     }
 }
 
+/* interface Syntax {
+    parse(text: string): any;
+    findParent(document: vscode.TextDocument, line: number): number;
+} */
+
+/* function provideHoverYaml(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.Hover | null> {
+    const syntax: Syntax = {
+        parse: (text) => yaml.safeLoad(text),
+        findParent: (document, parentLine) => findParentYaml(document, parentLine)
+    };
+    return provideHover(document, position, token, syntax);
+} */
 
 
 function migrateFromTkn018() {
@@ -147,4 +128,86 @@ function migrateFromTkn018() {
         fsx.copyFileSync(oldCfg, newCfg);
     }
 }
+
+/* function findProperty(line: vscode.TextLine): string {
+    const ix = line.text.indexOf(':');
+    return line.text.substring(line.firstNonWhitespaceCharacterIndex, ix);
+} */
+
+/* function provideHover(document: vscode.TextDocument, position: vscode.Position, _token: vscode.CancellationToken, syntax: Syntax): Promise<vscode.Hover | null> {
+    return new Promise(async (resolve, reject) => {
+        if (!explainActive) {
+            resolve(null);
+            return;
+        }
+
+        const body = document.getText();
+        let obj: any = {};
+
+        try {
+            obj = syntax.parse(body);
+        } catch (err) {
+            // Bad document, return nothing
+            // TODO: at least verbose log here?
+            resolve(null);
+            return;
+        }
+
+        // Not a k8s object.
+        if (!obj.kind) {
+            resolve(null);
+            return;
+        }
+
+        const property = findProperty(document.lineAt(position.line));
+        let field = syntax.parse(property),
+            parentLine = syntax.findParent(document, position.line);
+
+        while (parentLine !== -1) {
+            const parentProperty = findProperty(document.lineAt(parentLine));
+            field = `${syntax.parse(parentProperty)}.${field}`;
+            parentLine = syntax.findParent(document, parentLine);
+        }
+
+        if (field === 'kind') {
+            field = '';
+        }
+
+        explain(obj, field).then(
+            (msg) => resolve(msg ? new vscode.Hover(msg) : null),
+            (err: any) => reject(err)
+        );
+    });
+
+} */
+
+/* async function explain(obj: any, field: string): Promise<string | null> {
+    return new Promise<string | null>((resolve) => {
+        if (!obj.kind) {
+            vscode.window.showErrorMessage("Not a Tekton API Object!");
+            resolve(null);
+        }
+
+        let ref = obj.kind;
+        if (field && field.length > 0) {
+            ref = `${ref}.${field}`;
+        }
+
+        if (!swaggerSpecPromise) {
+            swaggerSpecPromise = explainer.readSwagger();
+        }
+
+        swaggerSpecPromise.then(
+            (s) => {
+                if (s) {
+                    resolve(explainer.readExplanation(s, ref));
+                }
+            },
+            (err) => {
+                vscode.window.showErrorMessage(`Explain failed: ${err}`);
+                swaggerSpecPromise = null;
+                resolve(null);
+            });
+    });
+} */
 
