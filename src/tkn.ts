@@ -11,6 +11,8 @@ import { statSync } from 'fs';
 import bs = require('binary-search');
 import { Platform } from './util/platform';
 import { pipeline } from 'stream';
+import { PipelineRun } from './tekton/pipelinerun';
+import { fail } from 'assert';
 
 export interface TektonNode extends QuickPickItem {
     contextValue: string;
@@ -132,7 +134,7 @@ export class TektonNodeImpl implements TektonNode {
             getChildren: () => this.tkn.getPipelineChildren(this)
         },
         pipelinerun: {
-            icon: 'pipe.png',
+            icon:'running.png',
             tooltip: 'PipelineRun: {label}',
             getChildren: () => this.tkn.getPipelineRunChildren(this)
         },
@@ -142,7 +144,7 @@ export class TektonNodeImpl implements TektonNode {
             getChildren: () => []
         },
         taskrun: {
-            icon: 'task.png',
+            icon: 'running.png',
             tooltip: 'TaskRun: {label}',
             getChildren: () => []
         },
@@ -163,7 +165,13 @@ export class TektonNodeImpl implements TektonNode {
     }
 
     get iconPath(): Uri {
-        return Uri.file(path.join(__dirname, "../images", this.CONTEXT_DATA[this.contextValue].icon));
+        let filepath: Uri;
+        if(this.contextValue === 'pipelinerun' || this.contextValue === 'taskrun'){
+            let fileName = 'running.png';
+            fileName = this.tkn.getState(this.name, this.contextValue)? 'success.png':'failed.png';
+            return Uri.file(path.join(__dirname, "../../images", fileName));
+        }
+        return Uri.file(path.join(__dirname, "../../images", this.CONTEXT_DATA[this.contextValue].icon));
     }
 
     get tooltip(): string {
@@ -185,9 +193,11 @@ export class TektonNodeImpl implements TektonNode {
     getParent(): TektonNode {
         return this.parent;
     }
+
 }
 
 export interface Tkn {
+    getState(name: string, context: string): Promise<boolean>;
     getPipelineResources(): Promise<TektonNode[]>;
     startPipeline(pipeline: TektonNode): Promise<TektonNode[]>;
     getPipelines(pipeline: TektonNode): Promise<TektonNode[]>;
@@ -224,7 +234,7 @@ function compareNodes(a, b): number {
 }
 
 export class TknImpl implements Tkn {
-
+   
     private ROOT: TektonNode = new TektonNodeImpl(undefined, 'root', undefined, undefined);
     private cache: Map<TektonNode, TektonNode[]> = new Map();
     private static cli: cliInstance.ICli = cliInstance.Cli.getInstance();
@@ -378,7 +388,27 @@ export class TknImpl implements Tkn {
         }
         return tasks;
     }
-    
+
+    public async getState(name: string, context: string): Promise<boolean> {
+        let result: cliInstance.CliExitData;
+        if(context === 'pipelinerun'){
+        result = await this.execute(Command.listPipelineRuns(""));
+        }
+        if (context === 'taskrun'){
+            result = await this.execute(Command.listTaskRuns(""));
+        }
+        let data: any[] = [];
+        try {
+            data = JSON.parse(result.stdout).items;
+        } catch (ignore) {
+
+        }
+        const pipelinerunObject = data.map(value => ({ name: value.metadata.name, status: value.status.conditions[0].status })).filter(function(obj) {
+            return obj.name === name;
+        });
+        return pipelinerunObject.status;
+    }
+
     async getTaskRuns(pipelineRun: TektonNode): Promise<TektonNode[]> {
         if (!this.cache.has(pipelineRun)) {
             this.cache.set(pipelineRun, await this._getTaskRuns(pipelineRun));

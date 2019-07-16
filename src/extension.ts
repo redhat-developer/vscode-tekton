@@ -8,7 +8,7 @@ import { Platform } from './util/platform';
 import path = require('path');
 import fsx = require('fs-extra');
 import * as k8s from 'vscode-kubernetes-tools-api';
-import { ExternalPipelineNodeContributor } from './pipeline/kube-pipeline';
+import { ExternalPipelineNodeContributor } from './pipeline/cluster-pipeline';
 import { ClusterExplorerV1 } from 'vscode-kubernetes-tools-api';
 import { ClusterTask } from './tekton/clustertask';
 import { pipeline } from 'stream';
@@ -44,23 +44,18 @@ export async function activate(context: vscode.ExtensionContext) {
     const tektonExplorerAPI = await k8s.extension.clusterExplorer.v1;
     if (tektonExplorerAPI.available) {
         tektonExplorer = tektonExplorerAPI.api;
-        tektonExplorer.registerNodeContributor(new ExternalPipelineNodeContributor());
-      /*   const nodeContributors = [
-            tektonExplorer.nodeSources.groupingFolder(
-                "Tekton Pipelines", 
-                "Tekton Pipelines", 
-                undefined,
-                tektonExplorer.nodeSources.resourceFolder("Pipelines", "Pipelines", "Pipeline", "pipelines").if(isTekton).at("Tekton Pipelines")
-            );
+        const nodeContributors = [
+            tektonExplorer.nodeSources.resourceFolder("Pipelines", "Pipelines", "Pipeline", "pipelines").if(isTekton).at("Tekton Pipelines"),
             tektonExplorer.nodeSources.resourceFolder("Pipelineruns", "Pipelineruns", "Pipelinerun", "pipelineruns").if(isTekton).at("Pipelines"),
             tektonExplorer.nodeSources.resourceFolder("Taskruns", "Taskruns", "Taskrun", "taskruns").if(isTekton).at("Pipelineruns"),
             tektonExplorer.nodeSources.resourceFolder("Tasks", "Tasks", "Task", "task").if(isTekton).at("Tekton Pipelines"),
             tektonExplorer.nodeSources.resourceFolder("Clustertasks", "Clustertasks", "Clustertask", "clustertask").if(isTekton).at("Tekton Pipelines")
         ];
+        tektonExplorer.registerNodeContributor(new ExternalPipelineNodeContributor());
         nodeContributors.forEach(element => {
             tektonExplorer.registerNodeContributor(element);
         });
-        tektonExplorer.registerNodeUICustomizer({ customize }); */
+        tektonExplorer.registerNodeUICustomizer({ customize }); 
     } else {
         vscode.window.showErrorMessage('Command not available: ${tektonExplorer.reason}');
     }

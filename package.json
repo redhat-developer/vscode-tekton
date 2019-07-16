@@ -175,7 +175,7 @@
       "view/item/context": [
         {
           "command": "tekton.pipeline.start",
-          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
+          "when": "view == (tektonPipelineExplorer || extension.vsKubernetesExplorer) && viewItem == pipeline",
           "group": "c1"
         },
         {
@@ -185,7 +185,7 @@
         },
         {
           "command": "tekton.pipeline.describe",
-          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
+          "when": "view == tektonPipelineExplorer  && viewItem == pipeline",
           "group": "c2@2"
         },
         {
