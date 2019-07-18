@@ -29,6 +29,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('tekton.about', (context) => execute(Pipeline.about, context)),
         vscode.commands.registerCommand('tekton.explorer.refresh', (context) => execute(Pipeline.refresh , context)),
         vscode.commands.registerCommand('tekton.pipeline.start', (context) => execute(Pipeline.start, context)),
+        vscode.commands.registerCommand('tekton.pipeline.restart', (context) => execute(Pipeline.restart, context)),
         vscode.commands.registerCommand('tekton.pipeline.create.local', (context) => execute(Pipeline.createFromFolder, context)),
         vscode.commands.registerCommand('tekton.pipeline.list', (context) => execute(Pipeline.list, context)),
         vscode.commands.registerCommand('tekton.pipeline.describe', (context) => execute(Pipeline.describe, context)),

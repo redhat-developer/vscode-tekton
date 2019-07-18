@@ -20,6 +20,7 @@
   "activationEvents": [
     "onView:tektonPipelineExplorer",
     "onView:extension.vsKubernetesExplorer",
+    "onCommand:tekton.pipeline.restart",
     "onCommand:tekton.pipeline.start",
     "onCommand:tekton.pipeline.create.local",
     "onCommand:tekton.pipeline.list",
@@ -46,6 +47,11 @@
       {
         "command": "tekton.pipeline.start",
         "title": "Start Pipeline",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipeline.restart",
+        "title": "Restart Pipeline",
         "category": "Tekton"
       },
       {
@@ -144,6 +150,10 @@
           "when": "view == tektonPipelineExplorer"
         },
         {
+          "command": "tekton.pipeline.restart",
+          "when": "view === tektonPipelineExplorer"
+        },
+        {
           "command": "tekton.pipeline.describe",
           "when": "view == tektonPipelineExplorer"
         },
@@ -185,19 +195,19 @@
       ],
       "view/item/context": [
         {
-          "command": "tekton.pipeline.start",
-          "when": "view == (tektonPipelineExplorer || extension.vsKubernetesExplorer) && viewItem == pipeline",
-          "group": "c1"
+          "command": "tekton.pipeline.restart",
+          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
+          "group": "c1@1"
         },
         {
           "command": "tekton.pipeline.list",
           "when": "view == tektonPipelineExplorer && viewItem == pipelinenode",
-          "group": "c2"
+          "group": "c1"
         },
         {
           "command": "tekton.pipeline.describe",
           "when": "view == tektonPipelineExplorer  && viewItem == pipeline",
-          "group": "c1"
+          "group": "c1@3"
         },
         {
           "command": "tekton.about",
@@ -207,7 +217,7 @@
         {
           "command": "tekton.pipelinerun.list",
           "when": "view == tektonPipelineExplorer && viewItem == pipeline",
-          "group": "c2"
+          "group": "c1@2"
         },
         {
           "command": "tekton.pipelinerun.describe",
