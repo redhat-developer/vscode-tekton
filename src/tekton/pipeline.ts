@@ -44,6 +44,16 @@ export class Pipeline extends TektonItem {
                 .then(() => `Pipeline '${pipelineName}' successfully created`)
                 .catch((error) => Promise.reject(`Failed to create Pipeline with error '${error}'`)));
     }
+    static async restart(context: TektonNode): Promise<string> {
+        const pipeline = await Pipeline.getTektonCmdData(context,
+            "Which Pipeline do you want to restart",
+            "Select Pipeline to restart");
+        if (pipeline) { Pipeline.tkn.executeInTerminal(Command.startPipeline(pipeline.getName(), undefined, undefined)); }
+        return Progress.execFunctionWithProgress(`Creating the Pipeline '${pipeline.getName}'.`, () =>
+            Pipeline.tkn.startPipeline(pipeline)
+                .then(() => `Pipeline '${pipeline.getName}' successfully created`)
+                .catch((error) => Promise.reject(`Failed to create Pipeline with error '${error}'`)));
+    }
     static createFromLocal(pipeline: TektonNode): Promise<string> {
         throw new Error("Method not implemented.");
     }

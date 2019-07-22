@@ -20,6 +20,7 @@
   "activationEvents": [
     "onView:tektonPipelineExplorer",
     "onView:extension.vsKubernetesExplorer",
+    "onCommand:tekton.pipeline.restart",
     "onCommand:tekton.pipeline.start",
     "onCommand:tekton.pipeline.create.local",
     "onCommand:tekton.pipeline.list",
@@ -31,7 +32,9 @@
     "onCommand:tekton.taskrun.list",
     "onCommand:tekton.taskrun.logs",
     "onCommand:tekton.explorer.refresh",
-    "onCommand:tekton.about"
+    "onCommand:tekton.about",
+    "onCommand:tekton.explain",
+    "onLanguage:yaml"
   ],
   "main": "./out/src/extension",
   "contributes": {
@@ -44,6 +47,11 @@
       {
         "command": "tekton.pipeline.start",
         "title": "Start Pipeline",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipeline.restart",
+        "title": "Restart Pipeline",
         "category": "Tekton"
       },
       {
@@ -105,6 +113,15 @@
         "mac": "ctrl+shift+r"
       }
     ],
+    "languages": [
+      {
+        "id": "yaml",
+        "filenames": [
+          "requirements.lock",
+          "**/.kube/config"
+        ]
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -131,6 +148,10 @@
         {
           "command": "tekton.pipeline.start",
           "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.pipeline.restart",
+          "when": "view === tektonPipelineExplorer"
         },
         {
           "command": "tekton.pipeline.describe",
@@ -174,56 +195,56 @@
       ],
       "view/item/context": [
         {
-          "command": "tekton.pipeline.start",
+          "command": "tekton.pipeline.restart",
           "when": "view == tektonPipelineExplorer && viewItem == pipeline",
-          "group": "c1"
+          "group": "c1@1"
         },
         {
           "command": "tekton.pipeline.list",
-          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
-          "group": "c2@1"
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinenode",
+          "group": "c1"
         },
         {
           "command": "tekton.pipeline.describe",
-          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
-          "group": "c2@2"
+          "when": "view == tektonPipelineExplorer  && viewItem == pipeline",
+          "group": "c1@3"
         },
         {
           "command": "tekton.about",
-          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
+          "when": "view == tektonPipelineExplorer",
           "group": "c3"
         },
         {
           "command": "tekton.pipelinerun.list",
-          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
-          "group": "p1"
+          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
+          "group": "c1@2"
         },
         {
           "command": "tekton.pipelinerun.describe",
           "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
-          "group": "p2"
+          "group": "c1@1"
         },
         {
           "command": "tekton.pipelinerun.logs",
           "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
-          "group": "p3"
+          "group": "c1@2"
         },
         {
           "command": "tekton.task.list",
-          "when": "view == tektonPipelineExplorer && viewItem == task",
-          "group": "a1"
+          "when": "view == tektonPipelineExplorer && viewItem == tasknode",
+          "group": "c1"
         },
         {
           "command": "tekton.taskrun.logs",
           "when": "view == tektonPipelineExplorer && viewItem == taskrun",
-          "group": "s1"
+          "group": "c1"
         }
       ]
     }
   },
   "configuration": {
     "type": "object",
-    "title": "Tekton",
+    "title": "Tekton Configuration",
     "properties": {
       "vs-tekton": {
         "type": "object",
@@ -233,9 +254,13 @@
             "type": "string",
             "description": "The namespace to use for all commands"
           },
-          "vs-tekton.tkn-path": {
+          "vs-kubernetes.outputFormat": {
+            "enum": [
+              "json",
+              "yaml"
+            ],
             "type": "string",
-            "description": "File path to a tkn binary."
+            "description": "Output format for Tekton specs. One of 'json' or 'yaml' (default)."
           },
           "vs-tekton.tkn-path.windows": {
             "type": "string",
@@ -254,7 +279,7 @@
           "vs-tekton.namespace": "tekton-pipelines",
           "vs-tekton.tkn-path": "",
           "vs-tekton.tknVersioning": "user-provided",
-          "vs-tekton.outputFormat": "yaml"
+          "vs-kubernetes.outputFormat": "yaml"
         }
       },
       "vs-tekton.showChannelOutput": {
@@ -271,7 +296,9 @@
       }
     }
   },
-  "extensionDependencies": [],
+  "extensionDependencies": [
+    "redhat.vscode-yaml"
+  ],
   "scripts": {
     "verify": "node ./out/build/verify-tools.js",
     "vscode:prepublish": "npm run compile",
@@ -320,7 +347,8 @@
     "walker": "^1.0.7"
   },
   "dependencies": {
-    "@kubernetes/client-node": "^0.8.2",
+    "@types/pluralize": "^0.0.29",
+    "@kubernetes/client-node": "^0.10.2",
     "binary-search": "^1.3.5",
     "byline": "^5.0.0",
     "event-stream": "3.3.4",
@@ -331,6 +359,7 @@
     "js-yaml": "^3.13.1",
     "mkdirp": "^0.5.1",
     "open": "^6.4.0",
+    "pluralize": "^4.0.0",
     "request": "^2.88.0",
     "request-progress": "^3.0.0",
     "semver": "^6.2.0",

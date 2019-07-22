@@ -17,6 +17,7 @@ import { TestItem } from './tekton/testTektonitem';
 import { ExecException } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import { pipeline } from 'stream';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -110,8 +111,9 @@ suite("tkn", () => {
 
     suite('item listings', () => {
         let execStub: sinon.SinonStub, yamlStub: sinon.SinonStub;
-        const pipeline = new TestItem(null, 'pipeline');
-        const pipelinerun = new TestItem(pipeline, 'pipelinerun');
+        const pipelineItem = new TestItem(null, 'pipeline');
+        const pipelinerun = new TestItem(pipelineItem, 'pipelinerun');
+        const taskItem = new TestItem(null, 'task');
 
         setup(() => {
             execStub = sandbox.stub(tknCli, 'execute');
@@ -122,7 +124,7 @@ suite("tkn", () => {
         test('getPipelines returns items created from tkn get pipeline', async () => {
             const tknPipelines = ['pipeline1', 'pipeline2', 'pipeline3'];
             execStub.resolves({ stdout: tknPipelines.join('\n'), stderr: '', error: null });
-            const result = await tknCli.getPipelines();
+            const result = await tknCli.getPipelines(pipelineItem);
 
             expect(execStub).calledWith(tkn.Command.listPipelines());
             expect(result.length).equals(3);
@@ -133,7 +135,7 @@ suite("tkn", () => {
 
         test('getPipelines returns empty list if tkn produces no output', async () => {
             execStub.resolves({ stdout: '', stderr: '', error: null });
-            const result = await tknCli.getPipelines();
+            const result = await tknCli.getPipelines(pipelineItem);
 
             expect(result).empty;
         });
@@ -142,7 +144,7 @@ suite("tkn", () => {
             const errorStub = sandbox.stub(window, 'showErrorMessage');
             sandbox.stub(tknCli, 'getPipelines').resolves([new TestItem(undefined, 'cluster')]);
             execStub.rejects(errorMessage);
-            const result = await tknCli.getPipelines();
+            const result = await tknCli.getPipelines(pipelineItem);
 
             expect(result).empty;
             expect(errorStub).calledOnceWith(`Cannot retrieve pipelines for current cluster. Error: ${errorMessage}`);
@@ -166,7 +168,7 @@ suite("tkn", () => {
                 ),
                 stderr: ''
             });
-            const result = await tknCli.getPipelineRuns(pipeline);
+            const result = await tknCli.getPipelineRuns(pipelineItem);
 
             expect(result.length).equals(1);
             expect(result[0].getName()).equals('pipelinerun1');
@@ -183,7 +185,7 @@ suite("tkn", () => {
                 ),
                 stderr: ''
             });
-            const result = await tknCli.getPipelineRuns(pipeline);
+            const result = await tknCli.getPipelineRuns(pipelineItem);
 
             expect(result).empty;
         });
@@ -217,7 +219,7 @@ suite("tkn", () => {
             execStub.resolves({ error: null, stderr: '', stdout: taskruns.join('\n') });
             const result = await tknCli.getTaskRuns(pipelinerun);
 
-            expect(execStub).calledWith(tkn.Command.listTaskRuns(pipeline.getName()));
+            expect(execStub).calledWith(tkn.Command.listTaskRuns(taskruns[0]));
             expect(result.length).equals(3);
             for (let i = 0; i < result.length; i++) {
                 expect(result[i].getName()).equals(taskruns[i]);
@@ -275,29 +277,8 @@ suite("tkn", () => {
                 ),
                 stderr: ''
             });
-            const result = await tknCli.getTasks();
+            const result = await tknCli.getTasks(taskItem);
             expect(result.length).equals(2);
-        });
-    });
-
-    suite('tkn current cluster detection integration', () => {
-        const clusterUrl = 'https://localhost:8443';
-
-        const tknVersion = [
-            'tkn v0.1.2 (43e2a41)',
-            '',
-            `Server: ${clusterUrl}`,
-            'Kubernetes: v1.11.0+d4cacc0'
-        ];
-
-        test('extension first uses tkn version to get cluster url', async () => {
-            sandbox.stub(tkn.TknImpl.prototype, 'execute').resolves({
-                error: undefined,
-                stdout: tknVersion.join('\n'),
-                stderr: ''
-            });
-            const cluster: tkn.TektonNode[] = await tkn.getInstance().getPipelines();
-            assert.equal(cluster[0].getName(), clusterUrl);
         });
     });
 });
