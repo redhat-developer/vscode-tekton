@@ -261,11 +261,11 @@ export class TknImpl implements Tkn {
         let pipelineTree: TektonNode[] = [];
         let pipelineNode = new TektonNodeImpl(this.ROOT, "Pipelines", ContextType.PIPELINENODE, this, TreeItemCollapsibleState.Collapsed);
         let taskNode = new TektonNodeImpl(this.ROOT, "Tasks", ContextType.TASKNODE, this, TreeItemCollapsibleState.Collapsed);
- //       let clustertaskNode = new TektonNodeImpl(this.ROOT, "Clustertasks", ContextType.CLUSTERTASKNODE, this, TreeItemCollapsibleState.Collapsed);
-        pipelineTree.push(pipelineNode, taskNode);
+        let clustertaskNode = new TektonNodeImpl(this.ROOT, "Clustertasks", ContextType.CLUSTERTASKNODE, this, TreeItemCollapsibleState.Collapsed);
+        pipelineTree.push(pipelineNode, taskNode, clustertaskNode);
         this.cache.set(pipelineNode, await this.getPipelines(pipelineNode));
         this.cache.set(taskNode, await this.getTasks(taskNode));
-//        this.cache.set(clustertaskNode, await this.getClusterTasks(clustertaskNode));
+        this.cache.set(clustertaskNode, await this.getClusterTasks(clustertaskNode));
         return pipelineTree;
 
     }
