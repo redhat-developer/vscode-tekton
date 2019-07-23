@@ -5,14 +5,29 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
+import * as k8s from 'vscode-kubernetes-tools-api';
 
 export class ClusterTask extends TektonItem {
+
+    static start(context: TektonNode): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
 
     static async list(treeItem: TektonNode): Promise<void> {
         const clustertasks = await ClusterTask.getTektonCmdData(treeItem,
             "From which pipeline you want to list ClusterTasks",
             "Select Pipeline you want to describe");
-        if (clustertasks) { ClusterTask.tkn.executeInTerminal(Command.listClusterTasks(clustertasks.getName())); }
+            if (clustertasks) { ClusterTask.tkn.executeInTerminal(Command.listClusterTasks(clustertasks.getName())); }
+    }
+
+    static async delete(treeItem: TektonNode): Promise<void> {
+        const clustertask = await ClusterTask.getTektonCmdData(treeItem,
+            "Which Pipeline do you want to delete",
+            "Select Pipeline you want to delete");
+        if (clustertask) { 
+            const kubectl = await k8s.extension.kubectl.v1;
+            if (kubectl.available) { await kubectl.api.invokeCommand('delete clustertask '+clustertask.getName()); }
+        }
     }
 
 }

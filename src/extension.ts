@@ -26,13 +26,23 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('tekton.pipeline.create.local', (context) => execute(Pipeline.createFromFolder, context)),
         vscode.commands.registerCommand('tekton.pipeline.list', (context) => execute(Pipeline.list, context)),
         vscode.commands.registerCommand('tekton.pipeline.describe', (context) => execute(Pipeline.describe, context)),
+        vscode.commands.registerCommand('tekton.pipeline.delete', (context) => execute(Pipeline.delete, context)),
         vscode.commands.registerCommand('tekton.pipelinerun.list', (context) => execute(PipelineRun.list, context)),
         vscode.commands.registerCommand('tekton.pipelinerun.describe', (context) => execute(PipelineRun.describe, context)),
         vscode.commands.registerCommand('tekton.pipelinerun.logs', (context) => execute(PipelineRun.logs, context)),
+        vscode.commands.registerCommand('tekton.pipelinerun.cancel', (context) => execute(PipelineRun.cancel, context)),
+        vscode.commands.registerCommand('tekton.pipelinerun.delete', (context) => execute(PipelineRun.delete, context)),
+        vscode.commands.registerCommand('tekton.task.start', (context) => execute(Task.start, context)),
         vscode.commands.registerCommand('tekton.task.list', (context) => execute(Task.list, context)),
+        vscode.commands.registerCommand('tekton.task.delete', (context) => execute(Task.delete, context)),
+        vscode.commands.registerCommand('tekton.clustertask.start', (context) => execute(ClusterTask.start, context)),
         vscode.commands.registerCommand('tekton.clustertask.list', (context) => execute(ClusterTask.list, context)),
+        vscode.commands.registerCommand('tekton.clustertask.delete', (context) => execute(ClusterTask.delete, context)),
         vscode.commands.registerCommand('tekton.taskrun.list', (context) => execute(TaskRun.list, context)),
         vscode.commands.registerCommand('tekton.taskrun.logs', (context) => execute(TaskRun.logs, context)),
+        vscode.commands.registerCommand('tekton.taskrun.cancel', (context) => execute(TaskRun.cancel, context)),
+        vscode.commands.registerCommand('tekton.taskrun.delete', (context) => execute(TaskRun.delete, context)),
+        vscode.commands.registerCommand('tekton.explorer.reportIssue', () => PipelineExplorer.reportIssue()),
         PipelineExplorer.getInstance()
     ];
     disposables.forEach((e) => context.subscriptions.push(e));
