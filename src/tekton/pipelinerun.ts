@@ -8,6 +8,13 @@ import { TektonNode, Command } from '../tkn';
 
 export class PipelineRun extends TektonItem {
 
+    static async restart(treeItem: TektonNode): Promise<void> {
+        const pipelinerun = await PipelineRun.getTektonCmdData(treeItem,
+            "From which project you want to describe PipelineRun",
+            "Select PipelineRun you want to describe");
+        if (pipelinerun) { PipelineRun.tkn.executeInTerminal(Command.startPipeline(pipelinerun.getName(), undefined, undefined)); }
+    }
+
     static async describe(treeItem: TektonNode): Promise<void> {
         const pipelinerun = await PipelineRun.getTektonCmdData(treeItem,
             "From which project you want to describe PipelineRun",

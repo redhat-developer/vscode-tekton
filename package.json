@@ -26,6 +26,7 @@
     "onCommand:tekton.pipeline.list",
     "onCommand:tekton.pipeline.describe",
     "onCommand:tekton.pipelinerun.list",
+    "onCommand:tekton.pipelinerun.restart",
     "onCommand:tekton.pipelinerun.describe",
     "onCommand:tekton.pipelinerun.logs",
     "onCommand:tekton.task.list",
@@ -51,7 +52,7 @@
       },
       {
         "command": "tekton.pipeline.restart",
-        "title": "Restart Pipeline",
+        "title": "Start Last Run",
         "category": "Tekton"
       },
       {
@@ -72,6 +73,11 @@
       {
         "command": "tekton.pipelinerun.list",
         "title": "List Pipelineruns",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipelinerun.restart",
+        "title": "Restart Pipelinerun",
         "category": "Tekton"
       },
       {
@@ -170,6 +176,10 @@
           "when": "view == tektonPipelineExplorer"
         },
         {
+          "command": "tekton.pipelinerun.restart",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
           "command": "tekton.pipelinerun.logs",
           "when": "view == tektonPipelineExplorer"
         },
@@ -220,14 +230,19 @@
           "group": "c1@2"
         },
         {
-          "command": "tekton.pipelinerun.describe",
+          "command": "tekton.pipelinerun.restart",
           "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
           "group": "c1@1"
         },
         {
-          "command": "tekton.pipelinerun.logs",
+          "command": "tekton.pipelinerun.describe",
           "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
           "group": "c1@2"
+        },
+        {
+          "command": "tekton.pipelinerun.logs",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
+          "group": "c1@3"
         },
         {
           "command": "tekton.task.list",
