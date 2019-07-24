@@ -3,4 +3,4 @@
 
 ## [Unreleased]
 
-- Initial release
+- Initial release!

@@ -1,2 +1,45 @@
-# vscode-tekton README
+# Visual Studio Code Tekton Pipelines Extension
+---
+[![Build Status](https://travis-ci.org/onyiny-ang/vscode-tekton.svg?branch=master)](https://travis-ci.org/onyiny-ang/vscode-tekton)
+
+## Overview
+
+A Visual Studio Code extension for interacting with Tekton Pipelines.
+
+To use the extension, developers can deploy Tekton Pipelines into a minikube instance (minishift / CDK has not been tested thoroughly but [feedback](issues) would be appreciated!). Currently all clusters are supported, but with some limitations for OpenShift Online Pro where additional storage might be required to create more than two components.
+
+For detail analysis of how to setup and run local OpenShift Cluster using minishift, please follow this wiki.
+
+
+### Commands and features
+
+### General Commands
+
+### Dependencies
+
+#### CLI Tools
+
+This extension uses the [Tekton CLI](https://github.com/tektoncd/cli): *tkn*
+
+#### Extensions
+
+This extension depends on Kubernetes Extension form Microsoft which is going to be installed automatically along with the Tekton Pipelines Extension. The below image demonstrates the Kubernetes Extension public API displaying Tekton specific resources: ClusterTasks, Tasks, Pipelines, Pipeline Resources, Pipelineruns, Taskruns in the Kubernetes Clusters View.
+
+### Release notes
+see the [change log](CHANGELOG.md).
+
+Contributing
+============
+This is an open source project open to anyone. This project welcomes contributions and suggestions!
+
+For information on getting started, refer to the [CONTRIBUTING instructions](CONTRIBUTING.md).
+
+Download the most recent `tekton-pipelines-<version>.vsix` file and install it by following the instructions [here](https://code.visualstudio.com/docs/editor/extension-gallery#_install-from-a-vsix).
+
+Feedback & Questions
+====================
+If you discover an issue please file a bug and we will fix it as soon as possible.
+* File a bug in [GitHub Issues](https://github.com/redhat-developer/vscode-tekton/issues).
+
+
 
