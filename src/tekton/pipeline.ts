@@ -13,17 +13,17 @@ import * as k8s from 'vscode-kubernetes-tools-api';
 
 export class Pipeline extends TektonItem {
 
-    static createFromFolder(createFromFolder: any, treeItem: any) {
+    static createFromFolder(createFromFolder: any, context: any) {
         throw new Error("Method not implemented.");
     }
 
-    static async getTektonData(treeItem: TektonNode): Promise<TektonNode> {
-        return await Pipeline.getTektonCmdData(treeItem,
+    static async getTektonData(context: TektonNode): Promise<TektonNode> {
+        return await Pipeline.getTektonCmdData(context,
             "In which namespace do you want to create an Pipeline"
         );
     }
-    static async startFromFolder(treeItem: TektonNode): Promise<string> {
-        const pipeline = await Pipeline.getTektonData(treeItem);
+    static async startFromFolder(context: TektonNode): Promise<string> {
+        const pipeline = await Pipeline.getTektonData(context);
         if (!pipeline) { return null; }
         const sourceTypes: QuickPickItem[] = [
             {
@@ -44,9 +44,9 @@ export class Pipeline extends TektonItem {
                 .then(() => `Pipeline '${pipelineName}' successfully created`)
                 .catch((error) => Promise.reject(`Failed to create Pipeline with error '${error}'`)));
     }
-    static async start(treeItem: TektonNode): Promise<string> {
-        const pipeline = await Pipeline.getTektonCmdData(treeItem,
-            "Which Pipeline do you want to restart",
+    static async start(context: TektonNode): Promise<string> {
+        const pipeline = await Pipeline.getTektonCmdData(context,
+            "Which Pipeline do you want to start",
             "Select Pipeline to restart");
         if (pipeline) {
             const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.listPipelines(), process.cwd(), false);
@@ -60,7 +60,7 @@ export class Pipeline extends TektonItem {
                 //show no pipelines if output is not correct json
             }
             const pipelinetrigger = data.map(value => ({ name: value.metadata.name, resources: value.spec.resources, param: value.spec.params ? value.spec.params : undefined })).filter(function (obj) {
-                return obj.name === treeItem.getName();
+                return obj.name === context.getName();
             });
             if (pipeline) { Pipeline.tkn.executeInTerminal(Command.startPipeline(pipelinetrigger[0].name, pipelinetrigger[0].resources, pipelinetrigger[0].param)); }
             if (!pipeline.getName()) { return null; }
@@ -72,8 +72,8 @@ export class Pipeline extends TektonItem {
         }
         return null;
     }
-    static async restart(treeItem: TektonNode): Promise<string> {
-        const pipeline = await Pipeline.getTektonCmdData(treeItem,
+    static async restart(context: TektonNode): Promise<string> {
+        const pipeline = await Pipeline.getTektonCmdData(context,
             "Which Pipeline do you want to restart",
             "Select Pipeline to restart");
         if (pipeline) {
@@ -104,8 +104,8 @@ export class Pipeline extends TektonItem {
         Cli.getInstance().showOutputChannel();
     }
 
-    static async describe(treeItem: TektonNode): Promise<void> {
-        const pipeline = await Pipeline.getTektonCmdData(treeItem,
+    static async describe(context: TektonNode): Promise<void> {
+        const pipeline = await Pipeline.getTektonCmdData(context,
             "Which Pipeline do you want to describe",
             "Select Pipeline you want to describe");
         if (pipeline) { Pipeline.tkn.executeInTerminal(Command.describePipelines(pipeline.getName())); }
@@ -115,11 +115,11 @@ export class Pipeline extends TektonItem {
         const pipeline = await Pipeline.getTektonCmdData(treeItem,
             "From which project do you want to describe Pipeline",
             "Select Pipeline you want to describe");
-        if (pipeline) { Pipeline.tkn.executeInTerminal(Command.listPipelines()); }
+        if (pipeline) { Pipeline.tkn.executeInTerminal(Command.listPipelinesinTerminal()); }
     }
 
-    static async delete(treeItem: TektonNode): Promise<void> {
-        const pipeline = await Pipeline.getTektonCmdData(treeItem,
+    static async delete(context: TektonNode): Promise<void> {
+        const pipeline = await Pipeline.getTektonCmdData(context,
             "Which Pipeline do you want to delete",
             "Select Pipeline you want to delete");
         if (pipeline) { 

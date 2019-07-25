@@ -15,7 +15,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
   readonly onDidChangeTreeData: Event<TektonNode | undefined> = this.onDidChangeTreeDataEmitter.event;
 
 
-  constructor() {
+  private constructor() {
     this.fsw = WatchUtil.watchFileForContextChange(kubeConfigFolder, 'config');
     this.fsw.emitter.on('file-changed', this.refresh.bind(this));
     this.treeView = window.createTreeView('tektonPipelineExplorer', { treeDataProvider: this });
@@ -65,7 +65,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     const template = {
       'VS Code version:': version,
       'OS:': Platform.OS,
-      'Extension version:': extensions.getExtension('redhat.vscode-tekton').packageJSON.version
+      'Extension version:': extensions.getExtension('redhat.vscode-tekton-pipelines').packageJSON.version
     };
     for (const [key, value] of Object.entries(template)) {
       body = `${body}${key} ${value}\n`;

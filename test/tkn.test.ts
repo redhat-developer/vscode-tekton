@@ -104,16 +104,21 @@ suite("tkn", () => {
             toolsStub.restore();
             toolsStub = sandbox.stub(ToolsConfig, 'detectOrDownload').resolves(path.join('segment1', 'segment2'));
             const ctStub = sandbox.stub(WindowUtil, 'createTerminal').returns(termFake);
-            await tknCli.executeInTerminal('cmd');
+            await tknCli.executeInTerminal('tkn');
+            // tslint:disable-next-line: no-unused-expression
+            expect(termFake.show).calledOnce;
             expect(ctStub).calledWith('Tekton', process.cwd(), 'segment1');
         });
     });
 
     suite('item listings', () => {
         let execStub: sinon.SinonStub, yamlStub: sinon.SinonStub;
-        const pipelineItem = new TestItem(null, 'pipeline');
-        const pipelinerun = new TestItem(pipelineItem, 'pipelinerun');
-        const taskItem = new TestItem(null, 'task');
+        const pipelineNodeItem = new TestItem(undefined, 'pipelinenode', tkn.ContextType.PIPELINENODE);
+        const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', tkn.ContextType.PIPELINE);
+        const pipelineItem2 = new TestItem(pipelineNodeItem, 'pipeline2', tkn.ContextType.PIPELINE);
+        const pipelineItem3 = new TestItem(pipelineNodeItem, 'pipeline3', tkn.ContextType.PIPELINE);
+        const pipelinerun = new TestItem(pipelineItem1, 'pipelinerun', tkn.ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
+        const taskItem = new TestItem(null, 'task', tkn.ContextType.TASK);
 
         setup(() => {
             execStub = sandbox.stub(tknCli, 'execute');
@@ -124,7 +129,7 @@ suite("tkn", () => {
         test('getPipelines returns items created from tkn get pipeline', async () => {
             const tknPipelines = ['pipeline1', 'pipeline2', 'pipeline3'];
             execStub.resolves({ stdout: tknPipelines.join('\n'), stderr: '', error: null });
-            const result = await tknCli.getPipelines(pipelineItem);
+            const result = await tknCli.getPipelines(pipelineNodeItem);
 
             expect(execStub).calledWith(tkn.Command.listPipelines());
             expect(result.length).equals(3);
@@ -135,16 +140,16 @@ suite("tkn", () => {
 
         test('getPipelines returns empty list if tkn produces no output', async () => {
             execStub.resolves({ stdout: '', stderr: '', error: null });
-            const result = await tknCli.getPipelines(pipelineItem);
+            const result = await tknCli.getPipelines(pipelineNodeItem);
 
             expect(result).empty;
         });
 
         test('getPipelines returns empty list if an error occurs', async () => {
             const errorStub = sandbox.stub(window, 'showErrorMessage');
-            sandbox.stub(tknCli, 'getPipelines').resolves([new TestItem(undefined, 'cluster')]);
+            sandbox.stub(tknCli, 'getPipelines').resolves([]);
             execStub.rejects(errorMessage);
-            const result = await tknCli.getPipelines(pipelineItem);
+            const result = await tknCli.getPipelines(pipelineNodeItem);
 
             expect(result).empty;
             expect(errorStub).calledOnceWith(`Cannot retrieve pipelines for current cluster. Error: ${errorMessage}`);
@@ -168,7 +173,7 @@ suite("tkn", () => {
                 ),
                 stderr: ''
             });
-            const result = await tknCli.getPipelineRuns(pipelineItem);
+            const result = await tknCli.getPipelineRuns(pipelineNodeItem);
 
             expect(result.length).equals(1);
             expect(result[0].getName()).equals('pipelinerun1');
@@ -185,7 +190,7 @@ suite("tkn", () => {
                 ),
                 stderr: ''
             });
-            const result = await tknCli.getPipelineRuns(pipelineItem);
+            const result = await tknCli.getPipelineRuns(pipelineNodeItem);
 
             expect(result).empty;
         });
@@ -199,8 +204,7 @@ suite("tkn", () => {
                         items: [
                             {
                                 metadata: {
-                                    name: 'taskrun1',
-                                    namespace: 'pipeline'
+                                    name: 'taskrun1'
                                 }
                             }
                         ]
@@ -234,17 +238,14 @@ suite("tkn", () => {
             expect(result).empty;
         });
 
-        test('getPipelineRunChildren returns both components and taskruns for an pipelinerun', async () => {
+        test('getPipelineRunChildren returns taskruns for an pipelinerun', async () => {
             execStub.onFirstCall().resolves({error: undefined, stdout: JSON.stringify({
                 items: [
                     {
                         metadata: {
                             name: 'taskrun1',
-                            namespace: 'pipeline'
                         },
-                        spec: {
-                            source: 'https://'
-                        }
+
                     }
                 ]
             }), stderr: ''});
@@ -252,33 +253,7 @@ suite("tkn", () => {
             //TODO: Probably need a get children here
             const result = await tknCli.getPipelineRuns(pipelinerun);
 
-            expect(result[0].getName()).deep.equals('component1');
-            expect(result[1].getName()).deep.equals('serv');
-        });
-
-        test('getTaskNames returns storage items for a component', async () => {
-            const component = new TestItem(pipelinerun, 'comp');
-            execStub.returns({
-                error: undefined,
-                stdout: JSON.stringify({
-                        items: [
-                            {
-                                metadata: {
-                                    name: "storage1"
-                                }
-                            },
-                            {
-                                metadata: {
-                                    name: "storage2"
-                                }
-                            }
-                        ]
-                    }
-                ),
-                stderr: ''
-            });
-            const result = await tknCli.getTasks(taskItem);
-            expect(result.length).equals(2);
+            expect(result[0].getName()).deep.equals('taskrun1');
         });
     });
 });

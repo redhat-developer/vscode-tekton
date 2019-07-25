@@ -17,7 +17,7 @@ export class ClusterTask extends TektonItem {
         const clustertasks = await ClusterTask.getTektonCmdData(treeItem,
             "From which pipeline you want to list ClusterTasks",
             "Select Pipeline you want to describe");
-            if (clustertasks) { ClusterTask.tkn.executeInTerminal(Command.listClusterTasks(clustertasks.getName())); }
+            if (clustertasks) { ClusterTask.tkn.executeInTerminal(Command.listClusterTasksinTerminal(clustertasks.getName())); }
     }
 
     static async delete(treeItem: TektonNode): Promise<void> {

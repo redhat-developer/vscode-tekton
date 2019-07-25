@@ -16,7 +16,7 @@ export class Task extends TektonItem {
     static async list(treeItem: TektonNode): Promise<void> {
         const task = await Task.getTektonCmdData(treeItem,
             "Which task do you want to list");
-        if (task) { Task.tkn.executeInTerminal(Command.listTasks(task.getName())); }
+        if (task) { Task.tkn.executeInTerminal(Command.listTasksinTerminal(task.getName())); }
     }
 
     static async delete(treeItem: TektonNode): Promise<void> {

@@ -16,14 +16,14 @@ export class TaskRun extends TektonItem {
         const taskrun = await TaskRun.getTektonCmdData(treeItem,
             "From which pipeline do you want to list a Taskrun",
             "Select Taskruns you want to list");
-        if (taskrun) TaskRun.tkn.executeInTerminal(Command.listTaskRuns(taskrun.getName()));
+        if (taskrun) { TaskRun.tkn.executeInTerminal(Command.listTaskRunsInTerminal(taskrun.getName())); }
     }
 
     static async logs(treeItem: TektonNode): Promise<void> {
         const taskrun = await TaskRun.getTektonCmdData(treeItem,
             "From which pipeline do you want to list a Taskrun",
             "Select Taskruns you want to list");
-        if (taskrun) TaskRun.tkn.executeInTerminal(Command.showTaskRunLogs(taskrun.getName()));
+        if (taskrun) { TaskRun.tkn.executeInTerminal(Command.showTaskRunLogs(taskrun.getName())); }
     }
 
     static async delete(treeItem: TektonNode): Promise<void> {
