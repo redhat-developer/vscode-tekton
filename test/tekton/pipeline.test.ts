@@ -49,7 +49,7 @@ suite('Tekton/Pipeline', () => {
             const result = await Pipeline.start(pipelineItem);
 
             expect(result).equals(`Pipeline '${pipelineItem.getName()}' successfully start(pipelineItem)d`);
-            expect(execStub).calledWith(Command.startPipeline(pipelineItem.getName()));
+            expect(execStub).calledWith(Command.startPipeline(pipelineItem.getName(), undefined, undefined));
         });
 
         test('returns null with no pipeline name selected', async () => {

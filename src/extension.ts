@@ -1,8 +1,5 @@
 import * as vscode from 'vscode';
-import * as yaml from 'js-yaml';
-import * as explainer from './explainer';
 import { PipelineExplorer } from './pipeline/pipelineExplorer';
-import { findParentYaml } from './yaml-navigation';
 import { Pipeline } from './tekton/pipeline';
 import { PipelineRun } from './tekton/pipelinerun';
 import { Task } from './tekton/task';
@@ -13,9 +10,6 @@ import fsx = require('fs-extra');
 import * as k8s from 'vscode-kubernetes-tools-api';
 import { ClusterTask } from './tekton/clustertask';
 
-
-/* let explainActive = false;
-let swaggerSpecPromise: Promise<explainer.SwaggerModel | undefined> | null = null; */
 export let contextGlobalState: vscode.ExtensionContext;
 let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
 
@@ -23,7 +17,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
     contextGlobalState = context;
     migrateFromTkn018();
-    // vscode.commands.executeCommand('extention.vsKubernetes)
 
     const disposables = [
         vscode.commands.registerCommand('tekton.about', (context) => execute(Pipeline.about, context)),
@@ -40,10 +33,6 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('tekton.clustertask.list', (context) => execute(ClusterTask.list, context)),
         vscode.commands.registerCommand('tekton.taskrun.list', (context) => execute(TaskRun.list, context)),
         vscode.commands.registerCommand('tekton.taskrun.logs', (context) => execute(TaskRun.logs, context)),
-/*  //       vscode.languages.registerHoverProvider(
-            { language: 'yaml' },
-            { provideHover: provideHoverYaml },
-        ), */
         PipelineExplorer.getInstance()
     ];
     disposables.forEach((e) => context.subscriptions.push(e));
@@ -106,20 +95,6 @@ function displayResult(result?: any) {
     }
 }
 
-/* interface Syntax {
-    parse(text: string): any;
-    findParent(document: vscode.TextDocument, line: number): number;
-} */
-
-/* function provideHoverYaml(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.Hover | null> {
-    const syntax: Syntax = {
-        parse: (text) => yaml.safeLoad(text),
-        findParent: (document, parentLine) => findParentYaml(document, parentLine)
-    };
-    return provideHover(document, position, token, syntax);
-} */
-
-
 function migrateFromTkn018() {
     const newCfgDir = path.join(Platform.getUserHomePath(), '.tkn');
     const newCfg = path.join(newCfgDir, 'tkn-config.yaml');
@@ -129,86 +104,3 @@ function migrateFromTkn018() {
         fsx.copyFileSync(oldCfg, newCfg);
     }
 }
-
-/* function findProperty(line: vscode.TextLine): string {
-    const ix = line.text.indexOf(':');
-    return line.text.substring(line.firstNonWhitespaceCharacterIndex, ix);
-} */
-
-/* function provideHover(document: vscode.TextDocument, position: vscode.Position, _token: vscode.CancellationToken, syntax: Syntax): Promise<vscode.Hover | null> {
-    return new Promise(async (resolve, reject) => {
-        if (!explainActive) {
-            resolve(null);
-            return;
-        }
-
-        const body = document.getText();
-        let obj: any = {};
-
-        try {
-            obj = syntax.parse(body);
-        } catch (err) {
-            // Bad document, return nothing
-            // TODO: at least verbose log here?
-            resolve(null);
-            return;
-        }
-
-        // Not a k8s object.
-        if (!obj.kind) {
-            resolve(null);
-            return;
-        }
-
-        const property = findProperty(document.lineAt(position.line));
-        let field = syntax.parse(property),
-            parentLine = syntax.findParent(document, position.line);
-
-        while (parentLine !== -1) {
-            const parentProperty = findProperty(document.lineAt(parentLine));
-            field = `${syntax.parse(parentProperty)}.${field}`;
-            parentLine = syntax.findParent(document, parentLine);
-        }
-
-        if (field === 'kind') {
-            field = '';
-        }
-
-        explain(obj, field).then(
-            (msg) => resolve(msg ? new vscode.Hover(msg) : null),
-            (err: any) => reject(err)
-        );
-    });
-
-} */
-
-/* async function explain(obj: any, field: string): Promise<string | null> {
-    return new Promise<string | null>((resolve) => {
-        if (!obj.kind) {
-            vscode.window.showErrorMessage("Not a Tekton API Object!");
-            resolve(null);
-        }
-
-        let ref = obj.kind;
-        if (field && field.length > 0) {
-            ref = `${ref}.${field}`;
-        }
-
-        if (!swaggerSpecPromise) {
-            swaggerSpecPromise = explainer.readSwagger();
-        }
-
-        swaggerSpecPromise.then(
-            (s) => {
-                if (s) {
-                    resolve(explainer.readExplanation(s, ref));
-                }
-            },
-            (err) => {
-                vscode.window.showErrorMessage(`Explain failed: ${err}`);
-                swaggerSpecPromise = null;
-                resolve(null);
-            });
-    });
-} */
-

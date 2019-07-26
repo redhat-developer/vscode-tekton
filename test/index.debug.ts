@@ -14,7 +14,8 @@ testRunner.configure({
     ui: 'tdd',
     useColors: true,
     timeout: 50000,
-    slow: 50000
+    slow: 50000,
+    reporter: 'mocha-jenkins-reporter'
 });
 
 module.exports = testRunner;
