@@ -17,7 +17,6 @@ import { TestItem } from './tekton/testTektonitem';
 import { ExecException } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { pipeline } from 'stream';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -113,23 +112,28 @@ suite("tkn", () => {
 
     suite('item listings', () => {
         let execStub: sinon.SinonStub, yamlStub: sinon.SinonStub;
-        const pipelineNodeItem = new TestItem(undefined, 'pipelinenode', tkn.ContextType.PIPELINENODE);
+        const pipelineNodeItem = new TestItem(tkn.TknImpl.ROOT, 'pipelinenode', tkn.ContextType.PIPELINENODE);
         const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', tkn.ContextType.PIPELINE);
         const pipelineItem2 = new TestItem(pipelineNodeItem, 'pipeline2', tkn.ContextType.PIPELINE);
         const pipelineItem3 = new TestItem(pipelineNodeItem, 'pipeline3', tkn.ContextType.PIPELINE);
-        const pipelinerun = new TestItem(pipelineItem1, 'pipelinerun', tkn.ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
-        const taskItem = new TestItem(null, 'task', tkn.ContextType.TASK);
+        const pipelinerunItem = new TestItem(pipelineItem1, 'pipelinerun', tkn.ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
+        const taskrunItem = new TestItem(pipelinerunItem, 'taskrun', tkn.ContextType.TASKRUN, undefined, "2019-07-25T12:03:00Z", "True");
+        const taskItem = new TestItem(tkn.TknImpl.ROOT, 'task', tkn.ContextType.TASK);
 
         setup(() => {
             execStub = sandbox.stub(tknCli, 'execute');
             yamlStub = sandbox.stub(jsYaml, 'safeLoad');
             sandbox.stub(fs, 'readFileSync');
+            sandbox.stub(tkn.TknImpl.prototype, "getPipelines").resolves([pipelineItem1, pipelineItem2, pipelineItem3]);
+            sandbox.stub(tkn.TknImpl.prototype, "getTasks").resolves([taskItem]);
+            sandbox.stub(tkn.TknImpl.prototype, "getPipelineRuns").resolves([pipelinerunItem]);
+            sandbox.stub(tkn.TknImpl.prototype, "getTaskRuns").resolves([pipelinerunItem]);
         });
 
         test('getPipelines returns items created from tkn get pipeline', async () => {
             const tknPipelines = ['pipeline1', 'pipeline2', 'pipeline3'];
             execStub.resolves({ stdout: tknPipelines.join('\n'), stderr: '', error: null });
-            const result = await tknCli.getPipelines(pipelineNodeItem);
+            const result = await tknCli.getPipelines(pipelineItem1);
 
             expect(execStub).calledWith(tkn.Command.listPipelines());
             expect(result.length).equals(3);
@@ -142,6 +146,7 @@ suite("tkn", () => {
             execStub.resolves({ stdout: '', stderr: '', error: null });
             const result = await tknCli.getPipelines(pipelineNodeItem);
 
+            // tslint:disable-next-line: no-unused-expression
             expect(result).empty;
         });
 
@@ -151,6 +156,7 @@ suite("tkn", () => {
             execStub.rejects(errorMessage);
             const result = await tknCli.getPipelines(pipelineNodeItem);
 
+            // tslint:disable-next-line: no-unused-expression
             expect(result).empty;
             expect(errorStub).calledOnceWith(`Cannot retrieve pipelines for current cluster. Error: ${errorMessage}`);
         });
@@ -192,6 +198,7 @@ suite("tkn", () => {
             });
             const result = await tknCli.getPipelineRuns(pipelineNodeItem);
 
+            // tslint:disable-next-line: no-unused-expression
             expect(result).empty;
         });
 
@@ -212,7 +219,7 @@ suite("tkn", () => {
                 ),
                 stderr: ''
             });
-            const result = await tknCli.getPipelineRuns(pipelinerun);
+            const result = await tknCli.getPipelineRuns(pipelinerunItem);
 
             expect(result.length).equals(1);
             expect(result[0].getName()).equals('taskrun1');
@@ -221,7 +228,7 @@ suite("tkn", () => {
         test('getTaskruns returns taskruns for a pipelinerun', async () => {
             const taskruns = ['taskrun1', 'taskrun2', 'taskrun3'];
             execStub.resolves({ error: null, stderr: '', stdout: taskruns.join('\n') });
-            const result = await tknCli.getTaskRuns(pipelinerun);
+            const result = await tknCli.getTaskRuns(pipelinerunItem);
 
             expect(execStub).calledWith(tkn.Command.listTaskRuns(taskruns[0]));
             expect(result.length).equals(3);
@@ -233,8 +240,9 @@ suite("tkn", () => {
         test('getTaskruns returns an empty list if an error occurs', async () => {
             execStub.onFirstCall().resolves({error: undefined, stdout: '', stderr: ''});
             execStub.onSecondCall().rejects(errorMessage);
-            const result = await tknCli.getTaskRuns(pipelinerun);
+            const result = await tknCli.getTaskRuns(pipelinerunItem);
 
+            // tslint:disable-next-line: no-unused-expression
             expect(result).empty;
         });
 
@@ -251,7 +259,7 @@ suite("tkn", () => {
             }), stderr: ''});
             execStub.onSecondCall().resolves({error: undefined, stdout: 'serv', stderr: ''});
             //TODO: Probably need a get children here
-            const result = await tknCli.getPipelineRuns(pipelinerun);
+            const result = await tknCli.getPipelineRuns(pipelinerunItem);
 
             expect(result[0].getName()).deep.equals('taskrun1');
         });

@@ -23,13 +23,15 @@ suite('Tekton Application Explorer', () => {
     const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN);
     const taskrunItem = new TestItem(pipelinerunItem, 'taskrun', ContextType.TASKRUN);
     const taskItem = new TestItem(taskNode, 'task', ContextType.TASK);
-    const clustertaskItem = new TestItem(clusterTaskNode, 'clustertask', ContextType.TASK);
+    const clustertaskItem = new TestItem(clusterTaskNode, 'clustertask', ContextType.CLUSTERTASK);
     const sandbox = sinon.createSandbox();
 
     let tektonInstance: PipelineExplorer;
 
     setup(() => {
         sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
+        sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskItem]);
+        sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([clustertaskItem]);
     });
 
     teardown(() => {
@@ -39,6 +41,8 @@ suite('Tekton Application Explorer', () => {
     test('delegate calls to TektonObject instance', async () => {
         tektonInstance = PipelineExplorer.getInstance();
         pipelineNode.getChildren().push(pipelineItem);
+        taskNode.getChildren().push(taskItem);
+        clusterTaskNode.getChildren().push(clustertaskItem);
         pipelineItem.getChildren().push(pipelinerunItem);
         pipelinerunItem.getChildren().push(taskrunItem);
         taskrunItem.getChildren().push(taskItem);
@@ -48,10 +52,20 @@ suite('Tekton Application Explorer', () => {
         expect(value.getName()).oneOf(["Pipelines", "Tasks", "ClusterTasks"]));
         const pipelinetest = await tektonInstance.getChildren(pipelineNode);
         expect(pipelinetest[0]).equals(pipelineItem);
+        const tasktest = await tektonInstance.getChildren(taskNode);
+        expect(tasktest[0]).equals(taskItem);
+        const clustertasktest = await tektonInstance.getChildren(clusterTaskNode);
+        expect(clustertasktest[0]).equals(clustertaskItem);
+        const pipelineruns = await tektonInstance.getChildren(pipelineItem);
+        expect(pipelineruns[0]).equals(pipelinerunItem);
         const taskruns = await tektonInstance.getChildren(pipelinerunItem);
         expect(taskruns[0]).equals(taskrunItem);
         expect(tektonInstance.getParent(pipelinerunItem)).equals(pipelineItem);
         expect(tektonInstance.getTreeItem(taskrunItem)).equals(taskrunItem);
+        expect(tektonInstance.getTreeItem(pipelinerunItem)).equals(pipelinerunItem);
+        expect(tektonInstance.getTreeItem(clustertaskItem)).equals(clustertaskItem);
+        expect(tektonInstance.getTreeItem(pipelineItem)).equals(pipelineItem);
+        expect(tektonInstance.getTreeItem(taskItem)).equals(taskItem);
     });
 
 });

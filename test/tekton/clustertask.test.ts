@@ -30,7 +30,7 @@ suite('Tekton/Clustertask', () => {
 
     setup(() => {
         sandbox = sinon.createSandbox();
-        execStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal');
+        termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal');
         execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
         sandbox = sinon.createSandbox();
         getClusterTaskStub = sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([]);

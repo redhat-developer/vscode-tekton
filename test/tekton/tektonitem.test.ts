@@ -80,7 +80,7 @@ suite('TektonItem', () => {
         test('returns an array of pipelinerun names for the pipeline if there is at least one pipelinerun', async ()=> {
             sandbox.stub(TknImpl.prototype, 'getPipelineRuns').resolves([pipelinerunItem]);
             const pipelinerunNames = await TektonItem.getPipelinerunNames(pipelineItem);
-            expect(pipelinerunNames[0].getName()).equals('pipelinerunlication');
+            expect(pipelinerunNames[0].getName()).equals('pipelinerun');
 
         });
 
@@ -89,7 +89,7 @@ suite('TektonItem', () => {
             try {
                 await TektonItem.getPipelinerunNames(pipelineItem);
             } catch (err) {
-                expect(err.message).equals('You need at least one PipelineRun available. Please create new Tekton PipelineRun and try again.');
+                expect(err.message).equals('You need at least one Pipelinerun available. Please create new Tekton Pipelinerun and try again.');
                 return;
             }
             fail('should throw error in case pipelineruns array is empty');
@@ -126,7 +126,7 @@ suite('TektonItem', () => {
 
         });
 
-        test('throws error if there are no tasks available', async ()=> {
+        test('throws error if there are no taskruns available', async ()=> {
             sandbox.stub(TknImpl.prototype, 'getTaskRuns').resolves([]);
             try {
                 await TektonItem.getTaskRunNames(pipelinerunItem);
@@ -147,15 +147,15 @@ suite('TektonItem', () => {
 
         });
 
-        test('throws error if there are no tasks available', async ()=> {
+        test('throws error if there are no Cluster Tasks available', async ()=> {
             sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([]);
             try {
                 await TektonItem.getClusterTaskNames(clustertaskItem);
             } catch (err) {
-                expect(err.message).equals('You need at least one ClusterTask available. Please create new Tekton Task and try again.');
+                expect(err.message).equals('You need at least one ClusterTask available. Please create new Tekton ClusterTask and try again.');
                 return;
             }
-            fail('should throw error in case tasks array is empty');
+            fail('should throw error in case clustertasks array is empty');
         });
     });
 });
