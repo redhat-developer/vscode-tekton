@@ -4,7 +4,8 @@
 // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 {
 	"version": "0.2.0",
-	"configurations": [{
+	"configurations": [
+		{
 			"name": "Extension",
 			"type": "extensionHost",
 			"request": "launch",
@@ -30,9 +31,9 @@
 				"${workspaceFolder}/out/test/**/*.js"
 			],
 			"preLaunchTask": "npm: watch",
-            "env": {
-                "VSCOST_TEST_MODE": "debug"
-            }
+			"env": {
+				"VSCOST_TEST_MODE": "debug"
+			}
 		},
 		{
 			"name": "Extension Tests Coverage",
