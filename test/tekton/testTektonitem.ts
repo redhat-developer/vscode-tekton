@@ -6,11 +6,15 @@
 import { TektonNode, ContextType } from "../../src/tkn";
 
 export class TestItem implements TektonNode {
-    public readonly contextValue: ContextType;
+
+    
     constructor(
         private parent: TektonNode,
         private name: string,
-        private children = []) {
+        public readonly contextValue: ContextType,
+        private children = [],
+        public creationtime?: string,
+        public state?: string) {
     }
 
     getName(): string {

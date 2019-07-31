@@ -13,7 +13,7 @@ const errorMessage = {
     Pipelinerun: 'You need at least one Pipelinerun available. Please create new Tekton Pipelinerun and try again.',
     Task: 'You need at least one Task available. Please create new Tekton Task and try again.',
     Taskrun: 'You need at least one Taskrun available. Please create new Tekton Taskrun and try again.',
-    Clustertask: 'You need at least one Clustertask available. Please create new Tekton Clustertask and try again.',
+    ClusterTask: 'You need at least one ClusterTask available. Please create new Tekton ClusterTask and try again.',
 };
 
 export abstract class TektonItem {
@@ -70,7 +70,7 @@ export abstract class TektonItem {
 
     static async getClusterTaskNames(clustertask: TektonNode): Promise<TektonNode[]> {
         const taskList: Array<TektonNode> = await TektonItem.tkn.getClusterTasks(clustertask);
-        if (taskList.length === 0) { throw Error(errorMessage.Task); }
+        if (taskList.length === 0) { throw Error(errorMessage.ClusterTask); }
         return taskList;
     }
 

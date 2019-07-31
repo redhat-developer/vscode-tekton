@@ -11,7 +11,7 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { TestItem } from './testTektonitem';
-import { TknImpl, Command } from '../../src/tkn';
+import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { Progress } from '../../src/util/progress';
 import * as Util from '../../src/util/async';
 import { Refs } from '../../src/util/refs';
@@ -27,10 +27,9 @@ suite('Tekton/TaskRun', () => {
     let sandbox: sinon.SinonSandbox;
     let termStub: sinon.SinonStub, execStub: sinon.SinonStub;
     let getTaskRunsStub: sinon.SinonStub;
-    const pipelineItem = new TestItem(null, 'pipeline');
-    const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun');
-    const taskrunItem = new TestItem(pipelinerunItem, 'taskrun');
-    const taskItem = new TestItem(pipelinerunItem, 'task');
+    const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
+    const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
+    const taskrunItem = new TestItem(pipelinerunItem, 'taskrun', ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
     const errorMessage = 'FATAL ERROR';
     let getPipelines: sinon.SinonStub;
     let getPipelineRuns: sinon.SinonStub;
@@ -55,24 +54,23 @@ suite('Tekton/TaskRun', () => {
         getPipelines = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
         getPipelineRuns = sandbox.stub(TektonItem, 'getPipelinerunNames').resolves([pipelinerunItem]);
         sandbox.stub(TektonItem, 'getTaskRunNames').resolves([taskrunItem]);
-        sandbox.stub(TektonItem, 'getTaskRunNames').resolves([taskItem]);
     });
 
     teardown(() => {
         sandbox.restore();
     });
 
-    test('list calls tkn task list', () => {
-        TaskRun.list(taskItem);
+    test('list calls tkn taskrun list', () => {
+        TaskRun.list(taskrunItem);
 
-        expect(execStub).calledOnceWith(Command.listTasks(taskItem.getName()));
+        expect(execStub).calledOnceWith(Command.listTaskRuns(taskrunItem.getName()));
     });
 
     suite('called from command bar', () => {
 
         setup(() => {
             quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-            quickPickStub.onFirstCall().resolves(taskItem);
+            quickPickStub.onFirstCall().resolves(taskrunItem);
         });
 
         test('returns null when no task not defined properly', async () => {

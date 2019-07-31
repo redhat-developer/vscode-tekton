@@ -40,6 +40,7 @@ suite('Progress Utility', () => {
         execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: "", stderr: "" });
         await Progress.execWithProgress(options, steps, TknImpl.Instance);
 
+        // tslint:disable-next-line: no-unused-expression
         expect(execStub).calledTwice;
         expect(execStub.getCall(0).args[0]).equals(command1.command);
         expect(execStub.getCall(1).args[0]).equals(command2.command);

@@ -24,10 +24,12 @@ export class ToolsConfig {
 
     public static loadMetadata(requirements, platform): object {
         const req = JSON.parse(JSON.stringify(requirements));
-        if (req.platform) {
-            if (req.platform[platform]) {
-                Object.assign(req, req.platform[platform]);
-                delete req.platform;
+        if (req['tkn'].platform) {
+            if (req['tkn'].platform[platform]) {
+                Object.assign(req['tkn'], req['tkn'].platform[platform]);
+                delete req['tkn'].platform;
+            } else {
+                delete req['tkn'];
             }
         }
         return req;
@@ -49,7 +51,7 @@ export class ToolsConfig {
 
             if (toolLocation === undefined) {
                 // otherwise request permission to download
-                const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].platform[Platform.getOS()].dlFileName);
+                const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].dlFileName);
                 const installRequest = `Download and install v${ToolsConfig.tool['tkn'].version}`;
                 const response = await vscode.window.showInformationMessage(
                     `Cannot find ${ToolsConfig.tool['tkn'].description} ${ToolsConfig.tool['tkn'].versionRangeLabel}.`, installRequest, 'Help', 'Cancel');
@@ -65,13 +67,13 @@ export class ToolsConfig {
                         },
                             (progress: vscode.Progress<{ increment: number, message: string }>, token: vscode.CancellationToken) => {
                                 return DownloadUtil.downloadFile(
-                                    ToolsConfig.tool['tkn'].platform[Platform.getOS()].url,
+                                    ToolsConfig.tool['tkn'].url,
                                     toolDlLocation,
                                     (dlProgress, increment) => progress.report({ increment, message: `${dlProgress}%` })
                                 );
                             });
                         const sha256sum: string = await hasha.fromFile(toolDlLocation, { algorithm: 'sha256' });
-                        if (sha256sum !== ToolsConfig.tool['tkn'].platform[Platform.getOS()].sha256sum) {
+                        if (sha256sum !== ToolsConfig.tool['tkn'].sha256sum) {
                             fsex.removeSync(toolDlLocation);
                             action = await vscode.window.showInformationMessage(`Checksum for downloaded ${ToolsConfig.tool['tkn'].description} v${ToolsConfig.tool['tkn'].version} is not correct.`, 'Download again', 'Cancel');
                         }

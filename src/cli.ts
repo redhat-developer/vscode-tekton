@@ -13,6 +13,15 @@ export interface CliExitData {
     readonly stderr: string;
 }
 
+export interface ICli {
+    execute(cmd: string, opts?: ExecOptions): Promise<CliExitData>;
+}
+
+export interface TknChannel {
+    print(text: string): void;
+    show(): void;
+}
+
 export class Cli implements ICli {
     private static instance: Cli;
     private tknChannel: TknChannel = new TknChannelImpl();
@@ -47,15 +56,6 @@ export class Cli implements ICli {
             });
         });
     }
-}
-
-export interface ICli {
-    execute(cmd: string, opts?: ExecOptions): Promise<CliExitData>;
-}
-
-export interface TknChannel {
-    print(text: string): void;
-    show(): void;
 }
 
 class TknChannelImpl implements TknChannel {

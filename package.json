@@ -1,9 +1,9 @@
 {
-  "name": "vscode-tekton",
+  "name": "vscode-tekton-pipelines",
   "displayName": "Tekton",
   "description": "Tekton pipelines integration",
-  "version": "v0.1.2",
-  "license": "Apache-2.0",
+  "version": "0.1.0",
+  "license": "MIT",
   "publisher": "redhat",
   "repository": {
     "type": "git",
@@ -22,18 +22,29 @@
     "onView:extension.vsKubernetesExplorer",
     "onCommand:tekton.pipeline.restart",
     "onCommand:tekton.pipeline.start",
-    "onCommand:tekton.pipeline.create.local",
+    "onCommand:tekton.pipeline.createFromLocal",
     "onCommand:tekton.pipeline.list",
     "onCommand:tekton.pipeline.describe",
+    "onCommand:tekton.pipeline.delete",
     "onCommand:tekton.pipelinerun.list",
+    "onCommand:tekton.pipelinerun.restart",
     "onCommand:tekton.pipelinerun.describe",
     "onCommand:tekton.pipelinerun.logs",
+    "onCommand:tekton.pipelinerun.cancel",
+    "onCommand:tekton.pipelinerun.delete",
+    "onCommand:tekton.task.start",
     "onCommand:tekton.task.list",
+    "onCommand:tekton.task.delete",
+    "onCommand:tekton.clustertask.start",
+    "onCommand:tekton.clustertask.list",
+    "onCommand:tekton.clustertask.delete",
     "onCommand:tekton.taskrun.list",
     "onCommand:tekton.taskrun.logs",
+    "onCommand:tekton.taskrun.cancel",
+    "onCommand:tekton.taskrun.delete",
     "onCommand:tekton.explorer.refresh",
     "onCommand:tekton.about",
-    "onCommand:tekton.explain",
+    "onCommand:tekton.explorer.reportIssue",
     "onLanguage:yaml"
   ],
   "main": "./out/src/extension",
@@ -51,11 +62,11 @@
       },
       {
         "command": "tekton.pipeline.restart",
-        "title": "Restart Pipeline",
+        "title": "Start Last Run",
         "category": "Tekton"
       },
       {
-        "command": "tekton.pipeline.create.local",
+        "command": "tekton.pipeline.createFromLocal",
         "title": "New Pipeline from local folder",
         "category": "Tekton"
       },
@@ -70,8 +81,18 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.pipeline.delete",
+        "title": "Delete Pipelines",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.pipelinerun.list",
         "title": "List Pipelineruns",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipelinerun.restart",
+        "title": "Restart Pipelinerun",
         "category": "Tekton"
       },
       {
@@ -85,8 +106,43 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.pipelinerun.delete",
+        "title": "Delete Pipelineruns",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipelinerun.cancel",
+        "title": "Cancel Pipelineruns",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.task.start",
+        "title": "Start Task",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.task.list",
         "title": "List Tasks",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.task.delete",
+        "title": "Delete Task",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.clustertask.start",
+        "title": "Start ClusterTask",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.clustertask.list",
+        "title": "List ClusterTasks",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.clustertask.delete",
+        "title": "Delete ClusterTask",
         "category": "Tekton"
       },
       {
@@ -100,10 +156,32 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.taskrun.delete",
+        "title": "Delete Taskruns",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.taskrun.cancel",
+        "title": "Cancel Taskruns",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.explorer.refresh",
         "title": "Refresh View",
         "category": "Tekton",
-        "icon": "images/refresh.png"
+        "icon": {
+          "dark": "images/dark/icon-refresh.svg",
+          "light": "images/light/icon-refresh.svg"
+        }
+      },
+      {
+        "command": "tekton.explorer.reportIssue",
+        "title": "Report Extension Issue on GitHub",
+        "category": "Tekton",
+        "icon": {
+          "dark": "images/dark/icon-issue.svg",
+          "light": "images/light/icon-issue.svg"
+        }
       }
     ],
     "keybindings": [
@@ -162,6 +240,10 @@
           "when": "view == tektonPipelineExplorer"
         },
         {
+          "command": "tekton.pipeline.delete",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
           "command": "tekton.pipelinerun.list",
           "when": "view == tektonPipelineExplorer"
         },
@@ -170,11 +252,43 @@
           "when": "view == tektonPipelineExplorer"
         },
         {
+          "command": "tekton.pipelinerun.restart",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
           "command": "tekton.pipelinerun.logs",
           "when": "view == tektonPipelineExplorer"
         },
         {
+          "command": "tekton.pipelinerun.delete",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.pipelinerun.cancel",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.task.start",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
           "command": "tekton.task.list",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.task.delete",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.clustertask.start",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.clustertask.list",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.clustertask.delete",
           "when": "view == tektonPipelineExplorer"
         },
         {
@@ -184,11 +298,24 @@
         {
           "command": "tekton.taskrun.logs",
           "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.taskrun.delete",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.taskrun.cancel",
+          "when": "view == tektonPipelineExplorer"
         }
       ],
       "view/title": [
         {
           "command": "tekton.explorer.refresh",
+          "when": "view == tektonPipelineExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "tekton.explorer.reportIssue",
           "when": "view == tektonPipelineExplorer",
           "group": "navigation"
         }
@@ -198,6 +325,11 @@
           "command": "tekton.pipeline.restart",
           "when": "view == tektonPipelineExplorer && viewItem == pipeline",
           "group": "c1@1"
+        },
+        {
+          "command": "tekton.pipeline.start",
+          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
+          "group": "c1@2"
         },
         {
           "command": "tekton.pipeline.list",
@@ -210,6 +342,11 @@
           "group": "c1@3"
         },
         {
+          "command": "tekton.pipeline.delete",
+          "when": "view == tektonPipelineExplorer  && viewItem == pipeline",
+          "group": "c2"
+        },
+        {
           "command": "tekton.about",
           "when": "view == tektonPipelineExplorer",
           "group": "c3"
@@ -217,17 +354,37 @@
         {
           "command": "tekton.pipelinerun.list",
           "when": "view == tektonPipelineExplorer && viewItem == pipeline",
-          "group": "c1@2"
+          "group": "c1@4"
         },
         {
-          "command": "tekton.pipelinerun.describe",
+          "command": "tekton.pipelinerun.restart",
           "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
           "group": "c1@1"
         },
         {
-          "command": "tekton.pipelinerun.logs",
+          "command": "tekton.pipelinerun.describe",
           "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
           "group": "c1@2"
+        },
+        {
+          "command": "tekton.pipelinerun.logs",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
+          "group": "c1@3"
+        },
+        {
+          "command": "tekton.pipelinerun.cancel",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
+          "group": "c2@1"
+        },
+        {
+          "command": "tekton.pipelinerun.delete",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
+          "group": "c2@2"
+        },
+        {
+          "command": "tekton.task.start",
+          "when": "view == tektonPipelineExplorer && viewItem == task",
+          "group": "c1"
         },
         {
           "command": "tekton.task.list",
@@ -235,9 +392,39 @@
           "group": "c1"
         },
         {
-          "command": "tekton.taskrun.logs",
+          "command": "tekton.task.delete",
+          "when": "view == tektonPipelineExplorer && viewItem == task",
+          "group": "c2"
+        },
+        {
+          "command": "tekton.clustertask.start",
+          "when": "view == tektonPipelineExplorer && viewItem == clustertask",
+          "group": "c1"
+        },
+        {
+          "command": "tekton.clustertask.list",
+          "when": "view == tektonPipelineExplorer && viewItem == clustertasknode",
+          "group": "c1"
+        },
+        {
+          "command": "tekton.clustertask.delete",
+          "when": "view == tektonPipelineExplorer && viewItem == clustertask",
+          "group": "c2"
+        },
+        {
+          "command": "tekton.taskrun.list",
           "when": "view == tektonPipelineExplorer && viewItem == taskrun",
           "group": "c1"
+        },
+        {
+          "command": "tekton.taskrun.logs",
+          "when": "view == tektonPipelineExplorer && viewItem == taskrun",
+          "group": "c1@2"
+        },
+        {
+          "command": "tekton.taskrun.delete",
+          "when": "view == tektonPipelineExplorer && viewItem == taskrun",
+          "group": "c2"
         }
       ]
     }
@@ -315,23 +502,21 @@
     "@types/byline": "^4.2.31",
     "@types/chai": "^4.1.7",
     "@types/collections": "^5.0.0",
-    "@types/fs-extra": "^5.0.5",
+    "@types/fs-extra": "^8.0.0",
     "@types/js-yaml": "^3.12.1",
     "@types/mkdirp": "^0.5.2",
-    "@types/mocha": "^5.2.6",
-    "@types/node": "^11.13.15",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.0.10",
     "@types/request": "^2.48.1",
-    "@types/semver": "^6.0.1",
     "@types/shelljs": "^0.8.5",
     "@types/sinon": "^5.0.7",
     "@types/sinon-chai": "^3.2.2",
     "@types/string-format": "^2.0.0",
-    "@types/tmp": "0.0.34",
-    "@types/validator": "^10.11.0",
+    "@types/tmp": "0.1.0",
+    "@types/validator": "^10.11.2",
     "chai": "^4.2.0",
-    "codecov": "^3.3.0",
+    "codecov": "^3.5.0",
     "decache": "^4.5.1",
-    "eslint": "^5.16.0",
     "glob": "^7.1.3",
     "istanbul": "^0.4.5",
     "mocha": "^6.1.4",
@@ -340,7 +525,7 @@
     "remap-istanbul": "^0.13.0",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
-    "tmp": "0.0.33",
+    "tmp": "0.1.0",
     "tslint": "^5.18.0",
     "typescript": "^3.5.2",
     "vscode": "^1.1.35",
@@ -362,12 +547,12 @@
     "pluralize": "^4.0.0",
     "request": "^2.88.0",
     "request-progress": "^3.0.0",
-    "semver": "^6.2.0",
+    "semver": "^6.3.0",
     "shelljs": "^0.8.3",
     "string-format": "^2.0.0",
     "targz": "^1.0.1",
     "unzip-stream": "^0.3.0",
-    "validator": "^10.11.0",
-    "vscode-kubernetes-tools-api": "0.0.7"
+    "validator": "^11.0.0",
+    "vscode-kubernetes-tools-api": "1.0.0"
   }
 }

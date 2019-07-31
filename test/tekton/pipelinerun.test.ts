@@ -9,11 +9,12 @@ import * as vscode from 'vscode';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
-import { TknImpl, Command } from '../../src/tkn';
+import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { PipelineRun } from '../../src/tekton/pipelinerun';
 import { Pipeline } from '../../src/tekton/pipeline';
 import { TestItem } from './testTektonitem';
 import { TektonItem } from '../../src/tekton/tektonitem';
+import { doesNotThrow } from 'assert';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -24,8 +25,8 @@ suite('Tekton/PipelineRun', () => {
     let execStub: sinon.SinonStub;
     let getPipelineNamesStub: sinon.SinonStub;
     let inputStub: sinon.SinonStub;
-    const pipelineItem = new TestItem(null, 'pipeline');
-    const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun');
+    const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
+    const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
 
     setup(() => {
         sandbox = sinon.createSandbox();
@@ -47,13 +48,6 @@ suite('Tekton/PipelineRun', () => {
             quickPickStub.onFirstCall().resolves(pipelineItem);
         });
 
-        test('returns null when cancelled', async () => {
-            quickPickStub.onFirstCall().resolves();
-            const result = await Pipeline.start(null);
-
-            expect(result).null;
-        });
-
         test('returns the appropriate error message when no pipelines available', async () => {
             quickPickStub.restore();
             getPipelineNamesStub.restore();
@@ -69,15 +63,6 @@ suite('Tekton/PipelineRun', () => {
 
         });
 
-        test('asks to select a pipeline first', async () => {
-            const pipelines = Promise.resolve([pipelineItem, pipelineItem]);
-            inputStub.resolves('name');
-            execStub.resolves();
-
-            await Pipeline.start(null);
-
-            expect(quickPickStub).calledWith(pipelines, { placeHolder: "In which Pipeline you want to create an PipelineRun" });
-        });
     });
 
     suite('describe command', () => {
@@ -87,18 +72,19 @@ suite('Tekton/PipelineRun', () => {
             termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal').resolves();
         });
 
-        suite('called form \'Tekton PipelineRun Explorer\'', () => {
+        suite('called from \'Tekton PipelineRun Explorer\'', () => {
 
-            test('executes the pipelinerunropriate tkn command in terminal', async () => {
+            test('executes the pipelinerun appropriate tkn command in terminal', async (done) => {
                 await PipelineRun.describe(pipelinerunItem);
 
               expect(termStub).calledOnceWith(Command.describePipelineRuns(pipelinerunItem.getName()));
+              done();
             });
         });
 
         suite('called from command palette', () => {
 
-            test('calls the pipelinerunropriate error message when no pipeline found', async () => {
+            test('calls the pipelinerun appropriate error message when no pipeline found', async () => {
                 getPipelineNamesStub.restore();
                 sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([]);
                 try {
@@ -111,7 +97,7 @@ suite('Tekton/PipelineRun', () => {
 
             });
 
-            test('asks to select a pipeline and an pipelinerun', async () => {
+            test('asks to select a pipeline and a pipelinerun', async (done) => {
                 const pipelines = Promise.resolve([pipelineItem]);
                 const pipelineruns = Promise.resolve([pipelinerunItem]);
                 quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
@@ -122,6 +108,7 @@ suite('Tekton/PipelineRun', () => {
 
                 expect(quickPickStub).calledWith(pipelines, { placeHolder: "From which pipeline you want to describe PipelineRun" });
                 expect(quickPickStub).calledWith(pipelineruns, { placeHolder: "Select PipelineRun you want to describe" });
+                done();
             });
 
             test('skips tkn command execution if canceled by user', async () => {

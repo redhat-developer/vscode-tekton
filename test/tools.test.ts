@@ -79,8 +79,8 @@ suite("tool configuration", () => {
             sb.stub(shelljs, 'which').returns(<string & shelljs.ShellReturnValue>{stdout: 'tkn'});
             sb.stub(fs, 'existsSync').returns(false);
             sb.stub(ToolsConfig, 'getVersion').returns(ToolsConfig.tool['tkn'].version);
-            const toolLtknation = await ToolsConfig.detectOrDownload();
-            assert.equal(toolLtknation, 'tkn');
+            const tooltknation = await ToolsConfig.detectOrDownload();
+            assert.equal(tooltknation, 'tkn');
         });
 
         test('returns path to previously downloaded tool if detected version is correct', async () => {
@@ -91,7 +91,7 @@ suite("tool configuration", () => {
             assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
         });
 
-        test('ask to downloads tool if previously downloaded version is not correct and download if requested by user', async () => {
+        test('ask to download tool if previously downloaded version is not correct and download if requested by user', async () => {
             sb.stub(shelljs, 'which');
             sb.stub(fs, 'existsSync').returns(true);
             sb.stub(ToolsConfig, 'getVersion').resolves('0.0.0');
@@ -110,7 +110,7 @@ suite("tool configuration", () => {
             assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
         });
 
-        test('ask to downloads tool if previously downloaded version is not correct and skip download if canceled by user', async () => {
+        test('ask to download tool if previously downloaded version is not correct and skip download if canceled by user', async () => {
             sb.stub(shelljs, 'which');
             sb.stub(fs, 'existsSync').returns(true);
             sb.stub(ToolsConfig, 'getVersion').resolves('0.0.0');
@@ -200,7 +200,7 @@ suite("tool configuration", () => {
         test('keeps tool configuration if there is no platform attribute', () => {
             let config: object = {
                 tkn: {
-                    name: 'OpenShift Do tool',
+                    name: 'Tekton Pipeline Tkn tool',
                     version: '0.0.100'
                 }
             };
@@ -210,7 +210,7 @@ suite("tool configuration", () => {
         test('removes tool configuration if platform is not supported', () => {
             let config: object = {
                 tkn: {
-                    name: 'OpenShift Do tool',
+                    name: 'Tekton Pipelines Tkn tool',
                     version: '0.0.100',
                     platform: {
                         win32: {

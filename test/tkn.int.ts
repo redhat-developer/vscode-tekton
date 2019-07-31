@@ -12,7 +12,7 @@ import { Pipeline } from '../src/tekton/pipeline';
 
 suite('tkn integration', () => {
     const tk: tkn.Tkn = tkn.getInstance();
-    const pipelineItem = new TestItem(null, 'pipeline');
+    const pipelineItem = new TestItem(null, 'pipeline', tkn.ContextType.PIPELINE);
     let sb: sinon.SinonSandbox;
 
     setup(() => {

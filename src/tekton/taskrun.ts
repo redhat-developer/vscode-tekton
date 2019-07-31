@@ -5,21 +5,35 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
+import * as k8s from 'vscode-kubernetes-tools-api';
 
 export class TaskRun extends TektonItem {
+    static cancel(cancel: any, context: any): any {
+        throw new Error("Method not implemented.");
+    }
 
     static async list(treeItem: TektonNode): Promise<void> {
         const taskrun = await TaskRun.getTektonCmdData(treeItem,
             "From which pipeline do you want to list a Taskrun",
             "Select Taskruns you want to list");
-        if (taskrun) TaskRun.tkn.executeInTerminal(Command.listTaskRuns(taskrun.getName()));
+        if (taskrun) { TaskRun.tkn.executeInTerminal(Command.listTaskRunsInTerminal(taskrun.getName())); }
     }
 
     static async logs(treeItem: TektonNode): Promise<void> {
         const taskrun = await TaskRun.getTektonCmdData(treeItem,
             "From which pipeline do you want to list a Taskrun",
             "Select Taskruns you want to list");
-        if (taskrun) TaskRun.tkn.executeInTerminal(Command.showTaskRunLogs(taskrun.getName()));
+        if (taskrun) { TaskRun.tkn.executeInTerminal(Command.showTaskRunLogs(taskrun.getName())); }
+    }
+
+    static async delete(treeItem: TektonNode): Promise<void> {
+        const taskrun= await TaskRun.getTektonCmdData(treeItem,
+            "Which Pipeline do you want to delete",
+            "Select Pipeline you want to delete");
+        if (taskrun) { 
+            const kubectl = await k8s.extension.kubectl.v1;
+            if (kubectl.available) { await kubectl.api.invokeCommand('delete taskrun '+taskrun.getName()); }
+        }
     }
 
 }
