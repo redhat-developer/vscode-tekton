@@ -7,6 +7,7 @@ import { ToolsConfig } from './tools';
 import format = require('string-format');
 import { PipelineExplorer } from './pipeline/pipelineExplorer';
 import bs = require('binary-search');
+import { pipeline } from 'stream';
 
 
 export interface TektonNode extends QuickPickItem {
@@ -69,8 +70,8 @@ export class Command {
         return `tkn pipeline list -o json`;
     }
     @verbose
-    static listPipelinesinTerminal() {
-        return `tkn pipeline list`;
+    static listPipelinesinTerminal(name: string) {
+        return `tkn pipeline list ${name}`;
     }
     @verbose
     static describePipelines(name: string) {

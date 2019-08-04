@@ -21,30 +21,50 @@ suite('Tekton/Task', () => {
     let quickPickStub: sinon.SinonStub;
     let sandbox: sinon.SinonSandbox;
     let execStub: sinon.SinonStub;
-    let getTaskNamesStub: sinon.SinonStub;
-    let inputStub: sinon.SinonStub;
-    const taskItem = new TestItem(null, 'task', ContextType.TASK);
+    let getTaskStub: sinon.SinonStub;
+    const taskNode = new TestItem(TknImpl.ROOT, 'test-task', ContextType.TASKNODE, null);
+    const taskItem = new TestItem(taskNode, 'task', ContextType.TASK, null);
 
 
     setup(() => {
         sandbox = sinon.createSandbox();
-        execStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal').resolves();
-        sandbox = sinon.createSandbox();
         execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
         sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskItem]);
-        getTaskNamesStub = sandbox.stub(TektonItem, 'getTaskNames').resolves([taskItem]);
-        sandbox.stub(TektonItem, 'getTaskNames').resolves([taskItem]);
-        inputStub = sandbox.stub(vscode.window, 'showInputBox');
+        getTaskStub = sandbox.stub(TektonItem, 'getTaskNames').resolves([taskItem]);
+        sandbox.stub(vscode.window, 'showInputBox');
     });
 
     teardown(() => {
         sandbox.restore();
     });
 
-    test('list calls tkn task list', () => {
-        Task.list(taskItem);
+    let termStub: sinon.SinonStub;
 
-        expect(execStub).calledOnceWith(Command.listTasks(taskItem.getName()));
+    setup(() => {
+        termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal').resolves();
+    });
+
+    suite('called from \'Tekton Pipelines Explorer\'', () => {
+
+        test('executes the list tkn command in terminal', async () => {
+            await Task.list(taskItem);
+            expect(termStub).calledOnceWith(Command.listTasksinTerminal(taskItem.getName()));
+        });
+
+    });
+
+    suite('called from command palette', () => {
+
+        test('calls the appropriate error message when no task found', async () => {
+            getTaskStub.restore();
+            sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([]);
+            try {
+                await Task.list(null);
+            } catch (err) {
+                expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
+                return;
+            }
+        });
     });
 
     suite('called from command bar', () => {
@@ -54,12 +74,12 @@ suite('Tekton/Task', () => {
             quickPickStub.onFirstCall().resolves(taskItem);
         });
 
-        test('returns null when no task not defined properly', async (done) => {
+        test('returns undefined when task is not defined properly', async () => {
             quickPickStub.onFirstCall().resolves();
             const result = await Task.list(null);
             // tslint:disable-next-line: no-unused-expression
-            expect(result).null;
-            done();
+            expect(result).undefined;
         });
     });
 });
+

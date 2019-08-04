@@ -32,12 +32,12 @@ suite("tool configuration", () => {
 
     suite('getVersion()', () => {
         test('returns version number with expected output', async () => {
-            const testData: CliExitData = { stdout: 'tkn v0.1.2 (43e2a41)\n line two', stderr: '', error: undefined };
+            const testData: CliExitData = { stdout: 'tkn v0.2.0 (c3726f6)\n line two', stderr: '', error: undefined };
             sb.stub(Cli.prototype, 'execute').resolves(testData);
             sb.stub(fs, 'existsSync').returns(true);
 
             const result: string = await ToolsConfig.getVersion('tkn');
-            assert.equal(result, '0.1.2');
+            assert.equal(result, '0.2.0');
         });
 
         test('returns version undefined for unexpected output', async () => {
@@ -54,7 +54,7 @@ suite("tool configuration", () => {
             sb.stub(Cli.prototype, 'execute').resolves(invalidData);
             sb.stub(fs, 'existsSync').returns(false);
 
-            const result: string = await ToolsConfig.getVersion('tkn');
+            const result: string = await ToolsConfig.getVersion('odo');
             assert.equal(result, undefined);
         });
 
@@ -79,16 +79,16 @@ suite("tool configuration", () => {
             sb.stub(shelljs, 'which').returns(<string & shelljs.ShellReturnValue>{stdout: 'tkn'});
             sb.stub(fs, 'existsSync').returns(false);
             sb.stub(ToolsConfig, 'getVersion').returns(ToolsConfig.tool['tkn'].version);
-            const tooltknation = await ToolsConfig.detectOrDownload();
-            assert.equal(tooltknation, 'tkn');
+            const toolLocation = await ToolsConfig.detectOrDownload();
+            assert.equal(toolLocation, 'tkn');
         });
 
         test('returns path to previously downloaded tool if detected version is correct', async () => {
             sb.stub(shelljs, 'which');
             sb.stub(fs, 'existsSync').returns(true);
             sb.stub(ToolsConfig, 'getVersion').returns(ToolsConfig.tool['tkn'].version);
-            const toolLtknation = await ToolsConfig.detectOrDownload();
-            assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
+            const toolLocation = await ToolsConfig.detectOrDownload();
+            assert.equal( toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
         });
 
         test('ask to download tool if previously downloaded version is not correct and download if requested by user', async () => {
@@ -99,15 +99,11 @@ suite("tool configuration", () => {
             const stub = sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tool['tkn'].sha256sum);
             stub.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
             sb.stub(Archive, 'unzip').resolves();
-            let toolLtknation = await ToolsConfig.detectOrDownload();
+            let toolLocation = await ToolsConfig.detectOrDownload();
             assert.ok(showInfo.calledOnce);
             assert.ok(withProgress.calledOnce);
-            assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
+            assert.equal( toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
             showInfo.resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
-            toolLtknation = await ToolsConfig.detectOrDownload();
-            assert.ok(showInfo.calledTwice);
-            assert.ok(withProgress.calledTwice);
-            assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
         });
 
         test('ask to download tool if previously downloaded version is not correct and skip download if canceled by user', async () => {
@@ -115,9 +111,9 @@ suite("tool configuration", () => {
             sb.stub(fs, 'existsSync').returns(true);
             sb.stub(ToolsConfig, 'getVersion').resolves('0.0.0');
             const showInfo = sb.stub(vscode.window, 'showInformationMessage').resolves('Cancel');
-            const toolLtknation = await ToolsConfig.detectOrDownload();
+            const toolLocation = await ToolsConfig.detectOrDownload();
             assert.ok(showInfo.calledOnce);
-            assert.equal(toolLtknation, undefined);
+            assert.equal(toolLocation, undefined);
         });
 
         test('downloads tool, ask to download again if checksum does not match and finish if consecutive download successful', async () => {
@@ -130,10 +126,10 @@ suite("tool configuration", () => {
             fromFile.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
             sb.stub(fsex, 'removeSync');
             sb.stub(Archive, 'unzip').resolves();
-            const toolLtknation = await ToolsConfig.detectOrDownload();
+            const toolLocation = await ToolsConfig.detectOrDownload();
             assert.ok(withProgress.calledTwice);
             assert.ok(showInfo.calledTwice);
-            assert.equal( toolLtknation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
+            assert.equal( toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
         });
 
         test('downloads tool, ask to download again if checksum does not match and exits if canceled', async () => {
@@ -146,10 +142,10 @@ suite("tool configuration", () => {
             fromFile.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
             sb.stub(fsex, 'removeSync');
             sb.stub(Archive, 'unzip').resolves();
-            const toolLtknation = await ToolsConfig.detectOrDownload();
+            const toolLocation = await ToolsConfig.detectOrDownload();
             assert.ok(withProgress.calledOnce);
             assert.ok(showInfo.calledTwice);
-            assert.equal(toolLtknation, undefined);
+            assert.equal(toolLocation, undefined);
         });
 
         suite('on windows', () => {
