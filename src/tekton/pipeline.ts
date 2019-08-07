@@ -17,13 +17,13 @@ export class Pipeline extends TektonItem {
         throw new Error("Method not implemented.");
     }
 
-    static async getTektonData(context: TektonNode): Promise<TektonNode> {
+/*     static async getTektonData(context: TektonNode): Promise<TektonNode> {
         return await Pipeline.getTektonCmdData(context,
             "In which namespace do you want to create an Pipeline"
         );
-    }
-    static async startFromFolder(context: TektonNode): Promise<string> {
-        const pipeline = await Pipeline.getTektonData(context);
+    } */
+    static async startFromFolder(pipeline: TektonNode): Promise<string> {
+/*         const pipeline = await Pipeline.getTektonData(context) */;
         if (!pipeline) { return null; }
         const sourceTypes: QuickPickItem[] = [
             {
@@ -44,10 +44,10 @@ export class Pipeline extends TektonItem {
                 .then(() => `Pipeline '${pipelineName}' successfully created`)
                 .catch((error) => Promise.reject(`Failed to create Pipeline with error '${error}'`)));
     }
-    static async start(context: TektonNode): Promise<string> {
-        const pipeline = await Pipeline.getTektonCmdData(context,
+    static async start(pipeline: TektonNode): Promise<string> {
+/*         const pipeline = await Pipeline.getTektonCmdData(context,
             "Which Pipeline do you want to start",
-            "Select Pipeline to restart");
+            "Select Pipeline to restart"); */
         if (pipeline) {
             const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.listPipelines(), process.cwd(), false);
             let data: any[] = [];
@@ -60,7 +60,7 @@ export class Pipeline extends TektonItem {
                 //show no pipelines if output is not correct json
             }
             const pipelinetrigger = data.map(value => ({ name: value.metadata.name, resources: value.spec.resources, param: value.spec.params ? value.spec.params : undefined })).filter(function (obj) {
-                return obj.name === context.getName();
+                return obj.name === pipeline.getName();
             });
             if (pipeline) { Pipeline.tkn.executeInTerminal(Command.startPipeline(pipelinetrigger[0].name, pipelinetrigger[0].resources, pipelinetrigger[0].param)); }
             if (!pipeline.getName()) { return null; }
@@ -72,10 +72,10 @@ export class Pipeline extends TektonItem {
         }
         return null;
     }
-    static async restart(context: TektonNode): Promise<string> {
-        const pipeline = await Pipeline.getTektonCmdData(context,
+    static async restart(pipeline: TektonNode): Promise<string> {
+/*         const pipeline = await Pipeline.getTektonCmdData(context,
             "Which Pipeline do you want to restart",
-            "Select Pipeline to restart");
+            "Select Pipeline to restart"); */
         if (pipeline) {
             return Progress.execFunctionWithProgress(`Creating the Pipeline '${pipeline.getName()}'.`, () =>
                 Pipeline.tkn.restartPipeline(pipeline)
@@ -104,24 +104,24 @@ export class Pipeline extends TektonItem {
         Cli.getInstance().showOutputChannel();
     }
 
-    static async describe(context: TektonNode): Promise<void> {
-        const pipeline = await Pipeline.getTektonCmdData(context,
+    static async describe(pipeline: TektonNode): Promise<void> {
+/*         const pipeline = await Pipeline.getTektonCmdData(context,
             "Which Pipeline do you want to describe",
-            "Select Pipeline you want to describe");
+            "Select Pipeline you want to describe"); */
         if (pipeline) { Pipeline.tkn.executeInTerminal(Command.describePipelines(pipeline.getName())); }
     }
 
-    static async list(treeItem: TektonNode): Promise<void> {
-        const pipeline = await Pipeline.getTektonCmdData(treeItem,
+    static async list(pipeline: TektonNode): Promise<void> {
+/*         const pipeline = await Pipeline.getTektonCmdData(treeItem,
             "From which project do you want to describe Pipeline",
-            "Select Pipeline you want to describe");
-        if (pipeline) { Pipeline.tkn.executeInTerminal(Command.listPipelinesinTerminal()); }
+            "Select Pipeline you want to describe"); */
+        if (pipeline) { Pipeline.tkn.executeInTerminal(Command.listPipelinesinTerminal(pipeline.getName())); }
     }
 
-    static async delete(context: TektonNode): Promise<void> {
-        const pipeline = await Pipeline.getTektonCmdData(context,
+    static async delete(pipeline: TektonNode): Promise<void> {
+/*         const pipeline = await Pipeline.getTektonCmdData(context,
             "Which Pipeline do you want to delete",
-            "Select Pipeline you want to delete");
+            "Select Pipeline you want to delete"); */
         if (pipeline) { 
             const kubectl = await k8s.extension.kubectl.v1;
             if (kubectl.available) { await kubectl.api.invokeCommand('delete pipeline '+pipeline.getName()); }

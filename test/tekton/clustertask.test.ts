@@ -21,44 +21,67 @@ suite('Tekton/Clustertask', () => {
     let quickPickStub: sinon.SinonStub;
     let sandbox: sinon.SinonSandbox;
     let execStub: sinon.SinonStub;
-    let termStub: sinon.SinonStub;
     let getClusterTaskStub: sinon.SinonStub;
-    let inputStub: sinon.SinonStub;
     const clustertaskNode = new TestItem(TknImpl.ROOT, 'test-clustertask', ContextType.CLUSTERTASK, null);
     const clustertaskItem = new TestItem(clustertaskNode, 'test-clustertask', ContextType.CLUSTERTASK, null);
 
 
     setup(() => {
         sandbox = sinon.createSandbox();
-        termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal');
         execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
-        sandbox = sinon.createSandbox();
-        getClusterTaskStub = sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([]);
-        sandbox.stub(TektonItem, 'getClusterTaskNames').resolves([clustertaskItem]);
-        inputStub = sandbox.stub(vscode.window, 'showInputBox');
+        sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([clustertaskItem]);
+        getClusterTaskStub = sandbox.stub(TektonItem, 'getClusterTaskNames').resolves([clustertaskItem]);
+        sandbox.stub(vscode.window, 'showInputBox');
     });
 
     teardown(() => {
         sandbox.restore();
     });
 
-    test('list calls tkn clustertask list', async () => {
-        await ClusterTask.list(clustertaskItem);
-        expect(termStub).calledOnceWith(Command.listClusterTasks(clustertaskItem.getName()));
-    });
 
-    suite('called from command bar', () => {
+    suite('list command', async () => {
+        let termStub: sinon.SinonStub;
 
         setup(() => {
-            quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-            quickPickStub.onFirstCall().resolves(clustertaskItem);
+            termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal').resolves();
         });
 
-        test('returns null when no task not defined properly', async () => {
-            quickPickStub.onFirstCall().resolves();
-            const result = await ClusterTask.list(null);
-            // tslint:disable-next-line: no-unused-expression
-            expect(result).null;
+        suite('called from \'Tekton Pipelines Explorer\'', () => {
+
+            test('executes the list tkn command in terminal', async () => {
+                await ClusterTask.list(clustertaskItem);
+                expect(termStub).calledOnceWith(Command.listClusterTasksinTerminal(clustertaskItem.getName()));
+            });
+
+        });
+
+        suite('called from command palette', () => {
+
+            test('calls the appropriate error message when no project found', async () => {
+                getClusterTaskStub.restore();
+                sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([]);
+                try {
+                    await ClusterTask.list(null);
+                } catch (err) {
+                    expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
+                    return;
+                }
+            });
+        });
+
+        suite('called from command bar', () => {
+
+            setup(() => {
+                quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
+                quickPickStub.onFirstCall().resolves(clustertaskItem);
+            });
+
+            test('returns undefined when clustertask is not defined properly', async () => {
+                quickPickStub.onFirstCall().resolves();
+                const result = await ClusterTask.list(null);
+                // tslint:disable-next-line: no-unused-expression
+                expect(result).undefined;
+            });
         });
     });
 });

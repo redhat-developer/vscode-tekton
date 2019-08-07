@@ -13,16 +13,16 @@ export class Task extends TektonItem {
         throw new Error("Method not implemented.");
     }
 
-    static async list(treeItem: TektonNode): Promise<void> {
-        const task = await Task.getTektonCmdData(treeItem,
-            "Which task do you want to list");
+    static async list(task: TektonNode): Promise<void> {
+/*         const task = await Task.getTektonCmdData(treeItem,
+            "Which task do you want to list"); */
         if (task) { Task.tkn.executeInTerminal(Command.listTasksinTerminal(task.getName())); }
     }
 
-    static async delete(treeItem: TektonNode): Promise<void> {
-        const task = await Task.getTektonCmdData(treeItem,
+    static async delete(task: TektonNode): Promise<void> {
+/*         const task = await Task.getTektonCmdData(treeItem,
             "Which Pipeline do you want to delete",
-            "Select Pipeline you want to delete");
+            "Select Pipeline you want to delete"); */
         if (task) { 
             const kubectl = await k8s.extension.kubectl.v1;
             if (kubectl.available) { await kubectl.api.invokeCommand('delete task '+task.getName()); }

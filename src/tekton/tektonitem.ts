@@ -5,7 +5,7 @@
 
 import { Tkn, TknImpl, TektonNode } from '../tkn';
 import { PipelineExplorer } from '../pipeline/pipelineExplorer';
-import { window } from 'vscode';
+import { window, QuickPickItem } from 'vscode';
 import * as validator from 'validator';
 
 const errorMessage = {
@@ -15,6 +15,18 @@ const errorMessage = {
     Taskrun: 'You need at least one Taskrun available. Please create new Tekton Taskrun and try again.',
     ClusterTask: 'You need at least one ClusterTask available. Please create new Tekton ClusterTask and try again.',
 };
+
+/* export class QuickPickCommand implements QuickPickItem {
+    constructor (public label: string,
+        public command: () => Promise<string>,
+        public description?: string,
+        public detail?: string,
+        public picked?: boolean,
+        public alwaysShow?: boolean
+    ) {
+
+    }
+} */
 
 export abstract class TektonItem {
     protected static readonly tkn: Tkn = TknImpl.Instance;
@@ -50,6 +62,12 @@ export abstract class TektonItem {
         return (validator.matches(value, '^[a-z]([-a-z0-9]*[a-z0-9])*$')) ? null : message;
     }
 
+    static async getPipelineResources(): Promise<TektonNode[]> {
+        const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelineResources();
+        if (pipelineList.length === 0) { throw Error(errorMessage.Pipeline); }
+        return pipelineList;
+    }
+
     static async getPipelineNames(pipeline: TektonNode): Promise<TektonNode[]> {
         const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelines(pipeline);
         if (pipelineList.length === 0) { throw Error(errorMessage.Pipeline); }
@@ -79,14 +97,15 @@ export abstract class TektonItem {
         if (taskrunList.length === 0) { throw Error(errorMessage.Taskrun); }
         return taskrunList;
     }
+}
 
-    static async getTektonCmdData(treeItem: TektonNode, projectPlaceholder: string, pipelinePlaceholder?: string, taskPlaceholder?: string) {
-        let context = treeItem;
-        if (!context) {
-            context = await window.showQuickPick(TektonItem.getPipelineNames(treeItem), {placeHolder: projectPlaceholder});
-            if (context && pipelinePlaceholder) { context = await window.showQuickPick(TektonItem.getPipelinerunNames(context), {placeHolder: pipelinePlaceholder}); }
+/*     static async getTektonCmdData(treeItem: TektonNode, pipelinePlaceholder?: string, taskPlaceholder?: string, clustertaskPlaceholder?: string) {
+        let context: TektonNode | QuickPickCommand = treeItem;
+        if (!context) { context = await window.showQuickPick(TektonItem.getPipelineResources(), {placeHolder: pipelinePlaceholder}); }
+        if (context && context.contextValue === ContextType.PIPELINEpipelinePlaceholder) { context = await window.showQuickPick(TektonItem.getPipelinerunNames(context), {placeHolder: pipelinePlaceholder}); }
             if (context && taskPlaceholder) { context = await window.showQuickPick(TektonItem.getTaskNames(treeItem), {placeHolder: taskPlaceholder}); }
+            if (context && clustertaskPlaceholder) { context = await window.showQuickPick(TektonItem.getClusterTaskNames(treeItem), {placeHolder: clustertaskPlaceholder}); }
         }
         return context;
     }
-}
+} */
