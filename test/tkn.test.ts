@@ -132,9 +132,28 @@ suite("tkn", () => {
 
         test('getPipelines returns items from tkn pipeline list command', async () => {
           //  sandbox.stub(tkn.Command, "listPipelines").resolves([pipelineItem1, pipelineItem2, pipelineItem3]);
-            sandbox.stub(tkn.TknImpl.prototype, "getPipelines").resolves([pipelineItem1, pipelineItem2, pipelineItem3]);
+          //  sandbox.stub(tkn.TknImpl.prototype, "getPipelines").resolves([pipelineItem1, pipelineItem2, pipelineItem3]);
             const tknPipelines = ['pipeline1', 'pipeline2', 'pipeline3'];
-            execStub.resolves({ error: null, stderr: '', stdout: tknPipelines.join('\n') });
+            execStub.resolves({ error: null, stderr: '', stdout: JSON.stringify({
+                "items": [{
+                    "kind": "Pipeline",
+                    "apiVersion": "tekton.dev/v1alpha1",
+                    "metadata": {
+                        "name": "pipeline1"
+                    }
+                }, {
+                    "kind": "Pipeline",
+                    "apiVersion": "tekton.dev/v1alpha1",
+                    "metadata": {
+                        "name": "pipeline2"
+                    }
+                }, {
+                      "kind": "Pipeline",
+                      "apiVersion": "tekton.dev/v1alpha1",
+                      "metadata": {
+                          "name": "pipeline3"
+                    }
+                }]})});
             const result = await tknCli.getPipelines(pipelineItem1);
 
             expect(execStub).calledOnceWith(tkn.Command.listPipelines());
