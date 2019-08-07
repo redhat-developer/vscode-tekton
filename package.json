@@ -483,9 +483,7 @@
       }
     }
   },
-  "extensionDependencies": [
-    "redhat.vscode-yaml"
-  ],
+  "extensionDependencies": [],
   "scripts": {
     "verify": "node ./out/build/verify-tools.js",
     "vscode:prepublish": "npm run compile",

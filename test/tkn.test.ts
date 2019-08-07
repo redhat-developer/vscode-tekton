@@ -121,14 +121,15 @@ suite("tkn", () => {
         const taskrunItem = new TestItem(pipelinerunItem, 'taskrun1', tkn.ContextType.TASKRUN, undefined, "2019-07-25T12:03:01Z", "True");
         const taskrunItem2 = new TestItem(pipelinerunItem, 'taskrun2', tkn.ContextType.TASKRUN, undefined, "2019-07-25T12:03:02Z", "True");
         const taskNodeItem = new TestItem(tkn.TknImpl.ROOT, 'tasknode', tkn.ContextType.TASKNODE);
-        const taskItem = new TestItem(tkn.TknImpl.ROOT, 'task', tkn.ContextType.TASK);
-        const clustertaskNode = new TestItem(tkn.TknImpl.ROOT, 'clustertasknode', tkn.ContextType.CLUSTERTASKNODE);
-        const clustertaskItem = new TestItem(tkn.TknImpl.ROOT, 'clustertask', tkn.ContextType.CLUSTERTASK);
+        const taskItem = new TestItem(taskNodeItem, 'task1', tkn.ContextType.TASK);
+        const taskItem2 = new TestItem(taskNodeItem, 'task2', tkn.ContextType.TASK);
+        const clustertaskNodeItem = new TestItem(tkn.TknImpl.ROOT, 'clustertasknode', tkn.ContextType.CLUSTERTASKNODE);
+        const clustertaskItem = new TestItem(clustertaskNodeItem, 'clustertask1', tkn.ContextType.CLUSTERTASK);
+        const clustertaskItem2 = new TestItem(clustertaskNodeItem, 'clustertask2', tkn.ContextType.CLUSTERTASK);
 
         setup(() => {
             execStub = sandbox.stub(tknCli, 'execute');
             yamlStub = sandbox.stub(jsYaml, 'safeLoad');
-            sandbox.stub(tkn.TknImpl.prototype, "getTasks").resolves([taskItem]);
         });
 
         test('getPipelines returns items from tkn pipeline list command', async () => {
@@ -173,6 +174,81 @@ suite("tkn", () => {
             // tslint:disable-next-line: no-unused-expression
             expect(result).empty;
         });
+
+        test('getTasks returns items from tkn task list command', async () => {
+            const tknTasks = ['task1', 'task2'];
+            execStub.resolves({
+                error: null, stderr: '', stdout: JSON.stringify({
+                    "items": [{
+                        "kind": "Task",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "task1"
+                        }
+                    }, {
+                        "kind": "Task",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "task2"
+                        }
+                    }]
+                })
+            });
+            const result = await tknCli.getTasks(taskNodeItem);
+
+            expect(execStub).calledOnceWith(tkn.Command.listTasks(""));
+            expect(result.length).equals(2);
+            for (let i = 1; i < result.length; i++) {
+                expect(result[i].getName()).equals(tknTasks[i]);
+            }
+        });
+
+        test('getTasks returns empty list if tkn produces no output', async () => {
+            sandbox.stub(tkn.TknImpl.prototype, "getTasks").resolves([]);
+            execStub.resolves({ stdout: '', stderr: '', error: null });
+            const result = await tknCli.getTasks(taskNodeItem);
+
+            // tslint:disable-next-line: no-unused-expression
+            expect(result).empty;
+        });
+
+        test('getClusterTasks returns items from tkn task list command', async () => {
+            const tknTasks = ['clustertask1', 'clustertask2'];
+            execStub.resolves({
+                error: null, stderr: '', stdout: JSON.stringify({
+                    "items": [{
+                        "kind": "ClusterTask",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "clustertask1"
+                        }
+                    }, {
+                        "kind": "Task",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "clustertask2"
+                        }
+                    }]
+                })
+            });
+            const result = await tknCli.getClusterTasks(clustertaskNodeItem);
+
+            expect(execStub).calledOnceWith(tkn.Command.listClusterTasks(""));
+            expect(result.length).equals(2);
+            for (let i = 1; i < result.length; i++) {
+                expect(result[i].getName()).equals(tknTasks[i]);
+            }
+        });
+
+        test('getClusterTasks returns empty list if tkn produces no output', async () => {
+            sandbox.stub(tkn.TknImpl.prototype, "getClusterTasks").resolves([]);
+            execStub.resolves({ stdout: '', stderr: '', error: null });
+            const result = await tknCli.getTasks(clustertaskNodeItem);
+
+            // tslint:disable-next-line: no-unused-expression
+            expect(result).empty;
+        });
+
 
         test('getPipelineRuns returns pipelineruns for a pipeline', async () => {
             const tknPipelineRuns = ['pipelinerun1'];
