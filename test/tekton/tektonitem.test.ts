@@ -40,7 +40,7 @@ suite('TektonItem', () => {
 
     suite('getPipelineNames', ()=> {
 
-        test('returns an array of pipelinerunlication names for the pipeline if there is at least one pipeline', async ()=> {
+        test('returns an array of pipelinerun names for the pipeline if there is at least one pipeline', async ()=> {
             sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
             const pipelinerunNames = await TektonItem.getPipelineNames(pipelineItem);
             expect(pipelinerunNames[0].getName()).equals('pipeline');
