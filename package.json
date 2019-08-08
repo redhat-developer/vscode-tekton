@@ -210,7 +210,7 @@
       ]
     },
     "views": {
-      "explorer": [
+      "tektonView": [
         {
           "id": "extension.vsKubernetesExplorer",
           "name": "Clusters"

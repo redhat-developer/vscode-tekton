@@ -81,5 +81,26 @@ suite('Tekton/Pipeline', () => {
             expect(result).undefined;
         });
     });
+      suite('describe', () => {
+
+        setup(() => {
+            quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
+            quickPickStub.onFirstCall().resolves(pipelineItem);
+        });
+
+        test('returns null when cancelled', async () => {
+            quickPickStub.onFirstCall().resolves();
+            const result = await Pipeline.describe(null);
+
+            expect(result).undefined;
+        });
+
+        test('describe calls the correct tkn command in terminal', async () => {
+            await Pipeline.describe(pipelineItem);
+            expect(termStub).calledOnceWith(Command.describePipelines(pipelineItem.getName()));
+        });
+
+    });
+
 });
 
