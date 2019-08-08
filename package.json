@@ -21,6 +21,7 @@
   "activationEvents": [
     "onView:tektonPipelineExplorer",
     "onView:extension.vsKubernetesExplorer",
+    "onCommand:tekton.pipeline.restart",
     "onCommand:tekton.pipeline.start",
     "onCommand:tekton.pipeline.list",
     "onCommand:tekton.pipeline.describe",
@@ -65,6 +66,10 @@
       }
     ],
     "commands": [
+      {
+        "command": "tekton.quickInput",
+        "title": "Quick Input Samples"
+      },
       {
         "command": "tekton.about",
         "title": "About",

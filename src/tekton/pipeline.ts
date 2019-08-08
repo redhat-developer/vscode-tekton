@@ -5,9 +5,24 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
+import { startPipelineObject } from '../util/multiStepInput';
 import { Progress } from '../util/progress';
+import { QuickPickItem, window } from 'vscode';
 import * as cliInstance from '../cli';
 import { Cli } from '../cli';
+
+
+export interface NameType {
+    name: string;
+    type: string;
+}
+
+export interface PipelineTrigger {
+    name: string;
+    resources: NameType[];
+    params?: NameType[];
+    serviceAcct: string;
+}
 
 export class Pipeline extends TektonItem {
 
@@ -23,11 +38,32 @@ export class Pipeline extends TektonItem {
             } catch (ignore) {
                 //show no pipelines if output is not correct json
             }
-            const pipelinetrigger = data.map(value => ({ name: value.metadata.name, resources: value.spec.resources, param: value.spec.params ? value.spec.params : undefined })).filter(function (obj) {
+
+            let pipelinetrigger = data.map<PipelineTrigger>(value => ({
+                        name: value.metadata.name,
+                        resources: value.spec.resources, 
+                        param: value.spec.params ? value.spec.params : undefined,
+                        serviceAcct: value.spec.serviceAccount ? value.spec.serviceAccount : undefined
+            })).filter(function (obj) {
                 return obj.name === pipeline.getName();
             });
-            if (pipeline) { Pipeline.tkn.executeInTerminal(Command.startPipeline(pipelinetrigger[0].name, pipelinetrigger[0].resources, pipelinetrigger[0].param)); }
-            if (!pipeline.getName()) { return null; }
+            const options: { [key: string]: (pipelinetrigger) => Promise<PipelineTrigger> } = {
+                startPipelineObject,
+            };
+            const quickPick = window.createQuickPick();
+            quickPick.items = Object.keys(options).map(label => ({ label }));
+            quickPick.onDidChangeSelection(selection => {
+                if (selection[0]) {
+                    options[selection[0].label](pipelinetrigger)
+                        .catch(console.error);
+                }
+            });
+            quickPick.onDidHide(() => quickPick.dispose());
+            quickPick.show();
+            /*         const pipeline = await Pipeline.getTektonCmdData(context,
+                        "Which Pipeline do you want to start",
+                        "Select Pipeline to restart"); */
+
             return Progress.execFunctionWithProgress(`Creating the Pipeline '${pipeline.getName()}'.`, () =>
                 Pipeline.tkn.startPipeline(pipeline)
                     .then(() => `Pipeline '${pipeline.getName}' successfully created`)

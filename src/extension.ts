@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import { startPipeline, showInputBox } from './util/basicInput';
+import { startPipelineObject } from './util/multiStepInput';
 import { PipelineExplorer } from './pipeline/pipelineExplorer';
 import { Pipeline } from './tekton/pipeline';
 import { PipelineRun } from './tekton/pipelinerun';
@@ -18,6 +20,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     contextGlobalState = context;
     migrateFromTkn018();
+
+	
 
     const disposables = [
         vscode.commands.registerCommand('tekton.about', (context) => execute(Pipeline.about, context)),
