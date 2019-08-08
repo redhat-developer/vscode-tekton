@@ -10,7 +10,6 @@ import * as sinonChai from 'sinon-chai';
 import sinon = require('sinon');
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { TknImpl, ContextType } from '../../src/tkn';
-import { wait } from '../../src/util/async';
 import { TestItem } from './testTektonitem';
 import { fail } from 'assert';
 
@@ -32,10 +31,6 @@ suite('TektonItem', () => {
 
     teardown(() => {
         sandbox.restore();
-    });
-
-    test('Wait eventually exits', async () => {
-        return wait();
     });
 
     suite('getPipelineNames', ()=> {
