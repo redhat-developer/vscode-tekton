@@ -12,7 +12,6 @@ import * as sinon from 'sinon';
 import { TestItem } from './testTektonitem';
 import { TaskRun } from '../../src/tekton/taskrun';
 import { TknImpl, Command, ContextType } from '../../src/tkn';
-import * as Util from '../../src/util/async';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { AssertionError } from 'assert';
 
