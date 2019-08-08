@@ -1,7 +1,6 @@
 # Visual Studio Code Tekton Pipelines Extension  <img src="images/tekton.png" alt="tekton" width="50"/>
 
-[![Build Status](https://travis-ci.org/onyiny-ang/vscode-tekton.svg?branch=master)](https://travis-ci.org/onyiny-ang/vscode-tekton)
-[![Build Status](https://travis-ci.org/redhat-developer/vscode-tekton.svg?branch=master)](https://travis-ci.org/redhat-developer/vscode-tekton)
+[![Build Status](https://travis-ci.com/redhat-developer/vscode-tekton.svg?branch=master)](https://travis-ci.com/redhat-developer/vscode-tekton)
 [![Unit Tests Code Coverage](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/master/graph/badge.svg)](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/master/graph/badge.svg)
 [![Visual Studio Marketplace](https://vsmarketplacebadge.apphb.com/version/redhat.vscode-tekton-pipelines.svg)](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-tekton-pipelines)
 
