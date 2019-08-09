@@ -82,7 +82,7 @@ export class Command {
     @verbose
     static listPipelineRunsInTerminal(name: string) {
         return `tkn pipelinerun list ${name}`;
-    }    
+    }
     @verbose
     static describePipelineRuns(name: string) {
         return `tkn pipelinerun describe ${name}`;
@@ -125,9 +125,6 @@ export class Command {
     @verbose
     static addNewPipelineFromFolder(pipeline: TektonNode, path: string) {
         return `tkn pipeline start ${path}`;
-    }
-    static pushPipeline(pipeline: TektonNode): string {
-        return "A string";
     }
     //TODO: Watch components as per odo so that we can reconcile pipeline view properly
     //TODO: Create and delete pipelines Start Pipeline
@@ -501,10 +498,11 @@ export class TknImpl implements Tkn {
         throw new Error("Method not implemented.");
     }
     public async addPipelineFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode> {
-        await this.execute(Command.startPipeline(pipeline.getParent().getName(), undefined, undefined));
+        throw new Error("Method not implemented.");
+/*         await this.execute(Command.startPipeline(pipeline.getParent().getName(), undefined, undefined));
         this.executeInTerminal(Command.pushPipeline(pipeline), "randomstring1", "randomstring2");
-        return this.insertAndReveal(await this.getPipelines(pipeline), new TektonNodeImpl(pipeline, "test", ContextType.PIPELINE, this, TreeItemCollapsibleState.Collapsed, 'folder'));
-    }
+        return this.insertAndReveal(await this.getPipelines(pipeline), new TektonNodeImpl(pipeline, "test", ContextType.PIPELINE, this, TreeItemCollapsibleState.Collapsed, 'folder')); */
+    } 
 
     clearCache() {
         this.cache.clear();
