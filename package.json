@@ -413,13 +413,13 @@
         },
         {
           "command": "tekton.taskrun.list",
-          "when": "view == tektonPipelineExplorer && viewItem == taskrun",
-          "group": "c1"
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
+          "group": "c1@4"
         },
         {
           "command": "tekton.taskrun.logs",
           "when": "view == tektonPipelineExplorer && viewItem == taskrun",
-          "group": "c1@2"
+          "group": "c1"
         },
         {
           "command": "tekton.taskrun.delete",
