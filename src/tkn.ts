@@ -7,8 +7,6 @@ import { ToolsConfig } from './tools';
 import format = require('string-format');
 import { PipelineExplorer } from './pipeline/pipelineExplorer';
 import bs = require('binary-search');
-import { pipeline } from 'stream';
-
 
 export interface TektonNode extends QuickPickItem {
     contextValue: string;
@@ -94,27 +92,27 @@ export class Command {
         return `tkn pipelinerun logs ${name}`;
     }
     @verbose
-    static listTasks(name: string) {
-        return `tkn task list ${name} -o json`;
+    static listTasks(namespace: string) {
+        return `tkn task list -n ${namespace} -o json`;
     }
     @verbose
-    static listTasksinTerminal(name: string) {
-        return `tkn task list ${name}`;
+    static listTasksinTerminal(namespace: string) {
+        return `tkn task list -n ${namespace} -o json`;
     }
     @verbose
-    static listTaskRuns(name: string) {
-        return `tkn taskrun list ${name} -o json`;
+    static listTaskRuns(namespace: string) {
+        return `tkn taskrun list -n ${namespace} -o json`;
     }
     @verbose
-    static listTaskRunsInTerminal(name: string) {
-        return `tkn taskrun list ${name}`;
+    static listTaskRunsInTerminal(namespace: string) {
+        return `tkn taskrun list -n ${namespace}`;
     }
     @verbose
-    static listClusterTasks(name: string) {
-        return `tkn clustertask list ${name} -o json`;
+    static listClusterTasks(namespace: string) {
+        return `tkn clustertask list -n ${namespace} -o json`;
     }
-    static listClusterTasksinTerminal(name: string) {
-        return `tkn clustertask list ${name}`;
+    static listClusterTasksinTerminal(namespace: string) {
+        return `tkn clustertask list -n ${namespace}`;
     }
     @verbose
     static showTaskRunLogs(name: string) {
@@ -369,7 +367,7 @@ export class TknImpl implements Tkn {
     }
 
     async _getTaskRuns(pipelinerun: TektonNode): Promise<TektonNode[]> {
-        const result: cliInstance.CliExitData = await this.execute(Command.listTaskRuns(""));
+        const result: cliInstance.CliExitData = await this.execute(Command.listTaskRuns("default"));
         if (result.stderr) {
             console.log(result + " Std.err when processing pipelines");
             return [new TektonNodeImpl(pipelinerun, result.stderr, ContextType.TASKRUN, this, TreeItemCollapsibleState.Expanded)];
@@ -389,7 +387,7 @@ export class TknImpl implements Tkn {
 
     async getTasksWithTkn(task: TektonNode): Promise<TektonNode[]> {
         let data: any[] = [];
-        const result: cliInstance.CliExitData = await this.execute(Command.listTasks(""));
+        const result: cliInstance.CliExitData = await this.execute(Command.listTasks("default"));
         if (result.stderr) {
             console.log(result + "Std.err when processing tasks");
             return [new TektonNodeImpl(task, result.stderr, ContextType.TASK, this, TreeItemCollapsibleState.Expanded)];
@@ -450,7 +448,7 @@ export class TknImpl implements Tkn {
     }
 
     async _getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]> {
-        const result: cliInstance.CliExitData = await this.execute(Command.listClusterTasks(""));
+        const result: cliInstance.CliExitData = await this.execute(Command.listClusterTasks("default"));
         let data: any[] = [];
         try {
             data = JSON.parse(result.stdout).items;
