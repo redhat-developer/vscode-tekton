@@ -257,6 +257,7 @@ export interface Tkn {
     getPipelineChildren(pipeline: TektonNode): Promise<TektonNode[]>;
     getPipelineRunChildren(pipelinerun: TektonNode): Promise<TektonNode[]>;
     getTaskChildren(task: TektonNode): Promise<TektonNode[]>;
+    getTaskRunsforTasks(task: TektonNode): Promise<TektonNode[]>;
     getClusterTaskChildren(clustertask: TektonNode): Promise<TektonNode[]>;
     clearCache?(): void;
 }
@@ -376,7 +377,7 @@ export class TknImpl implements Tkn {
         return this.cache.get(clustertask);
     }
 
-    async getTaskRunsforTasks(task: TektonNode): Promise<TektonNode[]> {
+    public async getTaskRunsforTasks(task: TektonNode): Promise<TektonNode[]> {
         let taskruns: TektonNode[] = await this._getTaskRunsforTasks(task);
         if (!taskruns) {
             return null;
