@@ -32,7 +32,7 @@ suite("tool configuration", () => {
 
     suite('getVersion()', () => {
         test('returns version number with expected output', async () => {
-            const testData: CliExitData = { stdout: 'tkn v0.2.0 (c3726f6)\n line two', stderr: '', error: undefined };
+            const testData: CliExitData = { stdout: 'Client version: 0.2.0', stderr: '', error: undefined };
             sb.stub(Cli.prototype, 'execute').resolves(testData);
             sb.stub(fs, 'existsSync').returns(true);
 
