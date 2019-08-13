@@ -6,11 +6,9 @@
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import { PipelineExplorer } from '../src/pipeline/pipelineExplorer';
-import { TknImpl, ContextType, TektonNodeImpl } from '../src/tkn';
+import { TknImpl, ContextType } from '../src/tkn';
 import { TestItem } from './tekton/testTektonitem';
 import sinon = require('sinon');
-import { doesNotReject } from 'assert';
-import { ClusterProviderV1 } from 'vscode-kubernetes-tools-api';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -67,5 +65,4 @@ suite('Tekton Application Explorer', () => {
         expect(tektonInstance.getTreeItem(pipelineItem)).equals(pipelineItem);
         expect(tektonInstance.getTreeItem(taskItem)).equals(taskItem);
     });
-
 });

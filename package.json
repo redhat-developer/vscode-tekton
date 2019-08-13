@@ -39,6 +39,7 @@
     "onCommand:tekton.clustertask.list",
     "onCommand:tekton.clustertask.delete",
     "onCommand:tekton.taskrun.list",
+    "onCommand:tekton.taskrun.listFromTask",
     "onCommand:tekton.taskrun.logs",
     "onCommand:tekton.taskrun.cancel",
     "onCommand:tekton.taskrun.delete",
@@ -147,6 +148,11 @@
       },
       {
         "command": "tekton.taskrun.list",
+        "title": "List Taskruns",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.taskrun.listFromTask",
         "title": "List Taskruns",
         "category": "Tekton"
       },
@@ -296,6 +302,10 @@
           "when": "view == tektonPipelineExplorer"
         },
         {
+          "command": "tekton.taskrun.listFromTask",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
           "command": "tekton.taskrun.logs",
           "when": "view == tektonPipelineExplorer"
         },
@@ -384,12 +394,17 @@
         {
           "command": "tekton.task.start",
           "when": "view == tektonPipelineExplorer && viewItem == task",
-          "group": "c1"
+          "group": "c1@1"
         },
         {
           "command": "tekton.task.list",
           "when": "view == tektonPipelineExplorer && viewItem == tasknode",
           "group": "c1"
+        },
+        {
+          "command": "tekton.taskrun.listFromTask",
+          "when": "view == tektonPipelineExplorer && viewItem == task",
+          "group": "c1@2"
         },
         {
           "command": "tekton.task.delete",
@@ -407,19 +422,24 @@
           "group": "c1"
         },
         {
+          "command": "tekton.taskrun.listFromTask",
+          "when": "view == tektonPipelineExplorer && viewItem == clustertask",
+          "group": "c1@2"
+        },
+        {
           "command": "tekton.clustertask.delete",
           "when": "view == tektonPipelineExplorer && viewItem == clustertask",
           "group": "c2"
         },
         {
           "command": "tekton.taskrun.list",
-          "when": "view == tektonPipelineExplorer && viewItem == taskrun",
-          "group": "c1"
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
+          "group": "c1@4"
         },
         {
           "command": "tekton.taskrun.logs",
           "when": "view == tektonPipelineExplorer && viewItem == taskrun",
-          "group": "c1@2"
+          "group": "c1"
         },
         {
           "command": "tekton.taskrun.delete",

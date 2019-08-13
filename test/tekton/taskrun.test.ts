@@ -51,7 +51,7 @@ suite('Tekton/TaskRun', () => {
 
             test('executes the list tkn command in terminal', async () => {
                 await TaskRun.list(taskrunItem);
-                expect(termStub).calledOnceWith(Command.listTaskRunsInTerminal(taskrunItem.getName()));
+                expect(termStub).calledOnceWith(Command.listTaskRunsInTerminal("default"));
             });
 
         });
@@ -92,8 +92,67 @@ suite('Tekton/TaskRun', () => {
             });
             teardown(() => {
                 quickPickStub.restore();
+                termStub.restore();
             });
         });
+
+        suite('listFromTasks command', async () => {
+            const taskItem = new TestItem(null, 'task', ContextType.TASK);
+            const clustertaskItem = new TestItem(null, 'clustertask', ContextType.CLUSTERTASK);
+    
+            setup(() => {
+                getTaskRunsStub = sandbox.stub(TektonItem, 'getTaskRunNames').resolves([taskrunItem]);
+            });
+    
+            suite('called from \'Tekton Pipelines Explorer\'', () => {
+    
+                test('executes the listFromTasks tkn command in terminal', async () => {
+                    await TaskRun.listFromTask(taskItem);
+                    expect(termStub).calledOnceWith(Command.listTaskRunsforTasksinTerminal(taskItem.getName()));
+                });
+    
+            });
+    
+            suite('called from command palette', () => {
+    
+                test('calls the appropriate error message when no project found', async () => {
+                    getTaskRunsStub.restore();
+                    sandbox.stub(TknImpl.prototype, 'getTaskRunsforTasks').resolves([]);
+                    try {
+                        await TaskRun.listFromTask(null);
+                    } catch (err) {
+                        expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
+                        return;
+                    }
+                });
+            });
+    
+            suite('called from command bar', () => {
+    
+                setup(() => {
+                    quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
+                    quickPickStub.onFirstCall().resolves(taskrunItem);
+                });
+    
+                test('returns null when clustertask is not defined properly', async () => {
+                    quickPickStub.onFirstCall().resolves();
+                    const result = await TaskRun.listFromTask(null);
+                    // tslint:disable-next-line: no-unused-expression
+                    expect(result).undefined;
+                });
+    
+                test('skips tkn command execution if canceled by user', async () => {
+                    quickPickStub.resolves(null);
+                    await TaskRun.listFromTask(null);
+                    // tslint:disable-next-line: no-unused-expression
+                    expect(termStub).not.called;
+                });
+                teardown(() => {
+                    quickPickStub.restore();
+                });
+            });
+        });
+    
 
         suite('log output', () => {
    

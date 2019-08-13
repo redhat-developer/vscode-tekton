@@ -125,7 +125,6 @@ suite("tkn", () => {
         const taskItem2 = new TestItem(taskNodeItem, 'task2', tkn.ContextType.TASK);
         const clustertaskNodeItem = new TestItem(tkn.TknImpl.ROOT, 'clustertasknode', tkn.ContextType.CLUSTERTASKNODE);
         const clustertaskItem = new TestItem(clustertaskNodeItem, 'clustertask1', tkn.ContextType.CLUSTERTASK);
-        const clustertaskItem2 = new TestItem(clustertaskNodeItem, 'clustertask2', tkn.ContextType.CLUSTERTASK);
 
         setup(() => {
             execStub = sandbox.stub(tknCli, 'execute');
@@ -196,7 +195,7 @@ suite("tkn", () => {
             });
             const result = await tknCli.getTasks(taskNodeItem);
 
-            expect(execStub).calledOnceWith(tkn.Command.listTasks(""));
+            expect(execStub).calledOnceWith(tkn.Command.listTasks("default"));
             expect(result.length).equals(2);
             for (let i = 1; i < result.length; i++) {
                 expect(result[i].getName()).equals(tknTasks[i]);
@@ -233,7 +232,7 @@ suite("tkn", () => {
             });
             const result = await tknCli.getClusterTasks(clustertaskNodeItem);
 
-            expect(execStub).calledOnceWith(tkn.Command.listClusterTasks(""));
+            expect(execStub).calledOnceWith(tkn.Command.listClusterTasks("default"));
             expect(result.length).equals(2);
             for (let i = 1; i < result.length; i++) {
                 expect(result[i].getName()).equals(tknTasks[i]);
@@ -416,7 +415,7 @@ suite("tkn", () => {
                 })
             });
             const result = await tknCli.getTaskRuns(pipelinerunItem);
-            expect(execStub).calledWith(tkn.Command.listTaskRuns(""));
+            expect(execStub).calledWith(tkn.Command.listTaskRuns("default"));
             expect(result.length).equals(2);
             for (let i = 0; i < result.length; i++) {
                 expect(result[i].getName()).equals(tknTaskRuns[i]);
@@ -431,6 +430,230 @@ suite("tkn", () => {
 
             // tslint:disable-next-line: no-unused-expression
             expect(result).empty;
+        });
+
+        test('getTaskRunFromTasks returns taskrun list for a task', async () => {
+            execStub.resolves({
+                error: null, stderr: '', stdout: JSON.stringify({
+                    "items": [
+                    {
+                        "kind": "TaskRun",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "taskrun1",
+                        },
+                        "spec": {
+                            "taskRef": {
+                                "name": "task1",
+                            }
+                        },
+                        "status": {
+                            "conditions": [
+                                {
+                                    "status": "True",
+                                }
+                            ],     
+                            "startTime": "2019-07-25T12:03:00Z",
+                        }
+                    },
+                    {
+                        "kind": "TaskRun",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "taskrun2",
+                        },
+                        "spec": {
+                            "taskRef": {
+                                "name": "task1",
+                            }
+                        },
+                        "status": {
+                            "conditions": [
+                                {
+                                    "status": "True",
+                                }
+                            ],                    
+                            "startTime": "2019-07-25T12:03:01Z",
+                        }
+                    }]
+                })
+            });
+            const result = await tknCli.getTaskChildren(taskItem);
+
+            expect(result.length).equals(2);
+            expect(result[0].getName()).equals('taskrun2');
+        });
+
+        test('getTaskrunsFromTasks returns taskruns for a task', async () => {
+            const tknTaskRuns = ['taskrun2', 'taskrun1'];
+            execStub.resolves({
+                error: null, stderr: '', stdout: JSON.stringify({
+                    "items": [
+                    {
+                        "kind": "TaskRun",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "taskrun1",
+                        },
+                        "spec": {
+                            "taskRef": {
+                                "name": "task1",
+                            }
+                        },
+                        "status": {
+                            "conditions": [
+                                {
+                                    "status": "True",
+                                }
+                            ],     
+                            "startTime": "2019-07-25T12:03:00Z",
+                        }
+                    },
+                    {
+                        "kind": "TaskRun",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "taskrun2",
+                        },
+                        "spec": {
+                            "taskRef": {
+                                "name": "task1",
+                            }
+                        },
+                        "status": {
+                            "conditions": [
+                                {
+                                    "status": "True",
+                                }
+                            ],                    
+                            "startTime": "2019-07-25T12:03:01Z",
+                        }
+                    }]
+                })
+            });
+            const result = await tknCli.getTaskChildren(taskItem);
+            expect(execStub).calledWith(tkn.Command.listTaskRunsforTasks(taskItem.getName()));
+            expect(result.length).equals(2);
+            for (let i = 0; i < result.length; i++) {
+                expect(result[i].getName()).equals(tknTaskRuns[i]);
+            }
+        });
+
+        test('getTaskrunsFromTasks returns an empty list if an error occurs', async () => {
+            sandbox.stub(tkn.TknImpl.prototype, "getTaskRunsforTasks").resolves([]);
+            execStub.onFirstCall().resolves({error: undefined, stdout: '', stderr: ''});
+            execStub.onSecondCall().rejects(errorMessage);
+            const result = await tknCli.getTaskRunsforTasks(taskItem);
+
+            // tslint:disable-next-line: no-unused-expression
+            expect(result).empty;
+        });
+
+        test('getTaskRunFromTasks returns taskrun list for a clustertask', async () => {
+            execStub.resolves({
+                error: null, stderr: '', stdout: JSON.stringify({
+                    "items": [
+                    {
+                        "kind": "TaskRun",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "taskrun1",
+                        },
+                        "spec": {
+                            "taskRef": {
+                                "name": "clustertask1",
+                            }
+                        },
+                        "status": {
+                            "conditions": [
+                                {
+                                    "status": "True",
+                                }
+                            ],     
+                            "startTime": "2019-07-25T12:03:00Z",
+                        }
+                    },
+                    {
+                        "kind": "TaskRun",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "taskrun2",
+                        },
+                        "spec": {
+                            "taskRef": {
+                                "name": "clustertask1",
+                            }
+                        },
+                        "status": {
+                            "conditions": [
+                                {
+                                    "status": "True",
+                                }
+                            ],                    
+                            "startTime": "2019-07-25T12:03:01Z",
+                        }
+                    }]
+                })
+            });
+            const result = await tknCli.getClusterTaskChildren(clustertaskItem);
+
+            expect(result.length).equals(2);
+            expect(result[0].getName()).equals('taskrun2');
+        });
+
+        test('getTaskrunsFromTasks returns taskruns for a clustertask', async () => {
+            const tknTaskRuns = ['taskrun2', 'taskrun1'];
+            execStub.resolves({
+                error: null, stderr: '', stdout: JSON.stringify({
+                    "items": [
+                    {
+                        "kind": "TaskRun",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "taskrun1",
+                        },
+                        "spec": {
+                            "taskRef": {
+                                "name": "clustertask1",
+                            }
+                        },
+                        "status": {
+                            "conditions": [
+                                {
+                                    "status": "True",
+                                }
+                            ],     
+                            "startTime": "2019-07-25T12:03:00Z",
+                        }
+                    },
+                    {
+                        "kind": "TaskRun",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "taskrun2",
+                        },
+                        "spec": {
+                            "taskRef": {
+                                "name": "clustertask1",
+                            }
+                        },
+                        "status": {
+                            "conditions": [
+                                {
+                                    "status": "True",
+                                }
+                            ],                    
+                            "startTime": "2019-07-25T12:03:01Z",
+                        }
+                    }]
+                })
+            });
+            const result = await tknCli.getClusterTaskChildren(clustertaskItem);
+            expect(execStub).calledWith(tkn.Command.listTaskRunsforTasks(clustertaskItem.getName()));
+            expect(result.length).equals(2);
+            for (let i = 0; i < result.length; i++) {
+                expect(result[i].getName()).equals(tknTaskRuns[i]);
+            }
         });
 
         test('getPipelineRunChildren returns taskruns for an pipelinerun', async () => {

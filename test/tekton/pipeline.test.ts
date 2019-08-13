@@ -10,6 +10,7 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { Pipeline } from '../../src/tekton/pipeline';
+import { PipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
@@ -100,6 +101,22 @@ suite('Tekton/Pipeline', () => {
             expect(termStub).calledOnceWith(Command.describePipelines(pipelineItem.getName()));
         });
 
+    });
+
+    suite('about', () => {
+        test('calls the proper tkn command in terminal', () => {
+            Pipeline.about();
+
+            expect(termStub).calledOnceWith(Command.printTknVersion());
+        });
+    });
+
+    suite('refresh', () => {
+        test('calls refresh on the explorer', () => {
+            const stub = sandbox.stub(PipelineExplorer.prototype, 'refresh');
+            Pipeline.refresh();
+            expect(stub).calledOnce;
+        });
     });
 
 });
