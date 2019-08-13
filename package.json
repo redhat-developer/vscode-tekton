@@ -14,7 +14,8 @@
     "vscode": "^1.32.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Snippets"
   ],
   "icon": "images/tekton.png",
   "activationEvents": [
@@ -449,6 +450,12 @@
       ]
     }
   },
+  "snippets": [
+    {
+      "language": "yaml",
+      "path": "./snippets/tektoncd.json"
+    }
+  ],
   "configuration": {
     "type": "object",
     "title": "Tekton Configuration",
