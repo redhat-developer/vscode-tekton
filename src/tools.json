@@ -4,28 +4,28 @@
         "description": "A CLI for interacting with Tekton",
         "vendor": "",
         "name": "tkn",
-        "version": "0.2.0",
-        "versionRange": "0.2.0",
-        "versionRangeLabel": "v0.2.0",
+        "version": "0.2.2",
+        "versionRange": "0.2.2",
+        "versionRangeLabel": "v0.2.2",
         "dlFileName": "tkn",
         "cmdFileName": "tkn",
         "filePrefix": "",
         "platform": {
             "win32": {
-                "url": "https://github.com/tektoncd/cli/releases/download/v0.2.0/tkn_0.2.0_Windows_x86_64.tar.gz",
-                "sha256sum": "317349623b67d4a30264b81c622b2a52f35f746ee5d3d7aa910bb8d78160d1ac",
-                "dlFileName": "tkn_0.2.0_Windows_x86_64.tar.gz",
+                "url": "https://github.com/tektoncd/cli/releases/download/v0.2.2/tkn_0.2.2_Windows_x86_64.tar.gz",
+                "sha256sum": "61dbfffeece0d84974122d6f5a115905e37e0281eb8b8950e98d57d3847afd76",
+                "dlFileName": "tkn_0.2.2_Windows_x86_64.tar.gz",
                 "cmdFileName": "tkn.exe"
             },
             "darwin": {
-                "url": "https://github.com/tektoncd/cli/releases/download/v0.2.0/tkn_0.2.0_Darwin_x86_64.tar.gz",
-                "sha256sum": "ac39646e48fc1dc169b764d0a04b9e9ab5c091728fb9af38f2b4d52b9292a44a",
+                "url": "https://github.com/tektoncd/cli/releases/download/v0.2.2/tkn_0.2.2_Darwin_x86_64.tar.gz",
+                "sha256sum": "2618f1d0b044f84ab14695f54f46d68d5170b4bb2c7bf9eb37995c8c91caf358",
                 "dlFileName": "tkn_0.2.0_Darwin_x86_64.tar.gz"
             },
             "linux": {
-                "url": "https://github.com/tektoncd/cli/releases/download/v0.2.0/tkn_0.2.0_Linux_x86_64.tar.gz",
-                "sha256sum": "122135c291d158f7256d54c458fe185b5755444c2cd36aa2935dd2f5ee0fa027",
-                "dlFileName": "tkn_0.2.0_Linux_x86_64.tar.gz"
+                "url": "https://github.com/tektoncd/cli/releases/download/v0.2.2/tkn_0.2.2_Linux_x86_64.tar.gz",
+                "sha256sum": "f6e1657a87488e4fbce55430f897234857773fd4e59765fe53f87b43c54dc510",
+                "dlFileName": "tkn_0.2.2_Linux_x86_64.tar.gz"
             }
         }
     }
