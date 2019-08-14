@@ -132,10 +132,10 @@ export class Command {
     static printTknVersion() {
         return `tkn version`;
     }
-    @verbose
+/*     @verbose
     static addNewPipelineFromFolder(pipeline: TektonNode, path: string) {
         return `tkn pipeline start ${path}`;
-    }
+    } */
     //TODO: Watch components as per odo so that we can reconcile pipeline view properly
     //TODO: Create and delete pipelines Start Pipeline
 
@@ -251,9 +251,9 @@ export interface Tkn {
     getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]>;
     execute(command: string, cwd?: string, fail?: boolean): Promise<CliExitData>;
     executeInTerminal(command: string, cwd?: string): void;
-    addPipelineFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
-    addTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
-    addClusterTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
+//    addPipelineFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
+//    addTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
+//    addClusterTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
     getPipelineChildren(pipeline: TektonNode): Promise<TektonNode[]>;
     getPipelineRunChildren(pipelinerun: TektonNode): Promise<TektonNode[]>;
     getTaskChildren(task: TektonNode): Promise<TektonNode[]>;
@@ -541,7 +541,7 @@ export class TknImpl implements Tkn {
         ).then(async (result) => result.error && fail ? Promise.reject(result.error) : result).catch((err) => fail ? Promise.reject(err) : Promise.resolve({ error: null, stdout: '', stderr: '' }));
     }
 
-    private insertAndReveal(array: TektonNode[], item: TektonNode): TektonNode {
+/*     private insertAndReveal(array: TektonNode[], item: TektonNode): TektonNode {
         const i = bs(array, item, compareNodes);
         array.splice(Math.abs(i) - 1, 0, item);
         PipelineExplorer.getInstance().reveal(item);
@@ -558,10 +558,10 @@ export class TknImpl implements Tkn {
     }
     public async addPipelineFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode> {
         throw new Error("Method not implemented.");
-/*         await this.execute(Command.startPipeline(pipeline.getParent().getName(), undefined, undefined));
+        await this.execute(Command.startPipeline(pipeline.getParent().getName(), undefined, undefined));
         this.executeInTerminal(Command.pushPipeline(pipeline), "randomstring1", "randomstring2");
-        return this.insertAndReveal(await this.getPipelines(pipeline), new TektonNodeImpl(pipeline, "test", ContextType.PIPELINE, this, TreeItemCollapsibleState.Collapsed, 'folder')); */
-    } 
+        return this.insertAndReveal(await this.getPipelines(pipeline), new TektonNodeImpl(pipeline, "test", ContextType.PIPELINE, this, TreeItemCollapsibleState.Collapsed, 'folder')); 
+    }  */
 
     clearCache() {
         this.cache.clear();
