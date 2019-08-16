@@ -67,10 +67,6 @@
     ],
     "commands": [
       {
-        "command": "tekton.quickInput",
-        "title": "Quick Input Samples"
-      },
-      {
         "command": "tekton.about",
         "title": "About",
         "category": "Tekton"

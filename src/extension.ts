@@ -1,6 +1,4 @@
 import * as vscode from 'vscode';
-import { startPipeline, showInputBox } from './util/basicInput';
-import { startPipelineObject } from './util/multiStepInput';
 import { PipelineExplorer } from './pipeline/pipelineExplorer';
 import { Pipeline } from './tekton/pipeline';
 import { PipelineRun } from './tekton/pipelinerun';
