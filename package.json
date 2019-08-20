@@ -21,17 +21,13 @@
   "activationEvents": [
     "onView:tektonPipelineExplorer",
     "onView:extension.vsKubernetesExplorer",
-    "onCommand:tekton.pipeline.restart",
     "onCommand:tekton.pipeline.start",
-    "onCommand:tekton.pipeline.createFromLocal",
     "onCommand:tekton.pipeline.list",
     "onCommand:tekton.pipeline.describe",
     "onCommand:tekton.pipeline.delete",
     "onCommand:tekton.pipelinerun.list",
-    "onCommand:tekton.pipelinerun.restart",
     "onCommand:tekton.pipelinerun.describe",
     "onCommand:tekton.pipelinerun.logs",
-    "onCommand:tekton.pipelinerun.cancel",
     "onCommand:tekton.pipelinerun.delete",
     "onCommand:tekton.task.start",
     "onCommand:tekton.task.list",
@@ -42,10 +38,10 @@
     "onCommand:tekton.taskrun.list",
     "onCommand:tekton.taskrun.listFromTask",
     "onCommand:tekton.taskrun.logs",
-    "onCommand:tekton.taskrun.cancel",
     "onCommand:tekton.taskrun.delete",
     "onCommand:tekton.explorer.refresh",
     "onCommand:tekton.about",
+    "onCommand:tekton.output",
     "onCommand:tekton.explorer.reportIssue",
     "onLanguage:yaml"
   ],
@@ -58,6 +54,11 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.output",
+        "title": "Show Output Channel",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.pipeline.start",
         "title": "Start Pipeline",
         "category": "Tekton"
@@ -65,11 +66,6 @@
       {
         "command": "tekton.pipeline.restart",
         "title": "Start Last Run",
-        "category": "Tekton"
-      },
-      {
-        "command": "tekton.pipeline.createFromLocal",
-        "title": "New Pipeline from local folder",
         "category": "Tekton"
       },
       {
@@ -93,11 +89,6 @@
         "category": "Tekton"
       },
       {
-        "command": "tekton.pipelinerun.restart",
-        "title": "Restart Pipelinerun",
-        "category": "Tekton"
-      },
-      {
         "command": "tekton.pipelinerun.describe",
         "title": "Describe Pipelineruns",
         "category": "Tekton"
@@ -110,11 +101,6 @@
       {
         "command": "tekton.pipelinerun.delete",
         "title": "Delete Pipelineruns",
-        "category": "Tekton"
-      },
-      {
-        "command": "tekton.pipelinerun.cancel",
-        "title": "Cancel Pipelineruns",
         "category": "Tekton"
       },
       {
@@ -165,11 +151,6 @@
       {
         "command": "tekton.taskrun.delete",
         "title": "Delete Taskruns",
-        "category": "Tekton"
-      },
-      {
-        "command": "tekton.taskrun.cancel",
-        "title": "Cancel Taskruns",
         "category": "Tekton"
       },
       {
@@ -259,19 +240,11 @@
           "when": "view == tektonPipelineExplorer"
         },
         {
-          "command": "tekton.pipelinerun.restart",
-          "when": "view == tektonPipelineExplorer"
-        },
-        {
           "command": "tekton.pipelinerun.logs",
           "when": "view == tektonPipelineExplorer"
         },
         {
           "command": "tekton.pipelinerun.delete",
-          "when": "view == tektonPipelineExplorer"
-        },
-        {
-          "command": "tekton.pipelinerun.cancel",
           "when": "view == tektonPipelineExplorer"
         },
         {
@@ -312,10 +285,6 @@
         },
         {
           "command": "tekton.taskrun.delete",
-          "when": "view == tektonPipelineExplorer"
-        },
-        {
-          "command": "tekton.taskrun.cancel",
           "when": "view == tektonPipelineExplorer"
         }
       ],
@@ -363,14 +332,14 @@
           "group": "c3"
         },
         {
+          "command": "tekton.output",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinenode",
+          "group": "c2"
+        },
+        {
           "command": "tekton.pipelinerun.list",
           "when": "view == tektonPipelineExplorer && viewItem == pipeline",
           "group": "c1@4"
-        },
-        {
-          "command": "tekton.pipelinerun.restart",
-          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
-          "group": "c1@1"
         },
         {
           "command": "tekton.pipelinerun.describe",
@@ -381,11 +350,6 @@
           "command": "tekton.pipelinerun.logs",
           "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
           "group": "c1@3"
-        },
-        {
-          "command": "tekton.pipelinerun.cancel",
-          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
-          "group": "c2@1"
         },
         {
           "command": "tekton.pipelinerun.delete",
@@ -500,7 +464,7 @@
         "title": "Show channel on output",
         "type": "boolean",
         "default": "false",
-        "description": "Show Tekton Pipeline output channel when new text added to ouput stream"
+        "description": "Show Tekton Pipeline output channel when new text added to output stream"
       },
       "vs-tekton.outputVerbosityLevel": {
         "title": "Output Verbosity Level",

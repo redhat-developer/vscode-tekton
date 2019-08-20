@@ -13,7 +13,7 @@ import * as k8s from 'vscode-kubernetes-tools-api';
 
 export class Pipeline extends TektonItem {
 
-    static createFromFolder(createFromFolder: any, context: any) {
+/*     static createFromFolder(createFromFolder: any, context: any) {
         throw new Error("Method not implemented.");
     }
 
@@ -87,10 +87,10 @@ export class Pipeline extends TektonItem {
         return null;
     }
 
-    static createFromLocal(pipeline: TektonNode): Promise<string> {
+/*     static createFromLocal(pipeline: TektonNode): Promise<string> {
         throw new Error("Method not implemented.");
     }
-
+ */
     static refresh(): void {
         Pipeline.explorer.refresh();
     }

@@ -8,9 +8,12 @@ import { TektonNode, Command } from '../tkn';
 import * as k8s from 'vscode-kubernetes-tools-api';
 
 export class TaskRun extends TektonItem {
-    static cancel(cancel: any, context: any): any {
+    
+    // TODO: keep track of CLI development for this implementation 
+    // https://github.com/tektoncd/cli/issues/13 and https://github.com/tektoncd/cli/issues/12
+/*     static cancel(context: TektonNode): Promise<void> {
         throw new Error("Method not implemented.");
-    }
+    } */
 
     static async list(taskrun: TektonNode): Promise<void> {
 /*         const taskrun = await TaskRun.getTektonCmdData(treeItem,

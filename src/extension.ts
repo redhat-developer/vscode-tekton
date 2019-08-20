@@ -20,18 +20,19 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const disposables = [
         vscode.commands.registerCommand('tekton.about', (context) => execute(Pipeline.about, context)),
+        vscode.commands.registerCommand('tekton.output', (context) => execute(Pipeline.showTektonOutput, context)),
         vscode.commands.registerCommand('tekton.explorer.refresh', (context) => execute(Pipeline.refresh , context)),
         vscode.commands.registerCommand('tekton.pipeline.start', (context) => execute(Pipeline.start, context)),
         vscode.commands.registerCommand('tekton.pipeline.restart', (context) => execute(Pipeline.restart, context)),
-        vscode.commands.registerCommand('tekton.pipeline.createFromLocal', (context) => execute(Pipeline.createFromLocal, context)),
+        //vscode.commands.registerCommand('tekton.pipeline.createFromLocal', (context) => execute(Pipeline.createFromLocal, context)),
         vscode.commands.registerCommand('tekton.pipeline.list', (context) => execute(Pipeline.list, context)),
         vscode.commands.registerCommand('tekton.pipeline.describe', (context) => execute(Pipeline.describe, context)),
         vscode.commands.registerCommand('tekton.pipeline.delete', (context) => execute(Pipeline.delete, context)),
-        vscode.commands.registerCommand('tekton.pipelinerun.restart', (context) => execute(PipelineRun.restart, context)),
+        //vscode.commands.registerCommand('tekton.pipelinerun.restart', (context) => execute(PipelineRun.restart, context)),
         vscode.commands.registerCommand('tekton.pipelinerun.list', (context) => execute(PipelineRun.list, context)),
         vscode.commands.registerCommand('tekton.pipelinerun.describe', (context) => execute(PipelineRun.describe, context)),
         vscode.commands.registerCommand('tekton.pipelinerun.logs', (context) => execute(PipelineRun.logs, context)),
-        vscode.commands.registerCommand('tekton.pipelinerun.cancel', (context) => execute(PipelineRun.cancel, context)),
+       // vscode.commands.registerCommand('tekton.pipelinerun.cancel', (context) => execute(PipelineRun.cancel, context)),
         vscode.commands.registerCommand('tekton.pipelinerun.delete', (context) => execute(PipelineRun.delete, context)),
         vscode.commands.registerCommand('tekton.task.start', (context) => execute(Task.start, context)),
         vscode.commands.registerCommand('tekton.task.list', (context) => execute(Task.list, context)),
@@ -42,7 +43,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('tekton.taskrun.list', (context) => execute(TaskRun.list, context)),
         vscode.commands.registerCommand('tekton.taskrun.listFromTask', (context) => execute(TaskRun.listFromTask, context)),
         vscode.commands.registerCommand('tekton.taskrun.logs', (context) => execute(TaskRun.logs, context)),
-        vscode.commands.registerCommand('tekton.taskrun.cancel', (context) => execute(TaskRun.cancel, context)),
+       // vscode.commands.registerCommand('tekton.taskrun.cancel', (context) => execute(TaskRun.cancel, context)),
         vscode.commands.registerCommand('tekton.taskrun.delete', (context) => execute(TaskRun.delete, context)),
         vscode.commands.registerCommand('tekton.explorer.reportIssue', () => PipelineExplorer.reportIssue()),
         PipelineExplorer.getInstance()
@@ -58,10 +59,10 @@ export async function activate(context: vscode.ExtensionContext) {
                 "context",
                 tektonExplorer.nodeSources.resourceFolder("ClusterTasks", "ClusterTasks", "ClusterTask", "clustertask").if(isTekton),
                 tektonExplorer.nodeSources.resourceFolder("Tasks", "Tasks", "Task", "task").if(isTekton),
-                tektonExplorer.nodeSources.resourceFolder("Taskruns", "Taskruns", "Taskrun", "taskruns").if(isTekton),
+                tektonExplorer.nodeSources.resourceFolder("TaskRuns", "TaskRuns", "TaskRun", "taskruns").if(isTekton),
                 tektonExplorer.nodeSources.resourceFolder("Pipelines", "Pipelines", "Pipeline", "pipelines").if(isTekton),
-                tektonExplorer.nodeSources.resourceFolder("Pipelineruns", "Pipelineruns", "Pipelinerun", "pipelineruns").if(isTekton),
-                tektonExplorer.nodeSources.resourceFolder("Pipeline Resources", "PipelineResources", "ClusterTask", "clustertask").if(isTekton),
+                tektonExplorer.nodeSources.resourceFolder("PipelineRuns", "PipelineRuns", "PipelineRun", "pipelineruns").if(isTekton),
+                tektonExplorer.nodeSources.resourceFolder("Pipeline Resources", "PipelineResources", "PipelineResources", "pipelineresources").if(isTekton),
             ).at(undefined);
         tektonExplorer.registerNodeContributor(nodeContributor);
     } else {
