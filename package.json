@@ -41,6 +41,7 @@
     "onCommand:tekton.taskrun.delete",
     "onCommand:tekton.explorer.refresh",
     "onCommand:tekton.about",
+    "onCommand:tekton.output",
     "onCommand:tekton.explorer.reportIssue",
     "onLanguage:yaml"
   ],
@@ -50,6 +51,11 @@
       {
         "command": "tekton.about",
         "title": "About",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.output",
+        "title": "Show Output Channel",
         "category": "Tekton"
       },
       {
@@ -326,6 +332,11 @@
           "group": "c3"
         },
         {
+          "command": "tekton.output",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinenode",
+          "group": "c2"
+        },
+        {
           "command": "tekton.pipelinerun.list",
           "when": "view == tektonPipelineExplorer && viewItem == pipeline",
           "group": "c1@4"
@@ -453,7 +464,7 @@
         "title": "Show channel on output",
         "type": "boolean",
         "default": "false",
-        "description": "Show Tekton Pipeline output channel when new text added to ouput stream"
+        "description": "Show Tekton Pipeline output channel when new text added to output stream"
       },
       "vs-tekton.outputVerbosityLevel": {
         "title": "Output Verbosity Level",

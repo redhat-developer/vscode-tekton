@@ -8,14 +8,50 @@
 
 A Visual Studio Code extension for interacting with Tekton Pipelines.
 
-To use the extension, developers can deploy Tekton Pipelines into a minikube instance (minishift / CDK has not been tested thoroughly but [feedback](issues) would be appreciated!). Currently all clusters are supported, but with some limitations for OpenShift Online Pro where additional storage might be required to create more than two components.
+To use the extension, developers can deploy Tekton Pipelines into a minikube instance (minishift / CDK has not been tested thoroughly but [feedback](issues) would be appreciated!)
 
-For detail analysis of how to setup and run local OpenShift Cluster using minishift, please follow this wiki.
+For detailed analysis of how to setup Tekton Pipelines, please follow the [instructions/tutorial](https://github.com/tektoncd/pipeline#want-to-start-using-pipelines).
 
 
 ### Commands and features
 
-### General Commands
+Development of the Tekton Pipelines Extension is largely following development of the [`tkn` CLI](https://github.com/tektoncd/cli) as well as [Tekton Pipelines](https://github.com/tektoncd/pipeline) which are both under active development and potentially subject to drastic changes. Please don't hesitate to open an [issue](issues) if you find a bug or something breaks unexpectedly. Pull Requests are always welcome--see the [CONTRIBUTING](CONTRIBUTING.md) section for details.
+
+`tekton-pipelines` supports a number of commands & actions for interacting with Tekton Pipelines; these are accessible via the command menu (`Cmd+Shift+P` <kbd>⌘⇧P</kbd> on macOS or `Ctrl+Shift+P` <kbd>⌃⇧P</kbd> on Windows and Linux) and may be bound to keys in the normal way.
+
+* `Tekton: About` - Provides the `tkn` tool version.
+* `Tekton: Show Output Channel` - Shows commands running under the hood and their output.
+* `Tekton: Refresh View` - Refreshes the Tekton Pipeline View.
+
+#### Actions available for a Tekton Pipeline/Task/ClusterTask
+
+   * `Pipeline -> Start` - Start a Pipeline with user indicated resources, parameters and service account.
+   * `Pipeline -> Restart` - Restart the last Pipeline run.
+   * `Pipeline/Task/ClusterTask -> List` - List all Pipelines in a Cluster.
+   * `Pipeline -> Describe` - Prints the JSON of a selected Pipeline.
+   * `Pipeline/Task/ClusterTask -> Delete` - Delete the selected Pipeline.
+
+#### Actions available for a Tekton PipelineRun
+
+   * `PipelineRun/TaskRun -> List` - List all PipelineRuns/TaskRuns in a Pipeline/Task
+   * `PipelineRun/TaskRun -> Describe` - Describe the selected PipelineRun/TaskRun
+   * `PipelineRun/TaskRun -> Logs` - Print Logs from the selected PipelineRun/TaskRun
+   * `PipelineRun/TaskRun -> Delete` - Delete the selected PipelineRun/TaskRun
+
+
+#### Icons Representation
+
+<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/pipe.png" width="15" height="15" /><span style="margin: 20px">Pipeline Resource Node</span></div>
+<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/task.png" width="15" height="15" /><span style="margin: 20px">Task Resource Node</span></div>
+<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/clustertask.png" width="15" height="15" /><span style="margin: 20px">ClusterTask Resource Node</span></div>
+<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/running.png" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Running</span></div>
+<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/success.png" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Successful Run</span></div>
+<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/failed.png" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Failed Run</span></div>
+
+
+### Extension Configuration Settings
+   * `Tekton Pipelines: Show Channel On Output` - Show Tekton Pipelines output channel when new text added to output stream
+   * `Tekton Pipelines: Output verbosity level` - Output verbosity level (value between 0 and 9) for Tekton Pipeline Start, Push and Watch commands in output channel and integrated terminal.
 
 ### Dependencies
 

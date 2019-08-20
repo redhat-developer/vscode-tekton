@@ -5,7 +5,7 @@
 
 import { Tkn, TknImpl, TektonNode } from '../tkn';
 import { PipelineExplorer } from '../pipeline/pipelineExplorer';
-import { window, QuickPickItem } from 'vscode';
+import { window } from 'vscode';
 import * as validator from 'validator';
 
 const errorMessage = {
@@ -106,6 +106,6 @@ export abstract class TektonItem {
             if (context && taskPlaceholder) { context = await window.showQuickPick(TektonItem.getTaskNames(treeItem), {placeHolder: taskPlaceholder}); }
             if (context && clustertaskPlaceholder) { context = await window.showQuickPick(TektonItem.getClusterTaskNames(treeItem), {placeHolder: clustertaskPlaceholder}); }
         }
-        return context;
+return c
     }
 } */
