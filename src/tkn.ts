@@ -76,7 +76,7 @@ export class Command {
         else {
             let params: string[] = [];
             pipelineData.params.forEach(element => {
-                params.push("--resource " + element.name + "=" + element.default);
+                params.push("--param " + element.name + "=" + element.default);
             });
             const paramString = params.join(" ");
             return `tkn pipeline start ${pipelineData.name} ${resString} ${paramString} ${svcAcct}`;

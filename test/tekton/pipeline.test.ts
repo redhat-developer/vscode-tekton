@@ -9,7 +9,7 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { TknImpl, Command, ContextType } from '../../src/tkn';
-import { Pipeline } from '../../src/tekton/pipeline';
+import { Pipeline, StartPipelineObject, PipeResources, PipeParams } from '../../src/tekton/pipeline';
 import { PipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { TestItem } from './testTektonitem';
@@ -24,7 +24,10 @@ suite('Tekton/Pipeline', () => {
     let quickPickStub: sinon.SinonStub;
     let sandbox: sinon.SinonSandbox;
     let execStub: sinon.SinonStub;
+    let startPipelineStub: sinon.SinonStub;
     let getPipelineStub: sinon.SinonStub;
+    let termStub: sinon.SinonStub;
+    let startPipelineObj: StartPipelineObject;
     const pipelineNode = new TestItem(TknImpl.ROOT, 'test-pipeline', ContextType.PIPELINENODE, null);
     const pipelineItem = new TestItem(pipelineNode, 'pipeline', ContextType.PIPELINE, null);
 
@@ -35,16 +38,11 @@ suite('Tekton/Pipeline', () => {
         sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
         getPipelineStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
         sandbox.stub(vscode.window, 'showInputBox');
+        termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal').resolves();
     });
 
     teardown(() => {
         sandbox.restore();
-    });
-
-    let termStub: sinon.SinonStub;
-
-    setup(() => {
-        termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal').resolves();
     });
 
     suite('called from \'Tekton Pipelines Explorer\'', () => {
@@ -119,6 +117,55 @@ suite('Tekton/Pipeline', () => {
         });
 
     });
+
+    suite('restart', () => {
+        test('starts a pipeline with appropriate resources', async () => {
+            await Pipeline.restart(pipelineItem);
+            expect(termStub).calledOnceWith(Command.restartPipeline(pipelineItem.getName()));
+        });
+    });
+
+
+    suite('start', () => {
+
+        setup(() => {
+            let testResources: PipeResources[] = [
+                {
+                    name: "test-resource1",
+                    resourceRef: "resource1"
+                },
+                {
+                    name: "test-resource2",
+                    resourceRef: "resource1"
+                }
+            ];
+            let testParams: PipeParams[] = [
+                {
+                    default: "package",
+                    description: "Param test description",
+                    name: "test-param1"
+                },
+                {
+                    default: "package",
+                    description: "Param test description",
+                    name: "test-param2"
+                }
+            ];
+            startPipelineObj = {
+                name: "pipeline",
+                resources: testResources,
+                params: testParams,
+                serviceAccount: undefined
+            };
+            startPipelineStub = sandbox.stub(Pipeline, "start").resolves({ error: null, stdout: 'tkn pipeline start pipeline --resource test-resource1=resource1 --resource test-resource2=resource1 --param test-param1=package --param test-param2=package', stderr: '' });
+        });
+
+        test('starts a pipeline with appropriate resources', async () => {
+            await Pipeline.start(pipelineItem);
+            expect(termStub).calledOnceWith(Command.startPipeline(startPipelineObj));
+        });
+    });
+
 
     suite('about', () => {
         test('calls the proper tkn command in terminal', () => {
