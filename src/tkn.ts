@@ -1,14 +1,11 @@
 import * as cliInstance from './cli';
-import { ProviderResult, TreeItemCollapsibleState, window, Terminal, Uri, commands, QuickPickItem, workspace } from 'vscode';
+import { ProviderResult, TreeItemCollapsibleState, Terminal, Uri, commands, QuickPickItem, workspace } from 'vscode';
 import { WindowUtil } from './util/windowUtils';
 import { CliExitData } from './cli';
 import * as path from 'path';
 import { ToolsConfig } from './tools';
 import format = require('string-format');
-import { PipelineExplorer } from './pipeline/pipelineExplorer';
-import bs = require('binary-search');
 import { StartPipelineObject } from './tekton/pipeline';
-import { pipeline } from 'stream';
 
 export interface TektonNode extends QuickPickItem {
     contextValue: string;
@@ -185,12 +182,6 @@ export class Command {
     static printTknVersion() {
         return `tkn version`;
     }
-    /*     @verbose
-        static addNewPipelineFromFolder(pipeline: TektonNode, path: string) {
-            return `tkn pipeline start ${path}`;
-        } */
-    //TODO: Watch components as per odo so that we can reconcile pipeline view properly
-    //TODO: Create and delete pipelines Start Pipeline
 
 }
 
@@ -310,9 +301,6 @@ export interface Tkn {
     getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]>;
     execute(command: string, cwd?: string, fail?: boolean): Promise<CliExitData>;
     executeInTerminal(command: string, cwd?: string): void;
-    //    addPipelineFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
-    //    addTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
-    //    addClusterTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode>;
     getPipelineChildren(pipeline: TektonNode): Promise<TektonNode[]>;
     getPipelineRunChildren(pipelinerun: TektonNode): Promise<TektonNode[]>;
     getTaskChildren(task: TektonNode): Promise<TektonNode[]>;
@@ -640,28 +628,6 @@ export class TknImpl implements Tkn {
             cwd ? { cwd } : {}
         ).then(async (result) => result.error && fail ? Promise.reject(result.error) : result).catch((err) => fail ? Promise.reject(err) : Promise.resolve({ error: null, stdout: '', stderr: '' }));
     }
-
-    /*     private insertAndReveal(array: TektonNode[], item: TektonNode): TektonNode {
-            const i = bs(array, item, compareNodes);
-            array.splice(Math.abs(i) - 1, 0, item);
-            PipelineExplorer.getInstance().reveal(item);
-            return item;
-        }
-        addTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode> {
-            throw new Error("Method not implemented.");
-        }
-        addClusterTaskFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode> {
-            throw new Error("Method not implemented.");
-        }
-        pushPipeline(pipeline: TektonNode) {
-            throw new Error("Method not implemented.");
-        }
-        public async addPipelineFromFolder(pipeline: TektonNode, path: string): Promise<TektonNode> {
-            throw new Error("Method not implemented.");
-            await this.execute(Command.startPipeline(pipeline.getParent().getName(), undefined, undefined));
-            this.executeInTerminal(Command.pushPipeline(pipeline), "randomstring1", "randomstring2");
-            return this.insertAndReveal(await this.getPipelines(pipeline), new TektonNodeImpl(pipeline, "test", ContextType.PIPELINE, this, TreeItemCollapsibleState.Collapsed, 'folder')); 
-        }  */
 
     clearCache() {
         this.cache.clear();

@@ -40,7 +40,7 @@ export interface PipelineTrigger {
     name: string;
     resources: NameType[];
     params?: PipeParams[];
-    serviceAcct: string;
+    serviceAcct: string | undefined;
 }
 
 export class Pipeline extends TektonItem {
