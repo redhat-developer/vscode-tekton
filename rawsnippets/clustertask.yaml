@@ -1,0 +1,8 @@
+apiVersion: tekton.dev/v1alpha1
+kind: ClusterTask
+metadata:
+  name: ${1:foo}
+spec:
+  steps:
+  - args:
+    - ${2:echo clustertask}

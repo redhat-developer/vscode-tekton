@@ -14,8 +14,8 @@
     "vscode": "^1.32.0"
   },
   "categories": [
-    "Other",
-    "Snippets"
+    "Snippets",
+    "Other"
   ],
   "icon": "images/tekton.png",
   "activationEvents": [
@@ -47,6 +47,19 @@
   ],
   "main": "./out/src/extension",
   "contributes": {
+    "snippets": [
+      {
+        "language": "yaml",
+        "path": "./snippets/tektoncd.json"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "tekton.explorer.refresh",
+        "key": "alt+shift+r",
+        "mac": "ctrl+shift+r"
+      }
+    ],
     "commands": [
       {
         "command": "tekton.about",
@@ -170,22 +183,6 @@
           "dark": "images/dark/icon-issue.svg",
           "light": "images/light/icon-issue.svg"
         }
-      }
-    ],
-    "keybindings": [
-      {
-        "command": "tekton.explorer.refresh",
-        "key": "alt+shift+r",
-        "mac": "ctrl+shift+r"
-      }
-    ],
-    "languages": [
-      {
-        "id": "yaml",
-        "filenames": [
-          "requirements.lock",
-          "**/.kube/config"
-        ]
       }
     ],
     "viewsContainers": {
@@ -414,12 +411,6 @@
       ]
     }
   },
-  "snippets": [
-    {
-      "language": "yaml",
-      "path": "./snippets/tektoncd.json"
-    }
-  ],
   "configuration": {
     "type": "object",
     "title": "Tekton Configuration",
@@ -529,6 +520,7 @@
     "byline": "^5.0.0",
     "event-stream": "3.3.4",
     "fs-extra": "^7.0.1",
+    "fuzzysearch": "^1.0.3",
     "git-fetch-pack": "^0.1.1",
     "git-transport-protocol": "^0.1.0",
     "hasha": "^5.0.0",

@@ -1,0 +1,10 @@
+params:
+- name: ${1:name}
+  value: ${2:value}
+resources:
+  inputs:
+  - name: ${3:source}
+    resource: ${4:app-source}
+  outputs:
+  - name: ${5:builtImage}
+    resource: ${6:app-image}

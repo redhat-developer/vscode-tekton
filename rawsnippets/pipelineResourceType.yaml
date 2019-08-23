@@ -1,0 +1,2 @@
+- name: ${1:app-source}
+  type: ${2|git,image,pullRequest,cluster,storage|}

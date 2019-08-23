@@ -1,55 +1,76 @@
 {
-  "Resource Limits and Requests": {
-    "prefix": [
-      "k8s-limits",
-      "k8s-requests"
-    ],
-    "body": [
-      "resources:",
-      "  limits:",
-      "    cpu: 4",
-      "    memory: 6Gi",
-      "  requests:",
-      "    cpu: 2",
-      "    memory: 4Gi"
-    ],
-    "description": "Defines the Kubernetes resource limits and requests"
-  },
-  "Tekton Task": {
-    "prefix": ["task", "tekton-task"],
+  "ClusterTask": {
+    "prefix": "Tekton: ClusterTask",
     "body": [
       "apiVersion: tekton.dev/v1alpha1",
-      "kind: Task",
+      "kind: ClusterTask",
       "metadata:",
-      "  name: ${1:build-app}",
+      "  name: ${1:foo}",
       "spec:",
       "  steps:",
-      "   - name: ${2:build-sources}",
-      "     image: ${3|fedora,quay.io/buildah/stable|}",
-      "     workingDir: \"/workspace/source/${4:\\${inputs.params.contextDir}}\"",
-      "     command:",
-      "      - ${5:echo}",
-      "     args:",
-      "      - 'hello world'",
-      "     $LINE_COMMENT env:"
+      "  - args:",
+      "    - ${2:echo clustertask}"
     ],
-    "description": "Tekton task definition"
+    "description": "Create a ClusterTask Resource"
   },
-  "Tekton TaskRun": {
-    "prefix": ["taskrun"],
+  "Param": {
+    "prefix": "Tekton: Parameter",
+    "body": [
+      "- name: ${1:foo}",
+      "  value: ${2:bar}",
+      ""
+    ],
+    "description": "A generic parameter used across any YAML that are key/value pair"
+  },
+  "Pipeline": {
+    "prefix": "Tekton: Pipeline",
     "body": [
       "apiVersion: tekton.dev/v1alpha1",
-      "kind: TaskRun",
+      "kind: Pipeline",
       "metadata:",
-      "  name: ${1:echo-hello-world-run}",
-      "spec:",
-      "  taskRef:",
-      "    name: ${2: echo-hello-world}"
+      "  name: ${1:app-deploy}",
+      "  spec:",
+      "    resources:",
+      "    - name: ${2:pipeline-resource-type}",
+      "      type: ${3:pipeline-type}",
+      "    tasks:",
+      "    - name: ${4:taskName}",
+      "      taskRef:",
+      "        name: ${5:build-app}"
     ],
-    "description": "Tekton task run"
+    "description": "Create a Tekton Pipeline Resource"
   },
-  "Pipeline Resource": {
-    "prefix": ["pipeline-resource"],
+  "Pipeline Task Reference": {
+    "prefix": "Tekton: PipelineTaskReference",
+    "body": [
+      "- name: ${1:taskName}",
+      "  taskRef:",
+      "    name: ${2:build-and-push}",
+      "  runAfter:",
+      "  - ${3:another-task-name}",
+      "  $LINE_COMMENT params:",
+      "  $LINE_COMMENT resources:"
+    ],
+    "description": "Tekton Pipeline Task Reference"
+  },
+  "Pipeline Task Reference Input": {
+    "prefix": "Tekton: PipelineTaskReferenceInput",
+    "body": [
+      "params:",
+      "- name: ${1:name}",
+      "  value: ${2:value}",
+      "resources:",
+      "  inputs:",
+      "  - name: ${3:source}",
+      "    resource: ${4:app-source}",
+      "  outputs:",
+      "  - name: ${5:builtImage}",
+      "    resource: ${6:app-image}"
+    ],
+    "description": "Tekton Pipeline Task Reference Inputs, Parameters and Outputs"
+  },
+  "PipelineResource": {
+    "prefix": "Tekton: PipelineResource",
     "body": [
       "apiVersion: tekton.dev/v1alpha1",
       "kind: PipelineResource",
@@ -57,125 +78,133 @@
       "  name: ${1:git-source}",
       "spec:",
       "  type: ${2|git,image,pullRequest,cluster,storage|}",
-      "  params: ",
-      "  $LINE_COMMENT Check https://github.com/tektoncd/pipeline/blob/master/docs/resources.md#pipelineresources for more applicable parameters"
+      "  $LINE_COMMENT params:",
+      "    $LINE_COMMENT Check https://github.com/tektoncd/pipeline/blob/master/docs/resources.md#pipelineresources for more applicable parameters"
     ],
-    "description": "Tekton pipeline resource"
+    "description": "Create a PipelineResource Resource"
   },
-  "Pipeline Resource Type": {
-    "prefix": ["pipeline-resource-type"],
+  "PipelineResource Type": {
+    "prefix": "Tekton: PipelineResourceType",
     "body": [
       "- name: ${1:app-source}",
       "  type: ${2|git,image,pullRequest,cluster,storage|}"
     ],
-    "description": "Tekton pipeline resource type"
+    "description": "Create a PipelineResource Type Resource"
   },
-  "Pipeline": {
-    "prefix": ["pipeline"],
-    "body": [
-      "apiVersion: tekton.dev/v1alpha1",
-      "kind: Pipeline",
-      "metadata:",
-      "  name: ${1:app-deploy}",
-      "spec:",
-      "$LINE_COMMENT Check https://github.com/tektoncd/pipeline/blob/master/docs/pipelines.md on how to define parameters",
-      "$LINE_COMMENT  params: ",
-      "  resources: ",
-      "  ${2:pipeline-resource-type}",
-      "  tasks: ",
-      "   - name: ${3:taskName}",
-      "     taskRef:",
-      "       name: ${4:build-app}",
-      "$LINE_COMMENT     pipeline-task-ref-input"
-    ],
-    "description": "Tekton pipeline run"
-  },
-  "Pipeline run": {
-    "prefix": ["pipeline-run"],
+  "PipelineRun": {
+    "prefix": "Tekton: PipelineRun",
     "body": [
       "apiVersion: tekton.dev/v1alpha1",
       "kind: PipelineRun",
       "metadata:",
       "  name: ${1:foo-run}",
       "spec:",
-      "$LINE_COMMENT Check https://github.com/tektoncd/pipeline/blob/master/docs/pipelines.md on how to define parameters",
-      "$LINE_COMMENT params: ",
-      "  pipelineRef: ",
-      "    name: ${2:foo}"
+      "  pipelineRef:",
+      "    name: ${2:foo}",
+      "  resources:",
+      "  - name: ${3:source}",
+      "    resourceRef:",
+      "      name: ${4:skaffold-source}"
     ],
-    "description": "Tekton pipeline run"
+    "description": "Create a Tekton PipelineRun Resource"
   },
-  "Task Step": {
-    "prefix": ["task-step"],
+  "Resource Limits and Requests": {
+    "prefix": "Tekton: K8s Limits",
     "body": [
-      "- name: ${2:echo2}",
-      "  image: ${3|fedora,quay.io/buildah/stable|}",
-      "  workingDir: \"/workspace/source/${4:\\${inputs.params.contextDir}}\"",
-      "  command:",
-      "   - ${5:echo2}",
-      "  args:",
-      "      - 'bye world'"
+      "resources:",
+      "  limits:",
+      "    cpu: 4",
+      "    memory: 6Gi",
+      "    requests:",
+      "      cpu: 2",
+      "      memory: 4Gi"
     ],
-    "description": "Tekton Task Step"
+    "description": "Defines the Kubernetes resource limits and requests"
   },
-  "Param": {
-    "prefix": ["parameter"],
-    "body": ["- name: ${1:foo}", "  value: ${2:bar}"],
-    "description": "A generic parameter used across any YAML that are key/value pair "
-  },
-  "Task Param": {
-    "prefix": ["task-parameter", "pipeline-parameter"],
+  "Task": {
+    "prefix": "Tekton: Task",
     "body": [
-      "- name: ${1:foo}",
-      "  description: ${3:Parameter description}",
-      "  default: ${4:default value}"
+      "apiVersion: tekton.dev/v1alpha1",
+      "kind: Task",
+      "metadata:",
+      "  name: ${1}",
+      "spec:",
+      "  inputs:",
+      "    $LINE_COMMENT params:",
+      "    resources:",
+      "    - name: ${2:workspace}",
+      "      type: ${3:git}",
+      "      targetPath: ${4:target-workspace}",
+      "  outputs:",
+      "    resources:",
+      "    - name: ${5}",
+      "      type: ${6}",
+      "  steps:",
+      "    - name: ${5:build-sources}",
+      "      image: ${6:ubuntu}",
+      "      command: ",
+      "      - ${7:/bin/bash}",
+      "      args: ",
+      "      - ${8:'-c', 'echo hello world'}]"
     ],
-    "description": "Tekton task parameter"
-  },
-  "Pipeline Task Reference": {
-    "prefix": ["pipeline-task-ref"],
-    "body": [
-      "- name: ${1:taskName}",
-      "  taskRef:",
-      "    name: ${2:build-and-push}",
-      "  runAfter:",
-      "   - ${3:another-task-name}",
-      "$LINE_COMMENT params:"
-    ],
-    "description": "Tekton pipeline task reference"
+    "description": "Create a Tekton Task Resource"
   },
   "Task Input": {
-    "prefix": ["task-input"],
+    "prefix": "Tekton: TaskInput",
     "body": [
-      "  inputs:",
-      "   resources:",
-      "    - name: ${1:source}",
-      "      type: ${2|git,image,pullRequest,cluster,storage|}",
-      "   params:",
-      "   - name: ${3:foo}",
-      "     description: ${4:Parameter description}",
-      "     default: ${5:default value}",
-      "  outputs:",
-      "   resources:",
-      "    - name: ${6:builtImage}",
-      "      type: image"
+      "inputs:",
+      "  resources:",
+      "  - name: ${1:source}",
+      "    type: ${2|git,image,pullRequest,cluster,storage|}",
+      "  params:",
+      "  - name: ${3:foo}",
+      "    description: ${4:Parameter description}",
+      "    default: ${5:default value}",
+      "    type: ${6:string}",
+      "outputs:",
+      "  resources:",
+      "  - name: ${7:builtImage}",
+      "    outputImageDir: ${8:path/to/image}",
+      "    targetPath: \"\"",
+      "    type: image",
+      "$LINE_COMMENT steps:"
     ],
-    "description": "Tekton task inputs, parameters and outputs"
+    "description": "Tekton Task Inputs, Parameters and Outputs"
   },
-  "Pipeline Task Reference Input": {
-    "prefix": ["pipeline-task-ref-input"],
+  "Task Param": {
+    "prefix": "Tekton: TaskParameter",
     "body": [
-      "params:",
-      " - name: ${1:name}",
-      "   value: ${2:value}",
-      "resources:",
-      " inputs:",
-      "  - name: ${3:source}",
-      "    resource: ${4:app-source}",
-      " outputs:",
-      "  - name: ${5:builtImage}",
-      "    resource: ${6:app-image}"
+      "- name: ${1:foo}",
+      "  description: ${2:Parameter description}",
+      "  default: ${3:default value}",
+      "  type: ${4:string}"
     ],
-    "description": "Tekton pipeline task reference inputs, parameters and outputs"
+    "description": "Tekton Pipeline Task Parameter"
+  },
+  "TaskRun": {
+    "prefix": "Tekton: TaskRun",
+    "body": [
+      "apiVersion: tekton.dev/v1alpha1",
+      "kind: TaskRun",
+      "metadata:",
+      "  name: ${1:echo-hello-world-run}",
+      "spec:",
+      "  taskRef:",
+      "    name: ${2:echo-hello-world}"
+    ],
+    "description": "Create a Tekton TaskRun Resource"
+  },
+  "TaskStep": {
+    "prefix": "Tekton TaskStep",
+    "body": [
+      "- name: ${2:echo2}",
+      "  image: ${3:fedora,quay.io/buildah/stable}",
+      "  workingDir: \\\"/workspace/source/${4:\\\\${inputs.params.contextDir}}\\\"",
+      "  command:",
+      "  - ${5:echo2}",
+      "  args:",
+      "  - 'bye world'"
+    ],
+    "description": "Tekton Task Step"
   }
 }
