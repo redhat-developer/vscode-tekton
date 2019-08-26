@@ -1,0 +1,7 @@
+- name: ${2:echo2}
+  image: ${3:fedora,quay.io/buildah/stable}
+  workingDir: \"/workspace/source/${4:\\${inputs.params.contextDir}}\"
+  command:
+  - ${5:echo2}
+  args:
+  - 'bye world'

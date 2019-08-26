@@ -1,0 +1,7 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: ${1:echo-hello-world-run}
+spec:
+  taskRef:
+    name: ${2:echo-hello-world}

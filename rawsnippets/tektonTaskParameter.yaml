@@ -1,0 +1,4 @@
+- name: ${1:foo}
+  description: ${2:Parameter description}
+  default: ${3:default value}
+  type: ${4:string}
