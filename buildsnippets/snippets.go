@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -111,17 +112,19 @@ func load(loc string) []string {
 }
 
 func main() {
+	os.RemoveAll("snippets")
 	out, err := json.MarshalIndent(snippets, "", "  ")
 	if err != nil {
 		panic(err)
 	}
-	err = os.Mkdir("snippets", 0644)
+	err = os.Mkdir("snippets", 0744)
 	if err != nil {
-		fmt.Print("Error creating snippets directory")
+		log.Fatalf("Unable to create folder: %s", err)
 	}
 	err = ioutil.WriteFile("snippets/tektoncd.json", out, 0644)
 	if err != nil {
-		fmt.Print("Error writing json schema to tektoncd.json")
+		log.Fatalf("Unable to create json file: %s", err)
+
 	}
 	fmt.Printf("%s", out)
 }
