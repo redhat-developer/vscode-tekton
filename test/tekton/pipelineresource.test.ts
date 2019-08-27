@@ -70,38 +70,22 @@ suite('Tekton/PipelineResource', () => {
 
         suite('called from command bar', () => {
 
-            setup(() => {
-                quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-                quickPickStub.onFirstCall().resolves(pipelineresourceItem);
-            });
-
             test('returns null when clustertask is not defined properly', async () => {
-                quickPickStub.onFirstCall().resolves();
                 const result = await PipelineResource.list(null);
                 // tslint:disable-next-line: no-unused-expression
                 expect(result).undefined;
             });
 
             test('skips tkn command execution if canceled by user', async () => {
-                quickPickStub.resolves(null);
                 await PipelineResource.describe(null);
                 // tslint:disable-next-line: no-unused-expression
                 expect(termStub).not.called;
-            });
-            teardown(() => {
-                quickPickStub.restore();
             });
         });
 
         suite('describe', () => {
 
-            setup(() => {
-                quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-                quickPickStub.onFirstCall().resolves(pipelineresourceItem);
-            });
-    
             test('returns null when cancelled', async () => {
-                quickPickStub.onFirstCall().resolves();
                 const result = await PipelineResource.describe(null);
     
                 expect(result).undefined;
@@ -116,13 +100,8 @@ suite('Tekton/PipelineResource', () => {
 
           suite('delete', () => {
 
-            setup(() => {
-                quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-                quickPickStub.onFirstCall().resolves(pipelineresourceItem);
-            });
     
             test('returns null when cancelled', async () => {
-                quickPickStub.onFirstCall().resolves();
                 const result = await PipelineResource.delete(null);
     
                 expect(result).undefined;

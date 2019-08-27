@@ -21,6 +21,7 @@ suite('TektonItem', () => {
     let sandbox: sinon.SinonSandbox;
     const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
     const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
+    const pipelineResourceItem = new TestItem(null, 'pipelineresource', ContextType.PIPELINERESOURCE);
     const taskrunItem = new TestItem(pipelinerunItem, 'taskrun', ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
     const taskItem = new TestItem(null, 'task', ContextType.TASK);
     const clustertaskItem = new TestItem(null, 'clustertask', ContextType.CLUSTERTASK);
@@ -31,6 +32,27 @@ suite('TektonItem', () => {
 
     teardown(() => {
         sandbox.restore();
+    });
+
+    suite('getPipelineNodes', ()=> {
+
+        test('returns an array of pipelineNodes names for the pipeline if there is at least one pipeline', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
+            const pipelinerunNames = await TektonItem.getPipelineNames(pipelineItem);
+            expect(pipelinerunNames[0].getName()).equals('pipeline');
+
+        });
+
+        test('throws error if there are no pipelines available', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([]);
+            try {
+                await TektonItem.getPipelineNames(pipelineItem);
+            } catch (err) {
+                expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
+                return;
+            }
+            fail('should throw error in case pipelines array is empty');
+        });
     });
 
     suite('getPipelineNames', ()=> {
@@ -54,22 +76,6 @@ suite('TektonItem', () => {
         });
     });
 
-    suite('validateMatches', ()=> {
-
-        test('returns validation message if provided value is not in lower case alphanumeric characters or "-"', async ()=> {
-            const message = 'Not a valid PipelineRun name. Please use lower case alphanumeric characters or "-", start with an alphabetic character, and end with an alphanumeric character';
-            let pipelinerunNames = await TektonItem.validateMatches(message, 'Nodejs-pipelinerun');
-            expect(pipelinerunNames).equals(message);
-            pipelinerunNames = await TektonItem.validateMatches(message, '2nodejs-pipelinerun');
-            expect(pipelinerunNames).equals(message);
-        });
-
-        test('returns undefined if provided value is in lower case alphanumeric characters', async ()=> {
-            const validateMatches = await TektonItem.validateMatches(undefined, 'nodejs-pipelinerun');
-            expect(validateMatches).equals(null);
-        });
-    });
-
     suite('getPipelineRunNames', ()=> {
 
         test('returns an array of pipelinerun names for the pipeline if there is at least one pipelinerun', async ()=> {
@@ -84,7 +90,7 @@ suite('TektonItem', () => {
             try {
                 await TektonItem.getPipelinerunNames(pipelineItem);
             } catch (err) {
-                expect(err.message).equals('You need at least one Pipelinerun available. Please create new Tekton Pipelinerun and try again.');
+                expect(err.message).equals('You need at least one PipelineRun available. Please create new Tekton PipelineRun and try again.');
                 return;
             }
             fail('should throw error in case pipelineruns array is empty');
@@ -126,7 +132,7 @@ suite('TektonItem', () => {
             try {
                 await TektonItem.getTaskRunNames(pipelinerunItem);
             } catch (err) {
-                expect(err.message).equals('You need at least one Taskrun available. Please create new Tekton Taskrun and try again.');
+                expect(err.message).equals('You need at least one TaskRun available. Please create new Tekton TaskRun and try again.');
                 return;
             }
             fail('should throw error in case tasks array is empty');
@@ -151,6 +157,28 @@ suite('TektonItem', () => {
                 return;
             }
             fail('should throw error in case clustertasks array is empty');
+        });
+    });
+
+
+    suite('getPipelineResourceNames', ()=> {
+
+        test('returns an array of pipelineresource names for the task if there is at least one task', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([pipelineResourceItem]);
+            const pipelineResourceNames = await TektonItem.getPipelineResourceNames(pipelineResourceItem);
+            expect(pipelineResourceNames[0].getName()).equals('pipelineresource');
+
+        });
+
+        test('throws error if there are no PipelineResources available', async ()=> {
+            sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([]);
+            try {
+                await TektonItem.getPipelineResourceNames(pipelineResourceItem);
+            } catch (err) {
+                expect(err.message).equals('You need at least one PipelineResource available. Please create new Tekton PipelineResource and try again.');
+                return;
+            }
+            fail('should throw error in case pipelineresource array is empty');
         });
     });
 });

@@ -70,38 +70,24 @@ suite('Tekton/PipelineRun', () => {
 
         suite('called from command bar', () => {
 
-            setup(() => {
-                quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-                quickPickStub.onFirstCall().resolves(pipelinerunItem);
-            });
 
             test('returns null when clustertask is not defined properly', async () => {
-                quickPickStub.onFirstCall().resolves();
                 const result = await PipelineRun.list(null);
                 // tslint:disable-next-line: no-unused-expression
                 expect(result).undefined;
             });
 
             test('skips tkn command execution if canceled by user', async () => {
-                quickPickStub.resolves(null);
                 await PipelineRun.describe(null);
                 // tslint:disable-next-line: no-unused-expression
                 expect(termStub).not.called;
-            });
-            teardown(() => {
-                quickPickStub.restore();
             });
         });
 
         suite('describe', () => {
 
-            setup(() => {
-                quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-                quickPickStub.onFirstCall().resolves(pipelinerunItem);
-            });
     
             test('returns null when cancelled', async () => {
-                quickPickStub.onFirstCall().resolves();
                 const result = await PipelineRun.describe(null);
     
                 expect(result).undefined;
@@ -116,19 +102,6 @@ suite('Tekton/PipelineRun', () => {
     
         suite('log output', () => {
    
-            setup(() => {
-                quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-                quickPickStub.onFirstCall().resolves(pipelinerunItem);
-            });
-
-            test('returns undefined when cancelled', async () => {
-                quickPickStub.onFirstCall().resolves();
-                const result = await PipelineRun.logs(null);
-    
-                // tslint:disable-next-line: no-unused-expression
-                expect(result).undefined;
-            });
-    
             test('Log calls the correct tkn command in terminal  w/ context', async () => {
                 await PipelineRun.logs(pipelinerunItem);
     
@@ -142,6 +115,24 @@ suite('Tekton/PipelineRun', () => {
                 expect(result).undefined;
             });
 
+        });
+
+        suite('cancel', () => {
+   
+            setup(() => {
+            });
+
+            test('returns undefined when cancelled', async () => {
+                const result = await PipelineRun.cancel(null);
+                expect(result).undefined;
+            });
+    
+            test('Cancel calls the correct tkn command in terminal  w/ context', async () => {
+                await PipelineRun.cancel(pipelinerunItem);
+    
+                expect(termStub).calledOnceWith(Command.cancelPipelineRun(pipelinerunItem.getName()));
+            });
+    
         });
     });
 });

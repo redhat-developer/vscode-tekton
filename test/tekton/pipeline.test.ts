@@ -70,13 +70,7 @@ suite('Tekton/Pipeline', () => {
 
     suite('called from command bar', () => {
 
-        setup(() => {
-            quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-            quickPickStub.onFirstCall().resolves(pipelineItem);
-        });
-
         test('returns undefined when pipeline is not defined properly', async () => {
-            quickPickStub.onFirstCall().resolves();
             const result = await Pipeline.list(null);
             // tslint:disable-next-line: no-unused-expression
             expect(result).undefined;
@@ -84,13 +78,7 @@ suite('Tekton/Pipeline', () => {
     });
       suite('describe', () => {
 
-        setup(() => {
-            quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-            quickPickStub.onFirstCall().resolves(pipelineItem);
-        });
-
         test('returns null when cancelled', async () => {
-            quickPickStub.onFirstCall().resolves();
             const result = await Pipeline.describe(null);
 
             expect(result).undefined;

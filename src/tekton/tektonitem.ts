@@ -10,10 +10,10 @@ import * as validator from 'validator';
 
 const errorMessage = {
     Pipeline: 'You need at least one Pipeline available. Please create new Tekton Pipeline and try again.',
-    Pipelinerun: 'You need at least one Pipelinerun available. Please create new Tekton Pipelinerun and try again.',
-    Pipelineresource: 'You need at least one Pipelineresource available. Please create new Tekton Pipelineresource and try again.',
+    PipelineRun: 'You need at least one PipelineRun available. Please create new Tekton PipelineRun and try again.',
+    PipelineResource: 'You need at least one PipelineResource available. Please create new Tekton PipelineResource and try again.',
     Task: 'You need at least one Task available. Please create new Tekton Task and try again.',
-    Taskrun: 'You need at least one Taskrun available. Please create new Tekton Taskrun and try again.',
+    TaskRun: 'You need at least one TaskRun available. Please create new Tekton TaskRun and try again.',
     ClusterTask: 'You need at least one ClusterTask available. Please create new Tekton ClusterTask and try again.',
 };
 
@@ -38,37 +38,6 @@ export abstract class TektonItem {
         return tektonNode && `This name is already used, please enter different name.`;
     }
 
-    static async getName(message: string, data: Array<TektonNode>, offset?: string): Promise<string> {
-        return await window.showInputBox({
-            prompt: `Provide ${message}`,
-            validateInput: (value: string) => {
-                let validationMessage = TektonItem.emptyName(`Empty ${message}`, value.trim());
-                if (!validationMessage) { validationMessage = TektonItem.validateMatches(`Not a valid ${message}. Please use lower case alphanumeric characters or "-", start with an alphabetic character, and end with an alphanumeric character`, value); }
-                if (!validationMessage) { validationMessage = TektonItem.lengthName(`${message} should be between 2-63 characters`, value, offset ? offset.length : 0); }
-                if (!validationMessage) { validationMessage = TektonItem.validateUniqueName(data, value); }
-                return validationMessage;
-            }
-        });
-    }
-
-    static emptyName(message: string, value: string) {
-        return validator.isEmpty(value) ? message : null;
-    }
-
-    static lengthName(message: string, value: string, offset: number) {
-        return validator.isLength(value, 2, 63 - offset) ? null : message;
-    }
-
-    static validateMatches(message: string, value: string) {
-        return (validator.matches(value, '^[a-z]([-a-z0-9]*[a-z0-9])*$')) ? null : message;
-    }
-
-    static async getPipelineResources(): Promise<TektonNode[]> {
-        const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelineNodes();
-        if (pipelineList.length === 0) { throw Error(errorMessage.Pipeline); }
-        return pipelineList;
-    }
-
     static async getPipelineNames(pipeline: TektonNode): Promise<TektonNode[]> {
         const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelines(pipeline);
         if (pipelineList.length === 0) { throw Error(errorMessage.Pipeline); }
@@ -77,7 +46,7 @@ export abstract class TektonItem {
 
     static async getPipelinerunNames(pipeline: TektonNode): Promise<TektonNode[]> {
         const pipelinerunList: Array<TektonNode> = await TektonItem.tkn.getPipelineRuns(pipeline);
-        if (pipelinerunList.length === 0) { throw Error(errorMessage.Pipelinerun); }
+        if (pipelinerunList.length === 0) { throw Error(errorMessage.PipelineRun); }
         return pipelinerunList;
     }
 
@@ -95,13 +64,13 @@ export abstract class TektonItem {
 
     static async getTaskRunNames(taskrun: TektonNode) {
         const taskrunList: Array<TektonNode> = await TektonItem.tkn.getTaskRuns(taskrun);
-        if (taskrunList.length === 0) { throw Error(errorMessage.Taskrun); }
+        if (taskrunList.length === 0) { throw Error(errorMessage.TaskRun); }
         return taskrunList;
     }
 
     static async getPipelineResourceNames(pipelineresource: TektonNode) {
         const pipelineresourceList: Array<TektonNode> = await TektonItem.tkn.getPipelineResources(pipelineresource);
-        if (pipelineresourceList.length === 0) { throw Error(errorMessage.Taskrun); }
+        if (pipelineresourceList.length === 0) { throw Error(errorMessage.PipelineResource); }
         return pipelineresourceList;
     }
 }

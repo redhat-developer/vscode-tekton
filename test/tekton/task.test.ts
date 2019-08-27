@@ -18,7 +18,6 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/Task', () => {
-    let quickPickStub: sinon.SinonStub;
     let sandbox: sinon.SinonSandbox;
     let execStub: sinon.SinonStub;
     let getTaskStub: sinon.SinonStub;
@@ -69,13 +68,7 @@ suite('Tekton/Task', () => {
 
     suite('called from command bar', () => {
 
-        setup(() => {
-            quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-            quickPickStub.onFirstCall().resolves(taskItem);
-        });
-
         test('returns undefined when task is not defined properly', async () => {
-            quickPickStub.onFirstCall().resolves();
             const result = await Task.list(null);
             // tslint:disable-next-line: no-unused-expression
             expect(result).undefined;

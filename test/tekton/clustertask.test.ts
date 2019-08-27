@@ -71,13 +71,7 @@ suite('Tekton/Clustertask', () => {
 
         suite('called from command bar', () => {
 
-            setup(() => {
-                quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-                quickPickStub.onFirstCall().resolves(clustertaskItem);
-            });
-
             test('returns undefined when clustertask is not defined properly', async () => {
-                quickPickStub.onFirstCall().resolves();
                 const result = await ClusterTask.list(null);
                 // tslint:disable-next-line: no-unused-expression
                 expect(result).undefined;

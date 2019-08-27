@@ -19,7 +19,6 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/TaskRun', () => {
-    let quickPickStub: sinon.SinonStub;
     let sandbox: sinon.SinonSandbox;
     let execStub: sinon.SinonStub;
     let getTaskRunsStub: sinon.SinonStub;
@@ -72,26 +71,18 @@ suite('Tekton/TaskRun', () => {
 
         suite('called from command bar', () => {
 
-            setup(() => {
-                quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-                quickPickStub.onFirstCall().resolves(taskrunItem);
-            });
-
             test('returns null when clustertask is not defined properly', async () => {
-                quickPickStub.onFirstCall().resolves();
                 const result = await TaskRun.list(null);
                 // tslint:disable-next-line: no-unused-expression
                 expect(result).undefined;
             });
 
             test('skips tkn command execution if canceled by user', async () => {
-                quickPickStub.resolves(null);
                 await TaskRun.list(null);
                 // tslint:disable-next-line: no-unused-expression
                 expect(termStub).not.called;
             });
             teardown(() => {
-                quickPickStub.restore();
                 termStub.restore();
             });
         });
@@ -129,26 +120,16 @@ suite('Tekton/TaskRun', () => {
     
             suite('called from command bar', () => {
     
-                setup(() => {
-                    quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-                    quickPickStub.onFirstCall().resolves(taskrunItem);
-                });
-    
                 test('returns null when clustertask is not defined properly', async () => {
-                    quickPickStub.onFirstCall().resolves();
                     const result = await TaskRun.listFromTask(null);
                     // tslint:disable-next-line: no-unused-expression
                     expect(result).undefined;
                 });
     
                 test('skips tkn command execution if canceled by user', async () => {
-                    quickPickStub.resolves(null);
                     await TaskRun.listFromTask(null);
                     // tslint:disable-next-line: no-unused-expression
                     expect(termStub).not.called;
-                });
-                teardown(() => {
-                    quickPickStub.restore();
                 });
             });
         });
@@ -156,13 +137,7 @@ suite('Tekton/TaskRun', () => {
 
         suite('log output', () => {
    
-            setup(() => {
-                quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-                quickPickStub.onFirstCall().resolves(taskrunItem);
-            });
-
             test('returns undefined when cancelled', async () => {
-                quickPickStub.onFirstCall().resolves();
                 const result = await TaskRun.logs(null);
     
                 // tslint:disable-next-line: no-unused-expression
