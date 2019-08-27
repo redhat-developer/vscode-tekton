@@ -11,6 +11,7 @@ import * as validator from 'validator';
 const errorMessage = {
     Pipeline: 'You need at least one Pipeline available. Please create new Tekton Pipeline and try again.',
     Pipelinerun: 'You need at least one Pipelinerun available. Please create new Tekton Pipelinerun and try again.',
+    Pipelineresource: 'You need at least one Pipelineresource available. Please create new Tekton Pipelineresource and try again.',
     Task: 'You need at least one Task available. Please create new Tekton Task and try again.',
     Taskrun: 'You need at least one Taskrun available. Please create new Tekton Taskrun and try again.',
     ClusterTask: 'You need at least one ClusterTask available. Please create new Tekton ClusterTask and try again.',
@@ -33,7 +34,7 @@ export abstract class TektonItem {
     protected static readonly explorer: PipelineExplorer = PipelineExplorer.getInstance();
 
     static validateUniqueName(data: Array<TektonNode>, value: string) {
-        const tektonNode =  data.find((tektonNode) =>  tektonNode.getName() === value);
+        const tektonNode = data.find((tektonNode) => tektonNode.getName() === value);
         return tektonNode && `This name is already used, please enter different name.`;
     }
 
@@ -63,7 +64,7 @@ export abstract class TektonItem {
     }
 
     static async getPipelineResources(): Promise<TektonNode[]> {
-        const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelineResources();
+        const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelineNodes();
         if (pipelineList.length === 0) { throw Error(errorMessage.Pipeline); }
         return pipelineList;
     }
@@ -96,6 +97,12 @@ export abstract class TektonItem {
         const taskrunList: Array<TektonNode> = await TektonItem.tkn.getTaskRuns(taskrun);
         if (taskrunList.length === 0) { throw Error(errorMessage.Taskrun); }
         return taskrunList;
+    }
+
+    static async getPipelineResourceNames(pipelineresource: TektonNode) {
+        const pipelineresourceList: Array<TektonNode> = await TektonItem.tkn.getPipelineResources(pipelineresource);
+        if (pipelineresourceList.length === 0) { throw Error(errorMessage.Taskrun); }
+        return pipelineresourceList;
     }
 }
 

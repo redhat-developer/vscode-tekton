@@ -49,7 +49,7 @@ suite('Tekton/Pipeline', () => {
 
         test('executes the list tkn command in terminal', async () => {
             await Pipeline.list(pipelineItem);
-            expect(termStub).calledOnceWith(Command.listPipelinesinTerminal(pipelineItem.getName()));
+            expect(termStub).calledOnceWith(Command.listPipelinesInTerminal(pipelineItem.getName()));
         });
 
     });

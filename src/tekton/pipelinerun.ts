@@ -42,6 +42,11 @@ export class PipelineRun extends TektonItem {
             "Select PipelineRun you want to describe"); */
         if (pipelinerun) { PipelineRun.tkn.executeInTerminal(Command.showPipelineRunLogs(pipelinerun.getName())); }
     }
+
+     static async cancel(pipelinerun: TektonNode): Promise<void> {
+        if (pipelinerun) { PipelineRun.tkn.executeInTerminal(Command.cancelPipelineRun(pipelinerun.getName())); }
+    }
+
     static async delete(pipelinerun: TektonNode): Promise<void> {
 /*         const pipelinerun = await PipelineRun.getTektonCmdData(treeItem,
             "Which Pipeline do you want to delete",

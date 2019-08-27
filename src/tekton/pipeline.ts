@@ -115,7 +115,7 @@ export class Pipeline extends TektonItem {
 /*         const pipeline = await Pipeline.getTektonCmdData(treeItem,
             "From which project do you want to describe Pipeline",
             "Select Pipeline you want to describe"); */
-        if (pipeline) { Pipeline.tkn.executeInTerminal(Command.listPipelinesinTerminal(pipeline.getName())); }
+        if (pipeline) { Pipeline.tkn.executeInTerminal(Command.listPipelinesInTerminal(pipeline.getName())); }
     }
 
     static async delete(pipeline: TektonNode): Promise<void> {

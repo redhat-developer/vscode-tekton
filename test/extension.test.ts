@@ -14,6 +14,7 @@ import * as chai from "chai";
 import * as sinonChai from "sinon-chai";
 import * as sinon from "sinon";
 import { PipelineRun } from "../src/tekton/pipelinerun";
+import { PipelineResource } from "../src/tekton/pipelineresource";
 import { TaskRun } from "../src/tekton/taskrun";
 import { Pipeline } from "../src/tekton/pipeline";
 import { Task } from "../src/tekton/task";
@@ -77,7 +78,7 @@ suite("Tekton Pipeline Extension", async () => {
         const cmds: string[] = await vscode.commands.getCommands();
         const tekton: string[] = cmds.filter((item) => item.startsWith('tekton.'));
         const mths: string[] = await getStaticMethodsToStub(tekton);
-        [Pipeline, Task, ClusterTask, PipelineRun, TaskRun, PipelineExplorer].forEach((item: { [x: string]: any; }) => {
+        [Pipeline, Task, ClusterTask, PipelineRun, TaskRun, PipelineResource, PipelineExplorer].forEach((item: { [x: string]: any; }) => {
             mths.forEach((name) => {
                 if (item[name]) {
                     sandbox.stub(item, name).resolves();
@@ -89,10 +90,10 @@ suite("Tekton Pipeline Extension", async () => {
         expect(vscode.window.showErrorMessage).has.not.been.called;
     });
 
-    test('should load pipeline, task and clustertasks', async () => {
+    test('should load pipeline, task, clustertasks and pipelineresources', async () => {
         sandbox.stub(TknImpl.prototype, 'execute').resolves({error: undefined, stdout: '', stderr: ''});
-        const pipelinenodes = await TknImpl.Instance.getPipelineResources();
-        expect(pipelinenodes.length).is.equals(3);
+        const pipelinenodes = await TknImpl.Instance.getPipelineNodes();
+        expect(pipelinenodes.length).is.equals(4);
     });
 
     test('should load pipelineruns from pipeline folder', async () => {
