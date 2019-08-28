@@ -5,7 +5,6 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
-import * as k8s from 'vscode-kubernetes-tools-api';
 
 export class Task extends TektonItem {
 
@@ -20,13 +19,6 @@ export class Task extends TektonItem {
     }
 
     static async delete(task: TektonNode): Promise<void> {
-/*         const task = await Task.getTektonCmdData(treeItem,
-            "Which Pipeline do you want to delete",
-            "Select Pipeline you want to delete"); */
-        if (task) { 
-            const kubectl = await k8s.extension.kubectl.v1;
-            if (kubectl.available) { await kubectl.api.invokeCommand('delete task '+task.getName()); }
-        }
+        if (task) { Task.tkn.executeInTerminal(Command.deleteTask(task.getName())); }
     }
-
 }

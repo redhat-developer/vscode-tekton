@@ -134,5 +134,14 @@ suite('Tekton/PipelineRun', () => {
             });
     
         });
+
+        suite('delete', () => {
+
+        test('describe calls the correct tkn command in terminal', async () => {
+            await PipelineRun.delete(pipelineItem);
+            expect(termStub).calledOnceWith(Command.deletePipelineRun(pipelineItem.getName()));
+        });
+
+    });
     });
 });

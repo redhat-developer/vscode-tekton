@@ -37,9 +37,6 @@ export class PipelineRun extends TektonItem {
     }
 
     static async logs(pipelinerun: TektonNode): Promise<void> {
-/*         const pipelinerun = await PipelineRun.getTektonCmdData(treeItem,
-            "From which project you want to describe PipelineRun",
-            "Select PipelineRun you want to describe"); */
         if (pipelinerun) { PipelineRun.tkn.executeInTerminal(Command.showPipelineRunLogs(pipelinerun.getName())); }
     }
 
@@ -48,13 +45,7 @@ export class PipelineRun extends TektonItem {
     }
 
     static async delete(pipelinerun: TektonNode): Promise<void> {
-/*         const pipelinerun = await PipelineRun.getTektonCmdData(treeItem,
-            "Which Pipeline do you want to delete",
-            "Select Pipeline you want to delete"); */
-        if (pipelinerun) { 
-            const kubectl = await k8s.extension.kubectl.v1;
-            if (kubectl.available) { await kubectl.api.invokeCommand('delete pipelinerun '+pipelinerun.getName()); }
-        }
+        if (pipelinerun) { PipelineRun.tkn.executeInTerminal(Command.deletePipelineRun(pipelinerun.getName())); }
     }
 
 }

@@ -66,13 +66,11 @@ suite('Tekton/Task', () => {
         });
     });
 
-    suite('called from command bar', () => {
+    suite('delete', () => {
 
-        test('returns undefined when task is not defined properly', async () => {
-            const result = await Task.list(null);
-            // tslint:disable-next-line: no-unused-expression
-            expect(result).undefined;
+        test('delete calls the correct tkn command in terminal', async () => {
+            await Task.delete(taskItem);
+            expect(termStub).calledOnceWith(Command.deleteTask(taskItem.getName()));
         });
     });
 });
-
