@@ -18,9 +18,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/Clustertask', () => {
-    let quickPickStub: sinon.SinonStub;
     let sandbox: sinon.SinonSandbox;
-    let execStub: sinon.SinonStub;
     let getClusterTaskStub: sinon.SinonStub;
     const clustertaskNode = new TestItem(TknImpl.ROOT, 'test-clustertask', ContextType.CLUSTERTASK, null);
     const clustertaskItem = new TestItem(clustertaskNode, 'test-clustertask', ContextType.CLUSTERTASK, null);
@@ -28,7 +26,6 @@ suite('Tekton/Clustertask', () => {
 
     setup(() => {
         sandbox = sinon.createSandbox();
-        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
         sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([clustertaskItem]);
         getClusterTaskStub = sandbox.stub(TektonItem, 'getClusterTaskNames').resolves([clustertaskItem]);
         sandbox.stub(vscode.window, 'showInputBox');
@@ -69,19 +66,19 @@ suite('Tekton/Clustertask', () => {
             });
         });
 
-        suite('called from command bar', () => {
+    });
 
-            setup(() => {
-                quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-                quickPickStub.onFirstCall().resolves(clustertaskItem);
-            });
+    suite('delete', () => {
+         let termStub: sinon.SinonStub;
 
-            test('returns undefined when clustertask is not defined properly', async () => {
-                quickPickStub.onFirstCall().resolves();
-                const result = await ClusterTask.list(null);
-                // tslint:disable-next-line: no-unused-expression
-                expect(result).undefined;
-            });
+         setup(() => {
+            termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal').resolves();
+        });
+
+        test('delete calls the correct tkn command in terminal', async () => {
+            await ClusterTask.delete(clustertaskItem);
+            expect(termStub).calledOnceWith(Command.deleteTask(clustertaskItem.getName()));
         });
     });
+
 });

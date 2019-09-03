@@ -24,6 +24,8 @@ export enum ContextType {
     PIPELINERUN = 'pipelinerun',
     CLUSTERTASK = 'clustertask',
     PIPELINENODE = 'pipelinenode',
+    PIPELINERESOURCENODE = 'pipelineresourcenode',
+    PIPELINERESOURCE = 'pipelineresource',
     TASKNODE = 'tasknode',
     CLUSTERTASKNODE = 'clustertasknode'
 }
@@ -74,11 +76,31 @@ export class Command {
         return `tkn pipeline start ${name} --last`;
     }
     @verbose
+    static deletePipeline(name: string) {
+        return `tkn pipeline delete ${name}`;
+    }
+    @verbose
+    static listPipelineResources() {
+        return `tkn resource list -o json`;
+    }
+    @verbose
+    static listPipelineResourcesInTerminal(name: string) {
+        return `tkn resource list ${name}`;
+    }
+    @verbose
+    static describePipelineResource(name: string) {
+        return `tkn resource describe ${name}`;
+    }
+    @verbose
+    static deletePipelineResource(name: string) {
+        return `tkn resource delete ${name}`;
+    }
+    @verbose
     static listPipelines() {
         return `tkn pipeline list -o json`;
     }
     @verbose
-    static listPipelinesinTerminal(name: string) {
+    static listPipelinesInTerminal(name: string) {
         return `tkn pipeline list ${name}`;
     }
     @verbose
@@ -96,6 +118,14 @@ export class Command {
     @verbose
     static describePipelineRuns(name: string) {
         return `tkn pipelinerun describe ${name}`;
+    }
+      @verbose
+    static cancelPipelineRun(name: string) {
+        return `tkn pipelinerun cancel ${name}`;
+    }
+    @verbose
+    static deletePipelineRun(name: string) {
+        return `tkn pipelinerun delete ${name}`;
     }
     @verbose
     static showPipelineRunLogs(name: string) {
@@ -118,6 +148,10 @@ export class Command {
         return `tkn taskrun list -n ${namespace}`;
     }
     @verbose
+    static deleteTask(name: string) {
+        return `tkn task delete ${name}`;
+    }
+    @verbose
     static listClusterTasks(namespace: string) {
         return `tkn clustertask list -n ${namespace} -o json`;
     }
@@ -125,8 +159,16 @@ export class Command {
         return `tkn clustertask list -n ${namespace}`;
     }
     @verbose
+    static deleteClusterTask(name: string) {
+        return `tkn task delete ${name}`;
+    }
+    @verbose
     static showTaskRunLogs(name: string) {
         return `tkn taskrun logs ${name}`;
+    }
+    @verbose
+    static deleteTaskRun(name: string) {
+        return `tkn taskrun delete ${name}`;
     }
     @verbose
     static printTknVersion() {
@@ -147,6 +189,11 @@ export class TektonNodeImpl implements TektonNode {
             icon: 'pipe.png',
             tooltip: 'Pipelines: {label}',
             getChildren: () => this.tkn.getPipelines(this)
+        },
+        pipelineresourcenode: {
+            icon: 'pipe.png',
+            tooltip: 'PipelineResources: {label}',
+            getChildren: () => this.tkn.getPipelineResources(this)
         },
         tasknode: {
             icon: 'task.png',
@@ -241,11 +288,12 @@ export class TektonNodeImpl implements TektonNode {
 }
 
 export interface Tkn {
-    getPipelineResources(): Promise<TektonNode[]>;
+    getPipelineNodes(): Promise<TektonNode[]>;
     startPipeline(pipeline: TektonNode): Promise<TektonNode[]>;
     restartPipeline(pipeline: TektonNode): Promise<TektonNode[]>;
     getPipelines(pipeline: TektonNode): Promise<TektonNode[]>;
     getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]>;
+    getPipelineResources(pipelineResources: TektonNode): Promise<TektonNode[]>;
     getTasks(task: TektonNode): Promise<TektonNode[]>;
     getTaskRuns(taskRun: TektonNode): Promise<TektonNode[]>;
     getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]>;
@@ -293,22 +341,24 @@ export class TknImpl implements Tkn {
         }
         return TknImpl.instance;
     }
-    async getPipelineResources(): Promise<TektonNode[]> {
+    async getPipelineNodes(): Promise<TektonNode[]> {
         if (!this.cache.has(TknImpl.ROOT)) {
-            this.cache.set(TknImpl.ROOT, await this._getPipelineResources());
+            this.cache.set(TknImpl.ROOT, await this._getPipelineNodes());
         }
         return this.cache.get(TknImpl.ROOT);
     }
 
-    public async _getPipelineResources(): Promise<TektonNode[]> {
+    public async _getPipelineNodes(): Promise<TektonNode[]> {
         let pipelineTree: TektonNode[] = [];
         let pipelineNode = new TektonNodeImpl(TknImpl.ROOT, "Pipelines", ContextType.PIPELINENODE, this, TreeItemCollapsibleState.Collapsed);
         let taskNode = new TektonNodeImpl(TknImpl.ROOT, "Tasks", ContextType.TASKNODE, this, TreeItemCollapsibleState.Collapsed);
         let clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, "ClusterTasks", ContextType.CLUSTERTASKNODE, this, TreeItemCollapsibleState.Collapsed);
-        pipelineTree.push(pipelineNode, taskNode, clustertaskNode);
+        let pipelineResourceNode = new TektonNodeImpl(TknImpl.ROOT, "PipelineResources", ContextType.PIPELINERESOURCENODE, this, TreeItemCollapsibleState.Collapsed);
+        pipelineTree.push(pipelineNode, taskNode, clustertaskNode, pipelineResourceNode);
         this.cache.set(pipelineNode, await this.getPipelines(pipelineNode));
         this.cache.set(taskNode, await this.getTasks(taskNode));
         this.cache.set(clustertaskNode, await this.getClusterTasks(clustertaskNode));
+        this.cache.set(pipelineResourceNode, await this.getPipelineResources(pipelineResourceNode));
         return pipelineTree;
 
     }
@@ -485,6 +535,35 @@ export class TknImpl implements Tkn {
         pipelines = [...new Set(pipelines)];
         const treeState = pipelines.length > 0 ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
         return pipelines.map<TektonNode>((value) => new TektonNodeImpl(pipeline, value, ContextType.PIPELINE, this, treeState)).sort(compareNodes);
+    }
+
+     async getPipelineResources(pipelineResources: TektonNode): Promise<TektonNode[]> {
+        return (await this._getPipelineResources(pipelineResources));
+    }
+
+    public async _getPipelineResources(pipelineResources: TektonNode): Promise<TektonNode[]> {
+        let pipelines: TektonNode[] = await this.getPipelineResourcesWithTkn(pipelineResources);
+        if (pipelines.length === 0) {
+            console.log("No pipelines detected");
+        }
+        return pipelines;
+    }
+    private async getPipelineResourcesWithTkn(pipelineResource: TektonNode): Promise<TektonNode[]> {
+        let data: any[] = [];
+        const result: cliInstance.CliExitData = await this.execute(Command.listPipelineResources(), process.cwd(), false);
+        if (result.stderr) {
+            console.log(result + " Std.err when processing pipelines");
+            return [new TektonNodeImpl(pipelineResource, result.stderr, ContextType.PIPELINERESOURCE, this, TreeItemCollapsibleState.Expanded)];
+        }
+        try {
+            data = JSON.parse(result.stdout).items;
+        } catch (ignore) {
+            //show no pipelines if output is not correct json
+        }
+        let pipelineresources: string[] = data.map((value) => value.metadata.name);
+        pipelineresources = [...new Set(pipelineresources)];
+        const treeState = pipelineresources.length > 0 ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
+        return pipelineresources.map<TektonNode>((value) => new TektonNodeImpl(pipelineResource, value, ContextType.PIPELINE, this, treeState)).sort(compareNodes);
     }
 
     public async getTasks(task: TektonNode): Promise<TektonNode[]> {

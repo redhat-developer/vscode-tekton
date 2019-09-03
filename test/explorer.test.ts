@@ -17,8 +17,10 @@ suite('Tekton Application Explorer', () => {
     const pipelineNode = new TestItem(TknImpl.ROOT, 'Pipelines', ContextType.PIPELINENODE);
     const taskNode = new TestItem(TknImpl.ROOT, 'Tasks', ContextType.TASKNODE);
     const clusterTaskNode = new TestItem(TknImpl.ROOT, 'ClusterTasks', ContextType.CLUSTERTASKNODE);
+    const pipelineResourceNode = new TestItem(TknImpl.ROOT, 'PipelineResources', ContextType.PIPELINERESOURCENODE);
     const pipelineItem = new TestItem(pipelineNode, 'pipeline', ContextType.PIPELINE);
     const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN);
+    const pipelineResourceItem = new TestItem(pipelineResourceNode, 'pipelineresource', ContextType.PIPELINERESOURCE);
     const taskrunItem = new TestItem(pipelinerunItem, 'taskrun', ContextType.TASKRUN);
     const taskItem = new TestItem(taskNode, 'task', ContextType.TASK);
     const clustertaskItem = new TestItem(clusterTaskNode, 'clustertask', ContextType.CLUSTERTASK);
@@ -30,6 +32,7 @@ suite('Tekton Application Explorer', () => {
         sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
         sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskItem]);
         sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([clustertaskItem]);
+        sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([pipelineResourceItem]);
     });
 
     teardown(() => {
@@ -45,9 +48,9 @@ suite('Tekton Application Explorer', () => {
         pipelinerunItem.getChildren().push(taskrunItem);
         taskrunItem.getChildren().push(taskItem);
         const pipelineNodes = await tektonInstance.getChildren();
-        expect(pipelineNodes.length).equals(3);
+        expect(pipelineNodes.length).equals(4);
         pipelineNodes.forEach((value) => 
-        expect(value.getName()).oneOf(["Pipelines", "Tasks", "ClusterTasks"]));
+        expect(value.getName()).oneOf(["Pipelines", "Tasks", "ClusterTasks","PipelineResources"]));
         const pipelinetest = await tektonInstance.getChildren(pipelineNode);
         expect(pipelinetest[0]).equals(pipelineItem);
         const tasktest = await tektonInstance.getChildren(taskNode);

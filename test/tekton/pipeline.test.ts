@@ -14,6 +14,8 @@ import { PipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
+import { pipeline } from 'stream';
+import { doesNotReject } from 'assert';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -49,7 +51,7 @@ suite('Tekton/Pipeline', () => {
 
         test('executes the list tkn command in terminal', async () => {
             await Pipeline.list(pipelineItem);
-            expect(termStub).calledOnceWith(Command.listPipelinesinTerminal(pipelineItem.getName()));
+            expect(termStub).calledOnceWith(Command.listPipelinesInTerminal(pipelineItem.getName()));
         });
 
     });
@@ -67,38 +69,53 @@ suite('Tekton/Pipeline', () => {
             }
         });
     });
+     suite('start', () => {
 
-    suite('called from command bar', () => {
-
-        setup(() => {
-            quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-            quickPickStub.onFirstCall().resolves(pipelineItem);
+        test('start returns null when no pipeline', async () => {
+            const result = await Pipeline.start(null);
+            expect(result).null;
         });
 
-        test('returns undefined when pipeline is not defined properly', async () => {
-            quickPickStub.onFirstCall().resolves();
-            const result = await Pipeline.list(null);
-            // tslint:disable-next-line: no-unused-expression
-            expect(result).undefined;
+    });
+    suite('restart', () => {
+
+        test('restart returns expected error string with pipeline restart', async () => {
+            getPipelineStub.restore();
+            sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([]);
+            try {
+                await Pipeline.restart(null);
+            } catch (err) {
+                expect(err.message).equals("Failed to create Pipeline with error '${err}'");
+                return;
+            }
+        });
+        test('restart returns expected string with pipeline restart', async () => {
+            getPipelineStub.restore();
+            sandbox.stub(TknImpl.prototype, 'restartPipeline').resolves();
+            const result = await Pipeline.restart(pipelineItem);
+            expect(result).equals("Pipeline 'pipeline' successfully created");
+            
+        });
+
+        test('start returns null when no pipeline', async () => {
+            const result = await Pipeline.restart(null);
+            expect(result).null;
         });
     });
-      suite('describe', () => {
 
-        setup(() => {
-            quickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
-            quickPickStub.onFirstCall().resolves(pipelineItem);
-        });
-
-        test('returns null when cancelled', async () => {
-            quickPickStub.onFirstCall().resolves();
-            const result = await Pipeline.describe(null);
-
-            expect(result).undefined;
-        });
+    suite('describe', () => {
 
         test('describe calls the correct tkn command in terminal', async () => {
             await Pipeline.describe(pipelineItem);
             expect(termStub).calledOnceWith(Command.describePipelines(pipelineItem.getName()));
+        });
+
+    });
+    suite('delete', () => {
+
+        test('describe calls the correct tkn command in terminal', async () => {
+            await Pipeline.delete(pipelineItem);
+            expect(termStub).calledOnceWith(Command.deletePipeline(pipelineItem.getName()));
         });
 
     });
@@ -120,4 +137,3 @@ suite('Tekton/Pipeline', () => {
     });
 
 });
-
