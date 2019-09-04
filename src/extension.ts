@@ -19,6 +19,8 @@ export async function activate(context: vscode.ExtensionContext) {
     contextGlobalState = context;
     migrateFromTkn018();
 
+	
+
     const disposables = [
         vscode.commands.registerCommand('tekton.about', (context) => execute(Pipeline.about, context)),
         vscode.commands.registerCommand('tekton.output', (context) => execute(Pipeline.showTektonOutput, context)),
