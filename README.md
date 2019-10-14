@@ -1,4 +1,4 @@
-# Visual Studio Code Tekton Pipelines Extension  <img src="https://github.com/redhat-developer/vscode-tekton/images/tekton.png" alt="tekton" width="50"/>
+# Visual Studio Code Tekton Pipelines Extension  <img src="https://github.com/redhat-developer/vscode-tekton/blob/master/images/tekton.png" alt="tekton" width="50"/>
 
 [![Build Status](https://travis-ci.com/redhat-developer/vscode-tekton.svg?branch=master)](https://travis-ci.com/redhat-developer/vscode-tekton)
 [![Unit Tests Code Coverage](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/master/graph/badge.svg)](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/master/graph/badge.svg)
@@ -85,6 +85,3 @@ Feedback & Questions
 ====================
 If you discover an issue please file a bug and we will fix it as soon as possible.
 * File a bug in [GitHub Issues](https://github.com/redhat-developer/vscode-tekton/issues).
-
-
-
