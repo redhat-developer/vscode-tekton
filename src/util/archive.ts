@@ -4,7 +4,6 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import targz = require('targz');
-import unzipm = require('unzip-stream');
 
 export class Archive {
     static unzip(zipFile: string, extractTo: string, prefix?: string): Promise<void> {
