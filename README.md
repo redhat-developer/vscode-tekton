@@ -1,8 +1,9 @@
 # Visual Studio Code Tekton Pipelines Extension  <img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/tekton.png" alt="tekton" width="50"/>
 
-[![Build Status](https://travis-ci.com/redhat-developer/vscode-tekton.svg?branch=master)](https://travis-ci.com/redhat-developer/vscode-tekton)
-[![Unit Tests Code Coverage](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/master/graph/badge.svg)](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/master/graph/badge.svg)
-[![Visual Studio Marketplace](https://vsmarketplacebadge.apphb.com/version/redhat.vscode-tekton-pipelines.svg)](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-tekton-pipelines)
+| System                                                                                                  | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Build ([master](https://github.com/redhat-developer/vscode-tekton/tree/master) branch)                          | [![Build Status](https://dev.azure.com/redhat-developer/vscode-tekton/_apis/build/status/redhat-developer.vscode-tekton?branchName=master)](https://dev.azure.com/redhat-developer/vscode-tekton/_build?definitionId=3&_a=summary) [![Build Status](https://travis-ci.com/redhat-developer/vscode-tekton.svg?branch=master)](https://travis-ci.com/redhat-developer/vscode-tekton) [![Unit Tests Code Coverage](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/master/graph/badge.svg)](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/master/graph/badge.svg) |
+| [Marketplace](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-openshift-connector) | [![Visual Studio Marketplace](https://vsmarketplacebadge.apphb.com/version/redhat.vscode-tekton-pipelines.svg)](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-tekton-pipelines)
 
 ## Overview
 
@@ -68,10 +69,11 @@ This extension uses the [Tekton CLI](https://github.com/tektoncd/cli):  `tkn`
 
 #### Extensions
 
-This extension depends on Kubernetes Extension form Microsoft which is going to be installed automatically along with the Tekton Pipelines Extension. The below image demonstrates the Kubernetes Extension public API displaying Tekton specific resources: ClusterTasks, Tasks, Pipelines, Pipeline Resources, Pipelineruns, Taskruns in the Kubernetes Clusters View.
+This extension depends on Kubernetes Extension form Microsoft which is going to be installed automatically along with the Tekton Pipelines Extension. The image belows demonstrates the Kubernetes Extension public API displaying Tekton specific resources: ClusterTasks, Tasks, Pipelines, Pipeline Resources, Pipelineruns, Taskruns in the Kubernetes Clusters View.
 
-### Release notes
-see the [change log](CHANGELOG.md).
+## Release notes
+
+See the [change log](CHANGELOG.md).
 
 Contributing
 ============
