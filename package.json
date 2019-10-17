@@ -1,7 +1,7 @@
 {
   "name": "vscode-tekton-pipelines",
-  "displayName": "Tekton",
-  "description": "Tekton pipelines integration",
+  "displayName": "Tekton Pipelines",
+  "description": "Tekton Pipelines extension by Red Hat",
   "version": "0.1.0",
   "license": "MIT",
   "publisher": "redhat",
