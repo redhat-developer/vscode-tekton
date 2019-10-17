@@ -2,9 +2,10 @@
   "name": "vscode-tekton-pipelines",
   "displayName": "Tekton Pipelines",
   "description": "Tekton Pipelines extension by Red Hat",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "license": "MIT",
   "publisher": "redhat",
+  "author": "Red Hat",
   "repository": {
     "type": "git",
     "url": "https://github.com/redhat-developer/vscode-tekton.git"
