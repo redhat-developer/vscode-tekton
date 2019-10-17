@@ -5,8 +5,6 @@
 
 import { Tkn, TknImpl, TektonNode } from '../tkn';
 import { PipelineExplorer } from '../pipeline/pipelineExplorer';
-import { window } from 'vscode';
-import * as validator from 'validator';
 
 const errorMessage = {
     Pipeline: 'You need at least one Pipeline available. Please create new Tekton Pipeline and try again.',
