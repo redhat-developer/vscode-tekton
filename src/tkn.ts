@@ -140,8 +140,8 @@ export class Command {
         return `tkn pipelinerun logs ${name}`;
     }
     @verbose
-    static listTasks(namespace: string) {
-        return `tkn task list -n ${namespace} -o json`;
+    static listTasks(namespace?: string) {
+        return `tkn task list ${namespace ? '-n ' + namespace : ''} -o json`;
     }
     @verbose
     static listTasksinTerminal(namespace: string) {
@@ -492,7 +492,7 @@ export class TknImpl implements Tkn {
 
     async getTasksWithTkn(task: TektonNode): Promise<TektonNode[]> {
         let data: any[] = [];
-        const result: cliInstance.CliExitData = await this.execute(Command.listTasks("default"));
+        const result: cliInstance.CliExitData = await this.execute(Command.listTasks());
         if (result.stderr) {
             console.log(result + "Std.err when processing tasks");
             return [new TektonNodeImpl(task, result.stderr, ContextType.TASK, this, TreeItemCollapsibleState.Expanded)];
