@@ -48,7 +48,7 @@ suite('Cli', () => {
         execStub.yields(null, stdout, '');
         await cli.execute(command);
 
-        expect(execStub).calledOnceWith(command, { maxBuffer: 2*1024*1024 }, sinon.match.func);
+        expect(execStub).calledWith(command, { maxBuffer: 2*1024*1024 }, sinon.match.func);
     });
 
     test('execute passes errors into its exit data', async () => {
