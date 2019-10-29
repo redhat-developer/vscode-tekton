@@ -197,6 +197,11 @@ export class TektonNodeImpl implements TektonNode {
             tooltip: 'PipelineResources: {label}',
             getChildren: () => this.tkn.getPipelineResources(this)
         },
+        pipelineresource: {
+            icon: 'pipe.png',
+            tooltip: 'PipelineResources: {label}',
+            getChildren: () => []
+        },
         tasknode: {
             icon: 'task.png',
             tooltip: 'Tasks: {label}',
@@ -560,9 +565,7 @@ export class TknImpl implements Tkn {
             //show no pipelines if output is not correct json
         }
         let pipelineresources: string[] = data.map((value) => value.metadata.name);
-        pipelineresources = [...new Set(pipelineresources)];
-        const treeState = pipelineresources.length > 0 ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
-        return pipelineresources.map<TektonNode>((value) => new TektonNodeImpl(pipelineResource, value, ContextType.PIPELINE, this, treeState)).sort(compareNodes);
+        return pipelineresources.map<TektonNode>((value) => new TektonNodeImpl(pipelineResource, value, ContextType.PIPELINERESOURCE, this, TreeItemCollapsibleState.None)).sort(compareNodes);
     }
 
     public async getTasks(task: TektonNode): Promise<TektonNode[]> {
