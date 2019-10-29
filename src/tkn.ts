@@ -585,10 +585,9 @@ export class TknImpl implements Tkn {
     }
 
     async _getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]> {
-
+        const result: cliInstance.CliExitData = await this.execute(Command.listClusterTasks("default"));
         let data: any[] = [];
         try {
-            const result: cliInstance.CliExitData = await this.execute(Command.listClusterTasks());
             data = JSON.parse(result.stdout).items;
         } catch (ignore) {
 
