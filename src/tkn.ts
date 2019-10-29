@@ -144,27 +144,27 @@ export class Command {
         return `tkn task list ${namespace ? '-n ' + namespace : ''} -o json`;
     }
     @verbose
-    static listTasksinTerminal(namespace: string) {
-        return `tkn task list -n ${namespace} -o json`;
+    static listTasksinTerminal(namespace?: string) {
+        return `tkn task list ${namespace ? '-n ' + namespace : ''} -o json`;
     }
     @verbose
-    static listTaskRuns(namespace: string) {
-        return `tkn taskrun list -n ${namespace} -o json`;
+    static listTaskRuns(namespace?: string) {
+        return `tkn taskrun list ${namespace ? '-n ' + namespace : ''} -o json`;
     }
     @verbose
-    static listTaskRunsInTerminal(namespace: string) {
-        return `tkn taskrun list -n ${namespace}`;
+    static listTaskRunsInTerminal(namespace?: string) {
+        return `tkn taskrun list ${namespace ? '-n ' + namespace : ''}`;
     }
     @verbose
     static deleteTask(name: string) {
         return `tkn task delete ${name}`;
     }
     @verbose
-    static listClusterTasks(namespace: string) {
-        return `tkn clustertask list -n ${namespace} -o json`;
+    static listClusterTasks(namespace?: string) {
+        return `tkn clustertask list ${namespace ? '-n ' + namespace : ''} -o json`;
     }
-    static listClusterTasksinTerminal(namespace: string) {
-        return `tkn clustertask list -n ${namespace}`;
+    static listClusterTasksinTerminal(namespace?: string) {
+        return `tkn clustertask list ${namespace ? '-n ' + namespace : ''}`;
     }
     @verbose
     static deleteClusterTask(name: string) {
@@ -477,7 +477,7 @@ export class TknImpl implements Tkn {
     }
 
     async _getTaskRuns(pipelinerun: TektonNode): Promise<TektonNode[]> {
-        const result: cliInstance.CliExitData = await this.execute(Command.listTaskRuns("default"));
+        const result: cliInstance.CliExitData = await this.execute(Command.listTaskRuns());
         if (result.stderr) {
             console.log(result + " Std.err when processing pipelines");
             return [new TektonNodeImpl(pipelinerun, result.stderr, ContextType.TASKRUN, this, TreeItemCollapsibleState.Expanded)];
@@ -585,9 +585,10 @@ export class TknImpl implements Tkn {
     }
 
     async _getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]> {
-        const result: cliInstance.CliExitData = await this.execute(Command.listClusterTasks("default"));
+
         let data: any[] = [];
         try {
+            const result: cliInstance.CliExitData = await this.execute(Command.listClusterTasks());
             data = JSON.parse(result.stdout).items;
         } catch (ignore) {
 
