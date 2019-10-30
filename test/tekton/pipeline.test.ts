@@ -182,7 +182,7 @@ suite('Tekton/Pipeline', () => {
             sandbox.stub(Pipeline, "start").withArgs(pipelineItem).resolves(`Pipeline 'pipeline' successfully created`);
             const result = await Pipeline.start(pipelineItem);
             expect(result).equals(`Pipeline '${startPipelineObj.name}' successfully created`);
-            expect('tkn pipeline start pipeline --resource test-resource1=resource1 --resource test-resource2=resource1 --param test-param1=package --param test-param2=package ').equals(Command.startPipeline(startPipelineObj));
+            expect('tkn pipeline start pipeline --resource test-resource1=resource1 --resource test-resource2=resource1 --param test-param1=package --param test-param2=package -s pipeline').equals(Command.startPipeline(startPipelineObj));
         });
 
         test('returns null if no pipeline selected', async () => {
