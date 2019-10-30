@@ -287,7 +287,7 @@ suite("tkn", () => {
             });
             const result = await tknCli.getClusterTasks(clustertaskNodeItem);
 
-            expect(execStub).calledOnceWith(tkn.Command.listClusterTasks("default"));
+            expect(execStub).calledOnceWith(tkn.Command.listClusterTasks());
             expect(result.length).equals(2);
             for (let i = 1; i < result.length; i++) {
                 expect(result[i].getName()).equals(tknTasks[i]);
