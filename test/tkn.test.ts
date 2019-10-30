@@ -470,7 +470,7 @@ suite("tkn", () => {
                 })
             });
             const result = await tknCli.getTaskRuns(pipelinerunItem);
-            expect(execStub).calledWith(tkn.Command.listTaskRuns("default"));
+            expect(execStub).calledWith(tkn.Command.listTaskRuns());
             expect(result.length).equals(2);
             for (let i = 0; i < result.length; i++) {
                 expect(result[i].getName()).equals(tknTaskRuns[i]);
