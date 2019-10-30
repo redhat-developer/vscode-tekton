@@ -61,7 +61,7 @@ export class Command {
     @verbose
     static startPipeline(pipelineData: StartPipelineObject) {
         let resources: string[] = [];
-        let svcAcct : string = pipelineData.serviceAccount? "--serviceaccount "+ pipelineData.serviceAccount : "";
+        let svcAcct : string = pipelineData.serviceAccount? "-s " + pipelineData.serviceAccount : "-s pipeline";
         pipelineData.resources.forEach(element => {
             resources.push("--resource " + element.name + "=" + element.resourceRef);
         });
@@ -81,7 +81,7 @@ export class Command {
     }
     @verbose
     static restartPipeline(name: string) {
-        return `tkn pipeline start ${name} --last`;
+        return `tkn pipeline start ${name} --last -s pipeline`;
     }
     @verbose
     static deletePipeline(name: string) {
