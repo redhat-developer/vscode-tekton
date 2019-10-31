@@ -9,7 +9,7 @@ import { TektonNode, Command } from '../tkn';
 export class TaskRun extends TektonItem {
 
     static async list(taskrun: TektonNode): Promise<void> {
-        if (taskrun) { TaskRun.tkn.executeInTerminal(Command.listTaskRunsInTerminal("default")); }
+        if (taskrun) { TaskRun.tkn.executeInTerminal(Command.listTaskRunsInTerminal()); }
     }
 
     static async listFromTask(taskrun: TektonNode): Promise<void> {

@@ -47,7 +47,7 @@ suite('Tekton/Task', () => {
 
         test('executes the list tkn command in terminal', async () => {
             await Task.list(taskItem);
-            expect(termStub).calledOnceWith(Command.listTasksinTerminal("default"));
+            expect(termStub).calledOnceWith(Command.listTasksinTerminal());
         });
 
     });
