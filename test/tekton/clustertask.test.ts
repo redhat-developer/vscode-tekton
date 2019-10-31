@@ -47,7 +47,7 @@ suite('Tekton/Clustertask', () => {
 
             test('executes the list tkn command in terminal', async () => {
                 await ClusterTask.list(clustertaskItem);
-                expect(termStub).calledOnceWith(Command.listClusterTasksinTerminal("default"));
+                expect(termStub).calledOnceWith(Command.listClusterTasksinTerminal());
             });
 
         });
