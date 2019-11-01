@@ -32,7 +32,7 @@
 			],
 			"preLaunchTask": "npm: watch",
 			"env": {
-				"VSCOST_TEST_MODE": "debug"
+				"VST_DISABLE_COVERAGE": "true"
 			}
 		},
 		{
