@@ -75,6 +75,17 @@ This extension depends on Kubernetes Extension form Microsoft which is going to 
 
 See the [change log](CHANGELOG.md).
 
+Nightly builds
+==============
+
+## WARNING: Nightly builds are by definition unstable. Install at you own risk.
+
+Nightly build bits are published once in 24 hours and available from this [location](https://download.jboss.org/jbosstools/adapters/snapshots/vscode-tekton/?C=M;O=D) with most recent build is on top of the list. 
+To install nightly build, download latest extension `.vsix` package and follow the steps on image below.
+
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/install-vsix.gif" width="708" height="500" /></div>
+
+
 Contributing
 ============
 This is an open source project open to anyone. This project welcomes contributions and suggestions!
