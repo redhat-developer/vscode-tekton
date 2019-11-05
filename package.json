@@ -79,7 +79,7 @@
       },
       {
         "command": "tekton.pipeline.start",
-        "title": "Start Pipeline",
+        "title": "Start",
         "category": "Tekton"
       },
       {
@@ -94,12 +94,12 @@
       },
       {
         "command": "tekton.pipeline.describe",
-        "title": "Describe Pipelines",
+        "title": "Describe",
         "category": "Tekton"
       },
       {
         "command": "tekton.pipeline.delete",
-        "title": "Delete Pipelines",
+        "title": "Delete",
         "category": "Tekton"
       },
       {
@@ -109,42 +109,42 @@
       },
       {
         "command": "tekton.pipelineresource.describe",
-        "title": "Describe PipelineResources",
+        "title": "Describe",
         "category": "Tekton"
       },
       {
         "command": "tekton.pipelineresource.delete",
-        "title": "Delete PipelineResources",
+        "title": "Delete",
         "category": "Tekton"
       },
       {
         "command": "tekton.pipelinerun.list",
-        "title": "List Pipelineruns",
+        "title": "List PipelineRuns",
         "category": "Tekton"
       },
       {
         "command": "tekton.pipelinerun.describe",
-        "title": "Describe Pipelineruns",
+        "title": "Describe",
         "category": "Tekton"
       },
       {
         "command": "tekton.pipelinerun.logs",
-        "title": "Show Pipelinerun logs",
+        "title": "Show Logs",
         "category": "Tekton"
       },
       {
         "command": "tekton.pipelinerun.cancel",
-        "title": "Cancel Pipelinerun",
+        "title": "Cancel",
         "category": "Tekton"
       },
       {
         "command": "tekton.pipelinerun.delete",
-        "title": "Delete Pipelineruns",
+        "title": "Delete",
         "category": "Tekton"
       },
       {
         "command": "tekton.task.start",
-        "title": "Start Task",
+        "title": "Start",
         "category": "Tekton"
       },
       {
@@ -154,12 +154,12 @@
       },
       {
         "command": "tekton.task.delete",
-        "title": "Delete Task",
+        "title": "Delete",
         "category": "Tekton"
       },
       {
         "command": "tekton.clustertask.start",
-        "title": "Start ClusterTask",
+        "title": "Start",
         "category": "Tekton"
       },
       {
@@ -169,27 +169,27 @@
       },
       {
         "command": "tekton.clustertask.delete",
-        "title": "Delete ClusterTask",
+        "title": "Delete",
         "category": "Tekton"
       },
       {
         "command": "tekton.taskrun.list",
-        "title": "List Taskruns",
+        "title": "List TaskRuns",
         "category": "Tekton"
       },
       {
         "command": "tekton.taskrun.listFromTask",
-        "title": "List Taskruns",
+        "title": "List TaskRuns",
         "category": "Tekton"
       },
       {
         "command": "tekton.taskrun.logs",
-        "title": "Show Taskrun logs",
+        "title": "Show Logs",
         "category": "Tekton"
       },
       {
         "command": "tekton.taskrun.delete",
-        "title": "Delete Taskruns",
+        "title": "Delete",
         "category": "Tekton"
       },
       {
