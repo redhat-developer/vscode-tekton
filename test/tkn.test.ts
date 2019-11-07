@@ -533,7 +533,7 @@ suite("tkn", () => {
                         }]
                 })
             });
-            const result = await tknCli.getTaskChildren(taskItem);
+            const result = await tknCli.getTaskRunsforTasks(taskItem);
 
             expect(result.length).equals(2);
             expect(result[0].getName()).equals('taskrun2');
@@ -586,7 +586,7 @@ suite("tkn", () => {
                         }]
                 })
             });
-            const result = await tknCli.getTaskChildren(taskItem);
+            const result = await tknCli.getTaskRunsforTasks(taskItem);
             expect(execStub).calledWith(tkn.Command.listTaskRunsforTasks(taskItem.getName()));
             expect(result.length).equals(2);
             for (let i = 0; i < result.length; i++) {
@@ -650,7 +650,7 @@ suite("tkn", () => {
                         }]
                 })
             });
-            const result = await tknCli.getClusterTaskChildren(clustertaskItem);
+            const result = await tknCli.getTaskRunsforTasks(clustertaskItem);
 
             expect(result.length).equals(2);
             expect(result[0].getName()).equals('taskrun2');
@@ -703,7 +703,7 @@ suite("tkn", () => {
                         }]
                 })
             });
-            const result = await tknCli.getClusterTaskChildren(clustertaskItem);
+            const result = await tknCli.getTaskRunsforTasks(clustertaskItem);
             expect(execStub).calledWith(tkn.Command.listTaskRunsforTasks(clustertaskItem.getName()));
             expect(result.length).equals(2);
             for (let i = 0; i < result.length; i++) {
@@ -712,7 +712,7 @@ suite("tkn", () => {
         });
 
         test('getPipelineRunChildren returns taskruns for an pipelinerun', async () => {
-            sandbox.stub(tkn.TknImpl.prototype, "getPipelineRunChildren").resolves([taskrunItem]);
+            sandbox.stub(tkn.TknImpl.prototype, "getTaskRuns").resolves([taskrunItem]);
             execStub.onFirstCall().resolves({
                 error: undefined, stdout: JSON.stringify({
                     items: [
@@ -732,7 +732,7 @@ suite("tkn", () => {
             });
             execStub.onSecondCall().resolves({ error: undefined, stdout: 'serv', stderr: '' });
             //TODO: Probably need a get children here
-            const result = await tknCli.getPipelineRunChildren(pipelinerunItem);
+            const result = await tknCli.getTaskRuns(pipelinerunItem);
 
             expect(result[0].getName()).deep.equals('taskrun1');
         });
