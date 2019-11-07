@@ -58,7 +58,7 @@ suite('Tekton/PipelineResource', () => {
 
             test('calls the appropriate error message when no pipelineresource found', async () => {
                 getPipelineNamesStub.restore();
-                sandbox.stub(TknImpl.prototype, 'getPipelineChildren').resolves([]);
+                sandbox.stub(TknImpl.prototype, 'getPipelineRuns').resolves([]);
                 try {
                     await PipelineResource.list(null);
                 } catch (err) {

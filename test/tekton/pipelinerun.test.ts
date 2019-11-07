@@ -58,7 +58,6 @@ suite('Tekton/PipelineRun', () => {
 
             test('calls the appropriate error message when no pipelinerun found', async () => {
                 getPipelineNamesStub.restore();
-                sandbox.stub(TknImpl.prototype, 'getPipelineChildren').resolves([]);
                 try {
                     await PipelineRun.list(null);
                 } catch (err) {

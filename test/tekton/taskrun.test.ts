@@ -56,7 +56,6 @@ suite('Tekton/TaskRun', () => {
 
             test('calls the appropriate error message when no project found', async () => {
                 getPipelineRunNamesStub.restore();
-                sandbox.stub(TknImpl.prototype, 'getPipelineRunChildren').resolves([]);
                 try {
                     await TaskRun.list(null);
                 } catch (err) {
