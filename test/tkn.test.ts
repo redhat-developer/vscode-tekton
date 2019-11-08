@@ -386,7 +386,11 @@ suite("tkn", () => {
                                 "ownerReferences": [{
                                     "kind": "PipelineRun",
                                     "name": "pipelinerun1"
-                                }]
+                                }],
+                                "labels": {
+                                    "tekton.dev/pipelineRun": "pipelinerun1"
+                                }
+                                
                             },
                             "status": {
                                 "conditions": [
@@ -405,7 +409,10 @@ suite("tkn", () => {
                                 "ownerReferences": [{
                                     "kind": "PipelineRun",
                                     "name": "pipelinerun1"
-                                }]
+                                }],
+                                "labels": {
+                                    "tekton.dev/pipelineRun": "pipelinerun1"
+                                }
                             },
                             "status": {
                                 "conditions": [
@@ -437,7 +444,10 @@ suite("tkn", () => {
                                 "ownerReferences": [{
                                     "kind": "PipelineRun",
                                     "name": "pipelinerun1"
-                                }]
+                                }],
+                                "labels": {
+                                    "tekton.dev/pipelineRun": "pipelinerun1"
+                                }
                             },
                             "status": {
                                 "conditions": [
@@ -456,7 +466,10 @@ suite("tkn", () => {
                                 "ownerReferences": [{
                                     "kind": "PipelineRun",
                                     "name": "pipelinerun1"
-                                }]
+                                }],
+                                "labels": {
+                                    "tekton.dev/pipelineRun": "pipelinerun1"
+                                }
                             },
                             "status": {
                                 "conditions": [
@@ -496,6 +509,9 @@ suite("tkn", () => {
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
                                 "name": "taskrun1",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "task1"
+                                }
                             },
                             "spec": {
                                 "taskRef": {
@@ -516,6 +532,9 @@ suite("tkn", () => {
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
                                 "name": "taskrun2",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "task1"
+                                }
                             },
                             "spec": {
                                 "taskRef": {
@@ -549,6 +568,9 @@ suite("tkn", () => {
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
                                 "name": "taskrun1",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "task1"
+                                }
                             },
                             "spec": {
                                 "taskRef": {
@@ -569,6 +591,9 @@ suite("tkn", () => {
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
                                 "name": "taskrun2",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "task1"
+                                }
                             },
                             "spec": {
                                 "taskRef": {
@@ -613,6 +638,9 @@ suite("tkn", () => {
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
                                 "name": "taskrun1",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "clustertask1"
+                                }
                             },
                             "spec": {
                                 "taskRef": {
@@ -633,6 +661,9 @@ suite("tkn", () => {
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
                                 "name": "taskrun2",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "clustertask1"
+                                }
                             },
                             "spec": {
                                 "taskRef": {
@@ -666,6 +697,9 @@ suite("tkn", () => {
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
                                 "name": "taskrun1",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "clustertask1"
+                                }
                             },
                             "spec": {
                                 "taskRef": {
@@ -686,6 +720,9 @@ suite("tkn", () => {
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
                                 "name": "taskrun2",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "clustertask1"
+                                }
                             },
                             "spec": {
                                 "taskRef": {

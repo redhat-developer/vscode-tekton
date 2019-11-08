@@ -6,6 +6,32 @@ import * as path from 'path';
 import { ToolsConfig } from './tools';
 import format = require('string-format');
 import { StartPipelineObject } from './tekton/pipeline';
+import humanize = require('humanize-duration');
+
+
+const humanizerSeconds = humanize.humanizer(createConfig());
+const humanizer = humanize.humanizer(createConfig());
+
+function createConfig(seconds: boolean = true): humanize.HumanizerOptions {
+    return {
+        language: 'shortEn',
+        languages: {
+            shortEn: {
+                y: () => 'y',
+                mo: () => 'mo',
+                w: () => 'w',
+                d: () => 'd',
+                h: () => 'h',
+                m: () => 'm',
+                s: () => 's',
+                ms: () => 'ms',
+            }
+        },
+        round: true,
+        largest: 2
+    };
+}
+
 
 export interface TektonNode extends QuickPickItem {
     contextValue: string;
@@ -294,6 +320,59 @@ export class TektonNodeImpl implements TektonNode {
 
 }
 
+type PipelineTaskRunData = {
+    metadata: {
+        creationTimestamp: string,
+        name: string,
+        labels: {
+            'tekton.dev/pipelineTask': string
+        }
+    },
+    status: {
+        completionTime: string;
+        conditions: [{
+            status: string
+        }]
+    }
+};
+
+
+export class TaskRun extends TektonNodeImpl {
+    private started: string;
+    private finished: string;
+    private shortName: string;
+    constructor(parent: TektonNode,
+        name: string,
+        tkn: Tkn,
+        item: PipelineTaskRunData) {
+        super(parent, name, ContextType.TASKRUN, tkn, TreeItemCollapsibleState.None, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status:'');
+        // destructuring assignment to save only required data from 
+        ({ 
+            metadata: { 
+                creationTimestamp: this.started, 
+                labels: {
+                    'tekton.dev/pipelineTask': this.shortName
+                }
+            }, status: {
+                completionTime: this.finished
+            }
+        } = item);
+        
+    }
+
+    get label(): string {
+        return this.shortName;
+    }
+
+    get description(): string {
+        let took = '';
+        if (this.finished) {
+            took = ', took ' + humanizer(Date.parse(this.finished) - Date.parse(this.started));
+        }
+        return 'started ' + humanizer(Date.now() - Date.parse(this.started)) + ' ago' + took;
+    }
+}
+
 export interface Tkn {
     getPipelineNodes(): Promise<TektonNode[]>;
     startPipeline(pipeline: StartPipelineObject): Promise<TektonNode[]>;
@@ -414,12 +493,10 @@ export class TknImpl implements Tkn {
             data = JSON.parse(result.stdout).items;
         } catch (ignore) {
         }
-        const taskrunObject = data.map(value => ({ name: value.metadata.name, owner: value.spec.taskRef.name, creationTime: value.metadata.creationTimestamp, state: value.status ? value.status.conditions[0].status : "" })).filter(function (obj) {
-            return obj.owner === task.getName();
-        });
-        return taskrunObject.map<TektonNode>((value) => {
-            return new TektonNodeImpl(task, value.name, ContextType.TASKRUN, this, TreeItemCollapsibleState.None, value.creationTime, value.state);
-        }).sort(compareTime);
+        return data
+            .filter((value) => value.spec.taskRef.name === task.getName())
+            .map((value) => new TaskRun(task, value.metadata.name, this, value))
+            .sort(compareTime);
     }
 
     async getTaskRuns(pipelineRun: TektonNode): Promise<TektonNode[]> {
@@ -442,12 +519,11 @@ export class TknImpl implements Tkn {
             data = JSON.parse(result.stdout).items;
         } catch (ignore) {
         }
-        const taskrunObject = data.map(value => ({ name: value.metadata.name, owner: value.metadata.ownerReferences ? value.metadata.ownerReferences[0].name : "", creationTime: value.metadata.creationTimestamp, state: value.status ? value.status.conditions[0].status : "" })).filter(function (obj) {
-            return obj.owner === pipelinerun.getName();
-        });
-        return taskrunObject.map<TektonNode>((value) => {
-            return new TektonNodeImpl(pipelinerun, value.name, ContextType.TASKRUN, this, TreeItemCollapsibleState.None, value.creationTime, value.state);
-        }).sort(compareTime);
+        
+        return data
+            .filter((value) => value.metadata.labels["tekton.dev/pipelineRun"] === pipelinerun.getName())
+            .map((value) => new TaskRun(pipelinerun, value.metadata.name, this, value))
+            .sort(compareTime);
     }
 
     async getPipelines(pipeline: TektonNode): Promise<TektonNode[]> {
