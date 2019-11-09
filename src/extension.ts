@@ -97,7 +97,6 @@ function execute<T>(command: (...args: T[]) => Promise<any> | void, ...params: T
         return res && res.then
             ? res.then((result: any) => {
                 displayResult(result);
-
             }).catch((err: any) => {
                 vscode.window.showErrorMessage(err.message ? err.message : err);
             })

@@ -8,8 +8,6 @@ import format = require('string-format');
 import { StartPipelineObject } from './tekton/pipeline';
 import humanize = require('humanize-duration');
 
-
-const humanizerSeconds = humanize.humanizer(createConfig());
 const humanizer = humanize.humanizer(createConfig());
 
 function createConfig(seconds: boolean = true): humanize.HumanizerOptions {
@@ -28,7 +26,8 @@ function createConfig(seconds: boolean = true): humanize.HumanizerOptions {
             }
         },
         round: true,
-        largest: 2
+        largest: 2,
+        conjunction: ' '
     };
 }
 
@@ -325,7 +324,8 @@ type PipelineTaskRunData = {
         creationTimestamp: string,
         name: string,
         labels: {
-            'tekton.dev/pipelineTask': string
+            'tekton.dev/pipelineTask': string,
+            'tekton.dev/pipelineRun': string
         }
     },
     status: {
@@ -333,6 +333,11 @@ type PipelineTaskRunData = {
         conditions: [{
             status: string
         }]
+    },
+    spec: {
+        taskRef: {
+            name: string
+        }
     }
 };
 
@@ -365,11 +370,76 @@ export class TaskRun extends TektonNodeImpl {
     }
 
     get description(): string {
-        let took = '';
-        if (this.finished) {
-            took = ', took ' + humanizer(Date.parse(this.finished) - Date.parse(this.started));
+        let r = '';
+        if (this.getParent().contextValue === ContextType.TASK) {
+            if (this.finished) {
+                r = 'started ' +  humanizer(Date.now() - Date.parse(this.started)) + ' ago, finished in ' + humanizer(Date.parse(this.finished) - Date.parse(this.started));
+            } else {
+                r = 'started ' +  humanizer(Date.now() - Date.parse(this.started)) + ' ago, running for ' + humanizer(Date.now() - Date.parse(this.started));
+            }
+        } else {
+            if (this.finished) {
+                r = 'finished in ' + humanizer(Date.parse(this.finished) - Date.parse(this.started));
+            } else {
+                r = 'running for ' + humanizer(Date.now() - Date.parse(this.started));
+            }
         }
-        return 'started ' + humanizer(Date.now() - Date.parse(this.started)) + ' ago' + took;
+        return r;
+    }
+}
+
+
+type PipelineRunData = {
+    metadata: {
+        creationTimestamp: string,
+        name: string,
+        generateName: string
+    },
+    spec: {
+        pipelineRef: {
+            name: string
+        }
+    },
+    status: {
+        completionTime: string;
+        conditions: [{
+            status: string
+        }]
+    }
+};
+
+export class PipelineRun extends TektonNodeImpl {
+    private started: string;
+    private finished: string;
+    private generateName: string;
+    constructor(parent: TektonNode,
+        name: string,
+        tkn: Tkn,
+        item: PipelineRunData) {
+        super(parent, name, ContextType.PIPELINERUN, tkn, TreeItemCollapsibleState.Expanded, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status:'');
+        // destructuring assignment to save only required data from
+        ({
+            metadata: {
+                creationTimestamp: this.started,
+                generateName: this.generateName
+            }, status: {
+                completionTime: this.finished
+            }
+        } = item);
+    }
+
+    get label(): string {
+        return this.name.substr(this.generateName.length);
+    }
+
+    get description(): string {
+        let r = '';
+        if (this.finished) {
+            r = 'started ' +  humanizer(Date.now() - Date.parse(this.started)) + ' ago, finished in ' + humanizer(Date.parse(this.finished) - Date.parse(this.started));
+        } else {
+            r = 'running for ' + humanizer(Date.now() - Date.parse(this.started));
+        }
+        return r;
     }
 }
 
@@ -455,22 +525,20 @@ export class TknImpl implements Tkn {
         const result: cliInstance.CliExitData = await this.execute(Command.listPipelineRuns(pipeline.getName()));
         if (result.stderr) {
             console.log(result + " Std.err when processing pipelines");
-            return [new TektonNodeImpl(pipeline, result.stderr, ContextType.PIPELINERUN, this, TreeItemCollapsibleState.Expanded)];
+            return [new TektonNodeImpl(pipeline, result.stderr, ContextType.PIPELINERUN, this, TreeItemCollapsibleState.None)];
         }
-        let data: any[] = [];
+
+        let data: PipelineRunData[] = [];
         try {
-            data = JSON.parse(result.stdout).items;
+            let r = JSON.parse(result.stdout);
+            data = r.items ? r.items : data;
         } catch (ignore) {
-
         }
-        if (!data) { return data; }
-        const pipelinerunObject = data.map(value => ({ name: value.metadata.name, parent: value.spec.pipelineRef.name, creationTime: value.metadata.creationTimestamp, state: value.status ? value.status.conditions[0].status : "" })).filter(function (obj) {
-            return obj.parent === pipeline.getName();
-        });
 
-        return pipelinerunObject.map<TektonNode>((value) => {
-            return new TektonNodeImpl(pipeline, value.name, ContextType.PIPELINERUN, this, TreeItemCollapsibleState.Collapsed, value.creationTime, value.state);
-        }).sort(compareTime);
+        return data
+            .filter((value) => value.spec.pipelineRef.name === pipeline.getName())
+            .map((value) => new PipelineRun(pipeline, value.metadata.name , this, value))
+            .sort(compareTime);
     }
 
     public async getTaskRunsforTasks(task: TektonNode): Promise<TektonNode[]> {
@@ -514,7 +582,7 @@ export class TknImpl implements Tkn {
             console.log(result + " Std.err when processing pipelines");
             return [new TektonNodeImpl(pipelinerun, result.stderr, ContextType.TASKRUN, this, TreeItemCollapsibleState.Expanded)];
         }
-        let data: any[] = [];
+        let data: PipelineTaskRunData[] = [];
         try {
             data = JSON.parse(result.stdout).items;
         } catch (ignore) {
