@@ -469,6 +469,7 @@ function compareNodes(a, b): number {
     const t = a.contextValue.localeCompare(b.contextValue);
     return t ? t : a.label.localeCompare(b.label);
 }
+
 function compareTime(a, b): number {
     const aTime = Date.parse(a.creationTime);
     const bTime = Date.parse(b.creationTime);
