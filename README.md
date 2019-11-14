@@ -15,7 +15,7 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 ### Setup kubernetes cluster to use with extension
 
-To use the extension, developers can deploy Tekton Pipelines into a minikube instance or use [Red Hat CodeReady Containters](https://developers.redhat.com/products/codeready-containers).
+To use the extension, developers can deploy Tekton Pipelines into a minikube instance or use [Red Hat CodeReady Containers](https://developers.redhat.com/products/codeready-containers).
 
 #### Red Hat CodeReady Containers
 
