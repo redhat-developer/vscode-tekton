@@ -10,14 +10,24 @@
 A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 - Uses `tkn` CLI commands to interact with Tekton Pipelines
-
 - Provides snippets for creating Pipeline Resources
 
 
-To use the extension, developers can deploy Tekton Pipelines into a minikube instance (minishift / CDK has not been tested thoroughly but [feedback](issues) would be appreciated!)
+### Setup kubernetes cluster to use with extension
 
-For detailed analysis of how to setup Tekton Pipelines, please follow the [instructions/tutorial](https://github.com/tektoncd/pipeline#want-to-start-using-pipelines).
+To use the extension, developers can deploy Tekton Pipelines into a minikube instance or use [Red Hat CodeReady Containters](https://developers.redhat.com/products/codeready-containers).
 
+#### Red Hat CodeReady Containers
+
+Red Hat CodeReady Containers is a simplest way to start OpenShift Cluster on your laptop in a matter of minutes, follow [this documentation](https://code-ready.github.io/crc/) to get it up and running. After cluster is started follow [this steps](https://github.com/openshift/pipelines-tutorial/#install-openshift-pipelines) to deploy OpenShift Pipelines into a OpenShift cluster.
+
+#### minikube
+
+For detailed analysis of how to setup Tekton Pipelines into minikube instance, please follow the [instructions/tutorial](https://github.com/tektoncd/pipeline#want-to-start-using-pipelines).
+
+### Tutorial
+
+Follow Tekton Pipeline Extension [tutorial](TUTORIAL.md) inspired by [original tutorial](https://github.com/openshift/pipelines-tutorial) that uses OpenShift Developer Console, `tkn` and `oc` command line tools.
 
 ### Commands and features
 
