@@ -382,30 +382,16 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
+                                "creationTimestamp" : "2019-07-25T12:03:01Z",
                                 "name": "taskrun1",
                                 "ownerReferences": [{
                                     "kind": "PipelineRun",
                                     "name": "pipelinerun1"
-                                }]
-                            },
-                            "status": {
-                                "conditions": [
-                                    {
-                                        "status": "True",
-                                    }
-                                ],
-                                "startTime": "2019-07-25T12:03:00Z",
-                            }
-                        },
-                        {
-                            "kind": "TaskRun",
-                            "apiVersion": "tekton.dev/v1alpha1",
-                            "metadata": {
-                                "name": "taskrun2",
-                                "ownerReferences": [{
-                                    "kind": "PipelineRun",
-                                    "name": "pipelinerun1"
-                                }]
+                                }],
+                                "labels": {
+                                    "tekton.dev/pipelineRun": "pipelinerun1"
+                                }
+                                
                             },
                             "status": {
                                 "conditions": [
@@ -414,6 +400,29 @@ suite("tkn", () => {
                                     }
                                 ],
                                 "startTime": "2019-07-25T12:03:01Z",
+                            }
+                        },
+                        {
+                            "kind": "TaskRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "creationTimestamp" : "2019-07-25T12:03:00Z",
+                                "name": "taskrun2",
+                                "ownerReferences": [{
+                                    "kind": "PipelineRun",
+                                    "name": "pipelinerun1"
+                                }],
+                                "labels": {
+                                    "tekton.dev/pipelineRun": "pipelinerun1"
+                                }
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:00Z",
                             }
                         }]
                 })
@@ -433,30 +442,15 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
+                                "creationTimestamp" : "2019-07-25T12:03:01Z",
                                 "name": "taskrun1",
                                 "ownerReferences": [{
                                     "kind": "PipelineRun",
                                     "name": "pipelinerun1"
-                                }]
-                            },
-                            "status": {
-                                "conditions": [
-                                    {
-                                        "status": "True",
-                                    }
-                                ],
-                                "startTime": "2019-07-25T12:03:00Z",
-                            }
-                        },
-                        {
-                            "kind": "TaskRun",
-                            "apiVersion": "tekton.dev/v1alpha1",
-                            "metadata": {
-                                "name": "taskrun2",
-                                "ownerReferences": [{
-                                    "kind": "PipelineRun",
-                                    "name": "pipelinerun1"
-                                }]
+                                }],
+                                "labels": {
+                                    "tekton.dev/pipelineRun": "pipelinerun1"
+                                }
                             },
                             "status": {
                                 "conditions": [
@@ -465,6 +459,29 @@ suite("tkn", () => {
                                     }
                                 ],
                                 "startTime": "2019-07-25T12:03:01Z",
+                            }
+                        },
+                        {
+                            "kind": "TaskRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "creationTimestamp" : "2019-07-25T12:03:00Z",
+                                "name": "taskrun2",
+                                "ownerReferences": [{
+                                    "kind": "PipelineRun",
+                                    "name": "pipelinerun1"
+                                }],
+                                "labels": {
+                                    "tekton.dev/pipelineRun": "pipelinerun1"
+                                }
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:00Z",
                             }
                         }]
                 })
@@ -495,27 +512,11 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
+                                "creationTimestamp" : "2019-07-25T12:03:01Z",
                                 "name": "taskrun1",
-                            },
-                            "spec": {
-                                "taskRef": {
-                                    "name": "task1",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "task1"
                                 }
-                            },
-                            "status": {
-                                "conditions": [
-                                    {
-                                        "status": "True",
-                                    }
-                                ],
-                                "startTime": "2019-07-25T12:03:00Z",
-                            }
-                        },
-                        {
-                            "kind": "TaskRun",
-                            "apiVersion": "tekton.dev/v1alpha1",
-                            "metadata": {
-                                "name": "taskrun2",
                             },
                             "spec": {
                                 "taskRef": {
@@ -529,6 +530,30 @@ suite("tkn", () => {
                                     }
                                 ],
                                 "startTime": "2019-07-25T12:03:01Z",
+                            }
+                        },
+                        {
+                            "kind": "TaskRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "creationTimestamp" : "2019-07-25T12:03:00Z",
+                                "name": "taskrun2",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "task1"
+                                }
+                            },
+                            "spec": {
+                                "taskRef": {
+                                    "name": "task1",
+                                }
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:00Z",
                             }
                         }]
                 })
@@ -548,27 +573,11 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
+                                "creationTimestamp" : "2019-07-25T12:03:01Z",
                                 "name": "taskrun1",
-                            },
-                            "spec": {
-                                "taskRef": {
-                                    "name": "task1",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "task1"
                                 }
-                            },
-                            "status": {
-                                "conditions": [
-                                    {
-                                        "status": "True",
-                                    }
-                                ],
-                                "startTime": "2019-07-25T12:03:00Z",
-                            }
-                        },
-                        {
-                            "kind": "TaskRun",
-                            "apiVersion": "tekton.dev/v1alpha1",
-                            "metadata": {
-                                "name": "taskrun2",
                             },
                             "spec": {
                                 "taskRef": {
@@ -582,6 +591,30 @@ suite("tkn", () => {
                                     }
                                 ],
                                 "startTime": "2019-07-25T12:03:01Z",
+                            }
+                        },
+                        {
+                            "kind": "TaskRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "creationTimestamp" : "2019-07-25T12:03:00Z",
+                                "name": "taskrun2",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "task1"
+                                }
+                            },
+                            "spec": {
+                                "taskRef": {
+                                    "name": "task1",
+                                }
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:00Z",
                             }
                         }]
                 })
@@ -612,27 +645,11 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
+                                "creationTimestamp" : "2019-07-25T12:03:01Z",
                                 "name": "taskrun1",
-                            },
-                            "spec": {
-                                "taskRef": {
-                                    "name": "clustertask1",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "clustertask1"
                                 }
-                            },
-                            "status": {
-                                "conditions": [
-                                    {
-                                        "status": "True",
-                                    }
-                                ],
-                                "startTime": "2019-07-25T12:03:00Z",
-                            }
-                        },
-                        {
-                            "kind": "TaskRun",
-                            "apiVersion": "tekton.dev/v1alpha1",
-                            "metadata": {
-                                "name": "taskrun2",
                             },
                             "spec": {
                                 "taskRef": {
@@ -646,6 +663,30 @@ suite("tkn", () => {
                                     }
                                 ],
                                 "startTime": "2019-07-25T12:03:01Z",
+                            }
+                        },
+                        {
+                            "kind": "TaskRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "creationTimestamp" : "2019-07-25T12:03:00Z",
+                                "name": "taskrun2",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "clustertask1"
+                                }
+                            },
+                            "spec": {
+                                "taskRef": {
+                                    "name": "clustertask1",
+                                }
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:00Z",
                             }
                         }]
                 })
@@ -665,27 +706,11 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
+                                "creationTimestamp" : "2019-07-25T12:03:01Z",
                                 "name": "taskrun1",
-                            },
-                            "spec": {
-                                "taskRef": {
-                                    "name": "clustertask1",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "clustertask1"
                                 }
-                            },
-                            "status": {
-                                "conditions": [
-                                    {
-                                        "status": "True",
-                                    }
-                                ],
-                                "startTime": "2019-07-25T12:03:00Z",
-                            }
-                        },
-                        {
-                            "kind": "TaskRun",
-                            "apiVersion": "tekton.dev/v1alpha1",
-                            "metadata": {
-                                "name": "taskrun2",
                             },
                             "spec": {
                                 "taskRef": {
@@ -699,6 +724,30 @@ suite("tkn", () => {
                                     }
                                 ],
                                 "startTime": "2019-07-25T12:03:01Z",
+                            }
+                        },
+                        {
+                            "kind": "TaskRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "creationTimestamp" : "2019-07-25T12:03:00Z",
+                                "name": "taskrun2",
+                                "labels": {
+                                    "tekton.dev/pipelineTask": "clustertask1"
+                                }
+                            },
+                            "spec": {
+                                "taskRef": {
+                                    "name": "clustertask1",
+                                }
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:00Z",
                             }
                         }]
                 })
