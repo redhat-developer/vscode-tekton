@@ -223,10 +223,6 @@
     "views": {
       "explorer": [
         {
-          "id": "extension.vsKubernetesExplorer",
-          "name": "Clusters"
-        },
-        {
           "id": "tektonPipelineExplorer",
           "name": "Tekton Pipelines"
         }
