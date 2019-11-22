@@ -12,6 +12,7 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 - Uses `tkn` CLI commands to interact with Tekton Pipelines
 - Provides snippets for creating Pipeline Resources
 
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/demo.gif" width="710" height="499" /></div>
 
 ### Setup kubernetes cluster to use with extension
 
