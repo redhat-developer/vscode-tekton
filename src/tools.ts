@@ -61,9 +61,9 @@ export class ToolsConfig {
                     do {
                         action = undefined;
                         await vscode.window.withProgress({
-                            cancellable: true,
-                            location: vscode.ProgressLocation.Notification,
-                            title: `Downloading ${ToolsConfig.tool['tkn'].description}`
+                                cancellable: true,
+                                location: vscode.ProgressLocation.Notification,
+                                title: `Downloading ${ToolsConfig.tool['tkn'].description}`
                             },
                             (progress: vscode.Progress<{increment: number, message: string}>, token: vscode.CancellationToken) => {
                                 return DownloadUtil.downloadFile(
@@ -88,7 +88,7 @@ export class ToolsConfig {
                         }
                         fsex.removeSync(toolDlLocation);
                         if (Platform.OS !== 'win32') {
-                            fs.chmodSync(toolCacheLocation, 0o765);
+                            fs.chmodSync(toolCacheLocation, '765');
                         }
                         toolLocation = toolCacheLocation;
                     }
