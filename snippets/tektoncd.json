@@ -195,7 +195,7 @@
     "description": "Create a Tekton TaskRun Resource"
   },
   "TaskStep": {
-    "prefix": "Tekton TaskStep",
+    "prefix": "Tekton: TaskStep",
     "body": [
       "- name: ${2:echo2}",
       "  image: ${3:fedora,quay.io/buildah/stable}",
