@@ -30,12 +30,13 @@ node('rhel7'){
     stage ("Package vscode-tekton") {
         def packageJson = readJSON file: 'package.json'
         sh "vsce package -o tekton-pipelines-${packageJson.version}-${env.BUILD_NUMBER}.vsix"
+        sh "sha256sum *.vsix > tekton-pipelines-${packageJson.version}-${env.BUILD_NUMBER}.vsix.sha256"
     }
 
     if(params.UPLOAD_LOCATION) {
         stage('Snapshot') {
             def filesToPush = findFiles(glob: '**.vsix')
-            sh "rsync -Pzrlt --rsh=ssh --protocol=28 ${filesToPush[0].path} ${UPLOAD_LOCATION}/snapshots/vscode-tekton/"
+            sh "rsync -Pzrlt --rsh=ssh --protocol=28 *.vsix* ${UPLOAD_LOCATION}/snapshots/vscode-tekton/"
             stash name:'vsix', includes:filesToPush[0].path
         }
     }
@@ -53,11 +54,11 @@ node('rhel7'){
                 def vsix = findFiles(glob: '**.vsix')
                 sh 'vsce publish -p ${TOKEN} --packagePath' + " ${vsix[0].path}"
             }
-            archive includes:"**.vsix"
+            archive includes:"**.vsix*"
 
             stage ("Promote the build to stable") {
                 def vsix = findFiles(glob: '**.vsix')
-                sh "rsync -Pzrlt --rsh=ssh --protocol=28 ${vsix[0].path} ${UPLOAD_LOCATION}/stable/vscode-tekton/"
+                sh "rsync -Pzrlt --rsh=ssh --protocol=28 *.vsix* ${UPLOAD_LOCATION}/stable/vscode-tekton/"
             }
         }
     }
