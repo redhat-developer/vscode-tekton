@@ -11,7 +11,6 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { PipelineRun } from '../../src/tekton/pipelinerun';
-import { Pipeline } from '../../src/tekton/pipeline';
 import { TestItem } from './testTektonitem';
 import { TektonItem } from '../../src/tekton/tektonitem';
 
@@ -144,13 +143,48 @@ suite('Tekton/PipelineRun', () => {
     
         });
 
-        suite('delete', () => {
-
-        test('describe calls the correct tkn command in terminal', async () => {
-            await PipelineRun.delete(pipelineItem);
-            expect(termStub).calledOnceWith(Command.deletePipelineRun(pipelineItem.getName()));
+        suite('delete command', () => {
+            let warnStub: sinon.SinonStub;
+    
+            setup(() => {
+                warnStub = sandbox.stub(vscode.window, 'showWarningMessage');
+            });
+    
+            test('calls the appropriate tkn command if confirmed', async () => {
+                warnStub.resolves('Yes');
+    
+                await PipelineRun.delete(pipelinerunItem);
+    
+                expect(execStub).calledOnceWith(Command.deletePipelineRun(pipelinerunItem.getName()));
+            });
+    
+            test('returns a confirmation message text when successful', async () => {
+                warnStub.resolves('Yes');
+    
+                const result = await PipelineRun.delete(pipelinerunItem);
+    
+                expect(result).equals(`pipelinerun '${pipelinerunItem.getName()}' successfully deleted`);
+            });
+    
+            test('returns null when cancelled', async() => {
+                warnStub.resolves('Cancel');
+    
+                const result = await PipelineRun.delete(pipelinerunItem);
+    
+                expect(result).null;
+            });
+    
+            test('throws an error message when command failed', async () => {
+                warnStub.resolves('Yes');
+                execStub.rejects('ERROR');
+                let expectedError;
+                try {
+                    await PipelineRun.delete(pipelinerunItem);
+                } catch (err) {
+                    expectedError = err;
+                }
+                expect(expectedError).equals(`Failed to delete pipelinerun with error 'ERROR'`);
+            });
         });
-
-    });
     });
 });

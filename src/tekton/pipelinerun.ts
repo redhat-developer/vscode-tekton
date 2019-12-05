@@ -5,7 +5,8 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
-import * as k8s from 'vscode-kubernetes-tools-api';
+import { window } from 'vscode';
+import { Progress } from '../util/progress';
 
 export class PipelineRun extends TektonItem {
 
@@ -48,8 +49,15 @@ export class PipelineRun extends TektonItem {
         if (pipelinerun) { PipelineRun.tkn.executeInTerminal(Command.cancelPipelineRun(pipelinerun.getName())); }
     }
 
-    static async delete(pipelinerun: TektonNode): Promise<void> {
-        if (pipelinerun) { PipelineRun.tkn.executeInTerminal(Command.deletePipelineRun(pipelinerun.getName())); }
+    static async delete(pipelinerun: TektonNode): Promise<string> {
+        const value = await window.showWarningMessage(`Do you want to delete pipelinerun '${pipelinerun.getName()}\'?`, 'Yes', 'Cancel');
+        if (value === 'Yes') {
+            return Progress.execFunctionWithProgress(`Deleting the pipelinerun '${pipelinerun.getName()}'`, () => 
+                PipelineRun.tkn.execute(Command.deletePipelineRun(pipelinerun.getName())))
+                .then(() => `pipelinerun '${pipelinerun.getName()}' successfully deleted`)
+                .catch((err) => Promise.reject(`Failed to delete pipelinerun with error '${err}'`));
+        }
+        return null;
     }
 
 }

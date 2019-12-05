@@ -110,7 +110,7 @@ export class Command {
     }
     @verbose
     static deletePipeline(name: string) {
-        return `tkn pipeline delete ${name}`;
+        return `tkn pipeline delete ${name} -f`;
     }
     @verbose
     static listPipelineResources() {
@@ -126,7 +126,7 @@ export class Command {
     }
     @verbose
     static deletePipelineResource(name: string) {
-        return `tkn resource delete ${name}`;
+        return `tkn resource delete ${name} -f`;
     }
     @verbose
     static listPipelines() {
@@ -158,7 +158,7 @@ export class Command {
     }
     @verbose
     static deletePipelineRun(name: string) {
-        return `tkn pipelinerun delete ${name}`;
+        return `tkn pipelinerun delete ${name} -f`;
     }
     @verbose
     static showPipelineRunLogs(name: string) {
@@ -182,7 +182,7 @@ export class Command {
     }
     @verbose
     static deleteTask(name: string) {
-        return `tkn task delete ${name}`;
+        return `tkn task delete ${name} -f`;
     }
     @verbose
     static listClusterTasks(namespace?: string) {
@@ -193,7 +193,7 @@ export class Command {
     }
     @verbose
     static deleteClusterTask(name: string) {
-        return `tkn task delete ${name}`;
+        return `tkn clustertask delete ${name} -f`;
     }
     @verbose
     static showTaskRunLogs(name: string) {
@@ -201,7 +201,7 @@ export class Command {
     }
     @verbose
     static deleteTaskRun(name: string) {
-        return `tkn taskrun delete ${name}`;
+        return `tkn taskrun delete ${name} -f`;
     }
     @verbose
     static printTknVersion() {

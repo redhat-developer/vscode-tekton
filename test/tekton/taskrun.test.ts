@@ -19,6 +19,7 @@ chai.use(sinonChai);
 
 suite('Tekton/TaskRun', () => {
     let sandbox: sinon.SinonSandbox;
+    let execStub: sinon.SinonStub;
     let getTaskRunsStub: sinon.SinonStub;
     let getPipelineRunNamesStub: sinon.SinonStub;
     const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
@@ -27,6 +28,7 @@ suite('Tekton/TaskRun', () => {
 
     setup(() => {
         sandbox = sinon.createSandbox();
+        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({error: null, stdout: '', stderr: ''});
         sandbox.stub(TknImpl.prototype, 'getTaskRuns').resolves([taskrunItem]);
         getPipelineRunNamesStub = sandbox.stub(TektonItem, 'getPipelinerunNames').resolves([pipelinerunItem]);
         sandbox.stub(vscode.window, 'showInputBox');
@@ -141,9 +143,47 @@ suite('Tekton/TaskRun', () => {
 
         suite('delete', () => {
 
-            test('delete calls the correct tkn command in terminal', async () => {
+        suite('delete command', () => {
+            let warnStub: sinon.SinonStub;
+    
+            setup(() => {
+                warnStub = sandbox.stub(vscode.window, 'showWarningMessage');
+            });
+    
+            test('calls the appropriate tkn command if confirmed', async () => {
+                warnStub.resolves('Yes');
+    
                 await TaskRun.delete(taskrunItem);
-                expect(termStub).calledOnceWith(Command.deleteTaskRun(taskrunItem.getName()));
+    
+                expect(execStub).calledOnceWith(Command.deleteTaskRun(taskrunItem.getName()));
+            });
+    
+            test('returns a confirmation message text when successful', async () => {
+                warnStub.resolves('Yes');
+    
+                const result = await TaskRun.delete(taskrunItem);
+    
+                expect(result).equals(`taskrun '${taskrunItem.getName()}' successfully deleted`);
+            });
+    
+            test('returns null when cancelled', async() => {
+                warnStub.resolves('Cancel');
+    
+                const result = await TaskRun.delete(taskrunItem);
+    
+                expect(result).null;
+            });
+    
+            test('throws an error message when command failed', async () => {
+                warnStub.resolves('Yes');
+                execStub.rejects('ERROR');
+                let expectedError;
+                try {
+                    await TaskRun.delete(taskrunItem);
+                } catch (err) {
+                    expectedError = err;
+                }
+                expect(expectedError).equals(`Failed to delete taskrun with error 'ERROR'`);
             });
         });
     });

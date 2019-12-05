@@ -5,6 +5,8 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
+import { window } from 'vscode';
+import { Progress } from '../util/progress';
 
 export class TaskRun extends TektonItem {
 

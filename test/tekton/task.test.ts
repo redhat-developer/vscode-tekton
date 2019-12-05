@@ -66,11 +66,47 @@ suite('Tekton/Task', () => {
         });
     });
 
-    suite('delete', () => {
+    suite('delete command', () => {
+        let warnStub: sinon.SinonStub;
 
-        test('delete calls the correct tkn command in terminal', async () => {
+        setup(() => {
+            warnStub = sandbox.stub(vscode.window, 'showWarningMessage');
+        });
+
+        test('calls the appropriate tkn command if confirmed', async () => {
+            warnStub.resolves('Yes');
+
             await Task.delete(taskItem);
-            expect(termStub).calledOnceWith(Command.deleteTask(taskItem.getName()));
+
+            expect(execStub).calledOnceWith(Command.deleteTask(taskItem.getName()));
+        });
+
+        test('returns a confirmation message text when successful', async () => {
+            warnStub.resolves('Yes');
+
+            const result = await Task.delete(taskItem);
+
+            expect(result).equals(`task '${taskItem.getName()}' successfully deleted`);
+        });
+
+        test('returns null when cancelled', async() => {
+            warnStub.resolves('Cancel');
+
+            const result = await Task.delete(taskItem);
+
+            expect(result).null;
+        });
+
+        test('throws an error message when command failed', async () => {
+            warnStub.resolves('Yes');
+            execStub.rejects('ERROR');
+            let expectedError;
+            try {
+                await Task.delete(taskItem);
+            } catch (err) {
+                expectedError = err;
+            }
+            expect(expectedError).equals(`Failed to delete task with error 'ERROR'`);
         });
     });
 });
