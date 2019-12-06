@@ -30,6 +30,7 @@
     "onCommand:tekton.pipelinerun.list",
     "onCommand:tekton.pipelinerun.describe",
     "onCommand:tekton.pipelinerun.logs",
+    "onCommand:tekton.pipelinerun.followLogs",
     "onCommand:tekton.pipelinerun.cancel",
     "onCommand:tekton.pipelinerun.delete",
     "onCommand:tekton.pipelineresource.list",
@@ -44,6 +45,7 @@
     "onCommand:tekton.taskrun.list",
     "onCommand:tekton.taskrun.listFromTask",
     "onCommand:tekton.taskrun.logs",
+    "onCommand:tekton.taskrun.followLogs",
     "onCommand:tekton.taskrun.delete",
     "onCommand:tekton.explorer.refresh",
     "onCommand:tekton.about",
@@ -133,6 +135,11 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.pipelinerun.followLogs",
+        "title": "Follow Logs",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.pipelinerun.cancel",
         "title": "Cancel",
         "category": "Tekton"
@@ -185,6 +192,11 @@
       {
         "command": "tekton.taskrun.logs",
         "title": "Show Logs",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.taskrun.followLogs",
+        "title": "Follow Logs",
         "category": "Tekton"
       },
       {
@@ -275,6 +287,10 @@
           "when": "view == tektonPipelineExplorer"
         },
         {
+          "command": "tekton.pipelinerun.followLogs",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
           "command": "tekton.pipelinerun.cancel",
           "when": "view == tektonPipelineExplorer"
         },
@@ -316,6 +332,10 @@
         },
         {
           "command": "tekton.taskrun.logs",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.taskrun.followLogs",
           "when": "view == tektonPipelineExplorer"
         },
         {
@@ -402,6 +422,11 @@
           "group": "c1@3"
         },
         {
+          "command": "tekton.pipelinerun.followLogs",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
+          "group": "c1@4"
+        },
+        {
           "command": "tekton.pipelinerun.cancel",
           "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
           "group": "c2@2"
@@ -460,6 +485,11 @@
           "command": "tekton.taskrun.logs",
           "when": "view == tektonPipelineExplorer && viewItem == taskrun",
           "group": "c1"
+        },
+        {
+          "command": "tekton.taskrun.followLogs",
+          "when": "view == tektonPipelineExplorer && viewItem == taskrun",
+          "group": "c1@1"
         },
         {
           "command": "tekton.taskrun.delete",

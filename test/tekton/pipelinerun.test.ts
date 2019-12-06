@@ -116,6 +116,16 @@ suite('Tekton/PipelineRun', () => {
 
         });
 
+        suite('followLog', () => {
+
+            test('followLog calls the correct tkn command in terminal', async () => {
+                await PipelineRun.followLog(pipelinerunItem);
+
+                expect(termStub).calledOnceWith(Command.showPipelineRunFollowLogs(pipelinerunItem.getName()));
+            });
+
+        });
+
         suite('cancel', () => {
    
             setup(() => {
