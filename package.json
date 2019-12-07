@@ -583,7 +583,7 @@
     "fuzzysearch": "^1.0.3",
     "git-fetch-pack": "^0.1.1",
     "git-transport-protocol": "^0.1.0",
-    "hasha": "^5.0.0",
+    "hasha": "5.0.0",
     "humanize-duration": "^3.21.0",
     "js-yaml": "^3.13.1",
     "mkdirp": "^0.5.1",
