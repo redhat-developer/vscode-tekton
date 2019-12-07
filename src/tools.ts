@@ -61,18 +61,18 @@ export class ToolsConfig {
                     do {
                         action = undefined;
                         await vscode.window.withProgress({
-                            cancellable: true,
-                            location: vscode.ProgressLocation.Notification,
-                            title: `Downloading ${ToolsConfig.tool['tkn'].description}`
-                        },
-                            (progress: vscode.Progress<{ increment: number, message: string }>, token: vscode.CancellationToken) => {
+                                cancellable: true,
+                                location: vscode.ProgressLocation.Notification,
+                                title: `Downloading ${ToolsConfig.tool['tkn'].description}`
+                            },
+                            (progress: vscode.Progress<{increment: number, message: string}>, token: vscode.CancellationToken) => {
                                 return DownloadUtil.downloadFile(
                                     ToolsConfig.tool['tkn'].url,
                                     toolDlLocation,
-                                    (dlProgress, increment) => progress.report({ increment, message: `${dlProgress}%` })
+                                    (dlProgress, increment) => progress.report({ increment, message: `${dlProgress}%`})
                                 );
-                            });
-                        const sha256sum: string = await hasha.fromFile(toolDlLocation, { algorithm: 'sha256' });
+                        });
+                        const sha256sum: string = await hasha.fromFile(toolDlLocation, {algorithm: 'sha256'});
                         if (sha256sum !== ToolsConfig.tool['tkn'].sha256sum) {
                             fsex.removeSync(toolDlLocation);
                             action = await vscode.window.showInformationMessage(`Checksum for downloaded ${ToolsConfig.tool['tkn'].description} v${ToolsConfig.tool['tkn'].version} is not correct.`, 'Download again', 'Cancel');
@@ -81,7 +81,11 @@ export class ToolsConfig {
                     } while (action === 'Download again');
 
                     if (action !== 'Cancel') {
-                        await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), "");
+                        if (toolDlLocation.endsWith('.zip') || toolDlLocation.endsWith('.tar.gz')) {
+                            await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), ToolsConfig.tool['tkn'].filePrefix);
+                        } else if (toolDlLocation.endsWith('.gz')) {
+                            await Archive.unzip(toolDlLocation, toolCacheLocation, ToolsConfig.tool['tkn'].filePrefix);
+                        }
                         fsex.removeSync(toolDlLocation);
                         if (Platform.OS !== 'win32') {
                             fs.chmodSync(toolCacheLocation, '765');
