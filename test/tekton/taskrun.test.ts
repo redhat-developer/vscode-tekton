@@ -132,7 +132,7 @@ suite('Tekton/TaskRun', () => {
         suite('followLog', () => {
 
             test('followLog calls the correct tkn command in terminal', async () => {
-                await TaskRun.followLog(taskrunItem);
+                await TaskRun.followLogs(taskrunItem);
 
                 expect(termStub).calledOnceWith(Command.showTaskRunFollowLogs(taskrunItem.getName()));
             });
