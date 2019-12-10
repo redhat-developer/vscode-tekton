@@ -21,12 +21,12 @@ export class Task extends TektonItem {
     }
 
     static async delete(task: TektonNode): Promise<string> {
-        const value = await window.showWarningMessage(`Do you want to delete task '${task.getName()}\'?`, 'Yes', 'Cancel');
+        const value = await window.showWarningMessage(`Do you want to delete the Task '${task.getName()}\'?`, 'Yes', 'Cancel');
         if (value === 'Yes') {
-            return Progress.execFunctionWithProgress(`Deleting the task '${task.getName()}'`, () => 
+            return Progress.execFunctionWithProgress(`Deleting the Task '${task.getName()}'.`, () => 
                 Task.tkn.execute(Command.deleteTask(task.getName())))
-                .then(() => `task '${task.getName()}' successfully deleted`)
-                .catch((err) => Promise.reject(`Failed to delete task with error '${err}'`));
+                .then(() => `The Task '${task.getName()}' successfully deleted.`)
+                .catch((err) => Promise.reject(`Failed to delete the Task '${task.getName()}': '${err}'.`));
         }
         return null;
     }

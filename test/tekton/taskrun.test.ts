@@ -141,8 +141,6 @@ suite('Tekton/TaskRun', () => {
 
         });
 
-        suite('delete', () => {
-
         suite('delete command', () => {
             let warnStub: sinon.SinonStub;
     
@@ -163,7 +161,7 @@ suite('Tekton/TaskRun', () => {
     
                 const result = await TaskRun.delete(taskrunItem);
     
-                expect(result).equals(`taskrun '${taskrunItem.getName()}' successfully deleted`);
+                expect(result).equals(`The TaskRun '${taskrunItem.getName()}' successfully deleted.`);
             });
     
             test('returns null when cancelled', async() => {
@@ -183,7 +181,7 @@ suite('Tekton/TaskRun', () => {
                 } catch (err) {
                     expectedError = err;
                 }
-                expect(expectedError).equals(`Failed to delete taskrun with error 'ERROR'`);
+                expect(expectedError).equals(`Failed to delete the TaskRun '${taskrunItem.getName()}': 'ERROR'.`);
             });
         });
     });

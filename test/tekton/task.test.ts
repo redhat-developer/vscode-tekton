@@ -86,7 +86,7 @@ suite('Tekton/Task', () => {
 
             const result = await Task.delete(taskItem);
 
-            expect(result).equals(`task '${taskItem.getName()}' successfully deleted`);
+            expect(result).equals(`The Task '${taskItem.getName()}' successfully deleted.`);
         });
 
         test('returns null when cancelled', async() => {
@@ -106,7 +106,7 @@ suite('Tekton/Task', () => {
             } catch (err) {
                 expectedError = err;
             }
-            expect(expectedError).equals(`Failed to delete task with error 'ERROR'`);
+            expect(expectedError).equals(`Failed to delete the Task '${taskItem.getName()}': 'ERROR'.`);
         });
     });
 });

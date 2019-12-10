@@ -26,7 +26,14 @@ export class TaskRun extends TektonItem {
         TaskRun.tkn.executeInTerminal(Command.showTaskRunFollowLogs(taskrun.getName()));
     }
 
-    static async delete(taskrun: TektonNode): Promise<void> {
-        if (taskrun) { TaskRun.tkn.executeInTerminal(Command.deleteTaskRun(taskrun.getName())); }
+    static async delete(taskrun: TektonNode): Promise<string> {
+        const value = await window.showWarningMessage(`Do you want to delete the TaskRun '${taskrun.getName()}\'?`, 'Yes', 'Cancel');
+        if (value === 'Yes') {
+            return Progress.execFunctionWithProgress(`Deleting the TaskRun '${taskrun.getName()}'.`, () => 
+                TaskRun.tkn.execute(Command.deleteTaskRun(taskrun.getName())))
+                .then(() => `The TaskRun '${taskrun.getName()}' successfully deleted.`)
+                .catch((err) => Promise.reject(`Failed to delete the TaskRun '${taskrun.getName()}': '${err}'.`));
+        }
+        return null;
     }
 }

@@ -21,12 +21,12 @@ export class PipelineResource extends TektonItem {
     }
 
      static async delete(pipelineresource: TektonNode): Promise<string> {
-        const value = await window.showWarningMessage(`Do you want to delete resource '${pipelineresource.getName()}\'?`, 'Yes', 'Cancel');
+        const value = await window.showWarningMessage(`Do you want to delete the Resource '${pipelineresource.getName()}\'?`, 'Yes', 'Cancel');
         if (value === 'Yes') {
-            return Progress.execFunctionWithProgress(`Deleting the resource '${pipelineresource.getName()}'`, () => 
+            return Progress.execFunctionWithProgress(`Deleting the Resource '${pipelineresource.getName()}'.`, () => 
                 PipelineResource.tkn.execute(Command.deletePipelineResource(pipelineresource.getName())))
-                .then(() => `resource '${pipelineresource.getName()}' successfully deleted`)
-                .catch((err) => Promise.reject(`Failed to delete resource with error '${err}'`));
+                .then(() => `The Resource '${pipelineresource.getName()}' successfully deleted.`)
+                .catch((err) => Promise.reject(`Failed to delete the Resource '${pipelineresource.getName()}': '${err}'.`));
         }
         return null;
     }

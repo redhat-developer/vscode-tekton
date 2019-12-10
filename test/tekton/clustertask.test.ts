@@ -90,7 +90,7 @@ suite('Tekton/Clustertask', () => {
 
             const result = await ClusterTask.delete(clustertaskItem);
 
-            expect(result).equals(`clustertask '${clustertaskItem.getName()}' successfully deleted`);
+            expect(result).equals(`The ClusterTask '${clustertaskItem.getName()}' successfully deleted.`);
         });
 
         test('returns null when cancelled', async() => {
@@ -110,7 +110,7 @@ suite('Tekton/Clustertask', () => {
             } catch (err) {
                 expectedError = err;
             }
-            expect(expectedError).equals(`Failed to delete clustertask with error 'ERROR'`);
+            expect(expectedError).equals(`Failed to delete the ClusterTask '${clustertaskItem.getName()}': 'ERROR'.`);
         });
     });
 

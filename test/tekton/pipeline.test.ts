@@ -128,7 +128,7 @@ suite('Tekton/Pipeline', () => {
 
             const result = await Pipeline.delete(pipelineItem);
 
-            expect(result).equals(`pipeline '${pipelineItem.getName()}' successfully deleted`);
+            expect(result).equals(`The Pipeline '${pipelineItem.getName()}' successfully deleted.`);
         });
 
         test('returns null when cancelled', async() => {
@@ -148,7 +148,7 @@ suite('Tekton/Pipeline', () => {
             } catch (err) {
                 expectedError = err;
             }
-            expect(expectedError).equals(`Failed to delete pipeline with error 'ERROR'`);
+            expect(expectedError).equals(`Failed to delete the Pipeline '${pipelineItem.getName()}': 'ERROR'.`);
         });
     });
 

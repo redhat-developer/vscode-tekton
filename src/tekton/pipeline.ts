@@ -271,12 +271,12 @@ export class Pipeline extends TektonItem {
     }
 
     static async delete(pipeline: TektonNode): Promise<string> {
-        const value = await window.showWarningMessage(`Do you want to delete pipeline '${pipeline.getName()}\'?`, 'Yes', 'Cancel');
+        const value = await window.showWarningMessage(`Do you want to delete the Pipeline '${pipeline.getName()}\'?`, 'Yes', 'Cancel');
         if (value === 'Yes') {
-            return Progress.execFunctionWithProgress(`Deleting the pipeline '${pipeline.getName()}'`, () => 
+            return Progress.execFunctionWithProgress(`Deleting the Pipeline '${pipeline.getName()}'.`, () => 
                 Pipeline.tkn.execute(Command.deletePipeline(pipeline.getName())))
-                .then(() => `pipeline '${pipeline.getName()}' successfully deleted`)
-                .catch((err) => Promise.reject(`Failed to delete pipeline with error '${err}'`));
+                .then(() => `The Pipeline '${pipeline.getName()}' successfully deleted.`)
+                .catch((err) => Promise.reject(`Failed to delete the Pipeline '${pipeline.getName()}': '${err}'.`));
         }
         return null;
     }
