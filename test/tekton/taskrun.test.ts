@@ -128,6 +128,17 @@ suite('Tekton/TaskRun', () => {
             });
 
         });
+
+        suite('followLog', () => {
+
+            test('followLog calls the correct tkn command in terminal', async () => {
+                await TaskRun.followLogs(taskrunItem);
+
+                expect(termStub).calledOnceWith(Command.showTaskRunFollowLogs(taskrunItem.getName()));
+            });
+
+        });
+
         suite('delete', () => {
 
             test('delete calls the correct tkn command in terminal', async () => {

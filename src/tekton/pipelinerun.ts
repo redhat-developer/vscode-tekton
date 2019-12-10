@@ -40,6 +40,10 @@ export class PipelineRun extends TektonItem {
         if (pipelinerun) { PipelineRun.tkn.executeInTerminal(Command.showPipelineRunLogs(pipelinerun.getName())); }
     }
 
+    static async followLogs(pipelinerun: TektonNode): Promise<void> {
+        PipelineRun.tkn.executeInTerminal(Command.showPipelineRunFollowLogs(pipelinerun.getName()));
+    }
+
      static async cancel(pipelinerun: TektonNode): Promise<void> {
         if (pipelinerun) { PipelineRun.tkn.executeInTerminal(Command.cancelPipelineRun(pipelinerun.getName())); }
     }

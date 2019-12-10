@@ -20,6 +20,10 @@ export class TaskRun extends TektonItem {
         if (taskrun) { TaskRun.tkn.executeInTerminal(Command.showTaskRunLogs(taskrun.getName())); }
     }
 
+    static async followLogs(taskrun: TektonNode): Promise<void> {
+        TaskRun.tkn.executeInTerminal(Command.showTaskRunFollowLogs(taskrun.getName()));
+    }
+
     static async delete(taskrun: TektonNode): Promise<void> {
         if (taskrun) { TaskRun.tkn.executeInTerminal(Command.deleteTaskRun(taskrun.getName())); }
     }

@@ -208,6 +208,14 @@ export class Command {
         return `tkn version`;
     }
 
+    static showPipelineRunFollowLogs(name: string) {
+        return `tkn pipelinerun logs ${name} -f`;
+    }
+
+    static showTaskRunFollowLogs(name: string) {
+        return `tkn taskrun logs ${name} -f`;
+    }
+
 }
 
 export class TektonNodeImpl implements TektonNode {
