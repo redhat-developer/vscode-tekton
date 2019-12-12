@@ -5,6 +5,8 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
+import { window } from 'vscode';
+import { Progress } from '../util/progress';
 
 export class Task extends TektonItem {
 
@@ -18,7 +20,14 @@ export class Task extends TektonItem {
         if (task) { Task.tkn.executeInTerminal(Command.listTasksinTerminal()); }
     }
 
-    static async delete(task: TektonNode): Promise<void> {
-        if (task) { Task.tkn.executeInTerminal(Command.deleteTask(task.getName())); }
+    static async delete(task: TektonNode): Promise<string> {
+        const value = await window.showWarningMessage(`Do you want to delete the Task '${task.getName()}\'?`, 'Yes', 'Cancel');
+        if (value === 'Yes') {
+            return Progress.execFunctionWithProgress(`Deleting the Task '${task.getName()}'.`, () => 
+                Task.tkn.execute(Command.deleteTask(task.getName())))
+                .then(() => `The Task '${task.getName()}' successfully deleted.`)
+                .catch((err) => Promise.reject(`Failed to delete the Task '${task.getName()}': '${err}'.`));
+        }
+        return null;
     }
 }

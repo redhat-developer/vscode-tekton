@@ -12,7 +12,6 @@ import * as cliInstance from '../cli';
 import { Cli } from '../cli';
 import * as k8s from 'vscode-kubernetes-tools-api';
 
-
 export interface NameType {
     name: string;
     type: string;
@@ -271,8 +270,15 @@ export class Pipeline extends TektonItem {
         if (pipeline) { Pipeline.tkn.executeInTerminal(Command.listPipelinesInTerminal(pipeline.getName())); }
     }
 
-    static async delete(pipeline: TektonNode): Promise<void> {
-        if (pipeline) {Pipeline.tkn.executeInTerminal(Command.deletePipeline(pipeline.getName())); }
+    static async delete(pipeline: TektonNode): Promise<string> {
+        const value = await window.showWarningMessage(`Do you want to delete the Pipeline '${pipeline.getName()}\'?`, 'Yes', 'Cancel');
+        if (value === 'Yes') {
+            return Progress.execFunctionWithProgress(`Deleting the Pipeline '${pipeline.getName()}'.`, () => 
+                Pipeline.tkn.execute(Command.deletePipeline(pipeline.getName())))
+                .then(() => `The Pipeline '${pipeline.getName()}' successfully deleted.`)
+                .catch((err) => Promise.reject(`Failed to delete the Pipeline '${pipeline.getName()}': '${err}'.`));
+        }
+        return null;
     }
 
 }

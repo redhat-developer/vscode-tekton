@@ -18,6 +18,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/Clustertask', () => {
+    let execStub: sinon.SinonStub;
     let sandbox: sinon.SinonSandbox;
     let getClusterTaskStub: sinon.SinonStub;
     const clustertaskNode = new TestItem(TknImpl.ROOT, 'test-clustertask', ContextType.CLUSTERTASK, null);
@@ -26,6 +27,7 @@ suite('Tekton/Clustertask', () => {
 
     setup(() => {
         sandbox = sinon.createSandbox();
+        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({error: null, stdout: '', stderr: ''});
         sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([clustertaskItem]);
         getClusterTaskStub = sandbox.stub(TektonItem, 'getClusterTaskNames').resolves([clustertaskItem]);
         sandbox.stub(vscode.window, 'showInputBox');
@@ -68,16 +70,47 @@ suite('Tekton/Clustertask', () => {
 
     });
 
-    suite('delete', () => {
-         let termStub: sinon.SinonStub;
+    suite('delete command', () => {
+        let warnStub: sinon.SinonStub;
 
-         setup(() => {
-            termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal').resolves();
+        setup(() => {
+            warnStub = sandbox.stub(vscode.window, 'showWarningMessage');
         });
 
-        test('delete calls the correct tkn command in terminal', async () => {
+        test('calls the appropriate tkn command if confirmed', async () => {
+            warnStub.resolves('Yes');
+
             await ClusterTask.delete(clustertaskItem);
-            expect(termStub).calledOnceWith(Command.deleteTask(clustertaskItem.getName()));
+
+            expect(execStub).calledOnceWith(Command.deleteClusterTask(clustertaskItem.getName()));
+        });
+
+        test('returns a confirmation message text when successful', async () => {
+            warnStub.resolves('Yes');
+
+            const result = await ClusterTask.delete(clustertaskItem);
+
+            expect(result).equals(`The ClusterTask '${clustertaskItem.getName()}' successfully deleted.`);
+        });
+
+        test('returns null when cancelled', async() => {
+            warnStub.resolves('Cancel');
+
+            const result = await ClusterTask.delete(clustertaskItem);
+
+            expect(result).null;
+        });
+
+        test('throws an error message when command failed', async () => {
+            warnStub.resolves('Yes');
+            execStub.rejects('ERROR');
+            let expectedError;
+            try {
+                await ClusterTask.delete(clustertaskItem);
+            } catch (err) {
+                expectedError = err;
+            }
+            expect(expectedError).equals(`Failed to delete the ClusterTask '${clustertaskItem.getName()}': 'ERROR'.`);
         });
     });
 

@@ -11,7 +11,6 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { PipelineResource } from '../../src/tekton/pipelineresource';
-import { Pipeline } from '../../src/tekton/pipeline';
 import { TestItem } from './testTektonitem';
 import { TektonItem } from '../../src/tekton/tektonitem';
 
@@ -98,20 +97,48 @@ suite('Tekton/PipelineResource', () => {
     
         });
 
-          suite('delete', () => {
-
+        suite('delete command', () => {
+            let warnStub: sinon.SinonStub;
     
-            test('returns null when cancelled', async () => {
-                const result = await PipelineResource.delete(null);
-    
-                expect(result).undefined;
+            setup(() => {
+                warnStub = sandbox.stub(vscode.window, 'showWarningMessage');
             });
     
-            test('describe calls the correct tkn command in terminal', async () => {
+            test('calls the appropriate tkn command if confirmed', async () => {
+                warnStub.resolves('Yes');
+    
                 await PipelineResource.delete(pipelineresourceItem);
-                expect(termStub).calledOnceWith(Command.deletePipelineResource(pipelineresourceItem.getName()));
+    
+                expect(execStub).calledOnceWith(Command.deletePipelineResource(pipelineresourceItem.getName()));
             });
     
+            test('returns a confirmation message text when successful', async () => {
+                warnStub.resolves('Yes');
+    
+                const result = await PipelineResource.delete(pipelineresourceItem);
+    
+                expect(result).equals(`The Resource '${pipelineresourceItem.getName()}' successfully deleted.`);
+            });
+    
+            test('returns null when cancelled', async() => {
+                warnStub.resolves('Cancel');
+    
+                const result = await PipelineResource.delete(pipelineresourceItem);
+    
+                expect(result).null;
+            });
+    
+            test('throws an error message when command failed', async () => {
+                warnStub.resolves('Yes');
+                execStub.rejects('ERROR');
+                let expectedError;
+                try {
+                    await PipelineResource.delete(pipelineresourceItem);
+                } catch (err) {
+                    expectedError = err;
+                }
+                expect(expectedError).equals(`Failed to delete the Resource '${pipelineresourceItem.getName()}': 'ERROR'.`);
+            });
         });
    
     });

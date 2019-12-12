@@ -107,13 +107,49 @@ suite('Tekton/Pipeline', () => {
         });
 
     });
-    suite('delete', () => {
 
-        test('describe calls the correct tkn command in terminal', async () => {
-            await Pipeline.delete(pipelineItem);
-            expect(termStub).calledOnceWith(Command.deletePipeline(pipelineItem.getName()));
+    suite('delete command', () => {
+        let warnStub: sinon.SinonStub;
+
+        setup(() => {
+            warnStub = sandbox.stub(vscode.window, 'showWarningMessage');
         });
 
+        test('calls the appropriate tkn command if confirmed', async () => {
+            warnStub.resolves('Yes');
+
+            await Pipeline.delete(pipelineItem);
+
+            expect(execStub).calledOnceWith(Command.deletePipeline(pipelineItem.getName()));
+        });
+
+        test('returns a confirmation message text when successful', async () => {
+            warnStub.resolves('Yes');
+
+            const result = await Pipeline.delete(pipelineItem);
+
+            expect(result).equals(`The Pipeline '${pipelineItem.getName()}' successfully deleted.`);
+        });
+
+        test('returns null when cancelled', async() => {
+            warnStub.resolves('Cancel');
+
+            const result = await Pipeline.delete(pipelineItem);
+
+            expect(result).null;
+        });
+
+        test('throws an error message when command failed', async () => {
+            warnStub.resolves('Yes');
+            execStub.rejects('ERROR');
+            let expectedError;
+            try {
+                await Pipeline.delete(pipelineItem);
+            } catch (err) {
+                expectedError = err;
+            }
+            expect(expectedError).equals(`Failed to delete the Pipeline '${pipelineItem.getName()}': 'ERROR'.`);
+        });
     });
 
     suite('restart', () => {

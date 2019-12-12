@@ -5,6 +5,8 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
+import { Progress } from '../util/progress';
+import { window } from 'vscode';
 
 export class ClusterTask extends TektonItem {
 
@@ -16,8 +18,15 @@ export class ClusterTask extends TektonItem {
             if (clustertasks) { ClusterTask.tkn.executeInTerminal(Command.listClusterTasksinTerminal()); }
     }
 
-    static async delete(clustertask: TektonNode): Promise<void> {
-        if (clustertask) { ClusterTask.tkn.executeInTerminal(Command.deleteClusterTask(clustertask.getName())); }
+    static async delete(clustertask: TektonNode): Promise<string> {
+        const value = await window.showWarningMessage(`Do you want to delete the ClusterTask '${clustertask.getName()}\'?`, 'Yes', 'Cancel');
+        if (value === 'Yes') {
+            return Progress.execFunctionWithProgress(`Deleting the ClusterTask '${clustertask.getName()}'.`, () => 
+                ClusterTask.tkn.execute(Command.deleteClusterTask(clustertask.getName())))
+                .then(() => `The ClusterTask '${clustertask.getName()}' successfully deleted.`)
+                .catch((err) => Promise.reject(`Failed to delete the ClusterTask '${clustertask.getName()}': '${err}'.`));
+        }
+        return null;
     }
 
 }
