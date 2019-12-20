@@ -10,6 +10,8 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import pq = require('proxyquire');
 import { EventEmitter } from 'events';
+import * as os from 'os';
+import * as path from 'path';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -27,7 +29,7 @@ suite('Download Util', () => {
         progressMock = pq('../../src/util/download', {
             'request-progress': (_: any) => requestEmitter,
             request: (_: any) => _
-            }
+        }
         ).DownloadUtil;
     });
 
@@ -37,9 +39,9 @@ suite('Download Util', () => {
 
     test('reports download progress', () => {
         const callback = sandbox.stub();
-        const result = progressMock.downloadFile('url', 'toFile', callback);
-        requestEmitter.emit('progress', {percent: 0.33});
-        requestEmitter.emit('progress', {percent: 0.66});
+        const result = progressMock.downloadFile('url', path.join(os.tmpdir(), 'toFile'), callback);
+        requestEmitter.emit('progress', { percent: 0.33 });
+        requestEmitter.emit('progress', { percent: 0.66 });
         requestEmitter.emit('end');
         streamEmitter.emit('close');
         return result.then(() => {
@@ -50,7 +52,7 @@ suite('Download Util', () => {
     });
 
     test('fails when download fails', () => {
-        const result = progressMock.downloadFile('url', 'toFile');
+        const result = progressMock.downloadFile('url', path.join(os.tmpdir(), 'toFile'));
         requestEmitter.emit('error', new Error('failure'));
         return result.then(() => {
             return Promise.reject(Error('No failure reported'));
@@ -60,7 +62,7 @@ suite('Download Util', () => {
     });
 
     test('fails when stream fails', () => {
-        const result = progressMock.downloadFile('url', 'toFile');
+        const result = progressMock.downloadFile('url', path.join(os.tmpdir(), 'toFile'));
         streamEmitter.emit('error', new Error('failure'));
         return result.then(() => {
             return Promise.reject(Error('No failure reported'));

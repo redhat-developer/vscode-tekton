@@ -7,9 +7,10 @@
 
 import * as vscode from 'vscode';
 import * as tknctl from '../tkn';
+import { CliCommand, createCliCommand } from '../cli';
 
 export interface Step {
-    command: string;
+    command: CliCommand;
     increment: number;
     total?: number;
 }
@@ -35,7 +36,7 @@ export class Progress {
                             });
                     });
                     return current;
-                }, {increment: 0, command: "", total: 0});
+                }, {increment: 0, command: createCliCommand(''), total: 0});
 
                 return calls.reduce<Promise<any>>((previous: Promise<any>, current: ()=>Promise<any>, index: number, calls: (()=>Promise<any>)[])=> {
                     return previous.then(current);
@@ -43,7 +44,7 @@ export class Progress {
             });
     }
 
-    static async execCmdWithProgress(title: string, cmd: string): Promise<any> {
+    static async execCmdWithProgress(title: string, cmd: CliCommand): Promise<any> {
         return new Promise(async (resolve, reject) => {
             await vscode.window.withProgress({
                     cancellable: false,
