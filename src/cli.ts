@@ -42,8 +42,6 @@ export class Cli implements ICli {
     private static instance: Cli;
     private tknChannel: TknChannel = new TknChannelImpl();
 
-    private constructor() { }
-
     static getInstance(): Cli {
         if (!Cli.instance) {
             Cli.instance = new Cli();
