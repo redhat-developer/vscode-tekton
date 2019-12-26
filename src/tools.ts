@@ -49,26 +49,27 @@ export class ToolsConfig {
             const whichLocation = which('tkn');
             const toolLocations: string[] = [whichLocation ? whichLocation.stdout : null, toolCacheLocation];
             toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tool['tkn'].versionRange);
+            const downgradeVersion = `Downgrade to ${ToolsConfig.tool['tkn'].version}`;
 
             if (toolLocation && await ToolsConfig.getVersion(toolLocation) !== ToolsConfig.tool['tkn'].version) {
-                response = await vscode.window.showWarningMessage(`You have higher version tkn: ${await ToolsConfig.getVersion(toolLocation)}. Supported tkn version: ${ToolsConfig.tool['tkn'].version} `, 'Downgrade', 'Cancel');
+                response = await vscode.window.showWarningMessage(`You have a higher tkn version: ${await ToolsConfig.getVersion(toolLocation)} which is not yet supported by extension. Supported tkn version: ${ToolsConfig.tool['tkn'].version}.`, downgradeVersion, 'Cancel');
             }
-            if (await ToolsConfig.getVersion(toolCacheLocation) === ToolsConfig.tool['tkn'].version) {
+            if (await ToolsConfig.getVersion(toolCacheLocation) === ToolsConfig.tool['tkn'].version && response !== 'Cancel') {
                 response = 'Cancel';
                 toolLocation = toolCacheLocation;
             }
 
-            if (toolLocation === undefined || response === 'Downgrade') {
+            if (toolLocation === undefined || response === downgradeVersion) {
                 // otherwise request permission to download
                 const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].dlFileName);
                 const installRequest = `Download and install v${ToolsConfig.tool['tkn'].version}`;
 
-                if (response !== 'Downgrade') {
+                if (response !== downgradeVersion) {
                     response = await vscode.window.showInformationMessage(
                         `Cannot find ${ToolsConfig.tool['tkn'].description} ${ToolsConfig.tool['tkn'].versionRangeLabel}.`, installRequest, 'Help', 'Cancel');
                 }
                 fsex.ensureDirSync(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
-                if (response === installRequest || response === 'Downgrade') {
+                if (response === installRequest || response === downgradeVersion) {
                     let action: string;
                     do {
                         action = undefined;
