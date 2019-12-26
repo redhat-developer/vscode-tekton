@@ -44,19 +44,31 @@ export class ToolsConfig {
         let toolLocation: string = ToolsConfig.tool['tkn'].location;
 
         if (toolLocation === undefined) {
+            let response: string;
             const toolCacheLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName);
             const whichLocation = which('tkn');
             const toolLocations: string[] = [whichLocation ? whichLocation.stdout : null, toolCacheLocation];
             toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tool['tkn'].versionRange);
 
-            if (toolLocation === undefined) {
+            if (toolLocation && await ToolsConfig.getVersion(toolLocation) !== ToolsConfig.tool['tkn'].version) {
+                response = await vscode.window.showWarningMessage(`You have higher version tkn: ${await ToolsConfig.getVersion(toolLocation)}. Supported tkn version: ${ToolsConfig.tool['tkn'].version} `, 'Downgrade', 'Cancel');
+            }
+            if (await ToolsConfig.getVersion(toolCacheLocation) === ToolsConfig.tool['tkn'].version) {
+                response = 'Cancel';
+                toolLocation = toolCacheLocation;
+            }
+
+            if (toolLocation === undefined || response === 'Downgrade') {
                 // otherwise request permission to download
                 const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].dlFileName);
                 const installRequest = `Download and install v${ToolsConfig.tool['tkn'].version}`;
-                const response = await vscode.window.showInformationMessage(
-                    `Cannot find ${ToolsConfig.tool['tkn'].description} ${ToolsConfig.tool['tkn'].versionRangeLabel}.`, installRequest, 'Help', 'Cancel');
+
+                if (response !== 'Downgrade') {
+                    response = await vscode.window.showInformationMessage(
+                        `Cannot find ${ToolsConfig.tool['tkn'].description} ${ToolsConfig.tool['tkn'].versionRangeLabel}.`, installRequest, 'Help', 'Cancel');
+                }
                 fsex.ensureDirSync(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
-                if (response === installRequest) {
+                if (response === installRequest || response === 'Downgrade') {
                     let action: string;
                     do {
                         action = undefined;
@@ -121,11 +133,13 @@ export class ToolsConfig {
     }
 
     public static async selectTool(locations: string[], versionRange: string): Promise<string> {
-        let result;
+        let result: string;
         for (const location of locations) {
-            if (location && semver.satisfies(await ToolsConfig.getVersion(location), versionRange)) {
-                result = location;
-                break;
+            if (fs.existsSync(location)) {
+                if (location && (await ToolsConfig.getVersion(location) > versionRange) || semver.satisfies(await ToolsConfig.getVersion(location), versionRange)) {
+                    result = location;
+                    break;
+                }
             }
         }
         return result;
