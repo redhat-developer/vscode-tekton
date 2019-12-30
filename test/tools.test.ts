@@ -71,10 +71,12 @@ suite("tool configuration", () => {
     suite('detectOrDownload()', () => {
         let withProgress;
         let getVersionStub;
+        let warningMessageStub;
 
         setup(() => {
             withProgress = sb.stub(vscode.window, 'withProgress').resolves();
-            getVersionStub = sb.stub(ToolsConfig, 'getVersion');
+            getVersionStub = sb.stub(ToolsConfig, 'getVersion').resolves();
+            warningMessageStub = sb.stub(vscode.window, 'showWarningMessage');
         });
 
         test('returns path to tool detected form PATH locations if detected version is correct', async () => {
@@ -90,6 +92,15 @@ suite("tool configuration", () => {
             sb.stub(fs, 'existsSync').returns(true);
             getVersionStub.returns(ToolsConfig.tool['tkn'].version);
             const toolLocation = await ToolsConfig.detectOrDownload();
+            assert.equal( toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
+        });
+
+        test('show warning message when greater version is detected', async () => {
+            sb.stub(shelljs, 'which');
+            sb.stub(fs, 'existsSync').returns(true);
+            getVersionStub.returns('2.0.1');
+            const toolLocation = await ToolsConfig.detectOrDownload();
+            assert.ok(warningMessageStub.calledOnce);
             assert.equal( toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
         });
 

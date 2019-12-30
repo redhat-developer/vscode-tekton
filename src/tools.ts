@@ -52,7 +52,7 @@ export class ToolsConfig {
             const downgradeVersion = `Downgrade to ${ToolsConfig.tool['tkn'].version}`;
 
             if (toolLocation && await ToolsConfig.getVersion(toolLocation) !== ToolsConfig.tool['tkn'].version) {
-                response = await vscode.window.showWarningMessage(`You have a higher tkn version: ${await ToolsConfig.getVersion(toolLocation)} which is not yet supported by extension. Supported tkn version: ${ToolsConfig.tool['tkn'].version}.`, downgradeVersion, 'Cancel');
+                response = await vscode.window.showWarningMessage(`Detected higher tkn version: ${await ToolsConfig.getVersion(toolLocation)} which is not yet supported. Supported tkn version: ${ToolsConfig.tool['tkn'].version}.`, downgradeVersion, 'Cancel');
             }
             if (await ToolsConfig.getVersion(toolCacheLocation) === ToolsConfig.tool['tkn'].version && response !== 'Cancel') {
                 response = 'Cancel';
