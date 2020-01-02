@@ -71,6 +71,7 @@ export class MultiStepInput {
 		try {
 			return await new Promise<T | (P extends { buttons: (infer I)[] } ? I : never)>((resolve, reject) => {
 				const input = window.createQuickPick<T>();
+				input.ignoreFocusOut = true;
 				input.title = title;
 				input.placeholder = placeholder;
 				input.items = items;
@@ -100,6 +101,7 @@ export class MultiStepInput {
 		try {
 			return await new Promise<string | (P extends { buttons: (infer I)[] } ? I : never)>((resolve, reject) => {
 				const input = window.createInputBox();
+				input.ignoreFocusOut = true;
 				input.title = title;
 				input.prompt = prompt;
 				let validating = validate('');
