@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
- 'use strict';
+'use strict';
 
 import * as vscode from 'vscode';
 import * as tknctl from '../tkn';
