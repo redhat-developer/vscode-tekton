@@ -14,6 +14,7 @@ import { PipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
+import { cliCommandToString } from '../../src/cli';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -65,7 +66,7 @@ suite('Tekton/Pipeline', () => {
             }
         });
     });
-     suite('start', () => {
+    suite('start', () => {
 
         test('start returns null when no pipeline', async () => {
             const result = await Pipeline.start(null);
@@ -90,7 +91,7 @@ suite('Tekton/Pipeline', () => {
             sandbox.stub(TknImpl.prototype, 'restartPipeline').resolves();
             const result = await Pipeline.restart(pipelineItem);
             expect(result).equals("Pipeline 'pipeline' successfully created");
-            
+
         });
 
         test('start returns null when no pipeline', async () => {
@@ -131,7 +132,7 @@ suite('Tekton/Pipeline', () => {
             expect(result).equals(`The Pipeline '${pipelineItem.getName()}' successfully deleted.`);
         });
 
-        test('returns null when cancelled', async() => {
+        test('returns null when cancelled', async () => {
             warnStub.resolves('Cancel');
 
             const result = await Pipeline.delete(pipelineItem);
@@ -158,7 +159,7 @@ suite('Tekton/Pipeline', () => {
             const result = await Pipeline.restart(pipelineItem);
             expect(result).equals(`Pipeline 'pipeline' successfully created`);
         });
-        
+
         test('returns null if no pipeline selected', async () => {
             const result = await Pipeline.restart(undefined);
             expect(result).equals(null);
@@ -218,7 +219,7 @@ suite('Tekton/Pipeline', () => {
             sandbox.stub(Pipeline, "start").withArgs(pipelineItem).resolves(`Pipeline 'pipeline' successfully created`);
             const result = await Pipeline.start(pipelineItem);
             expect(result).equals(`Pipeline '${startPipelineObj.name}' successfully created`);
-            expect('tkn pipeline start pipeline --resource test-resource1=resource1 --resource test-resource2=resource1 --param test-param1=package --param test-param2=package -s pipeline').equals(Command.startPipeline(startPipelineObj));
+            expect('tkn pipeline start pipeline --resource test-resource1=resource1 --resource test-resource2=resource1 --param test-param1=package --param test-param2=package -s pipeline').equals(cliCommandToString(Command.startPipeline(startPipelineObj)));
         });
 
         test('returns null if no pipeline selected', async () => {

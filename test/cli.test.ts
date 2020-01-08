@@ -8,18 +8,21 @@
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
-import { Cli } from '../src/cli';
+import { Cli, createCliCommand, cliCommandToString } from '../src/cli';
 import * as child_process from 'child_process';
+import * as events from 'events';
+import * as stream from 'stream';
 
 const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Cli', () => {
     let sandbox: sinon.SinonSandbox;
-    let execStub: sinon.SinonStub;
+    let spawnStub: sinon.SinonStub;
+    let procMock: child_process.ChildProcess;
     const cli = Cli.getInstance();
-    const command = 'command';
-    const options: child_process.ExecOptions = { cwd: 'cwd' };
+    const command = createCliCommand('command');
+    const options: child_process.SpawnOptions = { cwd: 'cwd', shell: true, windowsHide: true };
     const stdout = 'Standard output';
     const stderr = 'Error output';
     const error: child_process.ExecException = {
@@ -29,7 +32,11 @@ suite('Cli', () => {
 
     setup(() => {
         sandbox = sinon.createSandbox();
-        execStub = sandbox.stub(child_process, 'exec');
+        procMock = <child_process.ChildProcess>new events.EventEmitter();
+        procMock.stdin = new stream.Writable();
+        procMock.stdout = <stream.Readable>new events.EventEmitter();
+        procMock.stderr = <stream.Readable>new events.EventEmitter();
+        spawnStub = sandbox.stub(child_process, 'spawn').returns(procMock);
     });
 
     teardown(() => {
@@ -37,24 +44,33 @@ suite('Cli', () => {
     });
 
     test('execute runs the given command from shell', async () => {
-        execStub.yields(null, stdout, '');
-        const result = await cli.execute(command, options);
+        const p = cli.execute(command, options);
+        procMock.stdout.emit('data', stdout);
 
-        expect(execStub).calledWithExactly(command, options, sinon.match.func);
-        expect(result).deep.equals({ error: null, stdout: stdout, stderr: '' });
-    });
+        procMock.emit('close', 0);
 
-    test('execute uses a 2MB buffer by default', async () => {
-        execStub.yields(null, stdout, '');
-        await cli.execute(command);
+        const result = await p;
 
-        expect(execStub).calledWith(command, { maxBuffer: 2*1024*1024 }, sinon.match.func);
+        expect(spawnStub).calledWith(command.cliCommand, command.cliArguments, options);
+        expect(result).deep.equals({ error: undefined, stdout: stdout, stderr: '' });
     });
 
     test('execute passes errors into its exit data', async () => {
-        execStub.yields(error, stdout, stderr);
-        const result = await cli.execute(command);
+        const p = cli.execute(command);
+        procMock.stdout.emit('data', stdout);
+        procMock.stderr.emit('data', stderr);
+        procMock.emit('error', error);
+        procMock.emit('close', 1);
+        const result = await p;
 
         expect(result).deep.equals({ error: error, stdout: stdout, stderr: stderr });
+    });
+
+    test('cli command to string function', () => {
+        expect(cliCommandToString(createCliCommand('foo', 'bar', '-foo=bar', 'g'))).equals('foo bar -foo=bar g');
+    });
+
+    test('cli command to string with undefined args', () => {
+        expect(cliCommandToString(createCliCommand('foo'))).equals('foo ');
     });
 });

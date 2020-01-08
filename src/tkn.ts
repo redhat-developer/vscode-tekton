@@ -4,9 +4,9 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as cliInstance from './cli';
+import { CliCommand, CliExitData, ICli, Cli, createCliCommand, cliCommandToString } from './cli';
 import { ProviderResult, TreeItemCollapsibleState, Terminal, Uri, commands, QuickPickItem, workspace } from 'vscode';
 import { WindowUtil } from './util/windowUtils';
-import { CliExitData } from './cli';
 import * as path from 'path';
 import { ToolsConfig } from './tools';
 import format = require('string-format');
@@ -71,154 +71,160 @@ function verbose(_target: any, key: string, descriptor: any) {
     }
 
     descriptor[fnKey] = function (...args: any[]) {
-        const v = workspace.getConfiguration('vs-tekton').get('outputVerbosityLevel');
-        const command = fn!.apply(this, args);
-        return command + (v > 0 ? ` -v ${v}` : '');
+        const v: number = workspace.getConfiguration('vs-tekton').get('outputVerbosityLevel');
+        const command: CliCommand = fn!.apply(this, args);
+        if (v > 0) {
+            command.cliArguments.push('-v', v.toString());
+        }
+        return command;
     };
+}
+
+function newTknCommand(...tknArguments: string[]): CliCommand {
+    return createCliCommand('tkn', ...tknArguments);
 }
 
 export class Command {
     @verbose
-    static listTaskRunsforTasks(task: string): string {
-        return `tkn taskrun list ${task} -o json`;
+    static listTaskRunsforTasks(task: string): CliCommand {
+        return newTknCommand('taskrun', 'list', task, '-o', 'json');
     }
 
     @verbose
-    static listTaskRunsforTasksinTerminal(task: string): string {
-        return `tkn taskrun list ${task}`;
+    static listTaskRunsforTasksinTerminal(task: string): CliCommand {
+        return newTknCommand('taskrun', 'list', task);
     }
 
     @verbose
-    static startPipeline(pipelineData: StartPipelineObject) {
+    static startPipeline(pipelineData: StartPipelineObject): CliCommand {
         let resources: string[] = [];
-        let svcAcct : string = pipelineData.serviceAccount? "-s " + pipelineData.serviceAccount : "-s pipeline";
+        let svcAcct: string[] = pipelineData.serviceAccount ? ["-s ", pipelineData.serviceAccount] : ["-s", "pipeline"];
         pipelineData.resources.forEach(element => {
-            resources.push("--resource " + element.name + "=" + element.resourceRef);
+            resources.push("--resource");
+            resources.push(element.name + "=" + element.resourceRef);
         });
-        const resString = resources.join(' ');
 
         if (pipelineData.params.length === 0) {
-            return `tkn pipeline start ${pipelineData.name} ${resString} ${svcAcct}`;
+            return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...svcAcct);
         }
         else {
             let params: string[] = [];
             pipelineData.params.forEach(element => {
-                params.push("--param " + element.name + "=" + element.default);
+                params.push("--param");
+                params.push(element.name + "=" + element.default);
             });
-            const paramString = params.join(" ");
-            return `tkn pipeline start ${pipelineData.name} ${resString} ${paramString} ${svcAcct}`;
+            return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...params, ...svcAcct);
         }
     }
     @verbose
-    static restartPipeline(name: string) {
-        return `tkn pipeline start ${name} --last -s pipeline`;
+    static restartPipeline(name: string): CliCommand {
+        return newTknCommand('pipeline', 'start', name, '--last', '-s', 'pipeline');
     }
     @verbose
-    static deletePipeline(name: string) {
-        return `tkn pipeline delete ${name} -f`;
+    static deletePipeline(name: string): CliCommand {
+        return newTknCommand('pipeline', 'delete', name, '-f');
     }
     @verbose
-    static listPipelineResources() {
-        return `tkn resource list -o json`;
+    static listPipelineResources(): CliCommand {
+        return newTknCommand('resource', 'list', '-o', 'json');
     }
     @verbose
-    static listPipelineResourcesInTerminal(name: string) {
-        return `tkn resource list ${name}`;
+    static listPipelineResourcesInTerminal(name: string): CliCommand {
+        return newTknCommand('resource', 'list', name);
     }
     @verbose
-    static describePipelineResource(name: string) {
-        return `tkn resource describe ${name}`;
+    static describePipelineResource(name: string): CliCommand {
+        return newTknCommand('resource', 'describe', name);
     }
     @verbose
-    static deletePipelineResource(name: string) {
-        return `tkn resource delete ${name} -f`;
+    static deletePipelineResource(name: string): CliCommand {
+        return newTknCommand('resource', 'delete', name, '-f');
     }
     @verbose
-    static listPipelines() {
-        return `tkn pipeline list -o json`;
+    static listPipelines(): CliCommand {
+        return newTknCommand('pipeline', 'list', '-o', 'json');
     }
     @verbose
-    static listPipelinesInTerminal(name: string) {
-        return `tkn pipeline list ${name}`;
+    static listPipelinesInTerminal(name: string): CliCommand {
+        return newTknCommand('pipeline', 'list', name);
     }
     @verbose
-    static describePipelines(name: string) {
-        return `tkn pipeline describe ${name}`;
+    static describePipelines(name: string): CliCommand {
+        return newTknCommand('pipeline', 'describe', name);
     }
     @verbose
-    static listPipelineRuns(name: string) {
-        return `tkn pipelinerun list ${name} -o json`;
+    static listPipelineRuns(name: string): CliCommand {
+        return newTknCommand('pipelinerun', 'list', name, '-o', 'json');
     }
     @verbose
-    static listPipelineRunsInTerminal(name: string) {
-        return `tkn pipelinerun list ${name}`;
+    static listPipelineRunsInTerminal(name: string): CliCommand {
+        return newTknCommand('pipelinerun', 'list', name);
     }
     @verbose
-    static describePipelineRuns(name: string) {
-        return `tkn pipelinerun describe ${name}`;
-    }
-      @verbose
-    static cancelPipelineRun(name: string) {
-        return `tkn pipelinerun cancel ${name}`;
+    static describePipelineRuns(name: string): CliCommand {
+        return newTknCommand('pipelinerun', 'describe', name);
     }
     @verbose
-    static deletePipelineRun(name: string) {
-        return `tkn pipelinerun delete ${name} -f`;
+    static cancelPipelineRun(name: string): CliCommand {
+        return newTknCommand('pipelinerun', 'cancel', name);
     }
     @verbose
-    static showPipelineRunLogs(name: string) {
-        return `tkn pipelinerun logs ${name}`;
+    static deletePipelineRun(name: string): CliCommand {
+        return newTknCommand('pipelinerun', 'delete', name, '-f');
     }
     @verbose
-    static listTasks(namespace?: string) {
-        return `tkn task list ${namespace ? '-n ' + namespace : ''} -o json`;
+    static showPipelineRunLogs(name: string): CliCommand {
+        return newTknCommand('pipelinerun', 'logs', name);
     }
     @verbose
-    static listTasksinTerminal(namespace?: string) {
-        return `tkn task list ${namespace ? '-n ' + namespace : ''} -o json`;
+    static listTasks(namespace?: string): CliCommand {
+        return newTknCommand('task', 'list', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
     }
     @verbose
-    static listTaskRuns(namespace?: string) {
-        return `tkn taskrun list ${namespace ? '-n ' + namespace : ''} -o json`;
+    static listTasksinTerminal(namespace?: string): CliCommand {
+        return newTknCommand('task', 'list', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
     }
     @verbose
-    static listTaskRunsInTerminal(namespace?: string) {
-        return `tkn taskrun list ${namespace ? '-n ' + namespace : ''}`;
+    static listTaskRuns(namespace?: string): CliCommand {
+        return newTknCommand('taskrun', 'list', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
     }
     @verbose
-    static deleteTask(name: string) {
-        return `tkn task delete ${name} -f`;
+    static listTaskRunsInTerminal(namespace?: string): CliCommand {
+        return newTknCommand('taskrun', 'list', ...(namespace ? ['-n', namespace] : ''));
     }
     @verbose
-    static listClusterTasks(namespace?: string) {
-        return `tkn clustertask list ${namespace ? '-n ' + namespace : ''} -o json`;
-    }
-    static listClusterTasksinTerminal(namespace?: string) {
-        return `tkn clustertask list ${namespace ? '-n ' + namespace : ''}`;
+    static deleteTask(name: string): CliCommand {
+        return newTknCommand('task', 'delete', name, '-f');
     }
     @verbose
-    static deleteClusterTask(name: string) {
-        return `tkn clustertask delete ${name} -f`;
+    static listClusterTasks(namespace?: string): CliCommand {
+        return newTknCommand('clustertask', 'list', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
+    }
+    static listClusterTasksinTerminal(namespace?: string): CliCommand {
+        return newTknCommand('clustertask', 'list', ...(namespace ? ['-n', namespace] : ''));
     }
     @verbose
-    static showTaskRunLogs(name: string) {
-        return `tkn taskrun logs ${name}`;
+    static deleteClusterTask(name: string): CliCommand {
+        return newTknCommand('clustertask', 'delete', name, '-f');
     }
     @verbose
-    static deleteTaskRun(name: string) {
-        return `tkn taskrun delete ${name} -f`;
+    static showTaskRunLogs(name: string): CliCommand {
+        return newTknCommand('taskrun', 'logs', name);
     }
     @verbose
-    static printTknVersion() {
-        return `tkn version`;
+    static deleteTaskRun(name: string): CliCommand {
+        return newTknCommand('taskrun', 'delete', name, '-f');
+    }
+    @verbose
+    static printTknVersion(): CliCommand {
+        return newTknCommand('version');
     }
 
-    static showPipelineRunFollowLogs(name: string) {
-        return `tkn pipelinerun logs ${name} -f`;
+    static showPipelineRunFollowLogs(name: string): CliCommand {
+        return newTknCommand('pipelinerun', 'logs', name, '-f');
     }
-
-    static showTaskRunFollowLogs(name: string) {
-        return `tkn taskrun logs ${name} -f`;
+    static showTaskRunFollowLogs(name: string): CliCommand {
+        return newTknCommand('taskrun', 'logs', name, '-f');
     }
 
 }
@@ -363,11 +369,11 @@ export class TaskRun extends TektonNodeImpl {
         name: string,
         tkn: Tkn,
         item: PipelineTaskRunData) {
-        super(parent, name, ContextType.TASKRUN, tkn, TreeItemCollapsibleState.None, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status:'');
+        super(parent, name, ContextType.TASKRUN, tkn, TreeItemCollapsibleState.None, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status : '');
         // destructuring assignment to save only required data from 
-        ({ 
-            metadata: { 
-                creationTimestamp: this.started, 
+        ({
+            metadata: {
+                creationTimestamp: this.started,
                 labels: {
                     'tekton.dev/pipelineTask': this.shortName
                 }
@@ -375,7 +381,7 @@ export class TaskRun extends TektonNodeImpl {
                 completionTime: this.finished
             }
         } = item);
-        
+
     }
 
     get label(): string {
@@ -386,9 +392,9 @@ export class TaskRun extends TektonNodeImpl {
         let r = '';
         if (this.getParent().contextValue === ContextType.TASK) {
             if (this.finished) {
-                r = 'started ' +  humanizer(Date.now() - Date.parse(this.started)) + ' ago, finished in ' + humanizer(Date.parse(this.finished) - Date.parse(this.started));
+                r = 'started ' + humanizer(Date.now() - Date.parse(this.started)) + ' ago, finished in ' + humanizer(Date.parse(this.finished) - Date.parse(this.started));
             } else {
-                r = 'started ' +  humanizer(Date.now() - Date.parse(this.started)) + ' ago, running for ' + humanizer(Date.now() - Date.parse(this.started));
+                r = 'started ' + humanizer(Date.now() - Date.parse(this.started)) + ' ago, running for ' + humanizer(Date.now() - Date.parse(this.started));
             }
         } else {
             if (this.finished) {
@@ -429,7 +435,7 @@ export class PipelineRun extends TektonNodeImpl {
         name: string,
         tkn: Tkn,
         item: PipelineRunData) {
-        super(parent, name, ContextType.PIPELINERUN, tkn, TreeItemCollapsibleState.Expanded, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status:'');
+        super(parent, name, ContextType.PIPELINERUN, tkn, TreeItemCollapsibleState.Expanded, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status : '');
         // destructuring assignment to save only required data from
         ({
             metadata: {
@@ -448,7 +454,7 @@ export class PipelineRun extends TektonNodeImpl {
     get description(): string {
         let r = '';
         if (this.finished) {
-            r = 'started ' +  humanizer(Date.now() - Date.parse(this.started)) + ' ago, finished in ' + humanizer(Date.parse(this.finished) - Date.parse(this.started));
+            r = 'started ' + humanizer(Date.now() - Date.parse(this.started)) + ' ago, finished in ' + humanizer(Date.parse(this.finished) - Date.parse(this.started));
         } else {
             r = 'running for ' + humanizer(Date.now() - Date.parse(this.started));
         }
@@ -466,8 +472,8 @@ export interface Tkn {
     getTasks(task: TektonNode): Promise<TektonNode[]>;
     getTaskRuns(taskRun: TektonNode): Promise<TektonNode[]>;
     getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]>;
-    execute(command: string, cwd?: string, fail?: boolean): Promise<CliExitData>;
-    executeInTerminal(command: string, cwd?: string): void;
+    execute(command: CliCommand, cwd?: string, fail?: boolean): Promise<CliExitData>;
+    executeInTerminal(command: CliCommand, cwd?: string): void;
     getTaskRunsforTasks(task: TektonNode): Promise<TektonNode[]>;
     clearCache?(): void;
 }
@@ -493,7 +499,7 @@ export class TknImpl implements Tkn {
 
     public static ROOT: TektonNode = new TektonNodeImpl(undefined, 'root', undefined, undefined);
     private cache: Map<TektonNode, TektonNode[]> = new Map();
-    private static cli: cliInstance.ICli = cliInstance.Cli.getInstance();
+    private static cli: ICli = Cli.getInstance();
     private static instance: Tkn;
 
     private constructor() { }
@@ -536,7 +542,7 @@ export class TknImpl implements Tkn {
     }
 
     async _getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> | undefined {
-        const result: cliInstance.CliExitData = await this.execute(Command.listPipelineRuns(pipeline.getName()));
+        const result = await this.execute(Command.listPipelineRuns(pipeline.getName()));
         if (result.stderr) {
             console.log(result + " Std.err when processing pipelines");
             return [new TektonNodeImpl(pipeline, result.stderr, ContextType.PIPELINERUN, this, TreeItemCollapsibleState.None)];
@@ -551,7 +557,7 @@ export class TknImpl implements Tkn {
 
         return data
             .filter((value) => value.spec.pipelineRef.name === pipeline.getName())
-            .map((value) => new PipelineRun(pipeline, value.metadata.name , this, value))
+            .map((value) => new PipelineRun(pipeline, value.metadata.name, this, value))
             .sort(compareTime);
     }
 
@@ -565,7 +571,7 @@ export class TknImpl implements Tkn {
     }
 
     async _getTaskRunsforTasks(task: TektonNode): Promise<TektonNode[]> {
-        const result: cliInstance.CliExitData = await this.execute(Command.listTaskRunsforTasks(task.getName()));
+        const result = await this.execute(Command.listTaskRunsforTasks(task.getName()));
         if (result.stderr) {
             console.log(result + " Std.err when processing taskruns for " + task.getName());
             return [new TektonNodeImpl(task, result.stderr, ContextType.TASKRUN, this, TreeItemCollapsibleState.None)];
@@ -591,7 +597,7 @@ export class TknImpl implements Tkn {
     }
 
     async _getTaskRuns(pipelinerun: TektonNode): Promise<TektonNode[]> {
-        const result: cliInstance.CliExitData = await this.execute(Command.listTaskRuns());
+        const result = await this.execute(Command.listTaskRuns());
         if (result.stderr) {
             console.log(result + " Std.err when processing pipelines");
             return [new TektonNodeImpl(pipelinerun, result.stderr, ContextType.TASKRUN, this, TreeItemCollapsibleState.Expanded)];
@@ -601,7 +607,7 @@ export class TknImpl implements Tkn {
             data = JSON.parse(result.stdout).items;
         } catch (ignore) {
         }
-        
+
         return data
             .filter((value) => value.metadata.labels["tekton.dev/pipelineRun"] === pipelinerun.getName())
             .map((value) => new TaskRun(pipelinerun, value.metadata.name, this, value))
@@ -614,7 +620,7 @@ export class TknImpl implements Tkn {
 
     async _getPipelines(pipeline: TektonNode): Promise<TektonNode[]> {
         let data: any[] = [];
-        const result: cliInstance.CliExitData = await this.execute(Command.listPipelines(), process.cwd(), false);
+        const result = await this.execute(Command.listPipelines(), process.cwd(), false);
         if (result.stderr) {
             console.log(result + " Std.err when processing pipelines");
             return [new TektonNodeImpl(pipeline, result.stderr, ContextType.PIPELINE, this, TreeItemCollapsibleState.Expanded)];
@@ -630,13 +636,13 @@ export class TknImpl implements Tkn {
         return pipelines.map<TektonNode>((value) => new TektonNodeImpl(pipeline, value, ContextType.PIPELINE, this, treeState)).sort(compareNodes);
     }
 
-     async getPipelineResources(pipelineResources: TektonNode): Promise<TektonNode[]> {
+    async getPipelineResources(pipelineResources: TektonNode): Promise<TektonNode[]> {
         return (await this._getPipelineResources(pipelineResources));
     }
 
     private async _getPipelineResources(pipelineResource: TektonNode): Promise<TektonNode[]> {
         let data: any[] = [];
-        const result: cliInstance.CliExitData = await this.execute(Command.listPipelineResources(), process.cwd(), false);
+        const result = await this.execute(Command.listPipelineResources(), process.cwd(), false);
         if (result.stderr) {
             console.log(result + " Std.err when processing pipelines");
             return [new TektonNodeImpl(pipelineResource, result.stderr, ContextType.PIPELINERESOURCE, this, TreeItemCollapsibleState.Expanded)];
@@ -653,10 +659,10 @@ export class TknImpl implements Tkn {
     public async getTasks(task: TektonNode): Promise<TektonNode[]> {
         return (await this._getTasks(task));
     }
-   
+
     async _getTasks(task: TektonNode): Promise<TektonNode[]> {
         let data: any[] = [];
-        const result: cliInstance.CliExitData = await this.execute(Command.listTasks());
+        const result = await this.execute(Command.listTasks());
         if (result.stderr) {
             console.log(result + "Std.err when processing tasks");
             return [new TektonNodeImpl(task, result.stderr, ContextType.TASK, this, TreeItemCollapsibleState.Expanded)];
@@ -678,7 +684,7 @@ export class TknImpl implements Tkn {
     async _getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]> {
         let data: any[] = [];
         try {
-            const result: cliInstance.CliExitData = await this.execute(Command.listClusterTasks());
+            const result = await this.execute(Command.listClusterTasks());
             data = JSON.parse(result.stdout).items;
         } catch (ignore) {
 
@@ -689,7 +695,7 @@ export class TknImpl implements Tkn {
     }
 
     async startPipeline(pipeline: StartPipelineObject): Promise<TektonNode[]> {
-        const result: cliInstance.CliExitData = await this.execute(Command.startPipeline(pipeline));
+        const result = await this.execute(Command.startPipeline(pipeline));
         let data: any[] = [];
         try {
             data = JSON.parse(result.stdout).items;
@@ -706,22 +712,26 @@ export class TknImpl implements Tkn {
         await this.executeInTerminal(Command.restartPipeline(pipeline.getName()));
     }
 
-    public async executeInTerminal(command: string, cwd: string = process.cwd(), name: string = 'Tekton') {
+    public async executeInTerminal(command: CliCommand, cwd: string = process.cwd(), name: string = 'Tekton') {
         let toolLocation = await ToolsConfig.detectOrDownload();
         if (toolLocation) {
             toolLocation = path.dirname(toolLocation);
         }
         const terminal: Terminal = WindowUtil.createTerminal(name, cwd, toolLocation);
-        terminal.sendText(command, true);
+        terminal.sendText(cliCommandToString(command), true);
         terminal.show();
     }
 
-    public async execute(command: string, cwd?: string, fail: boolean = true): Promise<CliExitData> {
+    public async execute(command: CliCommand, cwd?: string, fail: boolean = true): Promise<CliExitData> {
         const toolLocation = await ToolsConfig.detectOrDownload();
-        return TknImpl.cli.execute(
-            toolLocation ? command.replace('tkn', `"${toolLocation}"`).replace(new RegExp(`&& tkn`, 'g'), `&& "${toolLocation}"`) : command,
-            cwd ? { cwd } : {}
-        ).then(async (result) => result.error && fail ? Promise.reject(result.error) : result).catch((err) => fail ? Promise.reject(err) : Promise.resolve({ error: null, stdout: '', stderr: '' }));
+        if (toolLocation) {
+            command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp(`&& tkn`, 'g'), `&& "${toolLocation}"`);
+        }
+
+
+        return TknImpl.cli.execute(command, cwd ? { cwd } : {})
+            .then(async (result) => result.error && fail ? Promise.reject(result.error) : result)
+            .catch((err) => fail ? Promise.reject(err) : Promise.resolve({ error: null, stdout: '', stderr: '' }));
     }
 
     clearCache() {

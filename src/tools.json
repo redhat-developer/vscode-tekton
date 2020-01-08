@@ -4,28 +4,28 @@
         "description": "A CLI for interacting with Tekton",
         "vendor": "",
         "name": "tkn",
-        "version": "0.5.1",
-        "versionRange": "0.5.1",
-        "versionRangeLabel": "v0.5.1",
+        "version": "0.6.0",
+        "versionRange": "0.6.0",
+        "versionRangeLabel": "v0.6.0",
         "dlFileName": "tkn",
         "cmdFileName": "tkn",
         "filePrefix": "",
         "platform": {
             "win32": {
-                "url": "https://github.com/tektoncd/cli/releases/download/v0.5.1/tkn_0.5.1_Windows_x86_64.zip",
-                "sha256sum": "d548d4c7a9b5442a5fae48b9fb386b1016b30eda8bfa3c8dd5ddf68df8aaa08e",
-                "dlFileName": "tkn_0.5.1_Windows_x86_64.zip",
+                "url": "https://github.com/tektoncd/cli/releases/download/v0.6.0/tkn_0.6.0_Windows_x86_64.zip",
+                "sha256sum": "5d69844fbb2ddaeece6cb872c19c67805d96b19293d2473e2c60fa8886fb7fc7",
+                "dlFileName": "tkn_0.6.0_Windows_x86_64.zip",
                 "cmdFileName": "tkn.exe"
             },
             "darwin": {
-                "url": "https://github.com/tektoncd/cli/releases/download/v0.5.1/tkn_0.5.1_Darwin_x86_64.tar.gz",
-                "sha256sum": "13055b61ef1e03b9ecda8f3f8c1782e85f1afba0755ffed75dcec690adf0c27c",
-                "dlFileName": "tkn_0.5.1_Darwin_x86_64.tar.gz"
+                "url": "https://github.com/tektoncd/cli/releases/download/v0.6.0/tkn_0.6.0_Darwin_x86_64.tar.gz",
+                "sha256sum": "69f2b19a399f113ff7491a16244d59c2a779bc43a74b4166e6e020d248a6c14b",
+                "dlFileName": "tkn_0.6.0_Darwin_x86_64.tar.gz"
             },
             "linux": {
-                "url": "https://github.com/tektoncd/cli/releases/download/v0.5.1/tkn_0.5.1_Linux_x86_64.tar.gz",
-                "sha256sum": "4f935e6ceef9c31ef33f197dda40dc9f2afb22f84c0e2997c0a3792220aa9662",
-                "dlFileName": "tkn_0.5.1_Linux_x86_64.tar.gz"
+                "url": "https://github.com/tektoncd/cli/releases/download/v0.6.0/tkn_0.6.0_Linux_x86_64.tar.gz",
+                "sha256sum": "5e76bb8feb329ca6a92fbe5c5b704377347bec0514258e4bf7705b7aede434db",
+                "dlFileName": "tkn_0.6.0_Linux_x86_64.tar.gz"
             }
         }
     }
