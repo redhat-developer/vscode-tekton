@@ -5,7 +5,7 @@
 
 import * as childProcess from 'child_process';
 import * as vscode from 'vscode';
-import { ExecException, ExecOptions } from 'child_process';
+import { ExecException, SpawnOptions } from 'child_process';
 
 export interface CliExitData {
     readonly error: ExecException;
@@ -14,7 +14,7 @@ export interface CliExitData {
 }
 
 export interface ICli {
-    execute(cmd: string, opts?: ExecOptions): Promise<CliExitData>;
+    execute(cmd: CliCommand, opts?: SpawnOptions): Promise<CliExitData>;
 }
 
 export interface TknChannel {
@@ -22,11 +22,25 @@ export interface TknChannel {
     show(): void;
 }
 
+export interface CliCommand {
+    cliCommand: string;
+    cliArguments: string[];
+}
+
+export function createCliCommand(cliCommand: string, ...cliArguments: string[]): CliCommand {
+    if (!cliArguments) {
+        cliArguments = [];
+    }
+    return { cliCommand, cliArguments };
+}
+
+export function cliCommandToString(command: CliCommand): string {
+    return `${command.cliCommand} ${command.cliArguments.join(' ')}`;
+}
+
 export class Cli implements ICli {
     private static instance: Cli;
     private tknChannel: TknChannel = new TknChannelImpl();
-
-    private constructor() {}
 
     static getInstance(): Cli {
         if (!Cli.instance) {
@@ -39,19 +53,32 @@ export class Cli implements ICli {
         this.tknChannel.show();
     }
 
-    async execute(cmd: string, opts: ExecOptions = {}): Promise<CliExitData> {
-        return new Promise<CliExitData>(async (resolve, reject) => {
-            this.tknChannel.print(cmd);
-            if (opts.maxBuffer === undefined) {
-                opts.maxBuffer = 2*1024*1024;
+    async execute(cmd: CliCommand, opts: SpawnOptions = {}): Promise<CliExitData> {
+        return new Promise<CliExitData>((resolve) => {
+            this.tknChannel.print(cliCommandToString(cmd));
+            if (opts.windowsHide === undefined) {
+                opts.windowsHide = true;
             }
-            childProcess.exec(cmd, opts, (error: ExecException, stdout: string, stderr: string) => {
-                this.tknChannel.print(stdout);
-                this.tknChannel.print(stderr);
+            if (opts.shell === undefined) {
+                opts.shell = true;
+            }
+            const tkn = childProcess.spawn(cmd.cliCommand, cmd.cliArguments, opts);
+            let stdout = '';
+            let stderr = '';
+            let error: Error;
+            tkn.stdout.on('data', (data) => {
+                stdout += data;
+            });
+            tkn.stderr.on('data', (data) => {
+                stderr += data;
+            });
+            tkn.on('error', err => {
                 // do not reject it here, because caller in some cases need the error and the streams
                 // to make a decision
-                // Filter update message text which starts with `---`
-                resolve({ error, stdout: stdout, stderr });
+                error = err;
+            });
+            tkn.on('close', () => {
+                resolve({ error, stdout, stderr });
             });
         });
     }

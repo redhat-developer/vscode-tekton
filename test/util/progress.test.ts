@@ -11,6 +11,7 @@ import * as sinon from 'sinon';
 import { Progress } from '../../src/util/progress';
 import * as vscode from 'vscode';
 import { TknImpl } from '../../src/tkn';
+import { createCliCommand } from '../../src/cli';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -23,9 +24,9 @@ suite('Progress Utility', () => {
         location: vscode.ProgressLocation.Notification,
         title: `Testing Progress`
     };
-    const command1 = { command: 'command one', increment: 50};
-    const command2 = { command: 'command two', increment: 50};
-    const steps = [ command1, command2 ];
+    const command1 = { command: createCliCommand('command', 'one'), increment: 50 };
+    const command2 = { command: createCliCommand('command', 'two'), increment: 50 };
+    const steps = [command1, command2];
     const errorMessage = 'An error';
 
     setup(() => {
@@ -62,7 +63,7 @@ suite('Progress Utility', () => {
         let e;
         try {
             await Progress.execWithProgress(options, steps, TknImpl.Instance);
-        } catch (err)  {
+        } catch (err) {
             e = err;
             expect(err.message).equals(errorMessage);
         }
@@ -73,8 +74,8 @@ suite('Progress Utility', () => {
     });
 
     test('execCmdWithProgress returned promise resolves in case of cmd finished successfully', () => {
-        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({error: undefined, stdout: '', stderr: ''});
-        Progress.execCmdWithProgress('title', 'cmd').catch(() => {
+        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '', stderr: '' });
+        Progress.execCmdWithProgress('title', createCliCommand('cmd')).catch(() => {
             expect.fail(true, false, 'returned promise should not be rejected');
         });
         sandbox.restore();
@@ -82,11 +83,11 @@ suite('Progress Utility', () => {
 
     test('execCmdWithProgress returned promise rejects in case of cmd finished with failure', async () => {
         const error = new Error(errorMessage);
-        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({error, stdout: '', stderr: ''});
+        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error, stdout: '', stderr: '' });
         let e;
         try {
-            await Progress.execCmdWithProgress('title', 'cmd');
-        } catch (err)  {
+            await Progress.execCmdWithProgress('title', createCliCommand('cmd'));
+        } catch (err) {
             e = err;
             expect(err.message).equals(errorMessage);
         }

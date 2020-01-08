@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as tkn from '../src/tkn';
-import { CliExitData, Cli } from '../src/cli';
+import { CliExitData, Cli, createCliCommand } from '../src/cli';
 import * as assert from 'assert';
 import * as sinon from 'sinon';
 import * as chai from 'chai';
@@ -42,7 +42,7 @@ suite("tkn", () => {
 
     suite('command execution', () => {
         let execStub: sinon.SinonStub, toolsStub: sinon.SinonStub;
-        const command = 'tkn do whatever you do';
+        const command = createCliCommand('tkn', 'do', 'whatever', 'you', 'do');
 
         setup(() => {
             execStub = sandbox.stub(Cli.prototype, 'execute');
@@ -63,8 +63,8 @@ suite("tkn", () => {
             execStub.resolves({ stdout: 'done', stderr: '', error: null });
             toolsStub.resolves(toolPath);
             await tknCli.execute(command);
-
-            expect(execStub).calledOnceWith(command.replace('tkn', `"${toolPath}"`));
+            command.cliCommand = command.cliCommand.replace('tkn', `"${toolPath}"`);
+            expect(execStub).calledOnceWith(command);
         });
 
         test('execute allows to set its working directory', async () => {
@@ -106,7 +106,7 @@ suite("tkn", () => {
             toolsStub.restore();
             toolsStub = sandbox.stub(ToolsConfig, 'detectOrDownload').resolves(path.join('segment1', 'segment2'));
             const ctStub = sandbox.stub(WindowUtil, 'createTerminal').returns(termFake);
-            await tknCli.executeInTerminal('tkn');
+            await tknCli.executeInTerminal(createCliCommand('tkn'));
             // tslint:disable-next-line: no-unused-expression
             expect(termFake.show).calledOnce;
             expect(ctStub).calledWith('Tekton', process.cwd(), 'segment1');
@@ -382,7 +382,7 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
-                                "creationTimestamp" : "2019-07-25T12:03:01Z",
+                                "creationTimestamp": "2019-07-25T12:03:01Z",
                                 "name": "taskrun1",
                                 "ownerReferences": [{
                                     "kind": "PipelineRun",
@@ -391,7 +391,7 @@ suite("tkn", () => {
                                 "labels": {
                                     "tekton.dev/pipelineRun": "pipelinerun1"
                                 }
-                                
+
                             },
                             "status": {
                                 "conditions": [
@@ -406,7 +406,7 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
-                                "creationTimestamp" : "2019-07-25T12:03:00Z",
+                                "creationTimestamp": "2019-07-25T12:03:00Z",
                                 "name": "taskrun2",
                                 "ownerReferences": [{
                                     "kind": "PipelineRun",
@@ -442,7 +442,7 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
-                                "creationTimestamp" : "2019-07-25T12:03:01Z",
+                                "creationTimestamp": "2019-07-25T12:03:01Z",
                                 "name": "taskrun1",
                                 "ownerReferences": [{
                                     "kind": "PipelineRun",
@@ -465,7 +465,7 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
-                                "creationTimestamp" : "2019-07-25T12:03:00Z",
+                                "creationTimestamp": "2019-07-25T12:03:00Z",
                                 "name": "taskrun2",
                                 "ownerReferences": [{
                                     "kind": "PipelineRun",
@@ -512,7 +512,7 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
-                                "creationTimestamp" : "2019-07-25T12:03:01Z",
+                                "creationTimestamp": "2019-07-25T12:03:01Z",
                                 "name": "taskrun1",
                                 "labels": {
                                     "tekton.dev/pipelineTask": "task1"
@@ -536,7 +536,7 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
-                                "creationTimestamp" : "2019-07-25T12:03:00Z",
+                                "creationTimestamp": "2019-07-25T12:03:00Z",
                                 "name": "taskrun2",
                                 "labels": {
                                     "tekton.dev/pipelineTask": "task1"
@@ -573,7 +573,7 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
-                                "creationTimestamp" : "2019-07-25T12:03:01Z",
+                                "creationTimestamp": "2019-07-25T12:03:01Z",
                                 "name": "taskrun1",
                                 "labels": {
                                     "tekton.dev/pipelineTask": "task1"
@@ -597,7 +597,7 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
-                                "creationTimestamp" : "2019-07-25T12:03:00Z",
+                                "creationTimestamp": "2019-07-25T12:03:00Z",
                                 "name": "taskrun2",
                                 "labels": {
                                     "tekton.dev/pipelineTask": "task1"
@@ -645,7 +645,7 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
-                                "creationTimestamp" : "2019-07-25T12:03:01Z",
+                                "creationTimestamp": "2019-07-25T12:03:01Z",
                                 "name": "taskrun1",
                                 "labels": {
                                     "tekton.dev/pipelineTask": "clustertask1"
@@ -669,7 +669,7 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
-                                "creationTimestamp" : "2019-07-25T12:03:00Z",
+                                "creationTimestamp": "2019-07-25T12:03:00Z",
                                 "name": "taskrun2",
                                 "labels": {
                                     "tekton.dev/pipelineTask": "clustertask1"
@@ -706,7 +706,7 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
-                                "creationTimestamp" : "2019-07-25T12:03:01Z",
+                                "creationTimestamp": "2019-07-25T12:03:01Z",
                                 "name": "taskrun1",
                                 "labels": {
                                     "tekton.dev/pipelineTask": "clustertask1"
@@ -730,7 +730,7 @@ suite("tkn", () => {
                             "kind": "TaskRun",
                             "apiVersion": "tekton.dev/v1alpha1",
                             "metadata": {
-                                "creationTimestamp" : "2019-07-25T12:03:00Z",
+                                "creationTimestamp": "2019-07-25T12:03:00Z",
                                 "name": "taskrun2",
                                 "labels": {
                                     "tekton.dev/pipelineTask": "clustertask1"
