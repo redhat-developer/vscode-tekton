@@ -20,7 +20,6 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/Pipeline', () => {
-    let quickPickStub: sinon.SinonStub;
     let sandbox: sinon.SinonSandbox;
     let execStub: sinon.SinonStub;
     let getPipelineStub: sinon.SinonStub;
@@ -171,12 +170,12 @@ suite('Tekton/Pipeline', () => {
 
         setup(() => {
 
-            let testNames: NameType[] = [{
+            const testNames: NameType[] = [{
                 name: "test",
                 type: "test-type"
             }];
 
-            let testResources: PipeResources[] = [
+            const testResources: PipeResources[] = [
                 {
                     name: "test-resource1",
                     resourceRef: "resource1"
@@ -186,7 +185,7 @@ suite('Tekton/Pipeline', () => {
                     resourceRef: "resource1"
                 }
             ];
-            let testParams: PipeParams[] = [
+            const testParams: PipeParams[] = [
                 {
                     default: "package",
                     description: "Param test description",

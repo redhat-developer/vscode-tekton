@@ -8,8 +8,8 @@
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
-import { Cli, createCliCommand, cliCommandToString } from '../src/cli';
-import * as child_process from 'child_process';
+import { createCliCommand, cliCommandToString, CliImpl } from '../src/cli';
+import * as childProcess from 'child_process';
 import * as events from 'events';
 import * as stream from 'stream';
 
@@ -19,24 +19,24 @@ chai.use(sinonChai);
 suite('Cli', () => {
     let sandbox: sinon.SinonSandbox;
     let spawnStub: sinon.SinonStub;
-    let procMock: child_process.ChildProcess;
-    const cli = Cli.getInstance();
+    let procMock: childProcess.ChildProcess;
+    const cli = CliImpl.getInstance();
     const command = createCliCommand('command');
-    const options: child_process.SpawnOptions = { cwd: 'cwd', shell: true, windowsHide: true };
+    const options: childProcess.SpawnOptions = { cwd: 'cwd', shell: true, windowsHide: true };
     const stdout = 'Standard output';
     const stderr = 'Error output';
-    const error: child_process.ExecException = {
+    const error: childProcess.ExecException = {
         message: 'Fatal Error',
         name: 'name'
     };
 
     setup(() => {
         sandbox = sinon.createSandbox();
-        procMock = <child_process.ChildProcess>new events.EventEmitter();
+        procMock = new events.EventEmitter() as childProcess.ChildProcess;
         procMock.stdin = new stream.Writable();
-        procMock.stdout = <stream.Readable>new events.EventEmitter();
-        procMock.stderr = <stream.Readable>new events.EventEmitter();
-        spawnStub = sandbox.stub(child_process, 'spawn').returns(procMock);
+        procMock.stdout = new events.EventEmitter() as stream.Readable;
+        procMock.stderr = new events.EventEmitter() as stream.Readable;
+        spawnStub = sandbox.stub(childProcess, 'spawn').returns(procMock);
     });
 
     teardown(() => {

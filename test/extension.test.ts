@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 //
 // Note: This example test is leveraging the Mocha test framework.
 // Please refer to their documentation on https://mochajs.org/ for help.
@@ -42,6 +43,7 @@ suite("Tekton Pipeline Extension", async () => {
         const stub = sandbox.stub(Pipeline, "about");
         try {
             await vscode.commands.executeCommand("tekton.about");
+        // eslint-disable-next-line no-empty
         } catch (ignore) {
         } finally {
             stub.restore();
@@ -66,7 +68,7 @@ suite("Tekton Pipeline Extension", async () => {
         const mths: Set<string> = new Set();
         tekton.forEach(name => {
             const segs: string[] = name.split(".");
-            let methName: string = segs[segs.length - 1];
+            const methName: string = segs[segs.length - 1];
             // tslint:disable-next-line: no-unused-expression
             !mths.has(methName) && mths.add(methName);
         });
@@ -78,7 +80,7 @@ suite("Tekton Pipeline Extension", async () => {
         const cmds: string[] = await vscode.commands.getCommands();
         const tekton: string[] = cmds.filter((item) => item.startsWith('tekton.'));
         const mths: string[] = await getStaticMethodsToStub(tekton);
-        [Pipeline, Task, ClusterTask, PipelineRun, TaskRun, PipelineResource, PipelineExplorer].forEach((item: { [x: string]: any; }) => {
+        [Pipeline, Task, ClusterTask, PipelineRun, TaskRun, PipelineResource, PipelineExplorer].forEach((item: { [x: string]: any }) => {
             mths.forEach((name) => {
                 if (item[name]) {
                     sandbox.stub(item, name).resolves();

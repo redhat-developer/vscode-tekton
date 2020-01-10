@@ -5,7 +5,6 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
-import * as k8s from 'vscode-kubernetes-tools-api';
 import { Progress } from '../util/progress';
 import { window } from 'vscode';
 
@@ -21,7 +20,7 @@ export class PipelineResource extends TektonItem {
     }
 
      static async delete(pipelineresource: TektonNode): Promise<string> {
-        const value = await window.showWarningMessage(`Do you want to delete the Resource '${pipelineresource.getName()}\'?`, 'Yes', 'Cancel');
+        const value = await window.showWarningMessage(`Do you want to delete the Resource '${pipelineresource.getName()}'?`, 'Yes', 'Cancel');
         if (value === 'Yes') {
             return Progress.execFunctionWithProgress(`Deleting the Resource '${pipelineresource.getName()}'.`, () => 
                 PipelineResource.tkn.execute(Command.deletePipelineResource(pipelineresource.getName())))

@@ -7,7 +7,7 @@
 
 export class Platform {
 
-    static identify(map) {
+    static identify(map): string | undefined {
         if (map[Platform.OS]) {
             return map[Platform.OS]();
         }

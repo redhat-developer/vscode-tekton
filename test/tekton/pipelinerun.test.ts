@@ -18,7 +18,6 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/PipelineRun', () => {
-    let quickPickStub: sinon.SinonStub;
     let sandbox: sinon.SinonSandbox;
     let execStub: sinon.SinonStub;
     let getPipelineNamesStub: sinon.SinonStub;
@@ -84,31 +83,31 @@ suite('Tekton/PipelineRun', () => {
 
         suite('describe', () => {
 
-    
+
             test('returns null when cancelled', async () => {
                 const result = await PipelineRun.describe(null);
-    
+
                 expect(result).undefined;
             });
-    
+
             test('describe calls the correct tkn command in terminal', async () => {
                 await PipelineRun.describe(pipelinerunItem);
                 expect(termStub).calledOnceWith(Command.describePipelineRuns(pipelinerunItem.getName()));
             });
-    
+
         });
-    
+
         suite('log output', () => {
-   
+
             test('Log calls the correct tkn command in terminal  w/ context', async () => {
                 await PipelineRun.logs(pipelinerunItem);
-    
+
                 expect(termStub).calledOnceWith(Command.showPipelineRunLogs(pipelinerunItem.getName()));
             });
-    
+
             test('fails with no context', async () => {
                 const result = await PipelineRun.logs(null);
-    
+
                 // tslint:disable-next-line: no-unused-expression
                 expect(result).undefined;
             });
@@ -126,54 +125,52 @@ suite('Tekton/PipelineRun', () => {
         });
 
         suite('cancel', () => {
-   
-            setup(() => {
-            });
+
 
             test('returns undefined when cancelled', async () => {
                 const result = await PipelineRun.cancel(null);
                 expect(result).undefined;
             });
-    
+
             test('Cancel calls the correct tkn command in terminal  w/ context', async () => {
                 await PipelineRun.cancel(pipelinerunItem);
-    
+
                 expect(termStub).calledOnceWith(Command.cancelPipelineRun(pipelinerunItem.getName()));
             });
-    
+
         });
 
         suite('delete command', () => {
             let warnStub: sinon.SinonStub;
-    
+
             setup(() => {
                 warnStub = sandbox.stub(vscode.window, 'showWarningMessage');
             });
-    
+
             test('calls the appropriate tkn command if confirmed', async () => {
                 warnStub.resolves('Yes');
-    
+
                 await PipelineRun.delete(pipelinerunItem);
-    
+
                 expect(execStub).calledOnceWith(Command.deletePipelineRun(pipelinerunItem.getName()));
             });
-    
+
             test('returns a confirmation message text when successful', async () => {
                 warnStub.resolves('Yes');
-    
+
                 const result = await PipelineRun.delete(pipelinerunItem);
-    
+
                 expect(result).equals(`The PipelineRun '${pipelinerunItem.getName()}' successfully deleted.`);
             });
-    
-            test('returns null when cancelled', async() => {
+
+            test('returns null when cancelled', async () => {
                 warnStub.resolves('Cancel');
-    
+
                 const result = await PipelineRun.delete(pipelinerunItem);
-    
+
                 expect(result).null;
             });
-    
+
             test('throws an error message when command failed', async () => {
                 warnStub.resolves('Yes');
                 execStub.rejects('ERROR');

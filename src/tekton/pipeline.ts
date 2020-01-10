@@ -5,12 +5,13 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
-import { MultiStepInput } from '../util/MultiStepInput';
+import { MultiStepInput, InputStep } from '../util/MultiStepInput';
 import { Progress } from '../util/progress';
 import { QuickPickItem, window } from 'vscode';
 import * as cliInstance from '../cli';
-import { Cli } from '../cli';
+import { CliImpl } from '../cli';
 import * as k8s from 'vscode-kubernetes-tools-api';
+import { TknPipelineResource, TknPipelineTrigger } from '../tekton';
 
 export interface NameType {
     name: string;
@@ -47,7 +48,7 @@ export class Pipeline extends TektonItem {
     static async start(pipeline: TektonNode): Promise<string> {
         if (pipeline) {
             const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.listPipelines(), process.cwd(), false);
-            let data: any[] = [];
+            let data: TknPipelineTrigger[] = [];
             if (result.stderr) {
                 console.log(result + " Std.err when processing pipelines");
             }
@@ -57,7 +58,7 @@ export class Pipeline extends TektonItem {
                 //show no pipelines if output is not correct json
             }
 
-            let pipelinetrigger = data.map<PipelineTrigger>(value => ({
+            const pipelinetrigger = data.map<PipelineTrigger>(value => ({
                 name: value.metadata.name,
                 resources: value.spec.resources,
                 params: value.spec.params ? value.spec.params : undefined,
@@ -65,7 +66,7 @@ export class Pipeline extends TektonItem {
             })).filter(function (obj) {
                 return obj.name === pipeline.getName();
             });
-            let inputStartPipeline = await Pipeline.startPipelineObject(pipelinetrigger);
+            const inputStartPipeline = await Pipeline.startPipelineObject(pipelinetrigger);
 
             return Progress.execFunctionWithProgress(`Creating the Pipeline '${inputStartPipeline.name}'.`, () =>
                 Pipeline.tkn.startPipeline(inputStartPipeline)
@@ -88,18 +89,18 @@ export class Pipeline extends TektonItem {
             type: string;
         }
 
-         let inputStartPipeline = {
+        const inputStartPipeline = {
             resources: [],
             params: [],
         } as StartPipelineObject;
         inputStartPipeline.name = context[0].name;
         inputStartPipeline.serviceAccount = context[0].serviceAcct;
 
-        async function collectInputs() {
+        async function collectInputs(): Promise<void> {
             await MultiStepInput.run(input => pickResourceGroup(input));
         }
 
-        async function pickResourceGroup(input: MultiStepInput) {
+        async function pickResourceGroup(input: MultiStepInput): Promise<InputStep> {
             const pick = await input.showQuickPick({
                 title,
                 placeholder: 'Input Pipeline resources',
@@ -107,7 +108,7 @@ export class Pipeline extends TektonItem {
             });
             const pipelineRef = await PipelineResourceReturn(pick.label);
             resources.splice(resources.indexOf(pick), 1);
-            let selectedResource: PipeResources = {
+            const selectedResource: PipeResources = {
                 name: pick.label,
                 resourceRef: await inputResources(input, pipelineRef),
             };
@@ -116,10 +117,10 @@ export class Pipeline extends TektonItem {
                 return pickResourceGroup(input);
             }
             if (params) {
-                return (input: MultiStepInput) => inputParameters(input);
+                return (input: MultiStepInput): Promise<InputStep> => inputParameters(input);
             }
             if (inputStartPipeline.serviceAccount) {
-                return (input: MultiStepInput) => pickServiceAcct(input);
+                return (input: MultiStepInput): Promise<InputStep> => pickServiceAcct(input);
             }
         }
 
@@ -133,7 +134,7 @@ export class Pipeline extends TektonItem {
             return pick.label;
         }
 
-        async function inputParameters(input: MultiStepInput) {
+        async function inputParameters(input: MultiStepInput): Promise<InputStep> {
             const pick = await input.showQuickPick({
                 title,
                 placeholder: 'Select Pipeline Parameter Name',
@@ -141,10 +142,10 @@ export class Pipeline extends TektonItem {
             });
             params.splice(params.indexOf(pick), 1);
             const paramVal = context[0].params.find(x => x.name === pick.label);
-            return (input: MultiStepInput) => inputParamValue(input, paramVal);
+            return (input: MultiStepInput): Promise<InputStep> => inputParamValue(input, paramVal);
         }
 
-        async function inputParamValue(input: MultiStepInput, selectedParam: PipeParams) {
+        async function inputParamValue(input: MultiStepInput, selectedParam: PipeParams): Promise<InputStep> {
             const paramVals = await getParamValues(selectedParam.name);
             const pick = await input.showQuickPick({
                 title,
@@ -152,7 +153,7 @@ export class Pipeline extends TektonItem {
                 items: paramVals,
             });
             if (pick.label === selectedParam.name) {
-                let parameter: PipeParams = { name: selectedParam.name, description: selectedParam.description, default: selectedParam.default };
+                const parameter: PipeParams = { name: selectedParam.name, description: selectedParam.description, default: selectedParam.default };
                 inputStartPipeline.params.push(parameter);
             }
             else {
@@ -161,21 +162,21 @@ export class Pipeline extends TektonItem {
                     prompt: 'Input Pipeline default Value',
                     validate: validateInput,
                 });
-                let parameter: PipeParams = { name: selectedParam.name, description: selectedParam.description, default: inputVal };
+                const parameter: PipeParams = { name: selectedParam.name, description: selectedParam.description, default: inputVal };
                 inputStartPipeline.params.push(parameter);
             }
             if (params.length > 0) {
                 return inputParameters(input);
             }
             if (inputStartPipeline.serviceAccount) {
-                return (input: MultiStepInput) => pickServiceAcct(input);
+                return (input: MultiStepInput): Promise<InputStep> => pickServiceAcct(input);
             }
             return;
         }
 
-        async function pickServiceAcct(input: MultiStepInput) {
+        async function pickServiceAcct(input: MultiStepInput): Promise<InputStep> {
             const svcAcct = await getServiceAcct();
-            let pick = await input.showQuickPick({
+            const pick = await input.showQuickPick({
                 title,
                 placeholder: 'Input Service Account',
                 items: svcAcct,
@@ -185,17 +186,18 @@ export class Pipeline extends TektonItem {
                 return;
             }
             else if (pick.label === 'Input New Service Account') {
-                let inputSvcAcct = await input.showInputBox({
+                const inputSvcAcct = await input.showInputBox({
                     title,
                     prompt: 'Input Service Account',
                     validate: validateInput,
                 });
+                // eslint-disable-next-line require-atomic-updates
                 inputStartPipeline.serviceAccount = inputSvcAcct;
             }
         }
 
         async function PipelineResourceReturn(name: string): Promise<PipelineRef[]> {
-            let pipeR: any[] = [];
+            let pipeR: TknPipelineResource[] = [];
             const element = context[0].resources.find(e => e.name === name);
             const kubectl = await k8s.extension.kubectl.v1;
             if (kubectl.available) {
@@ -203,10 +205,10 @@ export class Pipeline extends TektonItem {
                 try {
                     pipeR = JSON.parse(k8output.stdout).items;
                 } catch (ignore) {
-
+                    // eslint-disable-next-line no-empty
                 }
             }
-            let pipeResources = pipeR.map<PipelineRef>(value => ({
+            const pipeResources = pipeR.map<PipelineRef>(value => ({
                 name: value.metadata.name,
                 type: value.spec.type,
             })).filter(function (obj) {
@@ -216,8 +218,8 @@ export class Pipeline extends TektonItem {
             return pipeResources;
         }
 
-        async function validateInput(name: string) {
-            var alphaNumHyph = new RegExp(/^[a-zA-Z0-9-_]+$/);
+        async function validateInput(name: string): Promise<undefined | 'invalid'> {
+            const alphaNumHyph = new RegExp(/^[a-zA-Z0-9-_]+$/);
             return name.match(alphaNumHyph) ? undefined : 'invalid';
         }
 
@@ -259,7 +261,7 @@ export class Pipeline extends TektonItem {
     }
 
     static async showTektonOutput(): Promise<void> {
-        Cli.getInstance().showOutputChannel();
+        CliImpl.getInstance().showOutputChannel();
     }
 
     static async describe(pipeline: TektonNode): Promise<void> {
@@ -271,9 +273,9 @@ export class Pipeline extends TektonItem {
     }
 
     static async delete(pipeline: TektonNode): Promise<string> {
-        const value = await window.showWarningMessage(`Do you want to delete the Pipeline '${pipeline.getName()}\'?`, 'Yes', 'Cancel');
+        const value = await window.showWarningMessage(`Do you want to delete the Pipeline '${pipeline.getName()}'?`, 'Yes', 'Cancel');
         if (value === 'Yes') {
-            return Progress.execFunctionWithProgress(`Deleting the Pipeline '${pipeline.getName()}'.`, () => 
+            return Progress.execFunctionWithProgress(`Deleting the Pipeline '${pipeline.getName()}'.`, () =>
                 Pipeline.tkn.execute(Command.deletePipeline(pipeline.getName())))
                 .then(() => `The Pipeline '${pipeline.getName()}' successfully deleted.`)
                 .catch((err) => Promise.reject(`Failed to delete the Pipeline '${pipeline.getName()}': '${err}'.`));

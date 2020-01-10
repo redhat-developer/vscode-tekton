@@ -27,7 +27,7 @@ export class TaskRun extends TektonItem {
     }
 
     static async delete(taskrun: TektonNode): Promise<string> {
-        const value = await window.showWarningMessage(`Do you want to delete the TaskRun '${taskrun.getName()}\'?`, 'Yes', 'Cancel');
+        const value = await window.showWarningMessage(`Do you want to delete the TaskRun '${taskrun.getName()}'?`, 'Yes', 'Cancel');
         if (value === 'Yes') {
             return Progress.execFunctionWithProgress(`Deleting the TaskRun '${taskrun.getName()}'.`, () => 
                 TaskRun.tkn.execute(Command.deleteTaskRun(taskrun.getName())))

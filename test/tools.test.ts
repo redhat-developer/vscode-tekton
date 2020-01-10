@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { CliExitData, Cli } from '../src/cli';
+import { CliExitData, CliImpl } from '../src/cli';
 import * as assert from 'assert';
 import * as sinon from 'sinon';
 import { ToolsConfig } from '../src/tools';
@@ -33,7 +33,7 @@ suite("tool configuration", () => {
     suite('getVersion()', () => {
         test('returns version number with expected output', async () => {
             const testData: CliExitData = { stdout: 'Client version: 0.2.0', stderr: '', error: undefined };
-            sb.stub(Cli.prototype, 'execute').resolves(testData);
+            sb.stub(CliImpl.prototype, 'execute').resolves(testData);
             sb.stub(fs, 'existsSync').returns(true);
 
             const result: string = await ToolsConfig.getVersion('tkn');
@@ -42,7 +42,7 @@ suite("tool configuration", () => {
 
         test('returns version undefined for unexpected output', async () => {
             const invalidData: CliExitData = { error: undefined, stderr: '', stdout: 'tknunexpected v0.1.2 (43e2a41) \n line two' };
-            sb.stub(Cli.prototype, 'execute').resolves(invalidData);
+            sb.stub(CliImpl.prototype, 'execute').resolves(invalidData);
             sb.stub(fs, 'existsSync').returns(true);
 
             const result: string = await ToolsConfig.getVersion('tkn');
@@ -51,7 +51,7 @@ suite("tool configuration", () => {
 
         test('returns version undefined for not existing tool', async () => {
             const invalidData: CliExitData = { error: undefined, stderr: '', stdout: 'tknunexpected v0.1.2 (43e2a41) \n line two' };
-            sb.stub(Cli.prototype, 'execute').resolves(invalidData);
+            sb.stub(CliImpl.prototype, 'execute').resolves(invalidData);
             sb.stub(fs, 'existsSync').returns(false);
 
             const result: string = await ToolsConfig.getVersion('odo');
@@ -60,7 +60,7 @@ suite("tool configuration", () => {
 
         test('returns version undefined for tool that does not support version parameter', async () => {
             const invalidData: CliExitData = { error: new Error('something bad happened'), stderr: '', stdout: 'tknunexpected v0.1.2 (43e2a41) \n line two' };
-            sb.stub(Cli.prototype, 'execute').resolves(invalidData);
+            sb.stub(CliImpl.prototype, 'execute').resolves(invalidData);
             sb.stub(fs, 'existsSync').returns(true);
 
             const result: string = await ToolsConfig.getVersion('tkn');
@@ -80,7 +80,7 @@ suite("tool configuration", () => {
         });
 
         test('returns path to tool detected form PATH locations if detected version is correct', async () => {
-            sb.stub(shelljs, 'which').returns(<string & shelljs.ShellReturnValue>{stdout: 'tkn'});
+            sb.stub(shelljs, 'which').returns({stdout: 'tkn'} as string & shelljs.ShellReturnValue);
             sb.stub(fs, 'existsSync').returns(false);
             getVersionStub.returns(ToolsConfig.tool['tkn'].version);
             const toolLocation = await ToolsConfig.detectOrDownload();
@@ -112,7 +112,7 @@ suite("tool configuration", () => {
             const stub = sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tool['tkn'].sha256sum);
             stub.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
             sb.stub(Archive, 'unzip').resolves();
-            let toolLocation = await ToolsConfig.detectOrDownload();
+            const toolLocation = await ToolsConfig.detectOrDownload();
             assert.ok(showInfo.calledOnce);
             assert.ok(withProgress.calledOnce);
             assert.equal( toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));

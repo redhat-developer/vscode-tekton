@@ -13,7 +13,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fsex from 'fs-extra';
 import * as fs from 'fs';
-import { Cli, createCliCommand } from './cli';
+import { createCliCommand, CliImpl } from './cli';
 import semver = require('semver');
 import configData = require('./tools.json');
 
@@ -78,7 +78,7 @@ export class ToolsConfig {
                             location: vscode.ProgressLocation.Notification,
                             title: `Downloading ${ToolsConfig.tool['tkn'].description}`
                         },
-                            (progress: vscode.Progress<{ increment: number, message: string }>, token: vscode.CancellationToken) => {
+                            (progress: vscode.Progress<{ increment: number; message: string }>) => {
                                 return DownloadUtil.downloadFile(
                                     ToolsConfig.tool['tkn'].url,
                                     toolDlLocation,
@@ -110,17 +110,19 @@ export class ToolsConfig {
                 }
             }
             if (toolLocation) {
+                // TODO: 
+                // eslint-disable-next-line require-atomic-updates
                 ToolsConfig.tool['tkn'].location = toolLocation;
             }
         }
         return toolLocation;
     }
 
-    public static async getVersion(location: string, cmd: string = path.parse(location).name): Promise<string> {
+    public static async getVersion(location: string): Promise<string> {
         let detectedVersion: string;
         if (fs.existsSync(location)) {
             const version = new RegExp(`^Client version:\\s([0-9]+\\.[0-9]+\\.[0-9]+)$`);
-            const result = await Cli.getInstance().execute(createCliCommand(`"${location}"`, 'version'));
+            const result = await CliImpl.getInstance().execute(createCliCommand(`"${location}"`, 'version'));
             if (result.stdout) {
                 const toolVersion: string[] = result.stdout.trim().split('\n').filter((value) => {
                     return value.match(version);
