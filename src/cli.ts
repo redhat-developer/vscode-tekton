@@ -13,7 +13,7 @@ export interface CliExitData {
     readonly stderr: string;
 }
 
-export interface ICli {
+export interface Cli {
     execute(cmd: CliCommand, opts?: SpawnOptions): Promise<CliExitData>;
 }
 
@@ -38,15 +38,15 @@ export function cliCommandToString(command: CliCommand): string {
     return `${command.cliCommand} ${command.cliArguments.join(' ')}`;
 }
 
-export class Cli implements ICli {
-    private static instance: Cli;
+export class CliImpl implements Cli {
+    private static instance: CliImpl;
     private tknChannel: TknChannel = new TknChannelImpl();
 
-    static getInstance(): Cli {
-        if (!Cli.instance) {
-            Cli.instance = new Cli();
+    static getInstance(): CliImpl {
+        if (!CliImpl.instance) {
+            CliImpl.instance = new CliImpl();
         }
-        return Cli.instance;
+        return CliImpl.instance;
     }
 
     async showOutputChannel(): Promise<void> {
@@ -91,7 +91,7 @@ class TknChannelImpl implements TknChannel {
         this.channel.show();
     }
 
-    prettifyJson(str: string) {
+    prettifyJson(str: string): string {
         let jsonData: string;
         try {
             jsonData = JSON.stringify(JSON.parse(str), null, 2);

@@ -3,11 +3,12 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TektonNode, ContextType } from "../../src/tkn";
 
 export class TestItem implements TektonNode {
 
-    
+
     constructor(
         private parent: TektonNode,
         private name: string,
@@ -21,11 +22,11 @@ export class TestItem implements TektonNode {
         return this.name;
     }
 
-    getTreeItem() {
+    getTreeItem(): any {
         return null;
     }
 
-    getChildren() {
+    getChildren(): any[] {
         return this.children;
     }
 

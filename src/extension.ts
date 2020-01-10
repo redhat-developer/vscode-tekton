@@ -19,17 +19,17 @@ import { PipelineResource } from './tekton/pipelineresource';
 export let contextGlobalState: vscode.ExtensionContext;
 let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
 
     contextGlobalState = context;
     migrateFromTkn018();
 
-	
+
 
     const disposables = [
         vscode.commands.registerCommand('tekton.about', (context) => execute(Pipeline.about, context)),
         vscode.commands.registerCommand('tekton.output', (context) => execute(Pipeline.showTektonOutput, context)),
-        vscode.commands.registerCommand('tekton.explorer.refresh', (context) => execute(Pipeline.refresh , context)),
+        vscode.commands.registerCommand('tekton.explorer.refresh', (context) => execute(Pipeline.refresh, context)),
         vscode.commands.registerCommand('tekton.pipeline.start', (context) => execute(Pipeline.start, context)),
         vscode.commands.registerCommand('tekton.pipeline.restart', (context) => execute(Pipeline.restart, context)),
         //vscode.commands.registerCommand('tekton.pipeline.createFromLocal', (context) => execute(Pipeline.createFromLocal, context)),
@@ -56,7 +56,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('tekton.taskrun.listFromTask', (context) => execute(TaskRun.listFromTask, context)),
         vscode.commands.registerCommand('tekton.taskrun.logs', (context) => execute(TaskRun.logs, context)),
         vscode.commands.registerCommand('tekton.taskrun.followLogs', (context) => execute(TaskRun.followLogs, context)),
-       // vscode.commands.registerCommand('tekton.taskrun.cancel', (context) => execute(TaskRun.cancel, context)),
+        // vscode.commands.registerCommand('tekton.taskrun.cancel', (context) => execute(TaskRun.cancel, context)),
         vscode.commands.registerCommand('tekton.taskrun.delete', (context) => execute(TaskRun.delete, context)),
         vscode.commands.registerCommand('tekton.explorer.reportIssue', () => PipelineExplorer.reportIssue()),
         PipelineExplorer.getInstance()
@@ -68,15 +68,15 @@ export async function activate(context: vscode.ExtensionContext) {
     if (tektonExplorerAPI.available) {
         tektonExplorer = tektonExplorerAPI.api;
         const nodeContributor = tektonExplorer.nodeSources.groupingFolder(
-                "Tekton Pipelines",
-                "context",
-                tektonExplorer.nodeSources.resourceFolder("ClusterTasks", "ClusterTasks", "ClusterTask", "clustertask").if(isTekton),
-                tektonExplorer.nodeSources.resourceFolder("Tasks", "Tasks", "Task", "task").if(isTekton),
-                tektonExplorer.nodeSources.resourceFolder("TaskRuns", "TaskRuns", "TaskRun", "taskruns").if(isTekton),
-                tektonExplorer.nodeSources.resourceFolder("Pipelines", "Pipelines", "Pipeline", "pipelines").if(isTekton),
-                tektonExplorer.nodeSources.resourceFolder("PipelineRuns", "PipelineRuns", "PipelineRun", "pipelineruns").if(isTekton),
-                tektonExplorer.nodeSources.resourceFolder("Pipeline Resources", "PipelineResources", "PipelineResources", "pipelineresources").if(isTekton),
-            ).at(undefined);
+            "Tekton Pipelines",
+            "context",
+            tektonExplorer.nodeSources.resourceFolder("ClusterTasks", "ClusterTasks", "ClusterTask", "clustertask").if(isTekton),
+            tektonExplorer.nodeSources.resourceFolder("Tasks", "Tasks", "Task", "task").if(isTekton),
+            tektonExplorer.nodeSources.resourceFolder("TaskRuns", "TaskRuns", "TaskRun", "taskruns").if(isTekton),
+            tektonExplorer.nodeSources.resourceFolder("Pipelines", "Pipelines", "Pipeline", "pipelines").if(isTekton),
+            tektonExplorer.nodeSources.resourceFolder("PipelineRuns", "PipelineRuns", "PipelineRun", "pipelineruns").if(isTekton),
+            tektonExplorer.nodeSources.resourceFolder("Pipeline Resources", "PipelineResources", "PipelineResources", "pipelineresources").if(isTekton),
+        ).at(undefined);
         tektonExplorer.registerNodeContributor(nodeContributor);
     } else {
         vscode.window.showErrorMessage('Command not available: ${tektonExplorer.reason}');
@@ -95,17 +95,19 @@ async function isTekton(): Promise<boolean> {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export function deactivate(): void {
 }
 
-function execute<T>(command: (...args: T[]) => Promise<any> | void, ...params: T[]) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function execute<T>(command: (...args: T[]) => Promise<any> | void, ...params: T[]): any | undefined {
     try {
         const res = command.call(null, ...params);
         return res && res.then
-            ? res.then((result: any) => {
+            ? res.then((result: string) => {
                 displayResult(result);
-            }).catch((err: any) => {
-                vscode.window.showErrorMessage(err.message ? err.message : err);
+            }).catch((err: Error) => {
+                vscode.window.showErrorMessage(err.message ? err.message : err.toString());
             })
             : undefined;
     } catch (err) {
@@ -114,13 +116,13 @@ function execute<T>(command: (...args: T[]) => Promise<any> | void, ...params: T
 }
 
 
-function displayResult(result?: any) {
+function displayResult(result?: string): void {
     if (result && typeof result === 'string') {
         vscode.window.showInformationMessage(result);
     }
 }
 
-function migrateFromTkn018() {
+function migrateFromTkn018(): void {
     const newCfgDir = path.join(Platform.getUserHomePath(), '.tkn');
     const newCfg = path.join(newCfgDir, 'tkn-config.yaml');
     const oldCfg = path.join(Platform.getUserHomePath(), '.kube', 'tkn');

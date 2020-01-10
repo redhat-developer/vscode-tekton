@@ -15,7 +15,7 @@ export class DownloadUtil {
         throttle: throttle || 250,
         delay: 0,
         lengthHeader: 'content-length'
-      }).on('progress', (state: { percent: number; }) => {
+      }).on('progress', (state: { percent: number }) => {
         const current = Math.round(state.percent * 100);
         current !== previous && progressCallBack && progressCallBack(current, current - previous);
         previous = current;

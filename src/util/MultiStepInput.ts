@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable require-atomic-updates */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable header/header */
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QuickPickItem, window, Disposable, QuickInput, QuickInputButtons} from 'vscode';
+import { QuickPickItem, window, Disposable, QuickInput, QuickInputButtons } from 'vscode';
 
 // -------------------------------------------------------
 // Helper code that wraps the API for the multi-step case.
@@ -12,12 +15,13 @@ import { QuickPickItem, window, Disposable, QuickInput, QuickInputButtons} from 
 
 
 class InputFlowAction {
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	private constructor() { }
 	static back = new InputFlowAction();
 	static cancel = new InputFlowAction();
 }
 
-type InputStep = (input: MultiStepInput) => Thenable<InputStep | void>;
+export type InputStep = (input: MultiStepInput) => Thenable<InputStep | void>;
 
 interface QuickPickParameters<T extends QuickPickItem> {
 	title: string;
@@ -55,7 +59,7 @@ export class MultiStepInput {
 				if (err === InputFlowAction.back) {
 					this.steps.pop();
 					step = this.steps.pop();
-	 			} else if (err === InputFlowAction.cancel) {
+				} else if (err === InputFlowAction.cancel) {
 					step = undefined;
 				} else {
 					throw err;
@@ -81,7 +85,7 @@ export class MultiStepInput {
 						if (item === QuickInputButtons.Back) {
 							reject(InputFlowAction.back);
 						} else {
-							resolve(<any>item);
+							resolve(item as any);
 						}
 					}),
 					input.onDidChangeSelection(items => resolve(items[0])),
@@ -111,7 +115,7 @@ export class MultiStepInput {
 						if (item === QuickInputButtons.Back) {
 							reject(InputFlowAction.back);
 						} else {
-							resolve(<any>item);
+							resolve(item as any);
 						}
 					}),
 					input.onDidAccept(async () => {

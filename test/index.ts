@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------------------------
  *  Copyright (c) Red Hat, Inc. All rights reserved.
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
@@ -7,16 +8,18 @@
 require('source-map-support').install();
 
 /* tslint:disable no-require-imports */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as fs from 'fs';
 import * as glob from 'glob';
 import * as paths from 'path';
 import Mocha = require('mocha');
-import { ITestRunnerOptions, CoverageRunner } from './coverage';
+import { TestRunnerOptions, CoverageRunner } from './coverage';
 
 // declare var global: any;
 
 // Linux: prevent a weird NPE when mocha on Linux requires the window size from the TTY
 // Since we are not running in a tty environment, we just implement the method statically
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const tty = require('tty');
 if (!tty.getWindowSize) {
     tty.getWindowSize = (): number[] => {
@@ -35,20 +38,20 @@ if (process.env.BUILD_ID && process.env.BUILD_NUMBER) {
     config.reporter = 'mocha-jenkins-reporter';
 }
 
-let mocha = new Mocha(config);
+const mocha = new Mocha(config);
 
 function loadCoverageRunner(testsRoot: string): CoverageRunner | undefined {
     let coverageRunner: CoverageRunner;
     const coverConfigPath = paths.join(testsRoot, '..', '..', 'coverconfig.json');
     if (!process.env.VST_DISABLE_COVERAGE && fs.existsSync(coverConfigPath)) {
-        coverageRunner = new CoverageRunner(JSON.parse(fs.readFileSync(coverConfigPath, 'utf-8')) as ITestRunnerOptions, testsRoot);
+        coverageRunner = new CoverageRunner(JSON.parse(fs.readFileSync(coverConfigPath, 'utf-8')) as TestRunnerOptions, testsRoot);
         coverageRunner.setupCoverage();
     }
     return coverageRunner;
 }
 
 export function run(): any {
-     return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         const testsRoot = paths.resolve(__dirname);
         const coverageRunner = loadCoverageRunner(testsRoot);
         glob('**/**.test.js', { cwd: testsRoot }, (error, files): any => {

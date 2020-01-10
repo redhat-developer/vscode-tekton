@@ -2,11 +2,13 @@
  *  Copyright (c) Red Hat, Inc. All rights reserved.
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import glob = require("glob");
 import paths = require('path');
 import fs = require('fs');
-const istanbul = require('istanbul');
-const remapIstanbul = require('remap-istanbul');
+import istanbul = require('istanbul');
+import remapIstanbul = require('remap-istanbul');
 
 function _mkDirIfExists(dir: string): void {
     if (!fs.existsSync(dir)) {
@@ -14,7 +16,7 @@ function _mkDirIfExists(dir: string): void {
     }
 }
 
-export interface ITestRunnerOptions {
+export interface TestRunnerOptions {
     relativeCoverageDir?: string;
     relativeSourcePath?: string;
     ignorePatterns?: string[];
@@ -25,12 +27,12 @@ export interface ITestRunnerOptions {
 
 export class CoverageRunner {
 
-    private coverageVar: string = `$$cov_${new Date().getTime()}$$`;
+    private coverageVar = `$$cov_${new Date().getTime()}$$`;
     private transformer: any = undefined;
     private matchFn: any = undefined;
     private instrumenter: any = undefined;
 
-    constructor(private options: ITestRunnerOptions, private testsRoot: string) {
+    constructor(private options: TestRunnerOptions, private testsRoot: string) {
         if (!options.relativeSourcePath) {
             return;
         }
@@ -38,6 +40,7 @@ export class CoverageRunner {
 
     public setupCoverage(): void {
         // Set up Code Coverage, hooking require so that instrumented code is returned
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this;
         self.instrumenter = new istanbul.Instrumenter({ coverageVariable: self.coverageVar });
         const sourceRoot = paths.join(self.testsRoot, self.options.relativeSourcePath);
@@ -49,6 +52,7 @@ export class CoverageRunner {
         });
 
         // Create a match function - taken from the run-with-cover.js in istanbul.
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const decache = require('decache');
         const fileMap: any = {};
         srcFiles.forEach((file) => {
@@ -87,6 +91,7 @@ export class CoverageRunner {
      * @memberOf CoverageRunner
      */
     public reportCoverage(): void {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this;
         istanbul.hook.unhookRequire();
         let cov: any;

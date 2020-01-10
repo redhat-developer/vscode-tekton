@@ -31,7 +31,7 @@ export abstract class TektonItem {
     protected static readonly tkn: Tkn = TknImpl.Instance;
     protected static readonly explorer: PipelineExplorer = PipelineExplorer.getInstance();
 
-    static validateUniqueName(data: Array<TektonNode>, value: string) {
+    static validateUniqueName(data: Array<TektonNode>, value: string): string {
         const tektonNode = data.find((tektonNode) => tektonNode.getName() === value);
         return tektonNode && `This name is already used, please enter different name.`;
     }
@@ -60,13 +60,13 @@ export abstract class TektonItem {
         return taskList;
     }
 
-    static async getTaskRunNames(taskrun: TektonNode) {
+    static async getTaskRunNames(taskrun: TektonNode): Promise<TektonNode[]> {
         const taskrunList: Array<TektonNode> = await TektonItem.tkn.getTaskRuns(taskrun);
         if (taskrunList.length === 0) { throw Error(errorMessage.TaskRun); }
         return taskrunList;
     }
 
-    static async getPipelineResourceNames(pipelineresource: TektonNode) {
+    static async getPipelineResourceNames(pipelineresource: TektonNode): Promise<TektonNode[]> {
         const pipelineresourceList: Array<TektonNode> = await TektonItem.tkn.getPipelineResources(pipelineresource);
         if (pipelineresourceList.length === 0) { throw Error(errorMessage.PipelineResource); }
         return pipelineresourceList;

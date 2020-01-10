@@ -3,20 +3,19 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
+ /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as tkn from '../src/tkn';
-import { CliExitData, Cli, createCliCommand } from '../src/cli';
-import * as assert from 'assert';
+import { CliImpl, createCliCommand } from '../src/cli';
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import { ToolsConfig } from '../src/tools';
 import { WindowUtil } from '../src/util/windowUtils';
-import { Pipeline, StartPipelineObject, PipeResources, PipeParams, PipelineTrigger, NameType } from '../src/tekton/pipeline';
-import { window, Terminal } from 'vscode';
+import { StartPipelineObject, PipeResources, PipeParams } from '../src/tekton/pipeline';
+import { Terminal } from 'vscode';
 import jsYaml = require('js-yaml');
 import { TestItem } from './tekton/testTektonitem';
 import { ExecException } from 'child_process';
-import * as fs from 'fs';
 import * as path from 'path';
 
 const expect = chai.expect;
@@ -25,7 +24,6 @@ chai.use(sinonChai);
 // This needs to be edited to actually make sense wrt Tasks/TaskRuns in particular and nesting of resources
 suite("tkn", () => {
     const tknCli: tkn.Tkn = tkn.TknImpl.Instance;
-    let pipeTrigger: PipelineTrigger[];
     let startPipelineObj: StartPipelineObject;
     let sandbox: sinon.SinonSandbox;
     const errorMessage = 'Error';
@@ -45,7 +43,7 @@ suite("tkn", () => {
         const command = createCliCommand('tkn', 'do', 'whatever', 'you', 'do');
 
         setup(() => {
-            execStub = sandbox.stub(Cli.prototype, 'execute');
+            execStub = sandbox.stub(CliImpl.prototype, 'execute');
             toolsStub = sandbox.stub(ToolsConfig, 'detectOrDownload').resolves();
         });
 
@@ -63,6 +61,7 @@ suite("tkn", () => {
             execStub.resolves({ stdout: 'done', stderr: '', error: null });
             toolsStub.resolves(toolPath);
             await tknCli.execute(command);
+            // eslint-disable-next-line require-atomic-updates
             command.cliCommand = command.cliCommand.replace('tkn', `"${toolPath}"`);
             expect(execStub).calledOnceWith(command);
         });
@@ -136,7 +135,7 @@ suite("tkn", () => {
 
         test('startPipeline returns items from tkn pipeline start command', async () => {
 
-            let testResources: PipeResources[] = [
+            const testResources: PipeResources[] = [
                 {
                     name: "test-resource1",
                     resourceRef: "resource1"
@@ -146,7 +145,7 @@ suite("tkn", () => {
                     resourceRef: "resource1"
                 }
             ];
-            let testParams: PipeParams[] = [
+            const testParams: PipeParams[] = [
                 {
                     default: "package",
                     description: "Param test description",
@@ -305,7 +304,6 @@ suite("tkn", () => {
 
 
         test('getPipelineRuns returns pipelineruns for a pipeline', async () => {
-            const tknPipelineRuns = ['pipelinerun1'];
             execStub.resolves({
                 error: null, stderr: '',
                 stdout: JSON.stringify({

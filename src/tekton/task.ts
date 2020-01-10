@@ -10,6 +10,7 @@ import { Progress } from '../util/progress';
 
 export class Task extends TektonItem {
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
     static start(start: any, context: any): any {
         throw new Error("Method not implemented.");
     }
@@ -21,7 +22,7 @@ export class Task extends TektonItem {
     }
 
     static async delete(task: TektonNode): Promise<string> {
-        const value = await window.showWarningMessage(`Do you want to delete the Task '${task.getName()}\'?`, 'Yes', 'Cancel');
+        const value = await window.showWarningMessage(`Do you want to delete the Task '${task.getName()}'?`, 'Yes', 'Cancel');
         if (value === 'Yes') {
             return Progress.execFunctionWithProgress(`Deleting the Task '${task.getName()}'.`, () => 
                 Task.tkn.execute(Command.deleteTask(task.getName())))

@@ -2,7 +2,7 @@
  *  Copyright (c) Red Hat, Inc. All rights reserved.
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use strict';
 
 import * as chai from 'chai';
@@ -27,7 +27,7 @@ suite('Download Util', () => {
         streamEmitter = new EventEmitter();
         requestEmitter['pipe'] = () => streamEmitter;
         progressMock = pq('../../src/util/download', {
-            'request-progress': (_: any) => requestEmitter,
+            'request-progress': () => requestEmitter,
             request: (_: any) => _
         }
         ).DownloadUtil;

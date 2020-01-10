@@ -565,7 +565,8 @@
     "test": "npm run clean && npm run compile && npm run verify && node ./out/build/install-vscode.js && node ./out/build/unit-tests.js",
     "update-deps": "node_modules/.bin/ncu --upgrade --loglevel verbose --packageFile package.json && npm update",
     "coverage:upload": "codecov -f coverage/coverage-final.json",
-    "build": "npm run clean && eslint . --ext .js,.ts && npm run compile"
+    "build": "npm run clean && eslint . --ext .js,.ts && npm run compile",
+    "lint:fix": "eslint . --ext .js,.ts --fix"
   },
   "devDependencies": {
     "@types/byline": "^4.2.31",
