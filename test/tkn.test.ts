@@ -786,4 +786,25 @@ suite("tkn", () => {
             expect(result[0].getName()).deep.equals('taskrun1');
         });
     });
+
+    suite('getPipelineNodes', () => {
+
+        let execStub: sinon.SinonStub;
+
+        setup(() => {
+            execStub = sandbox.stub(tknCli, 'execute');
+        });
+
+        test('show warning message if user doesn\'t have the privileges to interact with tekton resources', async () => {
+            execStub.onFirstCall().resolves({ error: undefined, stdout: 'no', stderr: '' });
+            const result = await tknCli.getPipelineNodes();
+            assert.equal(result[0].getName(), "The current user doesn't have the privileges to interact with tekton resources.");
+        });
+
+        test('show warning message if OpenShift pipelines operator is not installed', async () => {
+            execStub.onFirstCall().resolves({ error: undefined, stdout: '', stderr: 'error: the server doesn\'t have a resource type "pipeline"' });
+            const result = await tknCli.getPipelineNodes();
+            assert.equal(result[0].getName(), "Please install the OpenShift Pipelines Operator.");
+        });
+    });
 });

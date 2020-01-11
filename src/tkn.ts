@@ -56,7 +56,8 @@ export enum ContextType {
     PIPELINERESOURCENODE = 'pipelineresourcenode',
     PIPELINERESOURCE = 'pipelineresource',
     TASKNODE = 'tasknode',
-    CLUSTERTASKNODE = 'clustertasknode'
+    CLUSTERTASKNODE = 'clustertasknode',
+    TKN_DOWN = 'tkn_down',
 }
 
 function verbose(_target: any, key: string, descriptor: any) {
@@ -82,6 +83,10 @@ function verbose(_target: any, key: string, descriptor: any) {
 
 function newTknCommand(...tknArguments: string[]): CliCommand {
     return createCliCommand('tkn', ...tknArguments);
+}
+
+function newOcCommand(...ocArguments: string[]): CliCommand {
+    return createCliCommand('oc', ...ocArguments);
 }
 
 export class Command {
@@ -227,6 +232,10 @@ export class Command {
         return newTknCommand('taskrun', 'logs', name, '-f');
     }
 
+    static tknStatus() {
+        return newOcCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'oc', 'get', 'pipeline.tekton.dev' );
+    }
+
 }
 
 export class TektonNodeImpl implements TektonNode {
@@ -280,7 +289,12 @@ export class TektonNodeImpl implements TektonNode {
             icon: 'clustertask.png',
             tooltip: 'Clustertask: {label}',
             getChildren: () => this.tkn.getTaskRunsforTasks(this)
-        }
+        },
+        tkn_down: {
+            icon: 'tkn-down.png',
+            tooltip: 'Cannot connect to the tekton',
+            getChildren: () => []
+        },
     };
 
     constructor(private parent: TektonNode,
@@ -510,7 +524,19 @@ export class TknImpl implements Tkn {
         }
         return TknImpl.instance;
     }
+
     async getPipelineNodes(): Promise<TektonNode[]> {
+        const result: cliInstance.CliExitData = await this.execute(
+            Command.tknStatus(), process.cwd(), false
+        );
+        if (result.stdout.trim() === 'no') {
+            const tknDownMsg: string = `The current user doesn't have the privileges to interact with tekton resources.` ;
+            return [new TektonNodeImpl(null, tknDownMsg, ContextType.TKN_DOWN, TknImpl.instance, TreeItemCollapsibleState.None)];
+        }
+        if (result.stderr.indexOf(`the server doesn't have a resource type "pipeline"`) > -1) {
+            const tknDownMsg: string = 'Please install the OpenShift Pipelines Operator.';
+            return [new TektonNodeImpl(null, tknDownMsg, ContextType.TKN_DOWN, TknImpl.instance, TreeItemCollapsibleState.None)];
+        }
         if (!this.cache.has(TknImpl.ROOT)) {
             this.cache.set(TknImpl.ROOT, await this._getPipelineNodes());
         }
