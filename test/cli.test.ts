@@ -63,7 +63,7 @@ suite('Cli', () => {
         procMock.emit('close', 1);
         const result = await p;
 
-        expect(result).deep.equals({ error: error, stdout: stdout, stderr: stderr });
+        expect(result).deep.equals({ error: error, stdout: stdout, stderr: '' });
     });
 
     test('cli command to string function', () => {

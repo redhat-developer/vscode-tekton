@@ -227,14 +227,15 @@ export class Command {
     static printTknVersion(): CliCommand {
         return newTknCommand('version');
     }
-
     static showPipelineRunFollowLogs(name: string): CliCommand {
         return newTknCommand('pipelinerun', 'logs', name, '-f');
     }
     static showTaskRunFollowLogs(name: string): CliCommand {
         return newTknCommand('taskrun', 'logs', name, '-f');
     }
-
+    static createPipelineResource(yamlFile: string): CliCommand {
+        return newTknCommand('resource', 'create', '-f', yamlFile);
+    }
     static tknStatus(): CliCommand {
         return newOcCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'oc', 'get', 'pipeline.tekton.dev' );
     }

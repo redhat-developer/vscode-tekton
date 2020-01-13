@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import * as childProcess from 'child_process';
 import * as vscode from 'vscode';
-import { ExecException, SpawnOptions } from 'child_process';
+import { ExecException, SpawnOptions, spawn } from 'child_process';
+
 
 export interface CliExitData {
     readonly error: ExecException;
@@ -62,15 +62,15 @@ export class CliImpl implements Cli {
             if (opts.shell === undefined) {
                 opts.shell = true;
             }
-            const tkn = childProcess.spawn(cmd.cliCommand, cmd.cliArguments, opts);
+            const tkn = spawn(cmd.cliCommand, cmd.cliArguments, opts);
             let stdout = '';
-            let stderr = '';
-            let error: Error;
+            const stderr = '';
+            let error;
             tkn.stdout.on('data', (data) => {
                 stdout += data;
             });
             tkn.stderr.on('data', (data) => {
-                stderr += data;
+                error += data;
             });
             tkn.on('error', err => {
                 // do not reject it here, because caller in some cases need the error and the streams
