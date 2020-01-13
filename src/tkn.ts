@@ -57,7 +57,7 @@ export enum ContextType {
     PIPELINERESOURCE = 'pipelineresource',
     TASKNODE = 'tasknode',
     CLUSTERTASKNODE = 'clustertasknode',
-    TKN_DOWN = 'tkn_down',
+    TKN_DOWN = 'tknDown',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -234,7 +234,7 @@ export class Command {
         return newTknCommand('taskrun', 'logs', name, '-f');
     }
 
-    static tknStatus() {
+    static tknStatus(): CliCommand {
         return newOcCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'oc', 'get', 'pipeline.tekton.dev' );
     }
 
@@ -292,7 +292,7 @@ export class TektonNodeImpl implements TektonNode {
             tooltip: 'Clustertask: {label}',
             getChildren: () => this.tkn.getTaskRunsforTasks(this)
         },
-        tkn_down: {
+        tknDown: {
             icon: 'tkn-down.png',
             tooltip: 'Cannot connect to the tekton',
             getChildren: () => []
@@ -531,15 +531,15 @@ export class TknImpl implements Tkn {
     }
 
     async getPipelineNodes(): Promise<TektonNode[]> {
-        const result: cliInstance.CliExitData = await this.execute(
+        const result: CliExitData = await this.execute(
             Command.tknStatus(), process.cwd(), false
         );
         if (result.stdout.trim() === 'no') {
-            const tknDownMsg: string = `The current user doesn't have the privileges to interact with tekton resources.` ;
+            const tknDownMsg = `The current user doesn't have the privileges to interact with tekton resources.`;
             return [new TektonNodeImpl(null, tknDownMsg, ContextType.TKN_DOWN, TknImpl.instance, TreeItemCollapsibleState.None)];
         }
         if (result.stderr.indexOf(`the server doesn't have a resource type "pipeline"`) > -1) {
-            const tknDownMsg: string = 'Please install the OpenShift Pipelines Operator.';
+            const tknDownMsg = 'Please install the OpenShift Pipelines Operator.';
             return [new TektonNodeImpl(null, tknDownMsg, ContextType.TKN_DOWN, TknImpl.instance, TreeItemCollapsibleState.None)];
         }
         if (!this.cache.has(TknImpl.ROOT)) {

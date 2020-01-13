@@ -9,6 +9,7 @@ import { CliImpl, createCliCommand } from '../src/cli';
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
+import * as assert from 'assert';
 import { ToolsConfig } from '../src/tools';
 import { WindowUtil } from '../src/util/windowUtils';
 import { StartPipelineObject, PipeResources, PipeParams } from '../src/tekton/pipeline';
