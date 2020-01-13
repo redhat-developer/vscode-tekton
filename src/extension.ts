@@ -15,6 +15,7 @@ import fsx = require('fs-extra');
 import * as k8s from 'vscode-kubernetes-tools-api';
 import { ClusterTask } from './tekton/clustertask';
 import { PipelineResource } from './tekton/pipelineresource';
+import { TektonNode } from './tkn';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -59,6 +60,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         // vscode.commands.registerCommand('tekton.taskrun.cancel', (context) => execute(TaskRun.cancel, context)),
         vscode.commands.registerCommand('tekton.taskrun.delete', (context) => execute(TaskRun.delete, context)),
         vscode.commands.registerCommand('tekton.explorer.reportIssue', () => PipelineExplorer.reportIssue()),
+        vscode.commands.registerCommand('_tekton.explorer.more', expandMoreItem),
         PipelineExplorer.getInstance()
     ];
     disposables.forEach((e) => context.subscriptions.push(e));
@@ -130,4 +132,9 @@ function migrateFromTkn018(): void {
         fsx.ensureDirSync(newCfgDir);
         fsx.copyFileSync(oldCfg, newCfg);
     }
+}
+
+function expandMoreItem(context: number, parent: TektonNode): void {
+        parent.visibleChildren += context;
+        PipelineExplorer.getInstance().refresh(parent);
 }

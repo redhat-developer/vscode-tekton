@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
- /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as tkn from '../src/tkn';
 import { CliImpl, createCliCommand } from '../src/cli';
 import * as sinon from 'sinon';
@@ -18,6 +18,7 @@ import jsYaml = require('js-yaml');
 import { TestItem } from './tekton/testTektonitem';
 import { ExecException } from 'child_process';
 import * as path from 'path';
+import { TektonNode } from '../src/tkn';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -373,6 +374,198 @@ suite("tkn", () => {
             expect(result).empty;
         });
 
+        test('getPipelineRuns returns list sorted newest first', async () => {
+            const tknPipelinesRuns = ['pipelinerun2', 'pipelinerun1'];
+            execStub.resolves({
+                error: null, stderr: '',
+                stdout: JSON.stringify({
+                    items: [
+                        {
+                            "kind": "PipelineRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "name": "pipelinerun1"
+                            },
+                            "spec": {
+                                "pipelineRef": {
+                                    "name": "pipeline1"
+                                }
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:00Z",
+                                "taskRuns": {
+                                }
+                            }
+                        },
+                        {
+                            "kind": "PipelineRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "name": "pipelinerun2"
+                            },
+                            "spec": {
+                                "pipelineRef": {
+                                    "name": "pipeline1"
+                                }
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:11Z",
+                                "taskRuns": {
+                                }
+                            }
+                        }]
+                })
+            });
+
+            const result = await tknCli.getPipelineRuns(pipelineItem1);
+            expect(result.length).equals(2);
+            for (let i = 0; i < result.length; i++) {
+                expect(result[i].getName()).equals(tknPipelinesRuns[i]);
+            }
+        });
+
+        test('getPipelineRuns returns "more" item', async () => {
+            const tknPipelinesRuns = ['pipelinerun2', 'more'];
+            sandbox.replace(tknCli as any, "defaultPageSize", 1);
+            const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', tkn.ContextType.PIPELINE);
+
+
+
+            execStub.resolves({
+                error: null, stderr: '',
+                stdout: JSON.stringify({
+                    items: [
+                        {
+                            "kind": "PipelineRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "name": "pipelinerun1"
+                            },
+                            "spec": {
+                                "pipelineRef": {
+                                    "name": "pipeline1"
+                                }
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:00Z",
+                                "taskRuns": {
+                                }
+                            }
+                        },
+                        {
+                            "kind": "PipelineRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "name": "pipelinerun2"
+                            },
+                            "spec": {
+                                "pipelineRef": {
+                                    "name": "pipeline1"
+                                }
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:11Z",
+                                "taskRuns": {
+                                }
+                            }
+                        }]
+                })
+            });
+
+
+
+            const result = await tknCli.getPipelineRuns(pipelineItem1);
+            expect(result.length).equals(2);
+            for (let i = 0; i < result.length; i++) {
+                expect(result[i].getName()).equals(tknPipelinesRuns[i]);
+            }
+        });
+
+        test('getPipelineRuns set visible item default', async () => {
+            const tknPipelinesRuns = ['pipelinerun2', 'more'];
+            sandbox.replace(tknCli as any, "defaultPageSize", 42);
+            const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', tkn.ContextType.PIPELINE);
+
+
+
+            execStub.resolves({
+                error: null, stderr: '',
+                stdout: JSON.stringify({
+                    items: [
+                        {
+                            "kind": "PipelineRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "name": "pipelinerun1"
+                            },
+                            "spec": {
+                                "pipelineRef": {
+                                    "name": "pipeline1"
+                                }
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:00Z",
+                                "taskRuns": {
+                                }
+                            }
+                        },
+                        {
+                            "kind": "PipelineRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "name": "pipelinerun2"
+                            },
+                            "spec": {
+                                "pipelineRef": {
+                                    "name": "pipeline1"
+                                }
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:11Z",
+                                "taskRuns": {
+                                }
+                            }
+                        }]
+                })
+            });
+
+
+
+            const result = await tknCli.getPipelineRuns(pipelineItem1);
+            expect(result.length).equals(2);
+            expect((pipelineItem1 as TektonNode).visibleChildren).to.equals(42);
+        });
+
         test('getTaskRun returns taskrun list for a pipelinerun', async () => {
             execStub.resolves({
                 error: null, stderr: '', stdout: JSON.stringify({
@@ -429,11 +622,11 @@ suite("tkn", () => {
             const result = await tknCli.getTaskRuns(pipelinerunItem);
 
             expect(result.length).equals(2);
-            expect(result[0].getName()).equals('taskrun2');
+            expect(result[0].getName()).equals('taskrun1');
         });
 
         test('getTaskruns returns taskruns for a pipelinerun', async () => {
-            const tknTaskRuns = ['taskrun2', 'taskrun1'];
+            const tknTaskRuns = ['taskrun1', 'taskrun2'];
             execStub.resolves({
                 error: null, stderr: '', stdout: JSON.stringify({
                     "items": [
@@ -560,11 +753,11 @@ suite("tkn", () => {
             const result = await tknCli.getTaskRunsforTasks(taskItem);
 
             expect(result.length).equals(2);
-            expect(result[0].getName()).equals('taskrun2');
+            expect(result[0].getName()).equals('taskrun1');
         });
 
         test('getTaskrunsFromTasks returns taskruns for a task', async () => {
-            const tknTaskRuns = ['taskrun2', 'taskrun1'];
+            const tknTaskRuns = ['taskrun1', 'taskrun2'];
             execStub.resolves({
                 error: null, stderr: '', stdout: JSON.stringify({
                     "items": [
@@ -693,11 +886,11 @@ suite("tkn", () => {
             const result = await tknCli.getTaskRunsforTasks(clustertaskItem);
 
             expect(result.length).equals(2);
-            expect(result[0].getName()).equals('taskrun2');
+            expect(result[0].getName()).equals('taskrun1');
         });
 
         test('getTaskrunsFromTasks returns taskruns for a clustertask', async () => {
-            const tknTaskRuns = ['taskrun2', 'taskrun1'];
+            const tknTaskRuns = ['taskrun1', 'taskrun2'];
             execStub.resolves({
                 error: null, stderr: '', stdout: JSON.stringify({
                     "items": [
@@ -804,6 +997,33 @@ suite("tkn", () => {
             execStub.onFirstCall().resolves({ error: undefined, stdout: '', stderr: 'error: the server doesn\'t have a resource type "pipeline"' });
             const result = await tknCli.getPipelineNodes();
             assert.equal(result[0].getName(), "Please install the OpenShift Pipelines Operator.");
+        });
+    });
+
+    suite('mode node', () => {
+        const pipelineNodeItem = new TestItem(tkn.TknImpl.ROOT, 'pipelinenode', tkn.ContextType.PIPELINENODE);
+        const pipelineItem = new TestItem(pipelineNodeItem, 'pipeline1', tkn.ContextType.PIPELINE);
+
+        test('more node has command', () => {
+            const more = new tkn.MoreNode(4, 10, pipelineItem);
+            const moreCommand = more.command;
+            assert.equal(moreCommand.command, '_tekton.explorer.more');
+        });
+
+        test('more node has command arguments', () => {
+            const more = new tkn.MoreNode(4, 10, pipelineItem);
+            const moreCommand = more.command;
+            assert.deepEqual(moreCommand.arguments, [4, pipelineItem, more]);
+        });
+
+        test('more node has name', () => {
+            const more = new tkn.MoreNode(4, 10, pipelineItem);
+            assert.equal(more.getName(), 'more');
+        });
+
+        test('more node has description', () => {
+            const more = new tkn.MoreNode(4, 10, pipelineItem);
+            assert.equal(more.description, '4 from 10');
         });
     });
 });
