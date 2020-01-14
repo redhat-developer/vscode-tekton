@@ -4,6 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as tkn from '../src/tkn';
 import { CliImpl, createCliCommand } from '../src/cli';
 import * as sinon from 'sinon';

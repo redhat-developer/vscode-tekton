@@ -545,12 +545,6 @@ function compareNodes(a, b): number {
     return t ? t : a.label.localeCompare(b.label);
 }
 
-function compareTime(a, b): number {
-    const aTime = Date.parse(a.creationTime);
-    const bTime = Date.parse(b.creationTime);
-    return aTime < bTime ? -1 : 1;
-}
-
 function compareTimeNewestFirst(a: TektonNode, b: TektonNode): number {
     const aTime = Date.parse(a.creationTime);
     const bTime = Date.parse(b.creationTime);
