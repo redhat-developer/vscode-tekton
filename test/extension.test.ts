@@ -135,4 +135,11 @@ suite("Tekton Pipeline Extension", async () => {
         await vscode.commands.executeCommand("tekton.explorer.refresh");
         expect(semStub).calledWith(error);
     });
+
+    test('more command should call refresh on parent item', async () => {
+        const refreshStub = sandbox.stub(PipelineExplorer.prototype, 'refresh'); 
+        const parentItem = sandbox.mock(pipelineItem);
+        await vscode.commands.executeCommand('_tekton.explorer.more', 42, parentItem);
+        expect(refreshStub).calledWith(parentItem);
+    });
 });
