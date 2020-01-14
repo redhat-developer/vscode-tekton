@@ -236,7 +236,7 @@ export class Command {
     }
 
     static tknStatus(): CliCommand {
-        return newOcCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'oc', 'get', 'pipeline.tekton.dev' );
+        return newOcCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'oc', 'get', 'pipeline.tekton.dev');
     }
 
 }
@@ -555,6 +555,7 @@ export class TknImpl implements Tkn {
 
     public static ROOT: TektonNode = new TektonNodeImpl(undefined, 'root', undefined, undefined);
     private cache: Map<TektonNode, TektonNode[]> = new Map();
+    private taskRunCache: PipelineTaskRunData[] | undefined;
     private static cli: Cli = CliImpl.getInstance();
     private static instance: Tkn;
     // Get page size from configuration, in case configuration is not present(dev mode) use hard coded value
@@ -697,17 +698,26 @@ export class TknImpl implements Tkn {
     }
 
     async _getTaskRuns(pipelinerun: TektonNode): Promise<TektonNode[]> {
-        const result = await this.execute(Command.listTaskRuns());
-        if (result.stderr) {
-            console.log(result + " Std.err when processing pipelines");
-            return [new TektonNodeImpl(pipelinerun, result.stderr, ContextType.TASKRUN, this, TreeItemCollapsibleState.Expanded)];
-        }
         let data: PipelineTaskRunData[] = [];
-        try {
-            data = JSON.parse(result.stdout).items;
-            // eslint-disable-next-line no-empty
-        } catch (ignore) {
+
+        if (this.taskRunCache) {
+            data = this.taskRunCache;
+        } else {
+            const result = await this.execute(Command.listTaskRuns());
+            if (result.stderr) {
+                console.log(result + " Std.err when processing pipelines");
+                return [new TektonNodeImpl(pipelinerun, result.stderr, ContextType.TASKRUN, this, TreeItemCollapsibleState.Expanded)];
+            }
+
+            try {
+                data = JSON.parse(result.stdout).items;
+                // eslint-disable-next-line no-empty
+            } catch (ignore) {
+            }
+
+            this.taskRunCache = data;
         }
+
 
         return data
             .filter((value) => value.metadata.labels["tekton.dev/pipelineRun"] === pipelinerun.getName())
@@ -839,5 +849,6 @@ export class TknImpl implements Tkn {
 
     clearCache(): void {
         this.cache.clear();
+        this.taskRunCache = undefined;
     }
 }

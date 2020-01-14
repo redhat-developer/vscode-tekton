@@ -626,6 +626,71 @@ suite("tkn", () => {
             expect(result[0].getName()).equals('taskrun1');
         });
 
+        test('getTaskRun returns taskrun list for a pipelinerun using cache', async () => {
+            execStub.resolves({
+                error: null, stderr: '', stdout: JSON.stringify({
+                    "items": [
+                        {
+                            "kind": "TaskRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "creationTimestamp": "2019-07-25T12:03:01Z",
+                                "name": "taskrun1",
+                                "ownerReferences": [{
+                                    "kind": "PipelineRun",
+                                    "name": "pipelinerun1"
+                                }],
+                                "labels": {
+                                    "tekton.dev/pipelineRun": "pipelinerun1"
+                                }
+
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:01Z",
+                            }
+                        },
+                        {
+                            "kind": "TaskRun",
+                            "apiVersion": "tekton.dev/v1alpha1",
+                            "metadata": {
+                                "creationTimestamp": "2019-07-25T12:03:00Z",
+                                "name": "taskrun2",
+                                "ownerReferences": [{
+                                    "kind": "PipelineRun",
+                                    "name": "pipelinerun1"
+                                }],
+                                "labels": {
+                                    "tekton.dev/pipelineRun": "pipelinerun1"
+                                }
+                            },
+                            "status": {
+                                "conditions": [
+                                    {
+                                        "status": "True",
+                                    }
+                                ],
+                                "startTime": "2019-07-25T12:03:00Z",
+                            }
+                        }]
+                })
+            });
+            const result = await tknCli.getTaskRuns(pipelinerunItem);
+
+            expect(result.length).equals(2);
+            expect(result[0].getName()).equals('taskrun1');
+
+            const result2 = await tknCli.getTaskRuns(pipelinerunItem);
+
+            expect(execStub.calledOnce).to.be.true;
+            expect(result2.length).equals(2);
+            expect(result2[0].getName()).equals('taskrun1');
+        });
+
         test('getTaskruns returns taskruns for a pipelinerun', async () => {
             const tknTaskRuns = ['taskrun1', 'taskrun2'];
             execStub.resolves({
