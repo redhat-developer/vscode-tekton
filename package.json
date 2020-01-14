@@ -537,19 +537,25 @@
           "vs-tekton.tkn-path": "",
           "vs-tekton.tknVersioning": "user-provided",
           "vs-kubernetes.outputFormat": "yaml"
+        },
+        "vs-tekton.showChannelOutput": {
+          "title": "Show channel on output",
+          "type": "boolean",
+          "default": "false",
+          "description": "Show Tekton Pipeline output channel when new text added to output stream"
+        },
+        "vs-tekton.outputVerbosityLevel": {
+          "title": "Output Verbosity Level",
+          "type": "number",
+          "default": 0,
+          "description": "Output verbosity level (value between 0 and 9) for Tekton Pipeline Start, Push and Watch commands in output channel and integrated terminal."
+        },
+        "vs-tekton.treePaginationLimit": {
+          "title": "Tree items pagination limit",
+          "type": "number",
+          "default": 5,
+          "description": "Tree pagination limit for some tekton related nodes(pipeline runs/task runs)"
         }
-      },
-      "vs-tekton.showChannelOutput": {
-        "title": "Show channel on output",
-        "type": "boolean",
-        "default": "false",
-        "description": "Show Tekton Pipeline output channel when new text added to output stream"
-      },
-      "vs-tekton.outputVerbosityLevel": {
-        "title": "Output Verbosity Level",
-        "type": "number",
-        "default": 0,
-        "description": "Output verbosity level (value between 0 and 9) for Tekton Pipeline Start, Push and Watch commands in output channel and integrated terminal."
       }
     }
   },

@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { CliCommand, CliExitData, Cli, CliImpl, createCliCommand, cliCommandToString } from './cli';
-import { ProviderResult, TreeItemCollapsibleState, Terminal, Uri, QuickPickItem, workspace } from 'vscode';
+import { ProviderResult, TreeItemCollapsibleState, Terminal, Uri, QuickPickItem, workspace, Command as vsCommand, TreeItem } from 'vscode';
 import { WindowUtil } from './util/windowUtils';
 import * as path from 'path';
 import { ToolsConfig } from './tools';
@@ -41,6 +41,7 @@ export interface TektonNode extends QuickPickItem {
     contextValue: string;
     creationTime?: string;
     state?: string;
+    visibleChildren?: number;
     getChildren(): ProviderResult<TektonNode[]>;
     getParent(): TektonNode;
     getName(): string;
@@ -478,6 +479,45 @@ export class PipelineRun extends TektonNodeImpl {
     }
 }
 
+export class MoreNode extends TreeItem implements TektonNode {
+    contextValue: string;
+    creationTime?: string;
+    state?: string;
+    detail?: string;
+    picked?: boolean;
+    alwaysShow?: boolean;
+    label: string;
+
+    constructor(private showNext: number,
+        private totalCount: number,
+        private parent: TektonNode) {
+        super(`more`, TreeItemCollapsibleState.None);
+    }
+
+    get command(): vsCommand {
+        return { command: '_tekton.explorer.more', title: `more ${this.showNext}`, arguments: [this.showNext, this.parent, this] };
+    }
+
+    get tooltip(): string {
+        return `${this.showNext} more from ${this.totalCount}`
+    }
+
+    get description(): string {
+        return `${this.showNext} from ${this.totalCount}`
+    }
+
+    getChildren(): ProviderResult<TektonNode[]> {
+        throw new Error("Method not implemented.");
+    }
+    getParent(): TektonNode {
+        return this.parent;
+    }
+    getName(): string {
+        return this.label;
+    }
+
+}
+
 export interface Tkn {
     getPipelineNodes(): Promise<TektonNode[]>;
     startPipeline(pipeline: StartPipelineObject): Promise<TektonNode[]>;
@@ -505,10 +545,10 @@ function compareNodes(a, b): number {
     return t ? t : a.label.localeCompare(b.label);
 }
 
-function compareTime(a, b): number {
+function compareTimeNewestFirst(a: TektonNode, b: TektonNode): number {
     const aTime = Date.parse(a.creationTime);
     const bTime = Date.parse(b.creationTime);
-    return aTime < bTime ? -1 : 1;
+    return aTime < bTime ? 1 : -1;
 }
 
 export class TknImpl implements Tkn {
@@ -517,10 +557,12 @@ export class TknImpl implements Tkn {
     private cache: Map<TektonNode, TektonNode[]> = new Map();
     private static cli: Cli = CliImpl.getInstance();
     private static instance: Tkn;
+    // Get page size from configuration, in case configuration is not present(dev mode) use hard coded value
+    defaultPageSize: number = workspace.getConfiguration('vs-tekton').has('treePaginationLimit') ? workspace.getConfiguration('vs-tekton').get('treePaginationLimit') : 5;
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    private constructor() { 
-        
+    private constructor() {
+
     }
 
     public static get Instance(): Tkn {
@@ -564,12 +606,24 @@ export class TknImpl implements Tkn {
     }
 
     async getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> {
+        if (!pipeline.visibleChildren) {
+            pipeline.visibleChildren = this.defaultPageSize;
+        }
         let pipelineRuns: TektonNode[] = this.cache.get(pipeline);
         if (!pipelineRuns) {
             pipelineRuns = await this._getPipelineRuns(pipeline);
             this.cache.set(pipeline, pipelineRuns);
         }
-        return pipelineRuns;
+
+        const currentRuns = pipelineRuns.slice(0, Math.min(pipeline.visibleChildren, pipelineRuns.length))
+        if (pipeline.visibleChildren < pipelineRuns.length) {
+            let nextPage = this.defaultPageSize;
+            if (pipeline.visibleChildren + this.defaultPageSize > pipelineRuns.length) {
+                nextPage = pipelineRuns.length - pipeline.visibleChildren;
+            }
+            currentRuns.push(new MoreNode(nextPage, pipelineRuns.length, pipeline));
+        }
+        return currentRuns;
     }
 
     async _getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> | undefined {
@@ -583,14 +637,14 @@ export class TknImpl implements Tkn {
         try {
             const r = JSON.parse(result.stdout);
             data = r.items ? r.items : data;
-        // eslint-disable-next-line no-empty
+            // eslint-disable-next-line no-empty
         } catch (ignore) {
         }
 
         return data
             .filter((value) => value.spec.pipelineRef.name === pipeline.getName())
             .map((value) => new PipelineRun(pipeline, value.metadata.name, this, value))
-            .sort(compareTime);
+            .sort(compareTimeNewestFirst);
     }
 
     public async getTaskRunsforTasks(task: TektonNode): Promise<TektonNode[]> {
@@ -611,22 +665,35 @@ export class TknImpl implements Tkn {
         let data: PipelineTaskRunData[] = [];
         try {
             data = JSON.parse(result.stdout).items;
-        // eslint-disable-next-line no-empty
+            // eslint-disable-next-line no-empty
         } catch (ignore) {
         }
         return data
             .filter((value) => value.spec.taskRef.name === task.getName())
             .map((value) => new TaskRun(task, value.metadata.name, this, value))
-            .sort(compareTime);
+            .sort(compareTimeNewestFirst);
     }
 
     async getTaskRuns(pipelineRun: TektonNode): Promise<TektonNode[]> {
+        if (!pipelineRun.visibleChildren) {
+            pipelineRun.visibleChildren = this.defaultPageSize;
+        }
+
         let taskRuns: TektonNode[] = this.cache.get(pipelineRun);
         if (!taskRuns) {
             taskRuns = await this._getTaskRuns(pipelineRun);
             this.cache.set(pipelineRun, taskRuns);
         }
-        return taskRuns;
+
+        const currentRuns = taskRuns.slice(0, Math.min(pipelineRun.visibleChildren, taskRuns.length))
+        if (pipelineRun.visibleChildren < taskRuns.length) {
+            let nextPage = this.defaultPageSize;
+            if (pipelineRun.visibleChildren + this.defaultPageSize > taskRuns.length) {
+                nextPage = taskRuns.length - pipelineRun.visibleChildren;
+            }
+            currentRuns.push(new MoreNode(nextPage, taskRuns.length, pipelineRun));
+        }
+        return currentRuns;
     }
 
     async _getTaskRuns(pipelinerun: TektonNode): Promise<TektonNode[]> {
@@ -638,14 +705,14 @@ export class TknImpl implements Tkn {
         let data: PipelineTaskRunData[] = [];
         try {
             data = JSON.parse(result.stdout).items;
-        // eslint-disable-next-line no-empty
+            // eslint-disable-next-line no-empty
         } catch (ignore) {
         }
 
         return data
             .filter((value) => value.metadata.labels["tekton.dev/pipelineRun"] === pipelinerun.getName())
             .map((value) => new TaskRun(pipelinerun, value.metadata.name, this, value))
-            .sort(compareTime);
+            .sort(compareTimeNewestFirst);
     }
 
     async getPipelines(pipeline: TektonNode): Promise<TektonNode[]> {
@@ -703,7 +770,7 @@ export class TknImpl implements Tkn {
         }
         try {
             data = JSON.parse(result.stdout).items;
-        // eslint-disable-next-line no-empty
+            // eslint-disable-next-line no-empty
         } catch (ignore) {
         }
         let tasks: string[] = data.map((value) => value.metadata.name);
@@ -720,7 +787,7 @@ export class TknImpl implements Tkn {
         try {
             const result = await this.execute(Command.listClusterTasks());
             data = JSON.parse(result.stdout).items;
-        // eslint-disable-next-line no-empty
+            // eslint-disable-next-line no-empty
         } catch (ignore) {
 
         }
@@ -734,7 +801,7 @@ export class TknImpl implements Tkn {
         let data: TknTask[] = [];
         try {
             data = JSON.parse(result.stdout).items;
-        // eslint-disable-next-line no-empty
+            // eslint-disable-next-line no-empty
         } catch (ignore) {
 
         }
