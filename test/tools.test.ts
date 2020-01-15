@@ -40,6 +40,15 @@ suite("tool configuration", () => {
             assert.equal(result, '0.2.0');
         });
 
+        test('returns version number with expected output when version number start with "v"', async () => {
+            const testData: CliExitData = { stdout: 'Client version: v0.2.0', stderr: '', error: undefined };
+            sb.stub(CliImpl.prototype, 'execute').resolves(testData);
+            sb.stub(fs, 'existsSync').returns(true);
+
+            const result: string = await ToolsConfig.getVersion('tkn');
+            assert.equal(result, '0.2.0');
+        });
+
         test('returns version undefined for unexpected output', async () => {
             const invalidData: CliExitData = { error: undefined, stderr: '', stdout: 'tknunexpected v0.1.2 (43e2a41) \n line two' };
             sb.stub(CliImpl.prototype, 'execute').resolves(invalidData);
