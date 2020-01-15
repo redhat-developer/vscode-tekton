@@ -121,7 +121,7 @@ export class ToolsConfig {
     public static async getVersion(location: string): Promise<string> {
         let detectedVersion: string;
         if (fs.existsSync(location)) {
-            const version = new RegExp(`^Client version:\\s([0-9]+\\.[0-9]+\\.[0-9]+)$`);
+            const version = new RegExp(`^Client version:\\s[v]?([0-9]+\\.[0-9]+\\.[0-9]+)$`);
             const result = await CliImpl.getInstance().execute(createCliCommand(`"${location}"`, 'version'));
             if (result.stdout) {
                 const toolVersion: string[] = result.stdout.trim().split('\n').filter((value) => {
