@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.0.3 (January 16, 2020)
+
+This is bug fix release:
+* Fixed check Tekton CLI when CLI has 'v' prefix in version
+* [#130](https://github.com/redhat-developer/vscode-tekton/issues/130) Update CLI not found error message
+
 ## 0.0.2 (January 15, 2020)
 
 This release brings to you:
