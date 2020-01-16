@@ -66,7 +66,7 @@ export class ToolsConfig {
 
                 if (response !== downgradeVersion) {
                     response = await vscode.window.showInformationMessage(
-                        `Cannot find ${ToolsConfig.tool['tkn'].description} ${ToolsConfig.tool['tkn'].versionRangeLabel}.`, installRequest, 'Help', 'Cancel');
+                        `Cannot find Tekton CLI ${ToolsConfig.tool['tkn'].versionRangeLabel} for interacting with Tekton Pipelines.`, installRequest, 'Help', 'Cancel');
                 }
                 fsex.ensureDirSync(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
                 if (response === installRequest || response === downgradeVersion) {
