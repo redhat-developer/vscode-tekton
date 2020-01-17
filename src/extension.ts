@@ -39,6 +39,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         vscode.commands.registerCommand('tekton.pipeline.delete', (context) => execute(Pipeline.delete, context)),
         vscode.commands.registerCommand('tekton.pipelineresource.list', (context) => execute(PipelineResource.list, context)),
         vscode.commands.registerCommand('tekton.pipelineresource.create', (context) => execute(PipelineResource.create, context)),
+        vscode.commands.registerCommand('tekton.pipelineresource.create.palette', (context) => execute(PipelineResource.create, context)),
         vscode.commands.registerCommand('tekton.pipelineresource.describe', (context) => execute(PipelineResource.describe, context)),
         vscode.commands.registerCommand('tekton.pipelineresource.delete', (context) => execute(PipelineResource.delete, context)),
         //vscode.commands.registerCommand('tekton.pipelinerun.restart', (context) => execute(PipelineRun.restart, context)),

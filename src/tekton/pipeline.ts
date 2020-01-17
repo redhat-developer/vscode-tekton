@@ -49,7 +49,7 @@ export class Pipeline extends TektonItem {
         if (pipeline) {
             const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.listPipelines(), process.cwd(), false);
             let data: TknPipelineTrigger[] = [];
-            if (result.stderr) {
+            if (result.error) {
                 console.log(result + " Std.err when processing pipelines");
             }
             try {

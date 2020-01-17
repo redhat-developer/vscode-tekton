@@ -41,9 +41,8 @@ suite('Tekton Application Explorer', () => {
 
     test('delegate calls to TektonObject instance', async () => {
         sandbox.stub(TknImpl.prototype, 'execute').resolves({
-            error: undefined,
-            stdout: '',
-            stderr: ''
+            error: '',
+            stdout: ''
         });
         tektonInstance = PipelineExplorer.getInstance();
         pipelineNode.getChildren().push(pipelineItem);

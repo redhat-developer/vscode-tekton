@@ -52,7 +52,7 @@ suite('Cli', () => {
         const result = await p;
 
         expect(spawnStub).calledWith(command.cliCommand, command.cliArguments, options);
-        expect(result).deep.equals({ error: undefined, stdout: stdout, stderr: '' });
+        expect(result).deep.equals({ error: undefined, stdout: stdout });
     });
 
     test('execute passes errors into its exit data', async () => {
@@ -63,7 +63,7 @@ suite('Cli', () => {
         procMock.emit('close', 1);
         const result = await p;
 
-        expect(result).deep.equals({ error: error, stdout: stdout, stderr: '' });
+        expect(result).deep.equals({ error: error, stdout: stdout });
     });
 
     test('cli command to string function', () => {

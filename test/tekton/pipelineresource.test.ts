@@ -48,7 +48,7 @@ suite('Tekton/PipelineResource', () => {
 
     setup(() => {
         sandbox = sinon.createSandbox();
-        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
+        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '' });
         sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([pipelineresourceItem]);
         getPipelineNamesStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
         sandbox.stub(window, 'showInputBox');
@@ -73,7 +73,6 @@ suite('Tekton/PipelineResource', () => {
         test('Save the file if user click on Save button', async () => {
             execStub.resolves({
                 error: undefined,
-                stderr: '',
                 stdout: "text"
             });
             sandbox.stub(window, 'showInformationMessage').resolves('Save');
@@ -104,7 +103,6 @@ suite('Tekton/PipelineResource', () => {
         test('Creates an tekton PipelineResources using .yaml file location from an active editor', async () => {
             execStub.resolves({
                 error: undefined,
-                stderr: '',
                 stdout: "text"
             });
             sandbox.stub(window, "activeTextEditor").value(TextEditorMock);
@@ -113,7 +111,7 @@ suite('Tekton/PipelineResource', () => {
         });
     
         test('errors when fail too create resource', async () => {
-            let savedErr: any;
+            let savedErr: Error;
             execStub.rejects(errorMessage);
             sandbox.stub(window, "activeTextEditor").value(TextEditorMock);
             try {
@@ -219,7 +217,7 @@ suite('Tekton/PipelineResource', () => {
             test('throws an error message when command failed', async () => {
                 warnStub.resolves('Yes');
                 execStub.rejects('ERROR');
-                let expectedError: any;
+                let expectedError: Error;
                 try {
                     await PipelineResource.delete(pipelineresourceItem);
                 } catch (err) {

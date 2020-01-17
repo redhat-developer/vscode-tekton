@@ -4,13 +4,12 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { ExecException, SpawnOptions, spawn } from 'child_process';
+import { SpawnOptions, spawn } from 'child_process';
 
 
 export interface CliExitData {
-    readonly error: ExecException;
+    readonly error: string | Error;
     readonly stdout: string;
-    readonly stderr: string;
 }
 
 export interface Cli {
@@ -64,8 +63,7 @@ export class CliImpl implements Cli {
             }
             const tkn = spawn(cmd.cliCommand, cmd.cliArguments, opts);
             let stdout = '';
-            const stderr = '';
-            let error;
+            let error: string | Error;
             tkn.stdout.on('data', (data) => {
                 stdout += data;
             });
@@ -78,7 +76,7 @@ export class CliImpl implements Cli {
                 error = err;
             });
             tkn.on('close', () => {
-                resolve({ error, stdout, stderr });
+                resolve({ error, stdout });
             });
         });
     }

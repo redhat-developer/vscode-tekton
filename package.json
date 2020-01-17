@@ -36,6 +36,7 @@
     "onCommand:tekton.pipelineresource.list",
     "onCommand:tekton.pipelineresource.describe",
     "onCommand:tekton.pipelineresource.create",
+    "onCommand:tekton.pipelineresource.create.palette",
     "onCommand:tekton.pipelineresrouce.delete",
     "onCommand:tekton.task.start",
     "onCommand:tekton.task.list",
@@ -113,6 +114,11 @@
       {
         "command": "tekton.pipelineresource.create",
         "title": "Create",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipelineresource.create.palette",
+        "title": "Create Pipeline Resource",
         "category": "Tekton"
       },
       {
@@ -274,6 +280,10 @@
         },
         {
           "command": "tekton.pipelineresource.list",
+          "when": "view == tektonPipelineExplorer"
+        },
+        {
+          "command": "tekton.pipelineresource.create",
           "when": "view == tektonPipelineExplorer"
         },
         {
