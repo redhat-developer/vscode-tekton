@@ -68,10 +68,10 @@ export class Pipeline extends TektonItem {
             });
             const inputStartPipeline = await Pipeline.startPipelineObject(pipelinetrigger);
 
-            return Progress.execFunctionWithProgress(`Creating the Pipeline '${inputStartPipeline.name}'.`, () =>
+            return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
                 Pipeline.tkn.startPipeline(inputStartPipeline)
-                    .then(() => `Pipeline '${inputStartPipeline.name}' successfully created`)
-                    .catch((error) => Promise.reject(`Failed to create Pipeline with error '${error}'`))
+                    .then(() => `Pipeline '${inputStartPipeline.name}' successfully started`)
+                    .catch((error) => Promise.reject(`Failed to start Pipeline with error '${error}'`))
             );
         }
         return null;
@@ -234,7 +234,6 @@ export class Pipeline extends TektonItem {
         }
 
         await collectInputs();
-        window.showInformationMessage(`Creating Pipeline '${inputStartPipeline.name}'`);
         return inputStartPipeline;
 
     }
