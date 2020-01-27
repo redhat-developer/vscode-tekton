@@ -465,7 +465,7 @@ export class PipelineRun extends TektonNodeImpl {
     }
 
     get label(): string {
-        return this.name.substr(this.generateName.length);
+        return this.name;
     }
 
     get description(): string {
