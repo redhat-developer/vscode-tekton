@@ -560,7 +560,8 @@
     }
   },
   "extensionDependencies": [
-    "ms-kubernetes-tools.vscode-kubernetes-tools"
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+    "redhat.vscode-yaml"
   ],
   "scripts": {
     "verify": "node ./out/build/verify-tools.js",
@@ -626,7 +627,9 @@
     "hasha": "5.0.0",
     "humanize-duration": "^3.21.0",
     "js-yaml": "^3.13.1",
+    "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
+    "node-yaml-parser": "0.0.9",
     "open": "^6.4.0",
     "pluralize": "^4.0.0",
     "request": "^2.88.0",

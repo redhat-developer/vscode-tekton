@@ -236,7 +236,7 @@ export class Command {
     }
 
     static tknStatus(): CliCommand {
-        return newOcCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'oc', 'get', 'pipeline.tekton.dev' );
+        return newOcCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'oc', 'get', 'pipeline.tekton.dev');
     }
 
 }
@@ -526,8 +526,10 @@ export interface Tkn {
     getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]>;
     getPipelineResources(pipelineResources: TektonNode): Promise<TektonNode[]>;
     getTasks(task: TektonNode): Promise<TektonNode[]>;
+    getRawTasks(): Promise<TknTask[]>;
     getTaskRuns(taskRun: TektonNode): Promise<TektonNode[]>;
     getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]>;
+    getRawClusterTasks(): Promise<TknTask[]>;
     execute(command: CliCommand, cwd?: string, fail?: boolean): Promise<CliExitData>;
     executeInTerminal(command: CliCommand, cwd?: string): void;
     getTaskRunsforTasks(task: TektonNode): Promise<TektonNode[]>;
@@ -778,6 +780,22 @@ export class TknImpl implements Tkn {
         return tasks.map<TektonNode>((value) => new TektonNodeImpl(task, value, ContextType.TASK, this, TreeItemCollapsibleState.Collapsed)).sort(compareNodes);
     }
 
+    async getRawTasks(): Promise<TknTask[]> {
+        let data: TknTask[] = [];
+        const result = await this.execute(Command.listTasks());
+        if (result.stderr) {
+            console.log(result + "Std.err when processing tasks");
+            return data;
+        }
+        try {
+            data = JSON.parse(result.stdout).items;
+            // eslint-disable-next-line no-empty
+        } catch (ignore) {
+        }
+
+        return data;
+    }
+
     async getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]> {
         return (await this._getClusterTasks(clustertask));
     }
@@ -794,6 +812,22 @@ export class TknImpl implements Tkn {
         let tasks: string[] = data.map((value) => value.metadata.name);
         tasks = [...new Set(tasks)];
         return tasks.map<TektonNode>((value) => new TektonNodeImpl(clustertask, value, ContextType.CLUSTERTASK, this, TreeItemCollapsibleState.Collapsed)).sort(compareNodes);
+    }
+
+    async getRawClusterTasks(): Promise<TknTask[]> {
+        let data: TknTask[] = [];
+        const result = await this.execute(Command.listClusterTasks());
+        if (result.stderr) {
+            console.log(result + "Std.err when processing tasks");
+            return data;
+        }
+        try {
+            data = JSON.parse(result.stdout).items;
+            // eslint-disable-next-line no-empty
+        } catch (ignore) {
+        }
+
+        return data;
     }
 
     async startPipeline(pipeline: StartPipelineObject): Promise<TektonNode[]> {

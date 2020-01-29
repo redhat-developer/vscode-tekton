@@ -33,8 +33,34 @@ export interface TknSpec {
 }
 
 export interface TknTaskSpec {
-    inputs: {};
+    inputs?: TknInputs;
+    outputs?: TknOutputs;
     steps: [];
+}
+
+export interface ParamSpec {
+    name: string;
+    type?: string;
+    description?: string;
+    default?: string | string[];
+}
+
+export interface TknInputs {
+    resources?: TaskResource[];
+    params?: ParamSpec[];
+}
+
+export interface TknOutputs {
+    results?: {};
+    resources?: TaskResource[];
+}
+
+export interface TaskResource {
+    name: string;
+    type: string;
+    description?: string;
+    targetPath?: string;
+    optional?: boolean;
 }
 
 
@@ -49,6 +75,7 @@ export interface TknPipelineResource {
 }
 
 export interface TknTask {
+    kind: string;
     metadata: TknMetadata;
     spec: TknTaskSpec;
 }
