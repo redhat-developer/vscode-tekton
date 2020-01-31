@@ -978,6 +978,62 @@ suite("tkn", () => {
 
             expect(result[0].getName()).deep.equals('taskrun1');
         });
+
+        test('getRawClusterTasks returns items from tkn task list command', async () => {
+            const tknTasks = ['clustertask1', 'clustertask2'];
+            execStub.resolves({
+                error: null, stderr: '', stdout: JSON.stringify({
+                    "items": [{
+                        "kind": "ClusterTask",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "clustertask1"
+                        }
+                    }, {
+                        "kind": "Task",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "clustertask2"
+                        }
+                    }]
+                })
+            });
+            const result = await tknCli.getRawClusterTasks();
+
+            expect(execStub).calledOnceWith(tkn.Command.listClusterTasks());
+            expect(result.length).equals(2);
+            for (let i = 1; i < result.length; i++) {
+                expect(result[i].metadata.name).equals(tknTasks[i]);
+            }
+        });
+
+        test('getRawTasks returns items from tkn task list command', async () => {
+            const tknTasks = ['clustertask1', 'clustertask2'];
+            execStub.resolves({
+                error: null, stderr: '', stdout: JSON.stringify({
+                    "items": [{
+                        "kind": "ClusterTask",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "clustertask1"
+                        }
+                    }, {
+                        "kind": "Task",
+                        "apiVersion": "tekton.dev/v1alpha1",
+                        "metadata": {
+                            "name": "clustertask2"
+                        }
+                    }]
+                })
+            });
+            const result = await tknCli.getRawTasks();
+
+            expect(execStub).calledOnceWith(tkn.Command.listTasks());
+            expect(result.length).equals(2);
+            for (let i = 1; i < result.length; i++) {
+                expect(result[i].metadata.name).equals(tknTasks[i]);
+            }
+        });
     });
 
     suite('getPipelineNodes', () => {

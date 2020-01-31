@@ -92,7 +92,7 @@ function convertTaskToSnippet(task: TknTask): TaskSnippet {
         result.taskRef.kind = task.kind;
 
     }
-    if (task.spec.inputs || task.spec.outputs) {
+    if (task.spec.inputs?.resources || task.spec.outputs?.resources) {
         result.resources = {};
     }
 
@@ -100,15 +100,16 @@ function convertTaskToSnippet(task: TknTask): TaskSnippet {
         const params: Param[] = [];
         for (const rawParam of task.spec.inputs.params) {
             if (rawParam.default) {
-                continue
+                continue;
             }
             params.push({
                 name: rawParam.name,
                 value: '$' + placeHolder++
             });
         }
-
-        result.params = params;
+        if (params.length > 0) {
+            result.params = params;
+        }
     }
 
     if (task.spec.inputs) {

@@ -7,10 +7,10 @@
 
 export interface TknMetadata {
     name: string;
-    generation: number;
-    namespace: string;
-    uid: string;
-    resourceVersion: string;
+    generation?: number;
+    namespace?: string;
+    uid?: string;
+    resourceVersion?: string;
 }
 
 export interface TknParams {
@@ -35,7 +35,7 @@ export interface TknSpec {
 export interface TknTaskSpec {
     inputs?: TknInputs;
     outputs?: TknOutputs;
-    steps: [];
+    steps: Array;
 }
 
 export interface ParamSpec {
