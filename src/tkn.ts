@@ -237,7 +237,7 @@ export class Command {
         return newTknCommand('resource', 'create', '-f', yamlFile);
     }
     static tknStatus(): CliCommand {
-        return newOcCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'oc', 'get', 'pipeline.tekton.dev' );
+        return newOcCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'oc', 'get', 'pipeline.tekton.dev');
     }
 
 }
@@ -275,7 +275,7 @@ export class TektonNodeImpl implements TektonNode {
             getChildren: () => this.tkn.getPipelineRuns(this)
         },
         pipelinerun: {
-            icon: 'running.png',
+            icon: 'running.gif',
             tooltip: 'PipelineRun: {label}',
             getChildren: () => this.tkn.getTaskRuns(this)
         },
@@ -285,7 +285,7 @@ export class TektonNodeImpl implements TektonNode {
             getChildren: () => this.tkn.getTaskRunsforTasks(this)
         },
         taskrun: {
-            icon: 'running.png',
+            icon: 'running.gif',
             tooltip: 'TaskRun: {label}',
             getChildren: () => []
         },
@@ -313,7 +313,7 @@ export class TektonNodeImpl implements TektonNode {
 
     get iconPath(): Uri {
         if (this.state) {
-            let fileName = 'running.png';
+            let fileName = 'running.gif';
             if (this.state) {
                 switch (this.state) {
                     case "False": {

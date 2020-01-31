@@ -63,7 +63,7 @@ Development of the Tekton Pipelines Extension is largely following development o
 <div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/task.png" width="15" height="15" /><span style="margin: 20px">Task Node</span></div>
 <div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/clustertask.png" width="15" height="15" /><span style="margin: 20px">ClusterTask Node</span></div>
 <div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/pipe.png" width="15" height="15" /><span style="margin: 20px">PipelineResource Node</span></div>
-<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/running.png" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Running</span></div>
+<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/running.gif" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Running</span></div>
 <div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/success.png" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Successful Run</span></div>
 <div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/failed.png" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Failed Run</span></div>
 
