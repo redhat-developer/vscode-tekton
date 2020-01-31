@@ -3,14 +3,13 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import * as childProcess from 'child_process';
 import * as vscode from 'vscode';
-import { ExecException, SpawnOptions } from 'child_process';
+import { SpawnOptions, spawn } from 'child_process';
+
 
 export interface CliExitData {
-    readonly error: ExecException;
+    readonly error: string | Error;
     readonly stdout: string;
-    readonly stderr: string;
 }
 
 export interface Cli {
@@ -62,15 +61,14 @@ export class CliImpl implements Cli {
             if (opts.shell === undefined) {
                 opts.shell = true;
             }
-            const tkn = childProcess.spawn(cmd.cliCommand, cmd.cliArguments, opts);
+            const tkn = spawn(cmd.cliCommand, cmd.cliArguments, opts);
             let stdout = '';
-            let stderr = '';
-            let error: Error;
+            let error: string | Error;
             tkn.stdout.on('data', (data) => {
                 stdout += data;
             });
             tkn.stderr.on('data', (data) => {
-                stderr += data;
+                error += data;
             });
             tkn.on('error', err => {
                 // do not reject it here, because caller in some cases need the error and the streams
@@ -78,7 +76,7 @@ export class CliImpl implements Cli {
                 error = err;
             });
             tkn.on('close', () => {
-                resolve({ error, stdout, stderr });
+                resolve({ error, stdout });
             });
         });
     }

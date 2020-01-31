@@ -51,7 +51,7 @@ suite("tkn", () => {
         });
 
         test('execute calls the given command in shell', async () => {
-            const data = { stdout: 'done', stderr: '', error: null };
+            const data = { stdout: 'done', error: null };
             execStub.resolves(data);
             const result = await tknCli.execute(command);
 
@@ -61,7 +61,7 @@ suite("tkn", () => {
 
         test('execute calls command with its detected location', async () => {
             const toolPath = 'path/to/tool/tool';
-            execStub.resolves({ stdout: 'done', stderr: '', error: null });
+            execStub.resolves({ stdout: 'done', error: null });
             toolsStub.resolves(toolPath);
             await tknCli.execute(command);
             // eslint-disable-next-line require-atomic-updates
@@ -70,7 +70,7 @@ suite("tkn", () => {
         });
 
         test('execute allows to set its working directory', async () => {
-            execStub.resolves({ stdout: 'done', stderr: '', error: null });
+            execStub.resolves({ stdout: 'done', error: null });
             const cwd = 'path/to/some/dir';
             await tknCli.execute(command, cwd);
 
@@ -79,7 +79,7 @@ suite("tkn", () => {
 
         test('execute rejects if an error occurs in the shell command', async () => {
             const err: ExecException = { message: 'ERROR', name: 'err' };
-            execStub.resolves({ error: err, stdout: '', stderr: '' });
+            execStub.resolves({ error: err, stdout: '' });
             try {
                 await tknCli.execute(command);
                 expect.fail();
@@ -90,10 +90,10 @@ suite("tkn", () => {
 
         test('execute can be set to pass errors through exit data', async () => {
             const err: ExecException = { message: 'ERROR', name: 'err' };
-            execStub.resolves({ error: err, stdout: '', stderr: '' });
+            execStub.resolves({ error: err, stdout: '' });
             const result = await tknCli.execute(command, null, false);
 
-            expect(result).deep.equals({ error: err, stdout: '', stderr: '' });
+            expect(result).deep.equals({ error: err, stdout: '' });
         });
 
         test('executeInTerminal send command to terminal and shows it', async () => {
@@ -168,7 +168,7 @@ suite("tkn", () => {
                 serviceAccount: undefined
             };
             execStub.resolves({
-                error: null, stderr: '', stdout: JSON.stringify({
+                error: null, stdout: JSON.stringify({
                     "items": [{
                         "kind": "Pipeline",
                         "apiVersion": "tekton.dev/v1alpha1",
@@ -191,7 +191,7 @@ suite("tkn", () => {
         test('getPipelines returns items from tkn pipeline list command', async () => {
             const tknPipelines = ['pipeline1', 'pipeline2', 'pipeline3'];
             execStub.resolves({
-                error: null, stderr: '', stdout: JSON.stringify({
+                error: null, stdout: JSON.stringify({
                     "items": [{
                         "kind": "Pipeline",
                         "apiVersion": "tekton.dev/v1alpha1",
@@ -224,7 +224,7 @@ suite("tkn", () => {
 
         test('getPipelines returns empty list if tkn produces no output', async () => {
             sandbox.stub(tkn.TknImpl.prototype, "getPipelines").resolves([]);
-            execStub.resolves({ stdout: '', stderr: '', error: null });
+            execStub.resolves({ stdout: '', error: null });
             const result = await tknCli.getPipelines(pipelineNodeItem);
 
             // tslint:disable-next-line: no-unused-expression
@@ -234,7 +234,7 @@ suite("tkn", () => {
         test('getTasks returns items from tkn task list command', async () => {
             const tknTasks = ['task1', 'task2'];
             execStub.resolves({
-                error: null, stderr: '', stdout: JSON.stringify({
+                error: null, stdout: JSON.stringify({
                     "items": [{
                         "kind": "Task",
                         "apiVersion": "tekton.dev/v1alpha1",
@@ -261,7 +261,7 @@ suite("tkn", () => {
 
         test('getTasks returns empty list if tkn produces no output', async () => {
             sandbox.stub(tkn.TknImpl.prototype, "getTasks").resolves([]);
-            execStub.resolves({ stdout: '', stderr: '', error: null });
+            execStub.resolves({ stdout: '', error: null });
             const result = await tknCli.getTasks(taskNodeItem);
 
             // tslint:disable-next-line: no-unused-expression
@@ -271,7 +271,7 @@ suite("tkn", () => {
         test('getClusterTasks returns items from tkn task list command', async () => {
             const tknTasks = ['clustertask1', 'clustertask2'];
             execStub.resolves({
-                error: null, stderr: '', stdout: JSON.stringify({
+                error: null, stdout: JSON.stringify({
                     "items": [{
                         "kind": "ClusterTask",
                         "apiVersion": "tekton.dev/v1alpha1",
@@ -298,7 +298,7 @@ suite("tkn", () => {
 
         test('getClusterTasks returns empty list if tkn produces no output', async () => {
             sandbox.stub(tkn.TknImpl.prototype, "getClusterTasks").resolves([]);
-            execStub.resolves({ stdout: '', stderr: '', error: null });
+            execStub.resolves({ stdout: '', error: null });
             const result = await tknCli.getTasks(clustertaskNodeItem);
 
             // tslint:disable-next-line: no-unused-expression
@@ -308,7 +308,7 @@ suite("tkn", () => {
 
         test('getPipelineRuns returns pipelineruns for a pipeline', async () => {
             execStub.resolves({
-                error: null, stderr: '',
+                error: null,
                 stdout: JSON.stringify({
                     items: [
                         {
@@ -367,7 +367,6 @@ suite("tkn", () => {
                     items: []
                 }
                 ),
-                stderr: ''
             });
             const result = await tknCli.getPipelineRuns(pipelineNodeItem);
 
@@ -378,7 +377,7 @@ suite("tkn", () => {
         test('getPipelineRuns returns list sorted newest first', async () => {
             const tknPipelinesRuns = ['pipelinerun2', 'pipelinerun1'];
             execStub.resolves({
-                error: null, stderr: '',
+                error: null,
                 stdout: JSON.stringify({
                     items: [
                         {
@@ -443,7 +442,7 @@ suite("tkn", () => {
 
 
             execStub.resolves({
-                error: null, stderr: '',
+                error: null,
                 stdout: JSON.stringify({
                     items: [
                         {
@@ -510,7 +509,7 @@ suite("tkn", () => {
 
 
             execStub.resolves({
-                error: null, stderr: '',
+                error: null,
                 stdout: JSON.stringify({
                     items: [
                         {
@@ -569,7 +568,7 @@ suite("tkn", () => {
 
         test('getTaskRun returns taskrun list for a pipelinerun', async () => {
             execStub.resolves({
-                error: null, stderr: '', stdout: JSON.stringify({
+                error: null, stdout: JSON.stringify({
                     "items": [
                         {
                             "kind": "TaskRun",
@@ -629,7 +628,7 @@ suite("tkn", () => {
         test('getTaskruns returns taskruns for a pipelinerun', async () => {
             const tknTaskRuns = ['taskrun1', 'taskrun2'];
             execStub.resolves({
-                error: null, stderr: '', stdout: JSON.stringify({
+                error: null, stdout: JSON.stringify({
                     "items": [
                         {
                             "kind": "TaskRun",
@@ -689,7 +688,7 @@ suite("tkn", () => {
 
         test('getTaskruns returns an empty list if an error occurs', async () => {
             sandbox.stub(tkn.TknImpl.prototype, "getTaskRuns").resolves([]);
-            execStub.onFirstCall().resolves({ error: undefined, stdout: '', stderr: '' });
+            execStub.onFirstCall().resolves({ error: undefined, stdout: '' });
             execStub.onSecondCall().rejects(errorMessage);
             const result = await tknCli.getTaskRuns(pipelinerunItem);
 
@@ -699,7 +698,7 @@ suite("tkn", () => {
 
         test('getTaskRunFromTasks returns taskrun list for a task', async () => {
             execStub.resolves({
-                error: null, stderr: '', stdout: JSON.stringify({
+                error: null, stdout: JSON.stringify({
                     "items": [
                         {
                             "kind": "TaskRun",
@@ -760,7 +759,7 @@ suite("tkn", () => {
         test('getTaskrunsFromTasks returns taskruns for a task', async () => {
             const tknTaskRuns = ['taskrun1', 'taskrun2'];
             execStub.resolves({
-                error: null, stderr: '', stdout: JSON.stringify({
+                error: null, stdout: JSON.stringify({
                     "items": [
                         {
                             "kind": "TaskRun",
@@ -822,7 +821,7 @@ suite("tkn", () => {
 
         test('getTaskrunsFromTasks returns an empty list if an error occurs', async () => {
             sandbox.stub(tkn.TknImpl.prototype, "getTaskRunsforTasks").resolves([]);
-            execStub.onFirstCall().resolves({ error: undefined, stdout: '', stderr: '' });
+            execStub.onFirstCall().resolves({ error: undefined, stdout: '' });
             execStub.onSecondCall().rejects(errorMessage);
             const result = await tknCli.getTaskRunsforTasks(taskItem);
 
@@ -832,7 +831,7 @@ suite("tkn", () => {
 
         test('getTaskRunFromTasks returns taskrun list for a clustertask', async () => {
             execStub.resolves({
-                error: null, stderr: '', stdout: JSON.stringify({
+                error: null, stdout: JSON.stringify({
                     "items": [
                         {
                             "kind": "TaskRun",
@@ -893,7 +892,7 @@ suite("tkn", () => {
         test('getTaskrunsFromTasks returns taskruns for a clustertask', async () => {
             const tknTaskRuns = ['taskrun1', 'taskrun2'];
             execStub.resolves({
-                error: null, stderr: '', stdout: JSON.stringify({
+                error: null, stdout: JSON.stringify({
                     "items": [
                         {
                             "kind": "TaskRun",
@@ -970,9 +969,9 @@ suite("tkn", () => {
 
                         }
                     ]
-                }), stderr: ''
+                })
             });
-            execStub.onSecondCall().resolves({ error: undefined, stdout: 'serv', stderr: '' });
+            execStub.onSecondCall().resolves({ error: undefined, stdout: 'serv' });
             //TODO: Probably need a get children here
             const result = await tknCli.getTaskRuns(pipelinerunItem);
 
@@ -1045,13 +1044,13 @@ suite("tkn", () => {
         });
 
         test('show warning message if user doesn\'t have the privileges to interact with tekton resources', async () => {
-            execStub.onFirstCall().resolves({ error: undefined, stdout: 'no', stderr: '' });
+            execStub.onFirstCall().resolves({ error: undefined, stdout: 'no' });
             const result = await tknCli.getPipelineNodes();
             assert.equal(result[0].getName(), "The current user doesn't have the privileges to interact with tekton resources.");
         });
 
         test('show warning message if OpenShift pipelines operator is not installed', async () => {
-            execStub.onFirstCall().resolves({ error: undefined, stdout: '', stderr: 'error: the server doesn\'t have a resource type "pipeline"' });
+            execStub.onFirstCall().resolves({ error: 'error: the server doesn\'t have a resource type "pipeline"', stdout: '' });
             const result = await tknCli.getPipelineNodes();
             assert.equal(result[0].getName(), "Please install the OpenShift Pipelines Operator.");
         });

@@ -32,7 +32,7 @@ suite("tool configuration", () => {
 
     suite('getVersion()', () => {
         test('returns version number with expected output', async () => {
-            const testData: CliExitData = { stdout: 'Client version: 0.2.0', stderr: '', error: undefined };
+            const testData: CliExitData = { stdout: 'Client version: 0.2.0', error: undefined };
             sb.stub(CliImpl.prototype, 'execute').resolves(testData);
             sb.stub(fs, 'existsSync').returns(true);
 
@@ -41,7 +41,7 @@ suite("tool configuration", () => {
         });
 
         test('returns version number with expected output when version number start with "v"', async () => {
-            const testData: CliExitData = { stdout: 'Client version: v0.2.0', stderr: '', error: undefined };
+            const testData: CliExitData = { stdout: 'Client version: v0.2.0', error: undefined };
             sb.stub(CliImpl.prototype, 'execute').resolves(testData);
             sb.stub(fs, 'existsSync').returns(true);
 
@@ -50,7 +50,7 @@ suite("tool configuration", () => {
         });
 
         test('returns version undefined for unexpected output', async () => {
-            const invalidData: CliExitData = { error: undefined, stderr: '', stdout: 'tknunexpected v0.1.2 (43e2a41) \n line two' };
+            const invalidData: CliExitData = { error: undefined, stdout: 'tknunexpected v0.1.2 (43e2a41) \n line two' };
             sb.stub(CliImpl.prototype, 'execute').resolves(invalidData);
             sb.stub(fs, 'existsSync').returns(true);
 
@@ -59,7 +59,7 @@ suite("tool configuration", () => {
         });
 
         test('returns version undefined for not existing tool', async () => {
-            const invalidData: CliExitData = { error: undefined, stderr: '', stdout: 'tknunexpected v0.1.2 (43e2a41) \n line two' };
+            const invalidData: CliExitData = { error: undefined, stdout: 'tknunexpected v0.1.2 (43e2a41) \n line two' };
             sb.stub(CliImpl.prototype, 'execute').resolves(invalidData);
             sb.stub(fs, 'existsSync').returns(false);
 
@@ -68,7 +68,7 @@ suite("tool configuration", () => {
         });
 
         test('returns version undefined for tool that does not support version parameter', async () => {
-            const invalidData: CliExitData = { error: new Error('something bad happened'), stderr: '', stdout: 'tknunexpected v0.1.2 (43e2a41) \n line two' };
+            const invalidData: CliExitData = { error: new Error('something bad happened'), stdout: 'tknunexpected v0.1.2 (43e2a41) \n line two' };
             sb.stub(CliImpl.prototype, 'execute').resolves(invalidData);
             sb.stub(fs, 'existsSync').returns(true);
 

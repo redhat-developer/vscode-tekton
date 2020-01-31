@@ -5,7 +5,6 @@
 
 'use strict';
 
-import * as vscode from 'vscode';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
@@ -13,27 +12,115 @@ import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { PipelineResource } from '../../src/tekton/pipelineresource';
 import { TestItem } from './testTektonitem';
 import { TektonItem } from '../../src/tekton/tektonitem';
+import { window } from 'vscode';
 
 const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/PipelineResource', () => {
     let sandbox: sinon.SinonSandbox;
+    const errorMessage = 'FATAL ERROR';
     let execStub: sinon.SinonStub;
+    let warnStub: sinon.SinonStub<[string, import("vscode").MessageOptions, ...import("vscode").MessageItem[]], Thenable<import("vscode").MessageItem>>;
     let getPipelineNamesStub: sinon.SinonStub;
     const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
     const pipelineresourceItem = new TestItem(pipelineItem, 'pipelineresource', ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
 
+    const sampleYaml = `
+    # manifests.yaml
+    apiVersion: tekton.dev/v1alpha1
+    kind: PipelineResource
+    metadata:
+        name: api-repo
+    spec:
+        type: git
+    params: 
+        - name: url
+          value: http://github.com/openshift-pipelines/vote-api.git
+    `;
+
+    const TextEditorMock = {
+        document: {
+            fileName: "manifests.yaml",
+            getText: sinon.stub().returns(sampleYaml),
+        },
+    };
+
     setup(() => {
         sandbox = sinon.createSandbox();
-        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
+        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '' });
         sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([pipelineresourceItem]);
         getPipelineNamesStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
-        sandbox.stub(vscode.window, 'showInputBox');
+        sandbox.stub(window, 'showInputBox');
     });
 
     teardown(() => {
         sandbox.restore();
+    });
+
+    suite('create', async () => {
+
+        setup(async () => {
+            warnStub = sandbox.stub(window, 'showWarningMessage');
+        });
+
+
+        test('show warning message if file is not yaml', async () => {
+            await PipelineResource.create();
+            expect(warnStub).is.calledOnce;
+        });
+    
+        test('Save the file if user click on Save button', async () => {
+            execStub.resolves({
+                error: undefined,
+                stdout: "text"
+            });
+            sandbox.stub(window, 'showInformationMessage').resolves('Save');
+            sandbox.stub(window, "activeTextEditor").value({
+                document: {
+                    fileName: "manifests.yaml",
+                    isDirty: true,
+                    save: sinon.stub().returns(true)
+                },
+            });
+            const result = await PipelineResource.create();
+            expect(result).equals('PipelineResources were successfully created.');
+        });
+    
+        test('show warning message if file content is changed', async () => {
+            const infoMsg = sandbox.stub(window, 'showInformationMessage').resolves(undefined);
+            sandbox.stub(window, "activeTextEditor").value({
+                document: {
+                    fileName: "manifests.yaml",
+                    isDirty: true,
+                },
+            });
+            await PipelineResource.create();
+            expect(warnStub).is.calledOnce;
+            expect(infoMsg).is.calledOnce;
+        });
+    
+        test('Creates an tekton PipelineResources using .yaml file location from an active editor', async () => {
+            execStub.resolves({
+                error: undefined,
+                stdout: "text"
+            });
+            sandbox.stub(window, "activeTextEditor").value(TextEditorMock);
+            const result = await PipelineResource.create();
+            expect(result).equals('PipelineResources were successfully created.');
+        });
+    
+        test('errors when fail too create resource', async () => {
+            let savedErr: Error;
+            execStub.rejects(errorMessage);
+            sandbox.stub(window, "activeTextEditor").value(TextEditorMock);
+            try {
+                await PipelineResource.create();
+            } catch (err) {
+                savedErr = err;
+            }
+            expect(savedErr).equals(`Failed to Create PipelineResources with error: ${errorMessage}`);
+        });
     });
 
     suite('list command', async () => {
@@ -100,7 +187,7 @@ suite('Tekton/PipelineResource', () => {
             let warnStub: sinon.SinonStub;
 
             setup(() => {
-                warnStub = sandbox.stub(vscode.window, 'showWarningMessage');
+                warnStub = sandbox.stub(window, 'showWarningMessage');
             });
 
             test('calls the appropriate tkn command if confirmed', async () => {
@@ -130,7 +217,7 @@ suite('Tekton/PipelineResource', () => {
             test('throws an error message when command failed', async () => {
                 warnStub.resolves('Yes');
                 execStub.rejects('ERROR');
-                let expectedError;
+                let expectedError: Error;
                 try {
                     await PipelineResource.delete(pipelineresourceItem);
                 } catch (err) {

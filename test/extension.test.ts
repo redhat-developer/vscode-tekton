@@ -93,19 +93,19 @@ suite("Tekton Pipeline Extension", async () => {
     });
 
     test('should load pipeline, task, clustertasks and pipelineresources', async () => {
-        sandbox.stub(TknImpl.prototype, 'execute').resolves({error: undefined, stdout: '', stderr: ''});
+        sandbox.stub(TknImpl.prototype, 'execute').resolves({error: '', stdout: ''});
         const pipelinenodes = await TknImpl.Instance.getPipelineNodes();
         expect(pipelinenodes.length).is.equals(4);
     });
 
     test('should load pipelineruns from pipeline folder', async () => {
-        sandbox.stub(TknImpl.prototype, 'execute').resolves({error: undefined, stdout: '', stderr: ''});
+        sandbox.stub(TknImpl.prototype, 'execute').resolves({error: undefined, stdout: ''});
         const pipelinerun = await TknImpl.Instance.getPipelineRuns(pipelineItem);
         expect(pipelinerun.length).is.equals(1);
     });
 
     test('should load taskruns from pipelinerun folder', async () => {
-        sandbox.stub(TknImpl.prototype, 'execute').resolves({error: undefined, stdout: '', stderr: ''});
+        sandbox.stub(TknImpl.prototype, 'execute').resolves({error: undefined, stdout: ''});
         const taskrun = await TknImpl.Instance.getTaskRuns(pipelinerunItem);
         expect(taskrun.length).is.equals(1);
     });
