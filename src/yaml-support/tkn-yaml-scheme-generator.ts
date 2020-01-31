@@ -17,11 +17,13 @@ export function generateScheme(extContext: vscode.ExtensionContext, vsDocument: 
 }
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function injectTaskSnippets(templateObj: any, snippets: Snippet[]): {} {
     templateObj.definitions.PipelineSpec.properties.tasks.defaultSnippets = snippets;
     return templateObj;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function injectTasksName(templateObj: any, tasks: string[], tasksRef: string[]): {} {
     templateObj.definitions.PipelineTask.properties.runAfter.items.enum = tasks;
 
@@ -33,6 +35,7 @@ function injectTasksName(templateObj: any, tasks: string[], tasksRef: string[]):
     return templateObj;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function injectResourceName(templateObj: any, resNames: string[]): {} {
     if (resNames && resNames.length > 0) {
         templateObj.definitions.PipelineTaskInputResource.properties.resource.enum = resNames;

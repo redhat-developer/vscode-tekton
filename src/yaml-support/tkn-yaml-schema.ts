@@ -17,6 +17,7 @@ interface SchemaAdditions {
     action: MODIFICATION_ACTIONS.add;
     path: string;
     key: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     content: any;
 }
 
@@ -71,7 +72,9 @@ export async function registerYamlSchemaSupport(context: vscode.ExtensionContext
 
     //TODO: remove this!!!
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rcs = (yamlPlugin as any).requestCustomSchema.bind(yamlPlugin);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (yamlPlugin as any).requestCustomSchema = async (resource: string): Promise<string[]> => {
         const result: string[] = await rcs(resource);
         if (result.includes('kubernetes://schema/tekton.dev/v1alpha1@pipeline')) {
