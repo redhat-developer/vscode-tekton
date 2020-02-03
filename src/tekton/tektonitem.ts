@@ -5,6 +5,8 @@
 
 import { Tkn, TknImpl, TektonNode } from '../tkn';
 import { PipelineExplorer } from '../pipeline/pipelineExplorer';
+import { kubefsUri } from '../util/tektonresources.virtualfs';
+import { workspace, window } from 'vscode';
 
 const errorMessage = {
     Pipeline: 'You need at least one Pipeline available. Please create new Tekton Pipeline and try again.',
@@ -70,6 +72,21 @@ export abstract class TektonItem {
         const pipelineresourceList: Array<TektonNode> = await TektonItem.tkn.getPipelineResources(pipelineresource);
         if (pipelineresourceList.length === 0) { throw Error(errorMessage.PipelineResource); }
         return pipelineresourceList;
+    }
+
+    static loadTektonResource(namespace: string | null, value: string): void {
+        const outputFormat = TektonItem.getOutputFormat();
+        const uri = kubefsUri(namespace, value, outputFormat);
+        workspace.openTextDocument(uri).then((doc) => {
+            if (doc) {
+                window.showTextDocument(doc, 1, true);
+            }
+        },
+        (err) => window.showErrorMessage(`Error loading document: ${err}`));
+    }
+
+    static getOutputFormat(): string {
+        return workspace.getConfiguration('vs-tekton')['vs-tekton.outputFormat'];
     }
 }
 

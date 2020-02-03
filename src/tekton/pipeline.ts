@@ -238,6 +238,9 @@ export class Pipeline extends TektonItem {
 
     }
 
+    static load(pipeline: TektonNode): void {
+        Pipeline.loadTektonResource(null, `${pipeline.contextValue}/${pipeline.getName()}`);
+    }
 
     static async restart(pipeline: TektonNode): Promise<string> {
         if (pipeline) {

@@ -239,6 +239,9 @@ export class Command {
     static tknStatus(): CliCommand {
         return newOcCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'oc', 'get', 'pipeline.tekton.dev');
     }
+    static getYaml(outputFormat: string, value: string): CliCommand {
+        return newOcCommand('-o', outputFormat, 'get', value)
+    }
 
 }
 
