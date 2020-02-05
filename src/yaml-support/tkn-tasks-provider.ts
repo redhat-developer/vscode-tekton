@@ -99,12 +99,9 @@ function convertTaskToSnippet(task: TknTask): TaskSnippet {
     if (task.spec.inputs?.params) {
         const params: Param[] = [];
         for (const rawParam of task.spec.inputs.params) {
-            if (rawParam.default) {
-                continue;
-            }
             params.push({
                 name: rawParam.name,
-                value: '$' + placeHolder++
+                value: rawParam.default ? rawParam.default : '$' + placeHolder++
             });
         }
         if (params.length > 0) {

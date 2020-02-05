@@ -104,7 +104,7 @@ suite('Task provider', () => {
         }]);
     });
 
-    test('convertTasksToSnippet should not add params with default values', () => {
+    test('convertTasksToSnippet should add params with default values', () => {
         const result = taskProvider.convertTasksToSnippet([{
             "kind": "Task",
             metadata: {
@@ -123,7 +123,7 @@ suite('Task provider', () => {
         expect(result).to.eql([{
             label: 'CustomTask',
             description: 'Task',
-            body: { name: '$1', taskRef: { name: 'CustomTask' }, resources: { inputs: [{ name: 'barResource', resource: "$2" }] } }
+            body: { name: '$1', taskRef: { name: 'CustomTask' }, params: [{ name: 'fooParam', value: 'fooDefault' }], resources: { inputs: [{ name: 'barResource', resource: "$2" }] } }
         }]);
     });
 
@@ -137,7 +137,7 @@ suite('Task provider', () => {
                 steps: [],
                 inputs: {},
                 outputs: {
-                    resources: [{name: 'Foo', type: 'Bar'}],
+                    resources: [{ name: 'Foo', type: 'Bar' }],
                 }
             }
         }]);
