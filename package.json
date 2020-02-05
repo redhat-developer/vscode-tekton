@@ -24,7 +24,7 @@
     "onView:extension.vsKubernetesExplorer",
     "onCommand:tekton.pipeline.restart",
     "onCommand:tekton.pipeline.start",
-    "onCommand:tekton.pipeline.load",
+    "onCommand:tekton.openInEditor",
     "onCommand:tekton.pipeline.list",
     "onCommand:tekton.pipeline.describe",
     "onCommand:tekton.pipeline.delete",
@@ -148,8 +148,8 @@
         "category": "Tekton"
       },
       {
-        "command": "tekton.pipeline.load",
-        "title": "Load",
+        "command": "tekton.openInEditor",
+        "title": "Open In Editor",
         "category": "Tekton"
       },
       {
@@ -325,7 +325,7 @@
           "when": "view == tektonPipelineExplorer"
         },
         {
-          "command": "tekton.pipeline.load",
+          "command": "tekton.openInEditor",
           "when": "view == tektonPipelineExplorer"
         },
         {
@@ -451,11 +451,6 @@
           "command": "tekton.pipeline.start",
           "when": "view == tektonPipelineExplorer && viewItem == pipeline",
           "group": "c1@2"
-        },
-        {
-          "command": "tekton.pipeline.load",
-          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
-          "group": "c1@3"
         },
         {
           "command": "tekton.pipeline.list",
@@ -591,6 +586,36 @@
           "command": "tekton.taskrun.delete",
           "when": "view == tektonPipelineExplorer && viewItem == taskrun",
           "group": "c2"
+        },
+        {
+          "command": "tekton.openInEditor",
+          "when": "view == tektonPipelineExplorer && viewItem == pipeline",
+          "group": "c0@1"
+        },
+        {
+          "command": "tekton.openInEditor",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelinerun",
+          "group": "c0@1"
+        },
+        {
+          "command": "tekton.openInEditor",
+          "when": "view == tektonPipelineExplorer && viewItem == clustertask",
+          "group": "c0@1"
+        },
+        {
+          "command": "tekton.openInEditor",
+          "when": "view == tektonPipelineExplorer && viewItem == pipelineresource",
+          "group": "c0@1"
+        },
+        {
+          "command": "tekton.openInEditor",
+          "when": "view == tektonPipelineExplorer && viewItem == taskrun",
+          "group": "c0@1"
+        },
+        {
+          "command": "tekton.openInEditor",
+          "when": "view == tektonPipelineExplorer && viewItem == task",
+          "group": "c0@1"
         }
       ]
     }
