@@ -341,6 +341,15 @@ export class TektonNodeImpl implements TektonNode {
         return format(this.CONTEXT_DATA[this.contextValue].tooltip, this);
     }
 
+    get command(): vsCommand | undefined {
+        const arrName = ['Pipelines', 'Tasks', 'ClusterTasks', 'PipelineResources'];
+        if (arrName.includes(this.name)) {
+            return undefined;
+        } else {
+            return { command: 'tekton.openInEditor', title: 'Open In Editor', arguments: [this] };
+        }
+    }
+
     get label(): string {
         return this.name;
     }
