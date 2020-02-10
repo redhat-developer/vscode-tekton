@@ -33,7 +33,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         vscode.commands.registerCommand('tekton.output', (context) => execute(Pipeline.showTektonOutput, context)),
         vscode.commands.registerCommand('tekton.explorer.refresh', (context) => execute(Pipeline.refresh, context)),
         vscode.commands.registerCommand('tekton.pipeline.start', (context) => execute(Pipeline.start, context)),
-        vscode.commands.registerCommand('tekton.openInEditor', (context) => execute(openInEditor, context)),
+        vscode.commands.registerCommand('tekton.openInEditor', (context) => execute(TektonItem.openInEditor, context)),
         vscode.commands.registerCommand('tekton.pipeline.restart', (context) => execute(Pipeline.restart, context)),
         //vscode.commands.registerCommand('tekton.pipeline.createFromLocal', (context) => execute(Pipeline.createFromLocal, context)),
         vscode.commands.registerCommand('tekton.pipeline.list', (context) => execute(Pipeline.list, context)),
@@ -92,25 +92,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     }
 
     registerYamlSchemaSupport(context);
-}
-
-function openInEditor(context: TektonNode): void {
-    loadTektonResource(null, `${context.contextValue}/${context.getName()}`);
-}
-
-function loadTektonResource(namespace: string | null, value: string): void {
-    const outputFormat = getOutputFormat();
-    const uri = kubefsUri(namespace, value, outputFormat);
-    workspace.openTextDocument(uri).then((doc) => {
-        if (doc) {
-            window.showTextDocument(doc, 1, true);
-        }
-    },
-    (err) => window.showErrorMessage(`Error loading document: ${err}`));
-}
-
-function getOutputFormat(): string {
-    return workspace.getConfiguration('vs-tekton')['vs-tekton.outputFormat'];
 }
 
 async function isTekton(): Promise<boolean> {

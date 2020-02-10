@@ -80,7 +80,7 @@ suite('Tekton Pipeline Extension', async () => {
         const cmds: string[] = await vscode.commands.getCommands();
         const tekton: string[] = cmds.filter((item) => item.startsWith('tekton.'));
         const mths: string[] = await getStaticMethodsToStub(tekton);
-        [Pipeline, Task, ClusterTask, PipelineRun, TaskRun, PipelineResource, PipelineExplorer].forEach((item: { [x: string]: any }) => {
+        [Pipeline, Task, ClusterTask, PipelineRun, TaskRun, PipelineResource, PipelineExplorer, TektonItem].forEach((item: { [x: string]: any }) => {
             mths.forEach((name) => {
                 if (item[name]) {
                     sandbox.stub(item, name).resolves();
