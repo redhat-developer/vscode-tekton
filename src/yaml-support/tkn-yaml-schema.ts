@@ -45,32 +45,8 @@ export async function registerYamlSchemaSupport(context: vscode.ExtensionContext
     }
 
     yamlPlugin.registerContributor('tekton', requestYamlSchemaUriCallback, requestYamlSchemaContentCallback);
-    // vscode.window.onDidChangeActiveTextEditor(async e => {
-    //     // filter non yaml files
-    //     if (e?.document.languageId !== 'yaml') {
-    //         return;
-    //     }
-    //     // const tknYamlType = isTektonYaml(e.document);
-    //     // if (tknYamlType && tknYamlType === TektonYamlType.Pipeline) {
 
-    //     // }
-    //     try {
-    //         // const snippets = await getTknTasksSnippets();
-    //         // await yamlPlugin.modifySchemaContent({
-    //         //     action: MODIFICATION_ACTIONS.add,
-    //         //     schema: "kubernetes://schema/tekton.dev/v1alpha1@pipeline",
-    //         //     key: "defaultSnippets",
-    //         //     path: "spec/tasks",
-    //         //     content: snippets
-    //         // });
-
-
-    //     } catch (e) {
-    //         console.error(e);
-    //     }
-    // });
-
-    //TODO: remove this!!!
+    //TODO: This is temporary, until 'vscode-yaml' not fixed 'modifySchemaContent' for contributed schema
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rcs = (yamlPlugin as any).requestCustomSchema.bind(yamlPlugin);
@@ -105,7 +81,7 @@ async function activateYamlExtension(): Promise<YamlExtensionAPI | undefined> {
         vscode.window.showWarningMessage('The installed Red Hat YAML extension doesn\'t support in memory schemas modification. Please upgrade \'YAML Support by Red Hat\' via the Extensions pane.');
         return undefined;
     }
-    if (ext.packageJSON.version && !semver.gte(ext.packageJSON.version, '0.7.1')) {
+    if (ext.packageJSON.version && !semver.gte(ext.packageJSON.version, '0.7.2')) {
         vscode.window.showWarningMessage('The installed Red Hat YAML extension doesn\'t support schemas modification. Please upgrade \'YAML Support by Red Hat\' via the Extensions pane.');
     }
     return yamlPlugin;
