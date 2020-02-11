@@ -13,11 +13,9 @@ import { Command } from '../tkn';
 export const TKN_RESOURCE_SCHEME = "tkn";
 export const TEKTON_RESOURCE_AUTHORITY = "loadtektonresource";
 
-export function kubefsUri(namespace: string | null | undefined /* TODO: rationalise null and undefined */, value: string, outputFormat: string): Uri {
+export function kubefsUri(value: string, outputFormat: string): Uri {
     const docname = `${value.replace('/', '-')}.${outputFormat}`;
-    const nonce = new Date().getTime();
-    const nsquery = namespace ? `ns=${namespace}&` : '';
-    const uri = `${TKN_RESOURCE_SCHEME}://${TEKTON_RESOURCE_AUTHORITY}/${docname}?${nsquery}value=${value}&_=${nonce}`;
+    const uri = `${TKN_RESOURCE_SCHEME}://${TEKTON_RESOURCE_AUTHORITY}/${docname}?value=${value}`;
     return Uri.parse(uri);
 }
 

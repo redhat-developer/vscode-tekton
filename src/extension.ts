@@ -17,6 +17,8 @@ import { ClusterTask } from './tekton/clustertask';
 import { PipelineResource } from './tekton/pipelineresource';
 import { TektonNode } from './tkn';
 import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
+import { TektonResourceVirtualFileSystemProvider, TKN_RESOURCE_SCHEME } from './util/tektonresources.virtualfs';
+import { TektonItem } from './tekton/tektonitem';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;

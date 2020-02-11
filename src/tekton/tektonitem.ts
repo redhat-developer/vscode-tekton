@@ -75,15 +75,15 @@ export abstract class TektonItem {
     }
 
     static openInEditor(context: TektonNode): void {
-        TektonItem.loadTektonResource(null, `${context.contextValue}/${context.getName()}`);
+        TektonItem.loadTektonResource(`${context.contextValue}/${context.getName()}`);
     }
 
-    static loadTektonResource(namespace: string | null, value: string): void {
+    static loadTektonResource(value: string): void {
         const outputFormat = TektonItem.getOutputFormat();
-        const uri = kubefsUri(namespace, value, outputFormat);
+        const uri = kubefsUri(value, outputFormat);
         workspace.openTextDocument(uri).then((doc) => {
             if (doc) {
-                window.showTextDocument(doc, 1, true);
+                window.showTextDocument(doc);
             }
         },
         (err) => window.showErrorMessage(`Error loading document: ${err}`));
