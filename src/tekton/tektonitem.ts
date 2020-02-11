@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { Tkn, TknImpl, TektonNode } from '../tkn';
-import { PipelineExplorer } from '../pipeline/pipelineExplorer';
+import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer';
 
 const errorMessage = {
     Pipeline: 'You need at least one Pipeline available. Please create new Tekton Pipeline and try again.',
@@ -29,7 +29,7 @@ const errorMessage = {
 
 export abstract class TektonItem {
     protected static readonly tkn: Tkn = TknImpl.Instance;
-    protected static readonly explorer: PipelineExplorer = PipelineExplorer.getInstance();
+    protected static readonly explorer: PipelineExplorer = pipelineExplorer;
 
     static validateUniqueName(data: Array<TektonNode>, value: string): string {
         const tektonNode = data.find((tektonNode) => tektonNode.getName() === value);

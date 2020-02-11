@@ -12,7 +12,7 @@
   },
   "bugs": "https://github.com/redhat-developer/vscode-tekton/issues",
   "engines": {
-    "vscode": "^1.32.0"
+    "vscode": "^1.39.1"
   },
   "categories": [
     "Snippets",
@@ -233,6 +233,26 @@
           "dark": "images/dark/icon-issue.svg",
           "light": "images/light/icon-issue.svg"
         }
+      },
+      {
+        "command": "tekton.explorer.enterZenMode",
+        "title": "Show only selected items",
+        "category": "Tekton",
+        "enablement": "!tekton:zenMode",
+        "icon": {
+          "dark": "images/dark/icon-focus.svg",
+          "light": "images/light/icon-focus.svg"
+        }
+      },
+      {
+        "command": "tekton.explorer.exitZenMode",
+        "title": "Show all items",
+        "category": "Tekton",
+        "enablement": "tekton:zenMode",
+        "icon": {
+          "dark": "images/dark/icon-reset.svg",
+          "light": "images/light/icon-reset.svg"
+        }
       }
     ],
     "viewsContainers": {
@@ -361,14 +381,24 @@
       ],
       "view/title": [
         {
+          "command": "tekton.explorer.enterZenMode",
+          "when": "view == tektonPipelineExplorer && !tekton:zenMode",
+          "group": "navigation@1"
+        },
+        {
+          "command": "tekton.explorer.exitZenMode",
+          "when": "view == tektonPipelineExplorer && tekton:zenMode",
+          "group": "navigation@2"
+        },
+        {
           "command": "tekton.explorer.refresh",
           "when": "view == tektonPipelineExplorer",
-          "group": "navigation"
+          "group": "navigation@3"
         },
         {
           "command": "tekton.explorer.reportIssue",
           "when": "view == tektonPipelineExplorer",
-          "group": "navigation"
+          "group": "navigation@4"
         }
       ],
       "view/item/context": [
@@ -615,7 +645,7 @@
     "@types/string-format": "^2.0.0",
     "@types/tmp": "0.1.0",
     "@types/validator": "^10.11.2",
-    "@types/vscode": "1.30.0",
+    "@types/vscode": "1.41.0",
     "@typescript-eslint/eslint-plugin": "^2.12.0",
     "@typescript-eslint/parser": "^2.12.0",
     "chai": "^4.2.0",

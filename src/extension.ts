@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { PipelineExplorer } from './pipeline/pipelineExplorer';
+import { PipelineExplorer, pipelineExplorer } from './pipeline/pipelineExplorer';
 import { Pipeline } from './tekton/pipeline';
 import { PipelineRun } from './tekton/pipelinerun';
 import { Task } from './tekton/task';
@@ -17,6 +17,7 @@ import { ClusterTask } from './tekton/clustertask';
 import { PipelineResource } from './tekton/pipelineresource';
 import { TektonNode } from './tkn';
 import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
+import { setCommandContext, CommandContext, enterZenMode, exitZenMode } from './commands';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -64,10 +65,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         vscode.commands.registerCommand('tekton.taskrun.delete', (context) => execute(TaskRun.delete, context)),
         vscode.commands.registerCommand('tekton.explorer.reportIssue', () => PipelineExplorer.reportIssue()),
         vscode.commands.registerCommand('_tekton.explorer.more', expandMoreItem),
-        PipelineExplorer.getInstance()
+        vscode.commands.registerCommand('tekton.explorer.enterZenMode', enterZenMode),
+        vscode.commands.registerCommand('tekton.explorer.exitZenMode', exitZenMode),
+        pipelineExplorer
     ];
     disposables.forEach((e) => context.subscriptions.push(e));
 
+    setCommandContext(CommandContext.TreeZenMode, false);
 
     const tektonExplorerAPI = await k8s.extension.clusterExplorer.v1;
     if (tektonExplorerAPI.available) {
@@ -141,5 +145,5 @@ function migrateFromTkn018(): void {
 
 function expandMoreItem(context: number, parent: TektonNode): void {
     parent.visibleChildren += context;
-    PipelineExplorer.getInstance().refresh(parent);
+    pipelineExplorer.refresh(parent);
 }
