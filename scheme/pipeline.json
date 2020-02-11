@@ -1,0 +1,298 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": true,
+    "type": "object",
+    "required": [
+        "apiVersion",
+        "kind",
+        "spec",
+        "metadata"
+    ],
+    "properties": {
+        "apiVersion": {
+            "type": "string",
+            "enum": [
+                "tekton.dev/v1alpha1"
+            ],
+            "default": "tekton.dev/v1alpha1"
+        },
+        "kind": {
+            "type": "string",
+            "enum": [
+                "Pipeline"
+            ]
+        },
+        "metadata": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$ref": "#/definitions/ObjectMeta"
+        },
+        "spec": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$ref": "#/definitions/PipelineSpec"
+        }
+    },
+    "definitions": {
+        "ArrayOrString": {
+            "type": [
+                "string",
+                "array"
+            ],
+            "items": {
+                "type": "string"
+            }
+        },
+        "ObjectMeta": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "required": [
+                "name"
+            ],
+            "type": "object"
+        },
+        "Param": {
+            "required": [
+                "name",
+                "value"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "$ref": "#/definitions/ArrayOrString"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object"
+        },
+        "ParamSpec": {
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "default": {
+                    "$ref": "#/definitions/ArrayOrString"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object"
+        },
+        "PipelineConditionResource": {
+            "required": [
+                "name",
+                "resource"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "resource": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object"
+        },
+        "PipelineDeclaredResource": {
+            "required": [
+                "name",
+                "type"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object"
+        },
+        "PipelineSpec": {
+            "properties": {
+                "params": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "$ref": "#/definitions/ParamSpec"
+                    },
+                    "type": "array"
+                },
+                "resources": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "$ref": "#/definitions/PipelineDeclaredResource"
+                    },
+                    "type": "array"
+                },
+                "tasks": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "$ref": "#/definitions/PipelineTask"
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object"
+        },
+        "PipelineTask": {
+            "required": [
+                "taskRef"
+            ],
+            "properties": {
+                "conditions": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "$ref": "#/definitions/PipelineTaskCondition"
+                    },
+                    "type": "array"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "params": {
+                    "items": {
+                        "$ref": "#/definitions/Param"
+                    },
+                    "type": "array"
+                },
+                "resources": {
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "$ref": "#/definitions/PipelineTaskResources"
+                },
+                "retries": {
+                    "type": "integer"
+                },
+                "runAfter": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "taskRef": {
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "$ref": "#/definitions/TaskRef"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object"
+        },
+        "PipelineTaskCondition": {
+            "required": [
+                "conditionRef"
+            ],
+            "properties": {
+                "conditionRef": {
+                    "type": "string"
+                },
+                "params": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "$ref": "#/definitions/Param"
+                    },
+                    "type": "array"
+                },
+                "resources": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "$ref": "#/definitions/PipelineConditionResource"
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object"
+        },
+        "PipelineTaskInputResource": {
+            "required": [
+                "name",
+                "resource"
+            ],
+            "properties": {
+                "from": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "resource": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object"
+        },
+        "PipelineTaskOutputResource": {
+            "required": [
+                "name",
+                "resource"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "resource": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object"
+        },
+        "PipelineTaskResources": {
+            "properties": {
+                "inputs": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "$ref": "#/definitions/PipelineTaskInputResource"
+                    },
+                    "type": "array"
+                },
+                "outputs": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "$ref": "#/definitions/PipelineTaskOutputResource"
+                    },
+                    "type": "array"
+                }
+            },
+            "additionalProperties": false,
+            "type": "object"
+        },
+        "TaskRef": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string",
+                    "enum": [
+                        "Task",
+                        "ClusterTask"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "type": "object",
+            "required": [
+                "name"
+            ]
+        }
+    }
+}

@@ -16,6 +16,7 @@ import * as k8s from 'vscode-kubernetes-tools-api';
 import { ClusterTask } from './tekton/clustertask';
 import { PipelineResource } from './tekton/pipelineresource';
 import { TektonNode } from './tkn';
+import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -85,6 +86,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     } else {
         vscode.window.showErrorMessage('Command not available: ${tektonExplorer.reason}');
     }
+
+    registerYamlSchemaSupport(context);
 }
 
 async function isTekton(): Promise<boolean> {
@@ -137,6 +140,6 @@ function migrateFromTkn018(): void {
 }
 
 function expandMoreItem(context: number, parent: TektonNode): void {
-        parent.visibleChildren += context;
-        PipelineExplorer.getInstance().refresh(parent);
+    parent.visibleChildren += context;
+    PipelineExplorer.getInstance().refresh(parent);
 }
