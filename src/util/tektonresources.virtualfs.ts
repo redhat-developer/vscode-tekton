@@ -9,6 +9,8 @@ import * as querystring from 'querystring';
 import { FileSystemProvider, Uri, EventEmitter, FileChangeEvent, Event, Disposable, FileStat, FileType, window, WorkspaceFolder, workspace } from "vscode";
 import { Cli, CliImpl, CliExitData } from '../cli';
 import { Command } from '../tkn';
+import * as k8s from 'vscode-kubernetes-tools-api';
+import { TektonItem } from '../tekton/tektonitem';
 
 export const TKN_RESOURCE_SCHEME = "tkn";
 export const TEKTON_RESOURCE_AUTHORITY = "loadtektonresource";
@@ -57,19 +59,22 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
 
     async readFileAsync(uri: Uri): Promise<Uint8Array> {
         const content = await this.loadResource(uri);
-        return new Buffer(content, 'utf8');
+        return Buffer.from(content, 'utf8');
     }
 
     async loadResource(uri: Uri): Promise<string> {
         const query = querystring.parse(uri.query);
 
-        const outputFormat = "yaml";
+        const outputFormat = TektonItem.getOutputFormat();
         const value = query.value as string;
 
         const sr = await this.execLoadResource(value, outputFormat);
 
-        if (!sr || sr.error) {
-            const message = sr ? sr.error : "Unable to run command line tool";
+        if (!sr || sr['error'] || sr['stderr']) {
+            let message = sr ? sr['error'] : "Unable to run command line tool";
+            if (sr['stderr']) {
+                message = sr['stderr'];
+            }
             // this.host.showErrorMessage('Get command failed: ' + message);
             throw message;
         }
@@ -77,7 +82,11 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
         return sr.stdout;
     }
 
-    async execLoadResource(value: string, outputFormat: string): Promise<CliExitData> {
+    async execLoadResource(value: string, outputFormat: string): Promise<CliExitData | k8s.KubectlV1.ShellResult> {
+        const kubectl = await k8s.extension.kubectl.v1;
+        if (kubectl.available) {
+            return await kubectl.api.invokeCommand(`-o ${outputFormat} get ${value}`);
+        }
         return await TektonResourceVirtualFileSystemProvider.cli.execute(Command.getYaml(outputFormat, value));
     }
 

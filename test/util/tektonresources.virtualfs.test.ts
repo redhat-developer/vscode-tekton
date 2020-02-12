@@ -13,12 +13,15 @@ import * as sinon from 'sinon';
 import { TektonResourceVirtualFileSystemProvider, kubefsUri } from '../../src/util/tektonresources.virtualfs';
 import { Uri, workspace, window } from 'vscode';
 import { CliImpl } from '../../src/cli';
+import * as k8s from 'vscode-kubernetes-tools-api';
 
 const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Platform Utility', () => {
     let sandbox: sinon.SinonSandbox;
+    let v1Stub: sinon.SinonStub;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let workspaceFoldersStub: sinon.SinonStub<any[], any>;
     let writeFileSyncStub: sinon.SinonStub<[string | number | Buffer | import("url").URL, any, fs.WriteFileOptions?], void>;
     let trvfsp: TektonResourceVirtualFileSystemProvider;
@@ -78,6 +81,11 @@ suite('Platform Utility', () => {
         workspaceFoldersStub = sandbox.stub(workspace, 'workspaceFolders').value([wsFolder1]);
         writeFileSyncStub = sandbox.stub(fs, 'writeFileSync');
         showErrorMessageStub = sandbox.stub(window, 'showErrorMessage');
+        const api: k8s.API<k8s.KubectlV1> = {
+          available: false,
+          reason: 'extension-not-available'
+        };
+        v1Stub = sandbox.stub(k8s.extension.kubectl, 'v1').value(api);
     });
 
     teardown(() => {
@@ -88,6 +96,19 @@ suite('Platform Utility', () => {
         const result = await trvfsp.readFile(Uri.parse(tknUri));
         expect(result.toString()).deep.equals(getYaml);
         expect(execStub).calledOnce;
+    });
+
+    test('should able to get yaml data from kubectl', async () => {
+      const api: k8s.API<k8s.KubectlV1> = {
+        available: true,
+        api: {
+            invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0}),
+            portForward: sandbox.stub()
+        }
+      };
+      v1Stub.onFirstCall().value(api);
+      const result = await trvfsp.readFile(Uri.parse(tknUri));
+      expect(result.toString()).deep.equals(getYaml);
     });
 
     test('throw error if command fails', async () => {
