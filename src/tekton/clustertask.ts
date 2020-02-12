@@ -16,7 +16,7 @@ export class ClusterTask extends TektonItem {
     }
 
     static async list(clustertasks: TektonNode): Promise<void> {
-            if (clustertasks) { ClusterTask.tkn.executeInTerminal(Command.listClusterTasksinTerminal()); }
+        if (clustertasks) { ClusterTask.tkn.executeInTerminal(Command.listClusterTasksinTerminal()); }
     }
 
     static async delete(clustertask: TektonNode): Promise<string> {

@@ -48,14 +48,14 @@ export class Progress {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             await vscode.window.withProgress({
-                    cancellable: false,
-                    location: vscode.ProgressLocation.Notification,
-                    title
-                },
-                async () => {
-                    const result = await tknctl.getInstance().execute(cmd, process.cwd(), false);
-                    result.error ? reject(result.error) : resolve();
-                }
+                cancellable: false,
+                location: vscode.ProgressLocation.Notification,
+                title
+            },
+            async () => {
+                const result = await tknctl.getInstance().execute(cmd, process.cwd(), false);
+                result.error ? reject(result.error) : resolve();
+            }
             );
         });
     }
@@ -65,13 +65,13 @@ export class Progress {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             await vscode.window.withProgress({
-                    cancellable: false,
-                    location: vscode.ProgressLocation.Notification,
-                    title
-                },
-                async (progress: vscode.Progress<{increment: number; message: string}>) => {
-                    await func(progress).then(resolve).catch(reject);
-                }
+                cancellable: false,
+                location: vscode.ProgressLocation.Notification,
+                title
+            },
+            async (progress: vscode.Progress<{increment: number; message: string}>) => {
+                await func(progress).then(resolve).catch(reject);
+            }
             );
         });
 
