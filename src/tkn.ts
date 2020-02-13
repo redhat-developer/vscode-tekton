@@ -316,17 +316,17 @@ export class TektonNodeImpl implements TektonNode {
             let fileName = 'running.gif';
             if (this.state) {
                 switch (this.state) {
-                    case "False": {
-                        fileName = 'failed.png';
-                        break;
-                    }
-                    case "True": {
-                        fileName = 'success.png';
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
+                case "False": {
+                    fileName = 'failed.png';
+                    break;
+                }
+                case "True": {
+                    fileName = 'success.png';
+                    break;
+                }
+                default: {
+                    break;
+                }
                 }
             }
             return Uri.file(path.join(__dirname, "../../images", fileName));

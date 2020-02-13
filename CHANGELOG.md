@@ -1,5 +1,15 @@
 # Change Log
 
+## 0.0.4 (February 11, 2020)
+
+This release brings to you:
+
+* [#121](https://github.com/redhat-developer/vscode-tekton/issues/121)Allow to use Tekton Catalog for creating and editing tekton related resources
+* [#108](https://github.com/redhat-developer/vscode-tekton/issues/108) Change color for "running" pipelineruns and taskruns
+* [#133](https://github.com/redhat-developer/vscode-tekton/issues/133) Show complete PipelineRun names 
+* Bugfixes for minor issues:
+  * [#134](https://github.com/redhat-developer/vscode-tekton/issues/134) Update info message to refect pipeline start
+
 ## 0.0.3 (January 16, 2020)
 
 This is bug fix release:

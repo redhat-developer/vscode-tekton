@@ -78,13 +78,13 @@ export class ToolsConfig {
                             location: vscode.ProgressLocation.Notification,
                             title: `Downloading ${ToolsConfig.tool['tkn'].description}`
                         },
-                            (progress: vscode.Progress<{ increment: number; message: string }>) => {
-                                return DownloadUtil.downloadFile(
-                                    ToolsConfig.tool['tkn'].url,
-                                    toolDlLocation,
-                                    (dlProgress, increment) => progress.report({ increment, message: `${dlProgress}%` })
-                                );
-                            });
+                        (progress: vscode.Progress<{ increment: number; message: string }>) => {
+                            return DownloadUtil.downloadFile(
+                                ToolsConfig.tool['tkn'].url,
+                                toolDlLocation,
+                                (dlProgress, increment) => progress.report({ increment, message: `${dlProgress}%` })
+                            );
+                        });
                         const sha256sum: string = await hasha.fromFile(toolDlLocation, { algorithm: 'sha256' });
                         if (sha256sum !== ToolsConfig.tool['tkn'].sha256sum) {
                             fsex.removeSync(toolDlLocation);
