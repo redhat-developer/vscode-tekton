@@ -1069,7 +1069,7 @@ suite("tkn", () => {
         test('more node has command arguments', () => {
             const more = new tkn.MoreNode(4, 10, pipelineItem);
             const moreCommand = more.command;
-            assert.deepEqual(moreCommand.arguments, [4, pipelineItem, more]);
+            assert.deepEqual(moreCommand.arguments, [4, pipelineItem]);
         });
 
         test('more node has name', () => {

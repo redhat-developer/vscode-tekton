@@ -17,7 +17,8 @@ import { ClusterTask } from './tekton/clustertask';
 import { PipelineResource } from './tekton/pipelineresource';
 import { TektonNode } from './tkn';
 import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
-import { setCommandContext, CommandContext, enterZenMode, exitZenMode } from './commands';
+import { setCommandContext, CommandContext, enterZenMode, exitZenMode, refreshCustomTree } from './commands';
+import { customTektonExplorer } from './pipeline/customTektonExplorer';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -66,7 +67,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         vscode.commands.registerCommand('tekton.explorer.reportIssue', () => PipelineExplorer.reportIssue()),
         vscode.commands.registerCommand('_tekton.explorer.more', expandMoreItem),
         vscode.commands.registerCommand('tekton.explorer.enterZenMode', enterZenMode),
-        vscode.commands.registerCommand('tekton.explorer.exitZenMode', exitZenMode),
+        vscode.commands.registerCommand('tekton.custom.explorer.exitZenMode', exitZenMode),
+        vscode.commands.registerCommand('tekton.custom.explorer.refresh', refreshCustomTree),
         pipelineExplorer
     ];
     disposables.forEach((e) => context.subscriptions.push(e));
@@ -143,7 +145,14 @@ function migrateFromTkn018(): void {
     }
 }
 
-function expandMoreItem(context: number, parent: TektonNode): void {
+function expandMoreItem(context: number, parent: TektonNode, treeViewId: string): void {
     parent.visibleChildren += context;
-    pipelineExplorer.refresh(parent);
+    if (treeViewId === 'tektonPipelineExplorer') {
+        pipelineExplorer.refresh(parent);
+    }
+
+    if (treeViewId === 'tektonCustomTree') {
+        customTektonExplorer.refresh(parent);
+    }
+
 }

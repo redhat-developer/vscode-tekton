@@ -21,7 +21,7 @@ module.exports = {
         "@typescript-eslint/no-use-before-define": ["error", { "functions": false, "classes": false }],
         '@typescript-eslint/no-unused-vars': [1],
         "@typescript-eslint/explicit-function-return-type": [1, { "allowExpressions": true }],
-        "indent": ["error", 4]
+        "indent": ["error", 4, {"SwitchCase": 1}]
     },
 
 };

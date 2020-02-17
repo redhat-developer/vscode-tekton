@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TreeDataProvider, TreeView, Event, EventEmitter, TreeItem, ProviderResult, Disposable, window, extensions, commands, Uri, version } from "vscode";
-import { Tkn, TektonNode, TknImpl } from '../tkn';
+import { Tkn, TektonNode, TknImpl, MoreNode } from '../tkn';
 import { WatchUtil, FileContentChangeNotifier } from '../util/watch';
 import { Platform } from '../util/platform';
 import * as path from 'path';
@@ -18,10 +18,6 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     private onDidChangeTreeDataEmitter: EventEmitter<TektonNode | undefined> = new EventEmitter<TektonNode | undefined>();
     readonly onDidChangeTreeData: Event<TektonNode | undefined> = this.onDidChangeTreeDataEmitter.event;
 
-    private zenMod = false;
-    private zenSelected: TektonNode[];
-
-
     constructor() {
         this.fsw = WatchUtil.watchFileForContextChange(kubeConfigFolder, 'config');
         this.fsw.emitter.on('file-changed', this.refresh.bind(this));
@@ -29,14 +25,15 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     }
 
     getTreeItem(element: TektonNode): TreeItem | Thenable<TreeItem> {
+        if (element instanceof MoreNode) {
+            element.command.arguments.push('tektonPipelineExplorer');
+        }
         return element;
     }
 
     getChildren(element?: TektonNode): ProviderResult<TektonNode[]> {
         if (element) {
             return element.getChildren();
-        } else if (this.zenMod) {
-            return this.zenSelected;
         } else {
             return PipelineExplorer.tkn.getPipelineNodes();
         }
@@ -67,14 +64,8 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
         this.treeView.reveal(item);
     }
 
-    zenMode(mode: boolean): void {
-        this.zenMod = mode;
-        if (mode) {
-            this.zenSelected = this.treeView.selection;
-        } else {
-            this.zenSelected = [];
-        }
-        this.refresh();
+    getSelection(): TektonNode[] | undefined {
+        return this.treeView.selection;
     }
 
 

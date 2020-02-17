@@ -236,27 +236,36 @@
       },
       {
         "command": "tekton.explorer.enterZenMode",
-        "title": "Show only selected items",
+        "title": "Show in custom items",
         "category": "Tekton",
-        "enablement": "!tekton:zenMode",
         "icon": {
           "dark": "images/dark/icon-focus.svg",
           "light": "images/light/icon-focus.svg"
         }
       },
       {
-        "command": "tekton.explorer.exitZenMode",
-        "title": "Show all items",
+        "command": "tekton.custom.explorer.exitZenMode",
+        "title": "Close view",
         "category": "Tekton",
         "enablement": "tekton:zenMode",
         "icon": {
-          "dark": "images/dark/icon-reset.svg",
-          "light": "images/light/icon-reset.svg"
+          "dark": "images/dark/icon-close.svg",
+          "light": "images/light/icon-close.svg"
+        }
+      },
+      {
+        "command": "tekton.custom.explorer.refresh",
+        "title": "Refresh View",
+        "category": "Tekton",
+        "enablement": "tekton:zenMode",
+        "icon": {
+          "dark": "images/dark/icon-refresh.svg",
+          "light": "images/light/icon-refresh.svg"
         }
       }
     ],
     "viewsContainers": {
-      "activitybar": [
+      "activitybar1": [
         {
           "id": "tektonView",
           "title": "Tekton Pipelines",
@@ -269,6 +278,11 @@
         {
           "id": "tektonPipelineExplorer",
           "name": "Tekton Pipelines"
+        },
+        {
+          "id": "tektonCustomTree",
+          "name": "Custom Tekton items",
+          "when": "tekton:zenMode"
         }
       ]
     },
@@ -382,13 +396,8 @@
       "view/title": [
         {
           "command": "tekton.explorer.enterZenMode",
-          "when": "view == tektonPipelineExplorer && !tekton:zenMode",
+          "when": "view == tektonPipelineExplorer",
           "group": "navigation@1"
-        },
-        {
-          "command": "tekton.explorer.exitZenMode",
-          "when": "view == tektonPipelineExplorer && tekton:zenMode",
-          "group": "navigation@2"
         },
         {
           "command": "tekton.explorer.refresh",
@@ -399,6 +408,16 @@
           "command": "tekton.explorer.reportIssue",
           "when": "view == tektonPipelineExplorer",
           "group": "navigation@4"
+        },
+        {
+          "command": "tekton.custom.explorer.exitZenMode",
+          "when": "view == tektonCustomTree",
+          "group": "navigation@2"
+        },
+        {
+          "command": "tekton.custom.explorer.refresh",
+          "when": "view == tektonCustomTree",
+          "group": "navigation@1"
         }
       ],
       "view/item/context": [

@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { commands } from 'vscode';
-import { pipelineExplorer } from './pipeline/pipelineExplorer';
+import { customTektonExplorer } from './pipeline/customTektonExplorer';
 
 export enum VSCodeCommands {
     SetContext = 'setContext',
@@ -22,11 +22,15 @@ export function setCommandContext(key: CommandContext | string, value: string | 
 
 export function enterZenMode(): void {
     setCommandContext(CommandContext.TreeZenMode, true);
-    pipelineExplorer.zenMode(true);
+    customTektonExplorer.showSelected(true);
 
 }
 
 export function exitZenMode(): void {
     setCommandContext(CommandContext.TreeZenMode, false);
-    pipelineExplorer.zenMode(false);
+    customTektonExplorer.showSelected(false);
+}
+
+export function refreshCustomTree(): void {
+    customTektonExplorer.refresh();
 }
