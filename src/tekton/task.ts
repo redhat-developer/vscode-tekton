@@ -12,7 +12,7 @@ export class Task extends TektonItem {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
     static start(start: any, context: any): any {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
 
     static async list(task: TektonNode): Promise<void> {

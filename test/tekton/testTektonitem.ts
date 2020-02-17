@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { TektonNode, ContextType } from "../../src/tkn";
+import { TektonNode, ContextType } from '../../src/tkn';
 
 export class TestItem implements TektonNode {
 

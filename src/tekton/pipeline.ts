@@ -50,7 +50,7 @@ export class Pipeline extends TektonItem {
             const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.listPipelines(), process.cwd(), false);
             let data: TknPipelineTrigger[] = [];
             if (result.error) {
-                console.log(result + " Std.err when processing pipelines");
+                console.log(result + ' Std.err when processing pipelines');
             }
             try {
                 data = JSON.parse(result.stdout).items;
@@ -182,7 +182,7 @@ export class Pipeline extends TektonItem {
                 items: svcAcct,
             });
             inputStartPipeline.serviceAccount = pick.label;
-            if (pick.label === (inputStartPipeline.serviceAccount || "None")) {
+            if (pick.label === (inputStartPipeline.serviceAccount || 'None')) {
                 return;
             }
             else if (pick.label === 'Input New Service Account') {

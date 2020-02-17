@@ -21,10 +21,10 @@ suite('Tekton/PipelineResource', () => {
     let sandbox: sinon.SinonSandbox;
     const errorMessage = 'FATAL ERROR';
     let execStub: sinon.SinonStub;
-    let warnStub: sinon.SinonStub<[string, import("vscode").MessageOptions, ...import("vscode").MessageItem[]], Thenable<import("vscode").MessageItem>>;
+    let warnStub: sinon.SinonStub<[string, import('vscode').MessageOptions, ...import('vscode').MessageItem[]], Thenable<import('vscode').MessageItem>>;
     let getPipelineNamesStub: sinon.SinonStub;
     const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
-    const pipelineresourceItem = new TestItem(pipelineItem, 'pipelineresource', ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
+    const pipelineresourceItem = new TestItem(pipelineItem, 'pipelineresource', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
 
     const sampleYaml = `
     # manifests.yaml
@@ -41,7 +41,7 @@ suite('Tekton/PipelineResource', () => {
 
     const TextEditorMock = {
         document: {
-            fileName: "manifests.yaml",
+            fileName: 'manifests.yaml',
             getText: sinon.stub().returns(sampleYaml),
         },
     };
@@ -73,12 +73,12 @@ suite('Tekton/PipelineResource', () => {
         test('Save the file if user click on Save button', async () => {
             execStub.resolves({
                 error: undefined,
-                stdout: "text"
+                stdout: 'text'
             });
             sandbox.stub(window, 'showInformationMessage').resolves('Save');
-            sandbox.stub(window, "activeTextEditor").value({
+            sandbox.stub(window, 'activeTextEditor').value({
                 document: {
-                    fileName: "manifests.yaml",
+                    fileName: 'manifests.yaml',
                     isDirty: true,
                     save: sinon.stub().returns(true)
                 },
@@ -89,9 +89,9 @@ suite('Tekton/PipelineResource', () => {
     
         test('show warning message if file content is changed', async () => {
             const infoMsg = sandbox.stub(window, 'showInformationMessage').resolves(undefined);
-            sandbox.stub(window, "activeTextEditor").value({
+            sandbox.stub(window, 'activeTextEditor').value({
                 document: {
-                    fileName: "manifests.yaml",
+                    fileName: 'manifests.yaml',
                     isDirty: true,
                 },
             });
@@ -103,9 +103,9 @@ suite('Tekton/PipelineResource', () => {
         test('Creates an tekton PipelineResources using .yaml file location from an active editor', async () => {
             execStub.resolves({
                 error: undefined,
-                stdout: "text"
+                stdout: 'text'
             });
-            sandbox.stub(window, "activeTextEditor").value(TextEditorMock);
+            sandbox.stub(window, 'activeTextEditor').value(TextEditorMock);
             const result = await PipelineResource.create();
             expect(result).equals('PipelineResources were successfully created.');
         });
@@ -113,7 +113,7 @@ suite('Tekton/PipelineResource', () => {
         test('errors when fail too create resource', async () => {
             let savedErr: Error;
             execStub.rejects(errorMessage);
-            sandbox.stub(window, "activeTextEditor").value(TextEditorMock);
+            sandbox.stub(window, 'activeTextEditor').value(TextEditorMock);
             try {
                 await PipelineResource.create();
             } catch (err) {
