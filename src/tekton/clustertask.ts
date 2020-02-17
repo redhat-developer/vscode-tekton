@@ -12,7 +12,7 @@ export class ClusterTask extends TektonItem {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     static start(context: TektonNode): Promise<void> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
 
     static async list(clustertasks: TektonNode): Promise<void> {

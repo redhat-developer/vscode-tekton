@@ -36,7 +36,7 @@ export class PipelineResource extends TektonItem {
         if (message) {
             window.showWarningMessage(message);
         } else {
-            return Progress.execFunctionWithProgress(`Creating PipelineResource`, () => 
+            return Progress.execFunctionWithProgress('Creating PipelineResource', () => 
                 PipelineResource.tkn.execute(Command.createPipelineResource(document.fileName)))
                 .then(() => 'PipelineResources were successfully created.')
                 .catch((err) => Promise.reject(`Failed to Create PipelineResources with error: ${err}`));

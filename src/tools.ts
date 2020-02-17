@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Platform } from "./util/platform";
-import { Archive } from "./util/archive";
-import { which } from "shelljs";
-import { DownloadUtil } from "./util/download";
-import hasha = require("hasha");
-import open = require("open");
+import { Platform } from './util/platform';
+import { Archive } from './util/archive';
+import { which } from 'shelljs';
+import { DownloadUtil } from './util/download';
+import hasha = require('hasha');
+import open = require('open');
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fsex from 'fs-extra';
@@ -105,7 +105,7 @@ export class ToolsConfig {
                         }
                         toolLocation = toolCacheLocation;
                     }
-                } else if (response === `Help`) {
+                } else if (response === 'Help') {
                     open('https://github.com/redhat-developer/vscode-tekton#dependencies');
                 }
             }
@@ -121,7 +121,7 @@ export class ToolsConfig {
     public static async getVersion(location: string): Promise<string> {
         let detectedVersion: string;
         if (fs.existsSync(location)) {
-            const version = new RegExp(`^Client version:\\s[v]?([0-9]+\\.[0-9]+\\.[0-9]+)$`);
+            const version = new RegExp('^Client version:\\s[v]?([0-9]+\\.[0-9]+\\.[0-9]+)$');
             const result = await CliImpl.getInstance().execute(createCliCommand(`"${location}"`, 'version'));
             if (result.stdout) {
                 const toolVersion: string[] = result.stdout.trim().split('\n').filter((value) => {

@@ -30,13 +30,13 @@ suite('Task provider', () => {
 
         execStub.onCall(0).resolves({
             error: null, stderr: '', stdout: JSON.stringify({
-                "items": [{
-                    "kind": "ClusterTask",
-                    "apiVersion": "tekton.dev/v1alpha1",
-                    "metadata": {
-                        "name": "clustertask1"
+                'items': [{
+                    'kind': 'ClusterTask',
+                    'apiVersion': 'tekton.dev/v1alpha1',
+                    'metadata': {
+                        'name': 'clustertask1'
                     },
-                    "spec": {
+                    'spec': {
 
                     }
                 }]
@@ -45,13 +45,13 @@ suite('Task provider', () => {
 
         execStub.onCall(1).resolves({
             error: null, stderr: '', stdout: JSON.stringify({
-                "items": [{
-                    "kind": "Task",
-                    "apiVersion": "tekton.dev/v1alpha1",
-                    "metadata": {
-                        "name": "clustertask2"
+                'items': [{
+                    'kind': 'Task',
+                    'apiVersion': 'tekton.dev/v1alpha1',
+                    'metadata': {
+                        'name': 'clustertask2'
                     },
-                    "spec": {
+                    'spec': {
 
                     }
                 }]
@@ -67,9 +67,9 @@ suite('Task provider', () => {
 
     test('convertTasksToSnippet should return snippets', () => {
         const result = taskProvider.convertTasksToSnippet([{
-            "kind": "Task",
+            'kind': 'Task',
             metadata: {
-                name: "CustomTask"
+                name: 'CustomTask'
             },
             spec: {
                 steps: [],
@@ -83,9 +83,9 @@ suite('Task provider', () => {
 
     test('convertTasksToSnippet should convert inputs ', () => {
         const result = taskProvider.convertTasksToSnippet([{
-            "kind": "Task",
+            'kind': 'Task',
             metadata: {
-                name: "CustomTask"
+                name: 'CustomTask'
             },
             spec: {
                 steps: [],
@@ -100,15 +100,15 @@ suite('Task provider', () => {
         expect(result).to.eql([{
             label: 'CustomTask',
             description: 'Task',
-            body: { name: '$1', taskRef: { name: 'CustomTask' }, params: [{ name: 'fooParam', value: '$2' }], resources: { inputs: [{ name: 'barResource', resource: "$3" }] } }
+            body: { name: '$1', taskRef: { name: 'CustomTask' }, params: [{ name: 'fooParam', value: '$2' }], resources: { inputs: [{ name: 'barResource', resource: '$3' }] } }
         }]);
     });
 
     test('convertTasksToSnippet should add params with default values', () => {
         const result = taskProvider.convertTasksToSnippet([{
-            "kind": "Task",
+            'kind': 'Task',
             metadata: {
-                name: "CustomTask"
+                name: 'CustomTask'
             },
             spec: {
                 steps: [],
@@ -123,15 +123,15 @@ suite('Task provider', () => {
         expect(result).to.eql([{
             label: 'CustomTask',
             description: 'Task',
-            body: { name: '$1', taskRef: { name: 'CustomTask' }, params: [{ name: 'fooParam', value: 'fooDefault' }], resources: { inputs: [{ name: 'barResource', resource: "$2" }] } }
+            body: { name: '$1', taskRef: { name: 'CustomTask' }, params: [{ name: 'fooParam', value: 'fooDefault' }], resources: { inputs: [{ name: 'barResource', resource: '$2' }] } }
         }]);
     });
 
     test('convertTasksToSnippet should add output', () => {
         const result = taskProvider.convertTasksToSnippet([{
-            "kind": "Task",
+            'kind': 'Task',
             metadata: {
-                name: "CustomTask"
+                name: 'CustomTask'
             },
             spec: {
                 steps: [],
@@ -145,7 +145,7 @@ suite('Task provider', () => {
         expect(result).to.eql([{
             label: 'CustomTask',
             description: 'Task',
-            body: { name: '$1', taskRef: { name: 'CustomTask' }, resources: { outputs: [{ name: 'Foo', resource: "$2" }] } }
+            body: { name: '$1', taskRef: { name: 'CustomTask' }, resources: { outputs: [{ name: 'Foo', resource: '$2' }] } }
         }]);
     });
 });

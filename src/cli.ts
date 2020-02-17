@@ -83,7 +83,7 @@ export class CliImpl implements Cli {
 }
 
 class TknChannelImpl implements TknChannel {
-    private readonly channel: vscode.OutputChannel = vscode.window.createOutputChannel("Tekton Pipelines");
+    private readonly channel: vscode.OutputChannel = vscode.window.createOutputChannel('Tekton Pipelines');
 
     show(): void {
         this.channel.show();

@@ -81,7 +81,7 @@ suite('Tekton/Pipeline', () => {
             try {
                 await Pipeline.restart(null);
             } catch (err) {
-                expect(err.message).equals("Failed to create Pipeline with error '${err}'");
+                expect(err.message).equals('Failed to create Pipeline with error \'${err}\'');
                 return;
             }
         });
@@ -89,7 +89,7 @@ suite('Tekton/Pipeline', () => {
             getPipelineStub.restore();
             sandbox.stub(TknImpl.prototype, 'restartPipeline').resolves();
             const result = await Pipeline.restart(pipelineItem);
-            expect(result).equals("Pipeline 'pipeline' successfully created");
+            expect(result).equals('Pipeline \'pipeline\' successfully created');
 
         });
 
@@ -154,9 +154,9 @@ suite('Tekton/Pipeline', () => {
 
     suite('restart', () => {
         test('restarts a pipeline with appropriate resources', async () => {
-            sandbox.stub(Pipeline, "restart").withArgs(pipelineItem).resolves(`Pipeline 'pipeline' successfully created`);
+            sandbox.stub(Pipeline, 'restart').withArgs(pipelineItem).resolves('Pipeline \'pipeline\' successfully created');
             const result = await Pipeline.restart(pipelineItem);
-            expect(result).equals(`Pipeline 'pipeline' successfully created`);
+            expect(result).equals('Pipeline \'pipeline\' successfully created');
         });
 
         test('returns null if no pipeline selected', async () => {
@@ -171,42 +171,42 @@ suite('Tekton/Pipeline', () => {
         setup(() => {
 
             const testNames: NameType[] = [{
-                name: "test",
-                type: "test-type"
+                name: 'test',
+                type: 'test-type'
             }];
 
             const testResources: PipeResources[] = [
                 {
-                    name: "test-resource1",
-                    resourceRef: "resource1"
+                    name: 'test-resource1',
+                    resourceRef: 'resource1'
                 },
                 {
-                    name: "test-resource2",
-                    resourceRef: "resource1"
+                    name: 'test-resource2',
+                    resourceRef: 'resource1'
                 }
             ];
             const testParams: PipeParams[] = [
                 {
-                    default: "package",
-                    description: "Param test description",
-                    name: "test-param1"
+                    default: 'package',
+                    description: 'Param test description',
+                    name: 'test-param1'
                 },
                 {
-                    default: "package",
-                    description: "Param test description",
-                    name: "test-param2"
+                    default: 'package',
+                    description: 'Param test description',
+                    name: 'test-param2'
                 }
             ];
 
             pipeTrigger = [{
-                name: "pipeline",
+                name: 'pipeline',
                 resources: testNames,
                 params: testParams,
                 serviceAcct: undefined
             }];
 
             startPipelineObj = {
-                name: "pipeline",
+                name: 'pipeline',
                 resources: testResources,
                 params: testParams,
                 serviceAccount: undefined
@@ -214,8 +214,8 @@ suite('Tekton/Pipeline', () => {
         });
 
         test('starts a pipeline with appropriate resources', async () => {
-            sandbox.stub(Pipeline, "startPipelineObject").withArgs(pipeTrigger).resolves(startPipelineObj);
-            sandbox.stub(Pipeline, "start").withArgs(pipelineItem).resolves(`Pipeline 'pipeline' successfully created`);
+            sandbox.stub(Pipeline, 'startPipelineObject').withArgs(pipeTrigger).resolves(startPipelineObj);
+            sandbox.stub(Pipeline, 'start').withArgs(pipelineItem).resolves('Pipeline \'pipeline\' successfully created');
             const result = await Pipeline.start(pipelineItem);
             expect(result).equals(`Pipeline '${startPipelineObj.name}' successfully created`);
             expect('tkn pipeline start pipeline --resource test-resource1=resource1 --resource test-resource2=resource1 --param test-param1=package --param test-param2=package -s pipeline').equals(cliCommandToString(Command.startPipeline(startPipelineObj)));
