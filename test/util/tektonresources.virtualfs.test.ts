@@ -23,6 +23,7 @@ suite('Platform Utility', () => {
     let v1Stub: sinon.SinonStub;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let workspaceFoldersStub: sinon.SinonStub<any[], any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let writeFileSyncStub: sinon.SinonStub<[string | number | Buffer | import("url").URL, any, fs.WriteFileOptions?], void>;
     let trvfsp: TektonResourceVirtualFileSystemProvider;
     let execStub: sinon.SinonStub;
@@ -82,8 +83,8 @@ suite('Platform Utility', () => {
         writeFileSyncStub = sandbox.stub(fs, 'writeFileSync');
         showErrorMessageStub = sandbox.stub(window, 'showErrorMessage');
         const api: k8s.API<k8s.KubectlV1> = {
-          available: false,
-          reason: 'extension-not-available'
+            available: false,
+            reason: 'extension-not-available'
         };
         v1Stub = sandbox.stub(k8s.extension.kubectl, 'v1').value(api);
     });
@@ -99,44 +100,44 @@ suite('Platform Utility', () => {
     });
 
     test('should able to get yaml data from kubectl', async () => {
-      const api: k8s.API<k8s.KubectlV1> = {
-        available: true,
-        api: {
-            invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0}),
-            portForward: sandbox.stub()
-        }
-      };
-      v1Stub.onFirstCall().value(api);
-      const result = await trvfsp.readFile(Uri.parse(tknUri));
-      expect(result.toString()).deep.equals(getYaml);
+        const api: k8s.API<k8s.KubectlV1> = {
+            available: true,
+            api: {
+                invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0}),
+                portForward: sandbox.stub()
+            }
+        };
+        v1Stub.onFirstCall().value(api);
+        const result = await trvfsp.readFile(Uri.parse(tknUri));
+        expect(result.toString()).deep.equals(getYaml);
     });
 
     test('throw error if command fails', async () => {
-      execStub.onFirstCall().resolves({ error: 'error', stdout: undefined });
-      try {
-        await trvfsp.readFile(Uri.parse(tknUri));
-      } catch (err) {
-        expect(err).deep.equals('error');
-        expect(execStub).calledOnce;
-      }
+        execStub.onFirstCall().resolves({ error: 'error', stdout: undefined });
+        try {
+            await trvfsp.readFile(Uri.parse(tknUri));
+        } catch (err) {
+            expect(err).deep.equals('error');
+            expect(execStub).calledOnce;
+        }
     });
 
     test('should able to save file in workspace', async () => {
-      const content = await trvfsp.readFile(Uri.parse(tknUri));
-      await trvfsp.writeFile(Uri.parse(tknUri), content);
-      writeFileSyncStub.calledOnce;
+        const content = await trvfsp.readFile(Uri.parse(tknUri));
+        await trvfsp.writeFile(Uri.parse(tknUri), content);
+        writeFileSyncStub.calledOnce;
     });
 
     test('return undefined if workspace folder is not present', async () => {
-      workspaceFoldersStub.onFirstCall().value(undefined);
-      const content = await trvfsp.readFile(Uri.parse(tknUri));
-      await trvfsp.writeFile(Uri.parse(tknUri), content);
-      showErrorMessageStub.calledOnce;
+        workspaceFoldersStub.onFirstCall().value(undefined);
+        const content = await trvfsp.readFile(Uri.parse(tknUri));
+        await trvfsp.writeFile(Uri.parse(tknUri), content);
+        showErrorMessageStub.calledOnce;
     });
 
     test('create file system uri parse', async () => {
-      workspaceFoldersStub.onFirstCall().resolves(wsFolder1);
-      const content = kubefsUri('pipeline/petclinic-deploy-pipeline', 'yaml');
-      expect(content).deep.equals(Uri.parse('tkn://loadtektonresource/pipeline-petclinic-deploy-pipeline.yaml?value=pipeline/petclinic-deploy-pipeline'));
+        workspaceFoldersStub.onFirstCall().resolves(wsFolder1);
+        const content = kubefsUri('pipeline/petclinic-deploy-pipeline', 'yaml');
+        expect(content).deep.equals(Uri.parse('tkn://loadtektonresource/pipeline-petclinic-deploy-pipeline.yaml?value=pipeline/petclinic-deploy-pipeline'));
     });
 });
