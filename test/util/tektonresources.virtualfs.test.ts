@@ -24,11 +24,11 @@ suite('Platform Utility', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let workspaceFoldersStub: sinon.SinonStub<any[], any>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let writeFileSyncStub: sinon.SinonStub<[string | number | Buffer | import("url").URL, any, fs.WriteFileOptions?], void>;
+    let writeFileSyncStub: sinon.SinonStub<[string | number | Buffer | import('url').URL, any, fs.WriteFileOptions?], void>;
     let trvfsp: TektonResourceVirtualFileSystemProvider;
     let execStub: sinon.SinonStub;
-    let showErrorMessageStub: sinon.SinonStub<[string, import("vscode").MessageOptions, ...import("vscode").MessageItem[]], Thenable<import("vscode").MessageItem>>;
-    const tknUri = "tknsss://loadtektonresourceload/pipeline-petclinic-deploy-pipeline.yaml?value%3Dpipeline%2Fpetclinic-deploy-pipeline%26_%3D1581402784093";
+    let showErrorMessageStub: sinon.SinonStub<[string, import('vscode').MessageOptions, ...import('vscode').MessageItem[]], Thenable<import('vscode').MessageItem>>;
+    const tknUri = 'tknsss://loadtektonresourceload/pipeline-petclinic-deploy-pipeline.yaml?value%3Dpipeline%2Fpetclinic-deploy-pipeline%26_%3D1581402784093';
     const getYaml = `apiVersion: tekton.dev/v1alpha1
     kind: Pipeline
     metadata:
@@ -138,6 +138,7 @@ suite('Platform Utility', () => {
     test('create file system uri parse', async () => {
         workspaceFoldersStub.onFirstCall().resolves(wsFolder1);
         const content = kubefsUri('pipeline/petclinic-deploy-pipeline', 'yaml');
-        expect(content).deep.equals(Uri.parse('tkn://loadtektonresource/pipeline-petclinic-deploy-pipeline.yaml?value=pipeline/petclinic-deploy-pipeline'));
+        const nonce = new Date().getTime();
+        expect(content).deep.equals(Uri.parse(`tkn://loadtektonresource/pipeline-petclinic-deploy-pipeline.yaml?value=pipeline/petclinic-deploy-pipeline&_=${nonce}`));
     });
 });

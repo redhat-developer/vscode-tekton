@@ -9,14 +9,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as querystring from 'querystring';
-import { FileSystemProvider, Uri, EventEmitter, FileChangeEvent, Event, Disposable, FileStat, FileType, window, WorkspaceFolder, workspace } from "vscode";
+import { FileSystemProvider, Uri, EventEmitter, FileChangeEvent, Event, Disposable, FileStat, FileType, window, WorkspaceFolder, workspace } from 'vscode';
 import { Cli, CliImpl, CliExitData } from '../cli';
 import { Command } from '../tkn';
 import * as k8s from 'vscode-kubernetes-tools-api';
 import { TektonItem } from '../tekton/tektonitem';
 
-export const TKN_RESOURCE_SCHEME = "tkn";
-export const TEKTON_RESOURCE_AUTHORITY = "loadtektonresource";
+export const TKN_RESOURCE_SCHEME = 'tkn';
+export const TEKTON_RESOURCE_AUTHORITY = 'loadtektonresource';
 
 export function kubefsUri(value: string, outputFormat: string): Uri {
     const docname = `${value.replace('/', '-')}.${outputFormat}`;
@@ -75,7 +75,7 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
         const sr = await this.execLoadResource(value, outputFormat);
 
         if (!sr || sr['error'] || sr['stderr']) {
-            let message = sr ? sr['error'] : "Unable to run command line tool";
+            let message = sr ? sr['error'] : 'Unable to run command line tool';
             if (sr['stderr']) {
                 message = sr['stderr'];
             }
@@ -134,7 +134,7 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
             return undefined;
         }
         if (folder.uri.scheme !== 'file') {
-            window.showErrorMessage("This command requires a filesystem folder");  // TODO: make it not
+            window.showErrorMessage('This command requires a filesystem folder');  // TODO: make it not
             return undefined;
         }
         return folder.uri.fsPath;
