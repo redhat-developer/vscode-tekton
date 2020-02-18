@@ -242,6 +242,9 @@ export class Command {
     static getYaml(outputFormat: string, value: string): CliCommand {
         return newOcCommand('-o', outputFormat, 'get', value)
     }
+    static updateYaml(fsPath: string): CliCommand {
+        return newTknCommand('apply', '-f', fsPath);
+    }
 
 }
 

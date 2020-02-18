@@ -1,5 +1,8 @@
+/* eslint-disable header/header */
+// Copied from https://github.com/Azure/vscode-kubernetes-tools/blob/e16c0b239660585753dfed4732293737f6f5f06d/src/kuberesources.virtualfs.ts
+
 /*-----------------------------------------------------------------------------------------------
- *  Copyright (c) Red Hat, Inc. All rights reserved.
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
@@ -17,7 +20,8 @@ export const TEKTON_RESOURCE_AUTHORITY = "loadtektonresource";
 
 export function kubefsUri(value: string, outputFormat: string): Uri {
     const docname = `${value.replace('/', '-')}.${outputFormat}`;
-    const uri = `${TKN_RESOURCE_SCHEME}://${TEKTON_RESOURCE_AUTHORITY}/${docname}?value=${value}`;
+    const nonce = new Date().getTime();
+    const uri = `${TKN_RESOURCE_SCHEME}://${TEKTON_RESOURCE_AUTHORITY}/${docname}?value=${value}&_=${nonce}`;
     return Uri.parse(uri);
 }
 
@@ -103,8 +107,25 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
         if (!rootPath) {
             return;
         }
-        const fspath = path.join(rootPath, uri.fsPath);
-        fs.writeFileSync(fspath, content);
+        const fsPath = path.join(rootPath, uri.fsPath);
+        fs.writeFileSync(fsPath, content);
+        await TektonResourceVirtualFileSystemProvider.updateYamlFile(fsPath)
+        const yamlContent = await this.loadResource(uri);
+        fs.writeFileSync(fsPath, yamlContent);
+        // workspace.openTextDocument(uri).then((doc) => {
+        //     if (doc) {
+        //         window.showTextDocument(doc);
+        //     }
+        // },
+        // (err) => window.showErrorMessage(`Error loading document: ${err}`));
+    }
+
+    static async updateYamlFile(fsPath: string): Promise<void> {
+        const kubectl = await k8s.extension.kubectl.v1;
+        if (kubectl.available) {
+            await kubectl.api.invokeCommand(`apply -f ${fsPath}`);
+        }
+        await TektonResourceVirtualFileSystemProvider.cli.execute(Command.updateYaml(fsPath));
     }
 
     async selectRootFolder(): Promise<string | undefined> {
