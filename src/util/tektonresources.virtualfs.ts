@@ -8,8 +8,9 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os'
 import * as querystring from 'querystring';
-import { FileSystemProvider, Uri, EventEmitter, FileChangeEvent, Event, Disposable, FileStat, FileType, window, WorkspaceFolder, workspace } from 'vscode';
+import { FileSystemProvider, Uri, EventEmitter, FileChangeEvent, Event, Disposable, FileStat, FileType, window, workspace, commands } from 'vscode';
 import { Cli, CliImpl, CliExitData } from '../cli';
 import { Command } from '../tkn';
 import * as k8s from 'vscode-kubernetes-tools-api';
@@ -103,51 +104,35 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
         // create subdirectories.
         // TODO: not loving prompting as part of the write when it should really be part of a separate
         // 'save' workflow - but needs must, I think
-        const rootPath = await this.selectRootFolder();
-        if (!rootPath) {
+        const tempPath = await os.tmpdir();
+        if (!tempPath) {
             return;
         }
-        const fsPath = path.join(rootPath, uri.fsPath);
+        const fsPath = path.join(tempPath, uri.fsPath);
         fs.writeFileSync(fsPath, content);
-        await TektonResourceVirtualFileSystemProvider.updateYamlFile(fsPath)
-        const yamlContent = await this.loadResource(uri);
-        fs.writeFileSync(fsPath, yamlContent);
-        // workspace.openTextDocument(uri).then((doc) => {
-        //     if (doc) {
-        //         window.showTextDocument(doc);
-        //     }
-        // },
-        // (err) => window.showErrorMessage(`Error loading document: ${err}`));
+        const result = await TektonResourceVirtualFileSystemProvider.updateYamlFile(fsPath);
+        if (result['stderr']) throw Error(result['stderr']);
+        if (result['error']) throw Error(result['error']);
+        fs.unlinkSync(fsPath);
+        const query = querystring.parse(uri.query);
+        const outputFormat = TektonItem.getOutputFormat();
+        const value = query.value as string;
+        const newUri = kubefsUri(value, outputFormat);
+        workspace.openTextDocument(newUri).then(async (doc) => {
+            await commands.executeCommand('workbench.action.closeActiveEditor');
+            if (doc) {
+                window.showTextDocument(doc, {preserveFocus: true, preview: true});
+            }
+        },
+        (err) => window.showErrorMessage(`Error loading document: ${err}`));
     }
 
-    static async updateYamlFile(fsPath: string): Promise<void> {
+    static async updateYamlFile(fsPath: string): Promise<CliExitData | k8s.KubectlV1.ShellResult> {
         const kubectl = await k8s.extension.kubectl.v1;
         if (kubectl.available) {
-            await kubectl.api.invokeCommand(`apply -f ${fsPath}`);
+            return await kubectl.api.invokeCommand(`apply -f ${fsPath}`);
         }
-        await TektonResourceVirtualFileSystemProvider.cli.execute(Command.updateYaml(fsPath));
-    }
-
-    async selectRootFolder(): Promise<string | undefined> {
-        const folder = await this.showWorkspaceFolderPick();
-        if (!folder) {
-            return undefined;
-        }
-        if (folder.uri.scheme !== 'file') {
-            window.showErrorMessage('This command requires a filesystem folder');  // TODO: make it not
-            return undefined;
-        }
-        return folder.uri.fsPath;
-    }
-
-    async showWorkspaceFolderPick(): Promise<WorkspaceFolder | undefined> {
-        if (!workspace.workspaceFolders) {
-            window.showErrorMessage('This command requires an open folder.');
-            return undefined;
-        } else if (workspace.workspaceFolders.length === 1) {
-            return workspace.workspaceFolders[0];
-        }
-        return await window.showWorkspaceFolderPick();
+        return await TektonResourceVirtualFileSystemProvider.cli.execute(Command.updateYaml(fsPath));
     }
 
     delete(): void | Thenable<void> {

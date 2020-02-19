@@ -83,7 +83,7 @@ export abstract class TektonItem {
         const uri = kubefsUri(value, outputFormat);
         workspace.openTextDocument(uri).then((doc) => {
             if (doc) {
-                window.showTextDocument(doc);
+                window.showTextDocument(doc, {preserveFocus: true, preview: true});
             }
         },
         (err) => window.showErrorMessage(`Error loading document: ${err}`));
