@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { TreeDataProvider, TreeView, Event, EventEmitter, TreeItem, ProviderResult, Disposable, window, extensions, commands, Uri, version } from "vscode";
+import { TreeDataProvider, TreeView, Event, EventEmitter, TreeItem, ProviderResult, Disposable, window, extensions, commands, Uri, version} from 'vscode';
 import { Tkn, TektonNode, TknImpl, MoreNode } from '../tkn';
 import { WatchUtil, FileContentChangeNotifier } from '../util/watch';
 import { Platform } from '../util/platform';
@@ -71,7 +71,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
 
     static async reportIssue(): Promise<void> {
         let body = '';
-        const repoURL = `https://github.com/redhat-developer/vscode-tekton`;
+        const repoURL = 'https://github.com/redhat-developer/vscode-tekton';
         const template = {
             'VS Code version:': version,
             'OS:': Platform.OS,

@@ -106,10 +106,10 @@ export class Command {
     @verbose
     static startPipeline(pipelineData: StartPipelineObject): CliCommand {
         const resources: string[] = [];
-        const svcAcct: string[] = pipelineData.serviceAccount ? ["-s ", pipelineData.serviceAccount] : ["-s", "pipeline"];
+        const svcAcct: string[] = pipelineData.serviceAccount ? ['-s ', pipelineData.serviceAccount] : ['-s', 'pipeline'];
         pipelineData.resources.forEach(element => {
-            resources.push("--resource");
-            resources.push(element.name + "=" + element.resourceRef);
+            resources.push('--resource');
+            resources.push(element.name + '=' + element.resourceRef);
         });
 
         if (pipelineData.params.length === 0) {
@@ -118,8 +118,8 @@ export class Command {
         else {
             const params: string[] = [];
             pipelineData.params.forEach(element => {
-                params.push("--param");
-                params.push(element.name + "=" + element.default);
+                params.push('--param');
+                params.push(element.name + '=' + element.default);
             });
             return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...params, ...svcAcct);
         }
@@ -316,11 +316,11 @@ export class TektonNodeImpl implements TektonNode {
             let fileName = 'running.gif';
             if (this.state) {
                 switch (this.state) {
-                    case "False": {
+                    case 'False': {
                         fileName = 'failed.png';
                         break;
                     }
-                    case "True": {
+                    case 'True': {
                         fileName = 'success.png';
                         break;
                     }
@@ -329,9 +329,9 @@ export class TektonNodeImpl implements TektonNode {
                     }
                 }
             }
-            return Uri.file(path.join(__dirname, "../../images", fileName));
+            return Uri.file(path.join(__dirname, '../../images', fileName));
         }
-        return Uri.file(path.join(__dirname, "../../images", this.CONTEXT_DATA[this.contextValue].icon));
+        return Uri.file(path.join(__dirname, '../../images', this.CONTEXT_DATA[this.contextValue].icon));
     }
 
     get tooltip(): string {
@@ -492,7 +492,7 @@ export class MoreNode extends TreeItem implements TektonNode {
     constructor(private showNext: number,
         private totalCount: number,
         private parent: TektonNode) {
-        super(`more`, TreeItemCollapsibleState.None);
+        super('more', TreeItemCollapsibleState.None);
         this.command = { command: '_tekton.explorer.more', title: `more ${this.showNext}`, arguments: [this.showNext, this.parent] };
     }
 
@@ -505,7 +505,7 @@ export class MoreNode extends TreeItem implements TektonNode {
     }
 
     getChildren(): ProviderResult<TektonNode[]> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     getParent(): TektonNode {
         return this.parent;
@@ -585,10 +585,10 @@ export class TknImpl implements Tkn {
             Command.tknStatus(), process.cwd(), false
         );
         if (result.stdout.trim() === 'no') {
-            const tknDownMsg = `The current user doesn't have the privileges to interact with tekton resources.`;
+            const tknDownMsg = 'The current user doesn\'t have the privileges to interact with tekton resources.';
             return [new TektonNodeImpl(null, tknDownMsg, ContextType.TKN_DOWN, TknImpl.instance, TreeItemCollapsibleState.None)];
         }
-        if (result.error && getStderrString(result.error).indexOf(`the server doesn't have a resource type "pipeline"`) > -1) {
+        if (result.error && getStderrString(result.error).indexOf('the server doesn\'t have a resource type "pipeline"') > -1) {
             const tknDownMsg = 'Please install the OpenShift Pipelines Operator.';
             return [new TektonNodeImpl(null, tknDownMsg, ContextType.TKN_DOWN, TknImpl.instance, TreeItemCollapsibleState.None)];
         }
@@ -600,10 +600,10 @@ export class TknImpl implements Tkn {
 
     public async _getPipelineNodes(): Promise<TektonNode[]> {
         const pipelineTree: TektonNode[] = [];
-        const pipelineNode = new TektonNodeImpl(TknImpl.ROOT, "Pipelines", ContextType.PIPELINENODE, this, TreeItemCollapsibleState.Collapsed);
-        const taskNode = new TektonNodeImpl(TknImpl.ROOT, "Tasks", ContextType.TASKNODE, this, TreeItemCollapsibleState.Collapsed);
-        const clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, "ClusterTasks", ContextType.CLUSTERTASKNODE, this, TreeItemCollapsibleState.Collapsed);
-        const pipelineResourceNode = new TektonNodeImpl(TknImpl.ROOT, "PipelineResources", ContextType.PIPELINERESOURCENODE, this, TreeItemCollapsibleState.Collapsed);
+        const pipelineNode = new TektonNodeImpl(TknImpl.ROOT, 'Pipelines', ContextType.PIPELINENODE, this, TreeItemCollapsibleState.Collapsed);
+        const taskNode = new TektonNodeImpl(TknImpl.ROOT, 'Tasks', ContextType.TASKNODE, this, TreeItemCollapsibleState.Collapsed);
+        const clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, 'ClusterTasks', ContextType.CLUSTERTASKNODE, this, TreeItemCollapsibleState.Collapsed);
+        const pipelineResourceNode = new TektonNodeImpl(TknImpl.ROOT, 'PipelineResources', ContextType.PIPELINERESOURCENODE, this, TreeItemCollapsibleState.Collapsed);
         pipelineTree.push(pipelineNode, taskNode, clustertaskNode, pipelineResourceNode);
         this.cache.set(pipelineNode, await this.getPipelines(pipelineNode));
         this.cache.set(taskNode, await this.getTasks(taskNode));
@@ -637,7 +637,7 @@ export class TknImpl implements Tkn {
     async _getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> | undefined {
         const result = await this.execute(Command.listPipelineRuns(pipeline.getName()));
         if (result.error) {
-            console.log(result + " Std.err when processing pipelines");
+            console.log(result + ' Std.err when processing pipelines');
             return [new TektonNodeImpl(pipeline, getStderrString(result.error), ContextType.PIPELINERUN, this, TreeItemCollapsibleState.None)];
         }
 
@@ -667,7 +667,7 @@ export class TknImpl implements Tkn {
     async _getTaskRunsforTasks(task: TektonNode): Promise<TektonNode[]> {
         const result = await this.execute(Command.listTaskRunsforTasks(task.getName()));
         if (result.error) {
-            console.log(result + " Std.err when processing taskruns for " + task.getName());
+            console.log(result + ' Std.err when processing taskruns for ' + task.getName());
             return [new TektonNodeImpl(task, getStderrString(result.error), ContextType.TASKRUN, this, TreeItemCollapsibleState.None)];
         }
         let data: PipelineTaskRunData[] = [];
@@ -707,7 +707,7 @@ export class TknImpl implements Tkn {
     async _getTaskRuns(pipelinerun: TektonNode): Promise<TektonNode[]> {
         const result = await this.execute(Command.listTaskRuns());
         if (result.error) {
-            console.log(result + " Std.err when processing pipelines");
+            console.log(result + ' Std.err when processing pipelines');
             return [new TektonNodeImpl(pipelinerun, getStderrString(result.error), ContextType.TASKRUN, this, TreeItemCollapsibleState.Expanded)];
         }
         let data: PipelineTaskRunData[] = [];
@@ -718,7 +718,7 @@ export class TknImpl implements Tkn {
         }
 
         return data
-            .filter((value) => value.metadata.labels["tekton.dev/pipelineRun"] === pipelinerun.getName())
+            .filter((value) => value.metadata.labels['tekton.dev/pipelineRun'] === pipelinerun.getName())
             .map((value) => new TaskRun(pipelinerun, value.metadata.name, this, value))
             .sort(compareTimeNewestFirst);
     }
@@ -731,7 +731,7 @@ export class TknImpl implements Tkn {
         let data: TknTask[] = [];
         const result = await this.execute(Command.listPipelines(), process.cwd(), false);
         if (result.error) {
-            console.log(result + " Std.err when processing pipelines");
+            console.log(result + ' Std.err when processing pipelines');
             return [new TektonNodeImpl(pipeline, getStderrString(result.error), ContextType.PIPELINE, this, TreeItemCollapsibleState.Expanded)];
         }
         try {
@@ -753,7 +753,7 @@ export class TknImpl implements Tkn {
         let data: TknPipelineResource[] = [];
         const result = await this.execute(Command.listPipelineResources(), process.cwd(), false);
         if (result.error) {
-            console.log(result + " Std.err when processing pipelines");
+            console.log(result + ' Std.err when processing pipelines');
             return [new TektonNodeImpl(pipelineResource, getStderrString(result.error), ContextType.PIPELINERESOURCE, this, TreeItemCollapsibleState.Expanded)];
         }
         try {
@@ -773,7 +773,7 @@ export class TknImpl implements Tkn {
         let data: TknTask[] = [];
         const result = await this.execute(Command.listTasks());
         if (result.error) {
-            console.log(result + "Std.err when processing tasks");
+            console.log(result + 'Std.err when processing tasks');
             return [new TektonNodeImpl(task, getStderrString(result.error), ContextType.TASK, this, TreeItemCollapsibleState.Expanded)];
         }
         try {
@@ -790,7 +790,7 @@ export class TknImpl implements Tkn {
         let data: TknTask[] = [];
         const result = await this.execute(Command.listTasks());
         if (result.error) {
-            console.log(result + "Std.err when processing tasks");
+            console.log(result + 'Std.err when processing tasks');
             return data;
         }
         try {
@@ -824,7 +824,7 @@ export class TknImpl implements Tkn {
         let data: TknTask[] = [];
         const result = await this.execute(Command.listClusterTasks());
         if (result.error) {
-            console.log(result + "Std.err when processing tasks");
+            console.log(result + 'Std.err when processing tasks');
             return data;
         }
         try {
@@ -868,7 +868,7 @@ export class TknImpl implements Tkn {
     public async execute(command: CliCommand, cwd?: string, fail = true): Promise<CliExitData> {
         const toolLocation = await ToolsConfig.detectOrDownload();
         if (toolLocation) {
-            command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp(`&& tkn`, 'g'), `&& "${toolLocation}"`);
+            command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);
         }
 
 

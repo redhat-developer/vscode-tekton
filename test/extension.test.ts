@@ -9,50 +9,50 @@
 // Please refer to their documentation on https://mochajs.org/ for help.
 //
 
-import * as assert from "assert";
-import * as vscode from "vscode";
-import * as chai from "chai";
-import * as sinonChai from "sinon-chai";
-import * as sinon from "sinon";
-import { PipelineRun } from "../src/tekton/pipelinerun";
-import { PipelineResource } from "../src/tekton/pipelineresource";
-import { TaskRun } from "../src/tekton/taskrun";
-import { Pipeline } from "../src/tekton/pipeline";
-import { Task } from "../src/tekton/task";
-import { ClusterTask } from "../src/tekton/clustertask";
-import packagejson = require("../package.json");
-import { TknImpl, TektonNodeImpl, ContextType } from "../src/tkn";
-import { PipelineExplorer } from "../src/pipeline/pipelineExplorer";
+import * as assert from 'assert';
+import * as vscode from 'vscode';
+import * as chai from 'chai';
+import * as sinonChai from 'sinon-chai';
+import * as sinon from 'sinon';
+import { PipelineRun } from '../src/tekton/pipelinerun';
+import { PipelineResource } from '../src/tekton/pipelineresource';
+import { TaskRun } from '../src/tekton/taskrun';
+import { Pipeline } from '../src/tekton/pipeline';
+import { Task } from '../src/tekton/task';
+import { ClusterTask } from '../src/tekton/clustertask';
+import packagejson = require('../package.json');
+import { TknImpl, TektonNodeImpl, ContextType } from '../src/tkn';
+import { PipelineExplorer } from '../src/pipeline/pipelineExplorer';
 
 const expect = chai.expect;
 chai.use(sinonChai);
 
-suite("Tekton Pipeline Extension", async () => {
+suite('Tekton Pipeline Extension', async () => {
     let sandbox: sinon.SinonSandbox;
-    const pipelineNode = new TektonNodeImpl(TknImpl.ROOT, "Pipelines", ContextType.PIPELINENODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
-    const taskNode = new TektonNodeImpl(TknImpl.ROOT, "Tasks", ContextType.TASKNODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
-    const clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, "Clustertasks", ContextType.CLUSTERTASKNODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
-    const pipelineItem = new TektonNodeImpl(pipelineNode, "test-pipeline", ContextType.PIPELINE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
-    const pipelinerunItem = new TektonNodeImpl(pipelineItem, "test-pipeline-1", ContextType.PIPELINERUN, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed, "2019-07-25T12:00:00Z", "True");
-    const taskrunItem = new TektonNodeImpl(pipelinerunItem, "test-taskrun-1", ContextType.TASKRUN, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed, "2019-07-25T12:03:00Z", "True");
-    const taskItem = new TektonNodeImpl(taskNode, "test-tasks", ContextType.TASK, TknImpl.Instance, vscode.TreeItemCollapsibleState.None);
-    const clustertaskItem = new TektonNodeImpl(clustertaskNode, "test-Clustertask", ContextType.CLUSTERTASK, TknImpl.Instance, vscode.TreeItemCollapsibleState.None);
+    const pipelineNode = new TektonNodeImpl(TknImpl.ROOT, 'Pipelines', ContextType.PIPELINENODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
+    const taskNode = new TektonNodeImpl(TknImpl.ROOT, 'Tasks', ContextType.TASKNODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
+    const clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, 'Clustertasks', ContextType.CLUSTERTASKNODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
+    const pipelineItem = new TektonNodeImpl(pipelineNode, 'test-pipeline', ContextType.PIPELINE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
+    const pipelinerunItem = new TektonNodeImpl(pipelineItem, 'test-pipeline-1', ContextType.PIPELINERUN, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed, '2019-07-25T12:00:00Z', 'True');
+    const taskrunItem = new TektonNodeImpl(pipelinerunItem, 'test-taskrun-1', ContextType.TASKRUN, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed, '2019-07-25T12:03:00Z', 'True');
+    const taskItem = new TektonNodeImpl(taskNode, 'test-tasks', ContextType.TASK, TknImpl.Instance, vscode.TreeItemCollapsibleState.None);
+    const clustertaskItem = new TektonNodeImpl(clustertaskNode, 'test-Clustertask', ContextType.CLUSTERTASK, TknImpl.Instance, vscode.TreeItemCollapsibleState.None);
 
     setup(async () => {
         sandbox = sinon.createSandbox();
-        const stub = sandbox.stub(Pipeline, "about");
+        const stub = sandbox.stub(Pipeline, 'about');
         try {
-            await vscode.commands.executeCommand("tekton.about");
+            await vscode.commands.executeCommand('tekton.about');
         // eslint-disable-next-line no-empty
         } catch (ignore) {
         } finally {
             stub.restore();
         }
-        sandbox.stub(TknImpl.prototype, "_getPipelines").resolves([pipelineItem]);
-        sandbox.stub(TknImpl.prototype, "_getTasks").resolves([taskItem]);
-        sandbox.stub(TknImpl.prototype, "_getClusterTasks").resolves([clustertaskItem]);
-        sandbox.stub(TknImpl.prototype, "_getPipelineRuns").resolves([pipelinerunItem]);
-        sandbox.stub(TknImpl.prototype, "_getTaskRuns").resolves([taskrunItem]);
+        sandbox.stub(TknImpl.prototype, '_getPipelines').resolves([pipelineItem]);
+        sandbox.stub(TknImpl.prototype, '_getTasks').resolves([taskItem]);
+        sandbox.stub(TknImpl.prototype, '_getClusterTasks').resolves([clustertaskItem]);
+        sandbox.stub(TknImpl.prototype, '_getPipelineRuns').resolves([pipelinerunItem]);
+        sandbox.stub(TknImpl.prototype, '_getTaskRuns').resolves([taskrunItem]);
     });
 
     teardown(() => {
@@ -60,14 +60,14 @@ suite("Tekton Pipeline Extension", async () => {
         TknImpl.Instance.clearCache();
     });
 
-    test("Extension should be present", () => {
-        assert.ok(vscode.extensions.getExtension("redhat.vscode-tekton-pipelines"));
+    test('Extension should be present', () => {
+        assert.ok(vscode.extensions.getExtension('redhat.vscode-tekton-pipelines'));
     });
 
     async function getStaticMethodsToStub(tekton: string[]): Promise<string[]> {
         const mths: Set<string> = new Set();
         tekton.forEach(name => {
-            const segs: string[] = name.split(".");
+            const segs: string[] = name.split('.');
             const methName: string = segs[segs.length - 1];
             // tslint:disable-next-line: no-unused-expression
             !mths.has(methName) && mths.add(methName);
@@ -75,8 +75,8 @@ suite("Tekton Pipeline Extension", async () => {
         return [...mths];
     }
 
-    test("should activate extension", async () => {
-        sandbox.stub(vscode.window, "showErrorMessage");
+    test('should activate extension', async () => {
+        sandbox.stub(vscode.window, 'showErrorMessage');
         const cmds: string[] = await vscode.commands.getCommands();
         const tekton: string[] = cmds.filter((item) => item.startsWith('tekton.'));
         const mths: string[] = await getStaticMethodsToStub(tekton);
@@ -110,7 +110,7 @@ suite("Tekton Pipeline Extension", async () => {
         expect(taskrun.length).is.equals(1);
     });
 
-    test("should register all extension commands declared commands in package descriptor", async () => {
+    test('should register all extension commands declared commands in package descriptor', async () => {
         return await vscode.commands.getCommands(true).then((commands) => {
             packagejson.contributes.commands.forEach(value => {
                 // tslint:disable-next-line: no-unused-expression
@@ -119,20 +119,20 @@ suite("Tekton Pipeline Extension", async () => {
         });
     });
 
-    test("sync command wrapper shows message returned from command", async () => {
-        sandbox.stub(Pipeline, "about");
-        sandbox.stub(vscode.window, "showErrorMessage");
-        const simStub: sinon.SinonStub = sandbox.stub(vscode.window, "showInformationMessage");
-        await vscode.commands.executeCommand("tekton.about");
+    test('sync command wrapper shows message returned from command', async () => {
+        sandbox.stub(Pipeline, 'about');
+        sandbox.stub(vscode.window, 'showErrorMessage');
+        const simStub: sinon.SinonStub = sandbox.stub(vscode.window, 'showInformationMessage');
+        await vscode.commands.executeCommand('tekton.about');
         // tslint:disable-next-line: no-unused-expression
         expect(simStub).not.called;
     });
 
-    test("sync command wrapper shows message returned from command", async () => {
-        const error = new Error("Message");
-        sandbox.stub(Pipeline, "refresh").throws(error);
-        const semStub: sinon.SinonStub = sandbox.stub(vscode.window, "showErrorMessage");
-        await vscode.commands.executeCommand("tekton.explorer.refresh");
+    test('sync command wrapper shows message returned from command', async () => {
+        const error = new Error('Message');
+        sandbox.stub(Pipeline, 'refresh').throws(error);
+        const semStub: sinon.SinonStub = sandbox.stub(vscode.window, 'showErrorMessage');
+        await vscode.commands.executeCommand('tekton.explorer.refresh');
         expect(semStub).calledWith(error);
     });
 

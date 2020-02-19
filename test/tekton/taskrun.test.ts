@@ -23,8 +23,8 @@ suite('Tekton/TaskRun', () => {
     let getTaskRunsStub: sinon.SinonStub;
     let getPipelineRunNamesStub: sinon.SinonStub;
     const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
-    const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
-    const taskrunItem = new TestItem(pipelinerunItem, 'taskrun', ContextType.PIPELINERUN, undefined, "2019-07-25T12:03:00Z", "True");
+    const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
+    const taskrunItem = new TestItem(pipelinerunItem, 'taskrun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
 
     setup(() => {
         sandbox = sinon.createSandbox();

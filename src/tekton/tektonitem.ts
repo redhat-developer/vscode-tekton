@@ -33,7 +33,7 @@ export abstract class TektonItem {
 
     static validateUniqueName(data: Array<TektonNode>, value: string): string {
         const tektonNode = data.find((tektonNode) => tektonNode.getName() === value);
-        return tektonNode && `This name is already used, please enter different name.`;
+        return tektonNode && 'This name is already used, please enter different name.';
     }
 
     static async getPipelineNames(pipeline: TektonNode): Promise<TektonNode[]> {

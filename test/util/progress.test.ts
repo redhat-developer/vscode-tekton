@@ -22,7 +22,7 @@ suite('Progress Utility', () => {
     const options = {
         cancellable: false,
         location: vscode.ProgressLocation.Notification,
-        title: `Testing Progress`
+        title: 'Testing Progress'
     };
     const command1 = { command: createCliCommand('command', 'one'), increment: 50 };
     const command2 = { command: createCliCommand('command', 'two'), increment: 50 };
@@ -38,7 +38,7 @@ suite('Progress Utility', () => {
     });
 
     test('calls cli commands in sequence', async () => {
-        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: "", stderr: "" });
+        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '', stderr: '' });
         await Progress.execWithProgress(options, steps, TknImpl.Instance);
 
         // tslint:disable-next-line: no-unused-expression
@@ -49,7 +49,7 @@ suite('Progress Utility', () => {
     });
 
     test('calls progress with given options', async () => {
-        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: "", stderr: "" });
+        execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '', stderr: '' });
         const spy = sandbox.spy(vscode.window, 'withProgress');
         await Progress.execWithProgress(options, steps, TknImpl.Instance);
 

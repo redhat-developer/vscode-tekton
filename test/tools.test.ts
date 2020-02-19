@@ -14,9 +14,9 @@ import { Archive } from '../src/util/archive';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as fsex from 'fs-extra';
-import hasha = require("hasha");
+import hasha = require('hasha');
 
-suite("tool configuration", () => {
+suite('tool configuration', () => {
     let sb: sinon.SinonSandbox;
     let chmodSyncStub: sinon.SinonStub;
 

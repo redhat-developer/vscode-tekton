@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import glob = require("glob");
+import glob = require('glob');
 import paths = require('path');
 import fs = require('fs');
 import istanbul = require('istanbul');

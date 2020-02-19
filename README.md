@@ -23,7 +23,7 @@ To use the extension, developers can deploy Tekton Pipelines into a minikube ins
 
 #### Red Hat CodeReady Containers
 
-Red Hat CodeReady Containers is a simplest way to start OpenShift Cluster on your laptop in a matter of minutes, follow [this documentation](https://code-ready.github.io/crc/) to get it up and running. After cluster is started follow [this steps](https://github.com/openshift/pipelines-tutorial/#install-openshift-pipelines) to deploy OpenShift Pipelines into a OpenShift cluster.
+Red Hat CodeReady Containers is a simple way to start OpenShift Cluster on your laptop in a matter of minutes, follow [this documentation](https://code-ready.github.io/crc/) to get it up and running. After cluster is started follow [this steps](https://github.com/openshift/pipelines-tutorial/#install-openshift-pipelines) to deploy OpenShift Pipelines into a OpenShift cluster.
 
 #### minikube
 
@@ -92,9 +92,9 @@ See the [change log](CHANGELOG.md).
 Nightly builds
 ==============
 
-## WARNING: Nightly builds are by definition unstable. Install at you own risk.
+## WARNING: Nightly builds are by definition unstable. Install at your own risk.
 
-Nightly build bits are published once in 24 hours and available from this [location](https://download.jboss.org/jbosstools/adapters/snapshots/vscode-tekton/?C=M;O=D) with most recent build is on top of the list. 
+Nightly builds are published every 24 hours and available from this [location](https://download.jboss.org/jbosstools/adapters/snapshots/vscode-tekton/?C=M;O=D) with most recent build is on top of the list. 
 To install nightly build, download latest extension `.vsix` package and follow the steps on image below.
 
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/install-vsix.gif" width="708" height="500" /></div>

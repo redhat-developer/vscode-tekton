@@ -171,7 +171,7 @@ suite('Tekton yaml', () => {
 
             const pipelineResources = getDeclaredResources({ getText: () => yaml, version: 1, uri: vscode.Uri.parse('file:///foo/pipeline/resources.yaml') } as vscode.TextDocument);
             expect(pipelineResources).is.not.empty;
-            expect(pipelineResources).to.eql([{name: "api-repo", type: "git"}, {name: "api-image", type: "image"}]);
+            expect(pipelineResources).to.eql([{name: 'api-repo', type: 'git'}, {name: 'api-image', type: 'image'}]);
         });
     });
 

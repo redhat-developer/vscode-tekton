@@ -79,14 +79,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     if (tektonExplorerAPI.available) {
         tektonExplorer = tektonExplorerAPI.api;
         const nodeContributor = tektonExplorer.nodeSources.groupingFolder(
-            "Tekton Pipelines",
-            "context",
-            tektonExplorer.nodeSources.resourceFolder("ClusterTasks", "ClusterTasks", "ClusterTask", "clustertask").if(isTekton),
-            tektonExplorer.nodeSources.resourceFolder("Tasks", "Tasks", "Task", "task").if(isTekton),
-            tektonExplorer.nodeSources.resourceFolder("TaskRuns", "TaskRuns", "TaskRun", "taskruns").if(isTekton),
-            tektonExplorer.nodeSources.resourceFolder("Pipelines", "Pipelines", "Pipeline", "pipelines").if(isTekton),
-            tektonExplorer.nodeSources.resourceFolder("PipelineRuns", "PipelineRuns", "PipelineRun", "pipelineruns").if(isTekton),
-            tektonExplorer.nodeSources.resourceFolder("Pipeline Resources", "PipelineResources", "PipelineResources", "pipelineresources").if(isTekton),
+            'Tekton Pipelines',
+            'context',
+            tektonExplorer.nodeSources.resourceFolder('ClusterTasks', 'ClusterTasks', 'ClusterTask', 'clustertask').if(isTekton),
+            tektonExplorer.nodeSources.resourceFolder('Tasks', 'Tasks', 'Task', 'task').if(isTekton),
+            tektonExplorer.nodeSources.resourceFolder('TaskRuns', 'TaskRuns', 'TaskRun', 'taskruns').if(isTekton),
+            tektonExplorer.nodeSources.resourceFolder('Pipelines', 'Pipelines', 'Pipeline', 'pipelines').if(isTekton),
+            tektonExplorer.nodeSources.resourceFolder('PipelineRuns', 'PipelineRuns', 'PipelineRun', 'pipelineruns').if(isTekton),
+            tektonExplorer.nodeSources.resourceFolder('Pipeline Resources', 'PipelineResources', 'PipelineResources', 'pipelineresources').if(isTekton),
         ).at(undefined);
         tektonExplorer.registerNodeContributor(nodeContributor);
     } else {
@@ -103,7 +103,7 @@ async function isTekton(): Promise<boolean> {
         if (!sr || sr.code !== 0) {
             return false;
         }
-        return sr.stdout.includes("tekton.dev/v1alpha1");  // Naive check to keep example simple!
+        return sr.stdout.includes('tekton.dev/v1alpha1');  // Naive check to keep example simple!
     }
 }
 
