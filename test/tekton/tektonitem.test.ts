@@ -12,6 +12,7 @@ import { TektonItem } from '../../src/tekton/tektonitem';
 import { TknImpl, ContextType } from '../../src/tkn';
 import { TestItem } from './testTektonitem';
 import { fail } from 'assert';
+import { workspace, EndOfLine, TextDocument, window } from 'vscode';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -19,12 +20,34 @@ chai.use(sinonChai);
 suite('TektonItem', () => {
 
     let sandbox: sinon.SinonSandbox;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let openTextStub: sinon.SinonStub<any[], any>;
     const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
     const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
     const pipelineResourceItem = new TestItem(null, 'pipelineresource', ContextType.PIPELINERESOURCE);
     const taskrunItem = new TestItem(pipelinerunItem, 'taskrun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
     const taskItem = new TestItem(null, 'task', ContextType.TASK);
     const clustertaskItem = new TestItem(null, 'clustertask', ContextType.CLUSTERTASK);
+
+    const textDocument: TextDocument = {
+        uri: undefined,
+        fileName: 'tmpServerConnector-server.json',
+        isClosed: false,
+        isDirty: false,
+        isUntitled: false,
+        languageId: '',
+        version: 1,
+        eol: EndOfLine.CRLF,
+        save: undefined,
+        lineCount: 33,
+        lineAt: undefined,
+        getText: () => '',
+        getWordRangeAtPosition: undefined,
+        offsetAt: undefined,
+        positionAt: undefined,
+        validatePosition: undefined,
+        validateRange: undefined
+    };
 
     setup(() => {
         sandbox = sinon.createSandbox();
@@ -115,6 +138,19 @@ suite('TektonItem', () => {
                 return;
             }
             fail('should throw error in case tasks array is empty');
+        });
+    });
+
+    suite('openInEditor', ()=> {
+
+        setup(() => {
+            openTextStub = sandbox.stub(workspace, 'openTextDocument').resolves(textDocument);
+            sandbox.stub(window, 'showTextDocument');
+        });
+
+        test('open yaml file in editor', async ()=> {
+            TektonItem.openInEditor(pipelineResourceItem);
+            expect(openTextStub).calledOnce;
         });
     });
 

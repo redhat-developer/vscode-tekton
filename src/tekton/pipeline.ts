@@ -238,7 +238,6 @@ export class Pipeline extends TektonItem {
 
     }
 
-
     static async restart(pipeline: TektonNode): Promise<string> {
         if (pipeline) {
             return Progress.execFunctionWithProgress(`Creating the Pipeline '${pipeline.getName()}'.`, () =>

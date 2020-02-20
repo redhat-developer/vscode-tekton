@@ -19,22 +19,25 @@ import { TektonNode } from './tkn';
 import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
 import { setCommandContext, CommandContext, enterZenMode, exitZenMode, refreshCustomTree } from './commands';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
+import { TektonResourceVirtualFileSystemProvider, TKN_RESOURCE_SCHEME } from './util/tektonresources.virtualfs';
+import { TektonItem } from './tekton/tektonitem';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 
+    const resourceDocProvider = new TektonResourceVirtualFileSystemProvider();
+
     contextGlobalState = context;
     migrateFromTkn018();
-
-
 
     const disposables = [
         vscode.commands.registerCommand('tekton.about', (context) => execute(Pipeline.about, context)),
         vscode.commands.registerCommand('tekton.output', (context) => execute(Pipeline.showTektonOutput, context)),
         vscode.commands.registerCommand('tekton.explorer.refresh', (context) => execute(Pipeline.refresh, context)),
         vscode.commands.registerCommand('tekton.pipeline.start', (context) => execute(Pipeline.start, context)),
+        vscode.commands.registerCommand('tekton.openInEditor', (context) => execute(TektonItem.openInEditor, context)),
         vscode.commands.registerCommand('tekton.pipeline.restart', (context) => execute(Pipeline.restart, context)),
         //vscode.commands.registerCommand('tekton.pipeline.createFromLocal', (context) => execute(Pipeline.createFromLocal, context)),
         vscode.commands.registerCommand('tekton.pipeline.list', (context) => execute(Pipeline.list, context)),
@@ -69,7 +72,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         vscode.commands.registerCommand('tekton.explorer.enterZenMode', enterZenMode),
         vscode.commands.registerCommand('tekton.custom.explorer.exitZenMode', exitZenMode),
         vscode.commands.registerCommand('tekton.custom.explorer.refresh', refreshCustomTree),
-        pipelineExplorer
+        pipelineExplorer,
+        // Temporarily loaded resource providers
+        vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME, resourceDocProvider, { /* TODO: case sensitive? */ }),
+
     ];
     disposables.forEach((e) => context.subscriptions.push(e));
 
