@@ -239,6 +239,12 @@ export class Command {
     static tknStatus(): CliCommand {
         return newOcCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'oc', 'get', 'pipeline.tekton.dev');
     }
+    static getYaml(outputFormat: string, value: string): CliCommand {
+        return newOcCommand('-o', outputFormat, 'get', value)
+    }
+    static updateYaml(fsPath: string): CliCommand {
+        return newTknCommand('apply', '-f', fsPath);
+    }
 
 }
 
@@ -336,6 +342,15 @@ export class TektonNodeImpl implements TektonNode {
 
     get tooltip(): string {
         return format(this.CONTEXT_DATA[this.contextValue].tooltip, this);
+    }
+
+    get command(): vsCommand | undefined {
+        const arrName = ['Pipelines', 'Tasks', 'ClusterTasks', 'PipelineResources'];
+        if (arrName.includes(this.name)) {
+            return undefined;
+        } else {
+            return { command: 'tekton.openInEditor', title: 'Open In Editor', arguments: [this] };
+        }
     }
 
     get label(): string {
