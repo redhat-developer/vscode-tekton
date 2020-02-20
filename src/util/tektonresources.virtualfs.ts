@@ -6,7 +6,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import * as fs from 'fs';
+import * as fsx from 'fs-extra';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os'
@@ -110,15 +110,11 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
             return;
         }
         const fsPath = path.join(tempPath, uri.fsPath);
-        fs.writeFile(fsPath, content, (err) => {
-            if (err) throw err;
-        });
+        await fsx.writeFile(fsPath, content);
         const result = await TektonResourceVirtualFileSystemProvider.updateYamlFile(fsPath);
         if (result['stderr']) throw Error(result['stderr']);
         if (result['error']) throw Error(result['error']);
-        fs.unlink(fsPath, (err) => {
-            if (err) throw err;
-        });
+        await fsx.unlink(fsPath);
         const query = querystring.parse(uri.query);
         const outputFormat = TektonItem.getOutputFormat();
         const value = query.value as string;
