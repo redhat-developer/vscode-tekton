@@ -7,16 +7,17 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
+import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os'
 import * as querystring from 'querystring';
-import { FileSystemProvider, Uri, EventEmitter, FileChangeEvent, Event, Disposable, FileStat, FileType, window, workspace, commands } from 'vscode';
+import { FileSystemProvider, Uri, EventEmitter, FileChangeEvent, Event, Disposable, FileStat, FileType, window, workspace, commands, Position } from 'vscode';
 import { Cli, CliImpl, CliExitData } from '../cli';
 import { Command } from '../tkn';
 import * as k8s from 'vscode-kubernetes-tools-api';
 import { TektonItem } from '../tekton/tektonitem';
 
-export const TKN_RESOURCE_SCHEME = 'tkn';
+export const TKN_RESOURCE_SCHEME = 'tekton';
 export const TEKTON_RESOURCE_AUTHORITY = 'loadtektonresource';
 
 export function kubefsUri(value: string, outputFormat: string): Uri {
@@ -109,19 +110,28 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
             return;
         }
         const fsPath = path.join(tempPath, uri.fsPath);
-        fs.writeFileSync(fsPath, content);
+        fs.writeFile(fsPath, content, (err) => {
+            if (err) throw err;
+        });
         const result = await TektonResourceVirtualFileSystemProvider.updateYamlFile(fsPath);
         if (result['stderr']) throw Error(result['stderr']);
         if (result['error']) throw Error(result['error']);
-        fs.unlinkSync(fsPath);
+        fs.unlink(fsPath, (err) => {
+            if (err) throw err;
+        });
         const query = querystring.parse(uri.query);
         const outputFormat = TektonItem.getOutputFormat();
         const value = query.value as string;
         const newUri = kubefsUri(value, outputFormat);
+        const editor = window.activeTextEditor;
+        // the Position object gives you the line and character where the cursor is
+        const scroll = editor.visibleRanges[0].start;
+        const pos = editor.selection.active;
         workspace.openTextDocument(newUri).then(async (doc) => {
             await commands.executeCommand('workbench.action.closeActiveEditor');
             if (doc) {
-                window.showTextDocument(doc, {preserveFocus: true, preview: true});
+                const showText = await window.showTextDocument(doc, {selection: new vscode.Range(pos, pos), preview: true});
+                showText.revealRange(new vscode.Range(scroll, scroll), 3);
             }
         },
         (err) => window.showErrorMessage(`Error loading document: ${err}`));

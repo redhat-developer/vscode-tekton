@@ -23,16 +23,13 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
     let sandbox: sinon.SinonSandbox;
     let v1Stub: sinon.SinonStub;
     let osStub: sinon.SinonStub;
-    let unlinkSyncStub: sinon.SinonStub<[fs.PathLike], void>;
-    let openTextStub: sinon.SinonStub<[{ language?: string; content?: string }?], Thenable<import('vscode').TextDocument>>;
-    let executeCommandStub: sinon.SinonStub<[string, ...any[]], Thenable<unknown>>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let workspaceFoldersStub: sinon.SinonStub<any[], any>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let writeFileSyncStub: sinon.SinonStub<[string | number | Buffer | import('url').URL, any, fs.WriteFileOptions?], void>;
+    let unlinkStub: sinon.SinonStub;
+    let openTextStub: sinon.SinonStub;
+    let executeCommandStub: sinon.SinonStub;
+    let workspaceFoldersStub: sinon.SinonStub;
+    let writeFileStub: sinon.SinonStub;
     let trvfsp: TektonResourceVirtualFileSystemProvider;
     let execStub: sinon.SinonStub;
-    let showErrorMessageStub: sinon.SinonStub<[string, import('vscode').MessageOptions, ...import('vscode').MessageItem[]], Thenable<import('vscode').MessageItem>>;
     const tknUri = 'tknsss://loadtektonresourceload/pipeline-petclinic-deploy-pipeline.yaml?value%3Dpipeline%2Fpetclinic-deploy-pipeline%26_%3D1581402784093';
     const getYaml = `apiVersion: tekton.dev/v1alpha1
     kind: Pipeline
@@ -104,17 +101,16 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
         execStub = sandbox.stub(CliImpl.getInstance(), 'execute').resolves({ error: undefined, stdout: getYaml });
         trvfsp = new TektonResourceVirtualFileSystemProvider();
         workspaceFoldersStub = sandbox.stub(workspace, 'workspaceFolders').value([wsFolder1]);
-        writeFileSyncStub = sandbox.stub(fs, 'writeFileSync');
-        showErrorMessageStub = sandbox.stub(window, 'showErrorMessage');
+        writeFileStub = sandbox.stub(fs, 'writeFile');
+        sandbox.stub(window, 'showErrorMessage');
         const api: k8s.API<k8s.KubectlV1> = {
             available: false,
             reason: 'extension-not-available'
         };
         v1Stub = sandbox.stub(k8s.extension.kubectl, 'v1').value(api);
         osStub = sandbox.stub(os, 'tmpdir');
-        unlinkSyncStub = sandbox.stub(fs, 'unlinkSync');
+        unlinkStub = sandbox.stub(fs, 'unlink');
         openTextStub = sandbox.stub(workspace, 'openTextDocument').resolves(textDocument);
-        sandbox.stub(window, 'showTextDocument');
         executeCommandStub = sandbox.stub(commands, 'executeCommand');
     });
 
@@ -167,10 +163,10 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
         };
         v1Stub.onFirstCall().value(api);
         await trvfsp.writeFile(Uri.parse(tknUri), content);
-        writeFileSyncStub.calledOnce;
+        writeFileStub.calledOnce;
         executeCommandStub.calledOnce;
         openTextStub.calledOnce;
-        unlinkSyncStub.calledOnce;
+        unlinkStub.calledOnce;
     });
 
     test('return undefined if temp folder is not found', async () => {
@@ -226,6 +222,6 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
         workspaceFoldersStub.onFirstCall().resolves(wsFolder1);
         const content = kubefsUri('pipeline/petclinic-deploy-pipeline', 'yaml');
         const nonce = new Date().getTime();
-        expect(content).deep.equals(Uri.parse(`tkn://loadtektonresource/pipeline-petclinic-deploy-pipeline.yaml?value=pipeline/petclinic-deploy-pipeline&_=${nonce}`));
+        expect(content).deep.equals(Uri.parse(`tekton://loadtektonresource/pipeline-petclinic-deploy-pipeline.yaml?value=pipeline/petclinic-deploy-pipeline&_=${nonce}`));
     });
 });
