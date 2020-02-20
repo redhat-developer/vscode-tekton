@@ -11,7 +11,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os'
 import * as querystring from 'querystring';
-import { FileSystemProvider, Uri, EventEmitter, FileChangeEvent, Event, Disposable, FileStat, FileType, window, workspace, commands, Position } from 'vscode';
+import { FileSystemProvider, Uri, EventEmitter, FileChangeEvent, Event, Disposable, FileStat, FileType, window, workspace, commands } from 'vscode';
 import { Cli, CliImpl, CliExitData } from '../cli';
 import { Command } from '../tkn';
 import * as k8s from 'vscode-kubernetes-tools-api';
