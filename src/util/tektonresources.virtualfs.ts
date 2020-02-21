@@ -39,7 +39,7 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
         // in the cluster and update the doc accordingly.  But that is very
         // definitely a future enhancement thing!
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        return new Disposable(() => {});
+        return new Disposable(() => { });
     }
 
     stat(): FileStat {
@@ -121,13 +121,19 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
         const newUri = kubefsUri(value, outputFormat);
         const editor = window.activeTextEditor;
         // the Position object gives you the line and character where the cursor is
-        const scroll = editor.visibleRanges[0].start;
-        const pos = editor.selection.active;
+        const scroll = editor?.visibleRanges[0].start;
+        const pos = editor?.selection.active;
         workspace.openTextDocument(newUri).then(async (doc) => {
             await commands.executeCommand('workbench.action.closeActiveEditor');
             if (doc) {
-                const showText = await window.showTextDocument(doc, {selection: new vscode.Range(pos, pos), preview: true});
-                showText.revealRange(new vscode.Range(scroll, scroll), 3);
+                const options: vscode.TextDocumentShowOptions = { preview: true };
+                if(pos){
+                    options.selection = new vscode.Range(pos, pos);
+                }
+                const showText = await window.showTextDocument(doc, options);
+                if (scroll) {
+                    showText.revealRange(new vscode.Range(scroll, scroll), 3);
+                }
             }
         },
         (err) => window.showErrorMessage(`Error loading document: ${err}`));
