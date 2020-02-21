@@ -16,38 +16,38 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Window Utility', () => {
-    let sandbox: sinon.SinonSandbox;
-    let termStub: sinon.SinonStub;
+  let sandbox: sinon.SinonSandbox;
+  let termStub: sinon.SinonStub;
 
-    setup(() => {
-        sandbox = sinon.createSandbox();
-        termStub = sandbox.stub(window, 'createTerminal');
-    });
+  setup(() => {
+    sandbox = sinon.createSandbox();
+    termStub = sandbox.stub(window, 'createTerminal');
+  });
 
-    teardown(() => {
-        sandbox.restore();
-    });
+  teardown(() => {
+    sandbox.restore();
+  });
 
-    test('createTerminal creates a terminal object', () => {
-        WindowUtil.createTerminal('name', process.cwd());
-        expect(termStub).calledOnce;
-    });
+  test('createTerminal creates a terminal object', () => {
+    WindowUtil.createTerminal('name', process.cwd());
+    expect(termStub).calledOnce;
+  });
 
-    test('createTerminal adds tools location and shell path to the environment', () => {
-        const toolLocationDir = path.dirname(path.join('dir', 'where', 'tool', 'is', 'located', 'tool'));
-        const env: NodeJS.ProcessEnv = {};
-        const key = process.platform === 'win32' ? 'Path' : 'PATH';
-        Object.assign(env, process.env);
-        env[key] = `${toolLocationDir}${path.delimiter}${process.env[key]}`;
+  test('createTerminal adds tools location and shell path to the environment', () => {
+    const toolLocationDir = path.dirname(path.join('dir', 'where', 'tool', 'is', 'located', 'tool'));
+    const env: NodeJS.ProcessEnv = {};
+    const key = process.platform === 'win32' ? 'Path' : 'PATH';
+    Object.assign(env, process.env);
+    env[key] = `${toolLocationDir}${path.delimiter}${process.env[key]}`;
 
-        const options: TerminalOptions = {
-            cwd: process.cwd(),
-            name: 'terminal',
-            shellPath: process.platform === 'win32' ? undefined : '/bin/bash',
-            env: env
-        };
-        WindowUtil.createTerminal('terminal', process.cwd(), toolLocationDir);
+    const options: TerminalOptions = {
+      cwd: process.cwd(),
+      name: 'terminal',
+      shellPath: process.platform === 'win32' ? undefined : '/bin/bash',
+      env: env
+    };
+    WindowUtil.createTerminal('terminal', process.cwd(), toolLocationDir);
 
-        expect(termStub).calledOnceWith(options);
-    });
+    expect(termStub).calledOnceWith(options);
+  });
 });

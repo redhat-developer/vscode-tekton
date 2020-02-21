@@ -11,15 +11,15 @@ import * as vscode from 'vscode';
 import { parse, findNodeAtPosition } from 'node-yaml-parser';
 
 export function isMapping(node: YamlNode): node is YamlMap {
-    return node.kind === 'MAPPING';
+  return node.kind === 'MAPPING';
 }
 
 export function isSequence(node: YamlNode): node is YamlSequence {
-    return node.kind === 'SEQ';
+  return node.kind === 'SEQ';
 }
 
 export function isMappingItem(node: YamlNode): node is YamlMappingItem {
-    return node.kind === 'PAIR';
+  return node.kind === 'PAIR';
 }
 
 export interface YamlNode {
@@ -83,11 +83,11 @@ export class YamlLocator {
      * @returns {YamlMatchedElement} the search results of yaml elements at the given position
      */
     public getMatchedElement(textDocument: vscode.TextDocument, pos: vscode.Position): YamlMatchedElement {
-        const key: string = textDocument.uri.toString();
-        this.ensureCache(key, textDocument);
-        const cacheEntry = this.cache[key];
-        // findNodeAtPosition will find the matched node at given position
-        return findNodeAtPosition(cacheEntry.yamlDocs, cacheEntry.lineLengths, pos.line, pos.character);
+      const key: string = textDocument.uri.toString();
+      this.ensureCache(key, textDocument);
+      const cacheEntry = this.cache[key];
+      // findNodeAtPosition will find the matched node at given position
+      return findNodeAtPosition(cacheEntry.yamlDocs, cacheEntry.lineLengths, pos.line, pos.character);
     }
 
     /**
@@ -98,24 +98,24 @@ export class YamlLocator {
      * @returns {YamlMatchedElement} the search results of yaml elements at the given position
      */
     public getYamlDocuments(textDocument: vscode.TextDocument): YamlDocument[] {
-        const key: string = textDocument.uri.toString();
-        this.ensureCache(key, textDocument);
-        return this.cache[key].yamlDocs;
+      const key: string = textDocument.uri.toString();
+      this.ensureCache(key, textDocument);
+      return this.cache[key].yamlDocs;
     }
 
     private ensureCache(key: string, textDocument: vscode.TextDocument): void {
-        if (!this.cache[key]) {
-            this.cache[key] = { version: -1 } as YamlCachedDocuments;
-        }
+      if (!this.cache[key]) {
+        this.cache[key] = { version: -1 } as YamlCachedDocuments;
+      }
 
-        if (this.cache[key].version !== textDocument.version) {
-            // the document and line lengths from parse method is cached into YamlCachedDocuments to avoid duplicate
-            // parse against the same text.
-            const { documents, lineLengths } = parse(textDocument.getText());
-            this.cache[key].yamlDocs = documents;
-            this.cache[key].lineLengths = lineLengths;
-            this.cache[key].version = textDocument.version;
-        }
+      if (this.cache[key].version !== textDocument.version) {
+        // the document and line lengths from parse method is cached into YamlCachedDocuments to avoid duplicate
+        // parse against the same text.
+        const { documents, lineLengths } = parse(textDocument.getText());
+        this.cache[key].yamlDocs = documents;
+        this.cache[key].lineLengths = lineLengths;
+        this.cache[key].version = textDocument.version;
+      }
     }
 }
 

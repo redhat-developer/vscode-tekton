@@ -14,48 +14,48 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Platform Utility', () => {
-    let sandbox: sinon.SinonSandbox;
+  let sandbox: sinon.SinonSandbox;
 
-    setup(() => {
-        sandbox = sinon.createSandbox();
-    });
+  setup(() => {
+    sandbox = sinon.createSandbox();
+  });
 
-    teardown(() => {
-        sandbox.restore();
-    });
+  teardown(() => {
+    sandbox.restore();
+  });
 
-    test('getOS returns the platform name', () => {
-        const os = Platform.getOS();
-        expect(os).equals(process.platform);
-    });
+  test('getOS returns the platform name', () => {
+    const os = Platform.getOS();
+    expect(os).equals(process.platform);
+  });
 
-    test('OS delegates to getOS', () => {
-        const spy = sandbox.spy(Platform, 'getOS');
-        const os = Platform.OS;
+  test('OS delegates to getOS', () => {
+    const spy = sandbox.spy(Platform, 'getOS');
+    const os = Platform.OS;
 
-        expect(spy).calledOnce;
-        expect(os).equals(process.platform);
-    });
+    expect(spy).calledOnce;
+    expect(os).equals(process.platform);
+  });
 
-    test('getEnv returns the platform environment', () => {
-        const env = Platform.getEnv();
-        expect(env).equals(process.env);
-    });
+  test('getEnv returns the platform environment', () => {
+    const env = Platform.getEnv();
+    expect(env).equals(process.env);
+  });
 
-    test('ENV delegates to getENV', () => {
-        const spy = sandbox.spy(Platform, 'getEnv');
-        const env = Platform.ENV;
+  test('ENV delegates to getENV', () => {
+    const spy = sandbox.spy(Platform, 'getEnv');
+    const env = Platform.ENV;
 
-        expect(spy).calledOnce;
-        expect(env).equals(process.env);
-    });
+    expect(spy).calledOnce;
+    expect(env).equals(process.env);
+  });
 
-    test('getUserHomePath returns the path to user home', () => {
-        const home = Platform.getUserHomePath();
-        if (process.platform === 'win32') {
-            expect(home).equals(process.env.USERPROFILE);
-        } else {
-            expect(home).equals(process.env.HOME);
-        }
-    });
+  test('getUserHomePath returns the path to user home', () => {
+    const home = Platform.getUserHomePath();
+    if (process.platform === 'win32') {
+      expect(home).equals(process.env.USERPROFILE);
+    } else {
+      expect(home).equals(process.env.HOME);
+    }
+  });
 });

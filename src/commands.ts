@@ -17,20 +17,20 @@ export enum CommandContext {
 
 
 export function setCommandContext(key: CommandContext | string, value: string | boolean): PromiseLike<void> {
-    return commands.executeCommand(VSCodeCommands.SetContext, key, value);
+  return commands.executeCommand(VSCodeCommands.SetContext, key, value);
 }
 
 export function enterZenMode(): void {
-    setCommandContext(CommandContext.TreeZenMode, true);
-    customTektonExplorer.showSelected(true);
+  setCommandContext(CommandContext.TreeZenMode, true);
+  customTektonExplorer.showSelected(true);
 
 }
 
 export function exitZenMode(): void {
-    setCommandContext(CommandContext.TreeZenMode, false);
-    customTektonExplorer.showSelected(false);
+  setCommandContext(CommandContext.TreeZenMode, false);
+  customTektonExplorer.showSelected(false);
 }
 
 export function refreshCustomTree(): void {
-    customTektonExplorer.refresh();
+  customTektonExplorer.refresh();
 }

@@ -16,46 +16,46 @@ export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Dispo
     private items: TektonNode[];
 
     constructor() {
-        this.treeView = window.createTreeView('tektonCustomTree', { treeDataProvider: this });
+      this.treeView = window.createTreeView('tektonCustomTree', { treeDataProvider: this });
     }
 
     dispose(): void {
-        this.treeView.dispose();
+      this.treeView.dispose();
     }
 
     getTreeItem(element: TektonNode): TreeItem | Thenable<TreeItem> {
-        if (element instanceof MoreNode) {
-            element.command.arguments.push('tektonCustomTree');
-        }
-        return element; //TODO: modify view state if item there
+      if (element instanceof MoreNode) {
+        element.command.arguments.push('tektonCustomTree');
+      }
+      return element; //TODO: modify view state if item there
     }
     getChildren(element?: TektonNode): ProviderResult<TektonNode[]> {
-        if (element) {
-            return element.getChildren();
-        } else {
-            return this.items;
-        }
+      if (element) {
+        return element.getChildren();
+      } else {
+        return this.items;
+      }
     }
     getParent?(element: TektonNode): ProviderResult<TektonNode> {
-        return element.getParent();
+      return element.getParent();
     }
 
 
     refresh(target?: TektonNode): void {
-        this.onDidChangeTreeDataEmitter.fire(target);
+      this.onDidChangeTreeDataEmitter.fire(target);
     }
 
     showSelected(show: boolean): void {
-        if (show) {
-            const selection = pipelineExplorer.getSelection();
-            if (selection) {
-                this.items = selection;
-                this.refresh();
-            }
-        } else {
-            this.items = undefined;
-            this.refresh();
+      if (show) {
+        const selection = pipelineExplorer.getSelection();
+        if (selection) {
+          this.items = selection;
+          this.refresh();
         }
+      } else {
+        this.items = undefined;
+        this.refresh();
+      }
 
     }
 
