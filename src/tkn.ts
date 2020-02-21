@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { CliCommand, CliExitData, Cli, CliImpl, createCliCommand, cliCommandToString } from './cli';
-import { ProviderResult, TreeItemCollapsibleState, Terminal, Uri, QuickPickItem, workspace, Command as vsCommand, TreeItem } from 'vscode';
+import { ProviderResult, TreeItemCollapsibleState, Terminal, Uri, workspace, TreeItem, Command as vsCommand } from 'vscode';
 import { WindowUtil } from './util/windowUtils';
 import * as path from 'path';
 import { ToolsConfig } from './tools';
@@ -37,7 +37,7 @@ function createConfig(): humanize.HumanizerOptions {
 }
 
 
-export interface TektonNode extends QuickPickItem {
+export interface TektonNode {
     contextValue: string;
     creationTime?: string;
     state?: string;
@@ -322,17 +322,17 @@ export class TektonNodeImpl implements TektonNode {
             let fileName = 'running.gif';
             if (this.state) {
                 switch (this.state) {
-                case 'False': {
-                    fileName = 'failed.png';
-                    break;
-                }
-                case 'True': {
-                    fileName = 'success.png';
-                    break;
-                }
-                default: {
-                    break;
-                }
+                    case 'False': {
+                        fileName = 'failed.png';
+                        break;
+                    }
+                    case 'True': {
+                        fileName = 'success.png';
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
                 }
             }
             return Uri.file(path.join(__dirname, '../../images', fileName));
@@ -508,10 +508,7 @@ export class MoreNode extends TreeItem implements TektonNode {
         private totalCount: number,
         private parent: TektonNode) {
         super('more', TreeItemCollapsibleState.None);
-    }
-
-    get command(): vsCommand {
-        return { command: '_tekton.explorer.more', title: `more ${this.showNext}`, arguments: [this.showNext, this.parent, this] };
+        this.command = { command: '_tekton.explorer.more', title: `more ${this.showNext}`, arguments: [this.showNext, this.parent] };
     }
 
     get tooltip(): string {

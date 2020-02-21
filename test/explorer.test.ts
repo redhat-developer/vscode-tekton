@@ -5,7 +5,7 @@
 
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
-import { PipelineExplorer } from '../src/pipeline/pipelineExplorer';
+import { pipelineExplorer as tektonInstance  } from '../src/pipeline/pipelineExplorer';
 import { TknImpl, ContextType } from '../src/tkn';
 import { TestItem } from './tekton/testTektonitem';
 import sinon = require('sinon');
@@ -26,8 +26,6 @@ suite('Tekton Application Explorer', () => {
     const clustertaskItem = new TestItem(clusterTaskNode, 'clustertask', ContextType.CLUSTERTASK);
     const sandbox = sinon.createSandbox();
 
-    let tektonInstance: PipelineExplorer;
-
     setup(() => {
         sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
         sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskItem]);
@@ -44,7 +42,6 @@ suite('Tekton Application Explorer', () => {
             error: '',
             stdout: ''
         });
-        tektonInstance = PipelineExplorer.getInstance();
         pipelineNode.getChildren().push(pipelineItem);
         taskNode.getChildren().push(taskItem);
         clusterTaskNode.getChildren().push(clustertaskItem);
