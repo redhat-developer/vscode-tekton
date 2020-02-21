@@ -7,6 +7,7 @@ This release brings to you:
 * [#141](https://github.com/redhat-developer/vscode-tekton/issues/141) Update tkn cli version to `0.7.1`
 * [#111](https://github.com/redhat-developer/vscode-tekton/issues/111) Open YAML on click in Tekton Pipelines window
 * [#152](https://github.com/redhat-developer/vscode-tekton/issues/152) Add filtering in the Tekton view container
+* [#55](https://github.com/redhat-developer/vscode-tekton/issues/55) Create 'New Pipeline Resource' command
 * Bugfixes for minor issues:
   * [#155](https://github.com/redhat-developer/vscode-tekton/pull/155) Fix typos & wording
 
