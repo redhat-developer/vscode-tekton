@@ -29,7 +29,7 @@ export class PipelineRun extends TektonItem {
             "Select PipelineRun you want to describe"); */
     if (pipelinerun) { PipelineRun.tkn.executeInTerminal(Command.describePipelineRuns(pipelinerun.getName())); }
   }
-    
+
   static async list(pipelinerun: TektonNode): Promise<void> {
     /*         const pipelinerun = await PipelineRun.getTektonCmdData(treeItem,
             "From which project you want to describe PipelineRun",
@@ -52,7 +52,7 @@ export class PipelineRun extends TektonItem {
   static async delete(pipelinerun: TektonNode): Promise<string> {
     const value = await window.showWarningMessage(`Do you want to delete the PipelineRun '${pipelinerun.getName()}'?`, 'Yes', 'Cancel');
     if (value === 'Yes') {
-      return Progress.execFunctionWithProgress(`Deleting the PipelineRun '${pipelinerun.getName()}'.`, () => 
+      return Progress.execFunctionWithProgress(`Deleting the PipelineRun '${pipelinerun.getName()}'.`, () =>
         PipelineRun.tkn.execute(Command.deletePipelineRun(pipelinerun.getName())))
         .then(() => `The PipelineRun '${pipelinerun.getName()}' successfully deleted.`)
         .catch((err) => Promise.reject(`Failed to delete the PipelineRun '${pipelinerun.getName()}': '${err}'.`));

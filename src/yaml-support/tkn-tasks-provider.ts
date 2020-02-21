@@ -6,54 +6,54 @@ import { TknImpl } from '../tkn';
 import { TknTask } from '../tekton';
 
 export interface Snippet {
-    label: string;
-    description?: string;
-    body: TaskSnippet;
+  label: string;
+  description?: string;
+  body: TaskSnippet;
 }
 
 interface TaskSnippet {
-    name: string;
-    taskRef: TaskRef;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    taskSpec?: any; // TODO check this
-    conditions?: PipelineTaskCondition[];
-    retries?: number;
-    runAfter?: string[];
-    resources?: PipelineTaskResources;
-    params?: Param[];
+  name: string;
+  taskRef: TaskRef;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  taskSpec?: any; // TODO check this
+  conditions?: PipelineTaskCondition[];
+  retries?: number;
+  runAfter?: string[];
+  resources?: PipelineTaskResources;
+  params?: Param[];
 
 }
 
 interface PipelineTaskCondition {
-    conditionRef: string;
-    params?: Param[];
-    resources: PipelineTaskInputResource[];
+  conditionRef: string;
+  params?: Param[];
+  resources: PipelineTaskInputResource[];
 }
 
 interface PipelineTaskResources {
-    inputs?: PipelineTaskInputResource[];
-    outputs?: PipelineTaskOutputResource[];
+  inputs?: PipelineTaskInputResource[];
+  outputs?: PipelineTaskOutputResource[];
 }
 
 interface PipelineTaskInputResource {
-    name: string;
-    resource: string;
-    from?: string[];
+  name: string;
+  resource: string;
+  from?: string[];
 }
 
 interface PipelineTaskOutputResource {
-    name: string;
-    resource: string;
+  name: string;
+  resource: string;
 }
 
 interface TaskRef {
-    name: string;
-    kind?: 'Task' | 'ClusterTask';
+  name: string;
+  kind?: 'Task' | 'ClusterTask';
 }
 
 interface Param {
-    name: string;
-    value: string | string[];
+  name: string;
+  value: string | string[];
 }
 
 export async function getTknTasksSnippets(): Promise<Snippet[]> {

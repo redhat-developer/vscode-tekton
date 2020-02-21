@@ -41,7 +41,7 @@ function injectResourceName(templateObj: any, resNames: string[]): {} {
     templateObj.definitions.PipelineTaskInputResource.properties.resource.enum = resNames;
     templateObj.definitions.PipelineTaskOutputResource.properties.resource.enum = resNames;
   }
-    
+
   return templateObj;
 }
 

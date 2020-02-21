@@ -39,7 +39,7 @@ export class WatchUtil {
 
   static grep(fileLocation: string, rx: RegExp): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      const fileStream = fs.createReadStream(fileLocation, {encoding: 'utf8'});
+      const fileStream = fs.createReadStream(fileLocation, { encoding: 'utf8' });
       byline(fileStream)
         .on('data', (line: string) => {
           if (rx.test(line)) {
@@ -54,6 +54,6 @@ export class WatchUtil {
 }
 
 export interface FileContentChangeNotifier {
-    readonly watcher: fs.FSWatcher;
-    readonly emitter: EventEmitter;
+  readonly watcher: fs.FSWatcher;
+  readonly emitter: EventEmitter;
 }

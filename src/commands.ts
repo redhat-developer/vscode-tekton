@@ -7,12 +7,12 @@ import { commands } from 'vscode';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
 
 export enum VSCodeCommands {
-    SetContext = 'setContext',
+  SetContext = 'setContext',
 }
 
 
 export enum CommandContext {
-    TreeZenMode = 'tekton:zenMode'
+  TreeZenMode = 'tekton:zenMode'
 }
 
 

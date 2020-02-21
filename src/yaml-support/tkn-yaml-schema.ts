@@ -8,29 +8,29 @@ import { isTektonYaml, TektonYamlType } from './tkn-yaml';
 import { generateScheme } from './tkn-yaml-scheme-generator';
 
 enum MODIFICATION_ACTIONS {
-    'delete',
-    'add'
+  'delete',
+  'add'
 }
 
 interface SchemaAdditions {
-    schema: string;
-    action: MODIFICATION_ACTIONS.add;
-    path: string;
-    key: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    content: any;
+  schema: string;
+  action: MODIFICATION_ACTIONS.add;
+  path: string;
+  key: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  content: any;
 }
 
 interface SchemaDeletions {
-    schema: string;
-    action: MODIFICATION_ACTIONS.delete;
-    path: string;
-    key: string;
+  schema: string;
+  action: MODIFICATION_ACTIONS.delete;
+  path: string;
+  key: string;
 }
 
 interface YamlExtensionAPI {
-    registerContributor(schema: string, requestSchema: (resource: string) => string, requestSchemaContent: (uri: string) => Promise<string>): boolean;
-    modifySchemaContent(schemaModifications: SchemaAdditions | SchemaDeletions): Promise<void>;
+  registerContributor(schema: string, requestSchema: (resource: string) => string, requestSchemaContent: (uri: string) => Promise<string>): boolean;
+  modifySchemaContent(schemaModifications: SchemaAdditions | SchemaDeletions): Promise<void>;
 }
 const VSCODE_YAML_EXTENSION_ID = 'redhat.vscode-yaml';
 let extContext: vscode.ExtensionContext;

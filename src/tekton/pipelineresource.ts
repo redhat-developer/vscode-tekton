@@ -36,7 +36,7 @@ export class PipelineResource extends TektonItem {
     if (message) {
       window.showWarningMessage(message);
     } else {
-      return Progress.execFunctionWithProgress('Creating PipelineResource', () => 
+      return Progress.execFunctionWithProgress('Creating PipelineResource', () =>
         PipelineResource.tkn.execute(Command.createPipelineResource(document.fileName)))
         .then(() => 'PipelineResources were successfully created.')
         .catch((err) => Promise.reject(`Failed to Create PipelineResources with error: ${err}`));
@@ -47,7 +47,7 @@ export class PipelineResource extends TektonItem {
   static async describe(pipelineresource: TektonNode): Promise<void> {
     if (pipelineresource) { PipelineResource.tkn.executeInTerminal(Command.describePipelineResource(pipelineresource.getName())); }
   }
-    
+
   static async list(pipelineresource: TektonNode): Promise<void> {
     if (pipelineresource) { PipelineResource.tkn.executeInTerminal(Command.listPipelineResourcesInTerminal(pipelineresource.getName())); }
   }
@@ -55,7 +55,7 @@ export class PipelineResource extends TektonItem {
   static async delete(pipelineresource: TektonNode): Promise<string> {
     const value = await window.showWarningMessage(`Do you want to delete the Resource '${pipelineresource.getName()}'?`, 'Yes', 'Cancel');
     if (value === 'Yes') {
-      return Progress.execFunctionWithProgress(`Deleting the Resource '${pipelineresource.getName()}'.`, () => 
+      return Progress.execFunctionWithProgress(`Deleting the Resource '${pipelineresource.getName()}'.`, () =>
         PipelineResource.tkn.execute(Command.deletePipelineResource(pipelineresource.getName())))
         .then(() => `The Resource '${pipelineresource.getName()}' successfully deleted.`)
         .catch((err) => Promise.reject(`Failed to delete the Resource '${pipelineresource.getName()}': '${err}'.`));

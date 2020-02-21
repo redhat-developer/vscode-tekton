@@ -22,7 +22,7 @@ export class ClusterTask extends TektonItem {
   static async delete(clustertask: TektonNode): Promise<string> {
     const value = await window.showWarningMessage(`Do you want to delete the ClusterTask '${clustertask.getName()}'?`, 'Yes', 'Cancel');
     if (value === 'Yes') {
-      return Progress.execFunctionWithProgress(`Deleting the ClusterTask '${clustertask.getName()}'.`, () => 
+      return Progress.execFunctionWithProgress(`Deleting the ClusterTask '${clustertask.getName()}'.`, () =>
         ClusterTask.tkn.execute(Command.deleteClusterTask(clustertask.getName())))
         .then(() => `The ClusterTask '${clustertask.getName()}' successfully deleted.`)
         .catch((err) => Promise.reject(`Failed to delete the ClusterTask '${clustertask.getName()}': '${err}'.`));

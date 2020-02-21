@@ -9,16 +9,16 @@ import * as _ from 'lodash';
 const TEKTON_API_VERSION = 'tekton.dev/v1alpha1';
 
 export enum TektonYamlType {
-    Task = 'Task',
-    TaskRun = 'TaskRun',
-    Pipeline = 'Pipeline',
-    PipelineRun = 'PipelineRun',
-    PipelineResource = 'PipelineResource'
+  Task = 'Task',
+  TaskRun = 'TaskRun',
+  Pipeline = 'Pipeline',
+  PipelineRun = 'PipelineRun',
+  PipelineResource = 'PipelineResource'
 }
 
 export interface DeclaredResource {
-    name: string;
-    type: string;
+  name: string;
+  type: string;
 }
 
 export function isTektonYaml(vsDocument: vscode.TextDocument): TektonYamlType | undefined {
@@ -163,8 +163,8 @@ function getTasksName(tasks: YamlNode[]): string[] {
 }
 
 export enum StringComparison {
-    Ordinal,
-    OrdinalIgnoreCase
+  Ordinal,
+  OrdinalIgnoreCase
 }
 
 // test whether two strings are equal ignore case
@@ -185,6 +185,6 @@ export function getYamlMappingValue(mapRootNode: YamlMap, key: string,
     return undefined;
   }
   const keyValueItem = mapRootNode.mappings.find((mapping) => mapping.key &&
-        (ignoreCase === StringComparison.OrdinalIgnoreCase ? key === mapping.key.raw : equalIgnoreCase(key, mapping.key.raw)));
+    (ignoreCase === StringComparison.OrdinalIgnoreCase ? key === mapping.key.raw : equalIgnoreCase(key, mapping.key.raw)));
   return keyValueItem ? keyValueItem.value.raw : undefined;
 }

@@ -24,7 +24,7 @@ export class Task extends TektonItem {
   static async delete(task: TektonNode): Promise<string> {
     const value = await window.showWarningMessage(`Do you want to delete the Task '${task.getName()}'?`, 'Yes', 'Cancel');
     if (value === 'Yes') {
-      return Progress.execFunctionWithProgress(`Deleting the Task '${task.getName()}'.`, () => 
+      return Progress.execFunctionWithProgress(`Deleting the Task '${task.getName()}'.`, () =>
         Task.tkn.execute(Command.deleteTask(task.getName())))
         .then(() => `The Task '${task.getName()}' successfully deleted.`)
         .catch((err) => Promise.reject(`Failed to delete the Task '${task.getName()}': '${err}'.`));
