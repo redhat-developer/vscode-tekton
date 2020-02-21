@@ -7,33 +7,33 @@
 
 export class Platform {
 
-    static identify(map): string | undefined {
-        if (map[Platform.OS]) {
-            return map[Platform.OS]();
-        }
-        return map['default'] ? map['default']() : undefined;
+  static identify(map): string | undefined {
+    if (map[Platform.OS]) {
+      return map[Platform.OS]();
     }
+    return map['default'] ? map['default']() : undefined;
+  }
 
-    static getOS(): string {
-        return process.platform;
-    }
+  static getOS(): string {
+    return process.platform;
+  }
 
-    static get OS(): string {
-        return Platform.getOS();
-    }
+  static get OS(): string {
+    return Platform.getOS();
+  }
 
-    static get ENV(): NodeJS.ProcessEnv {
-        return Platform.getEnv();
-    }
+  static get ENV(): NodeJS.ProcessEnv {
+    return Platform.getEnv();
+  }
 
-    static getEnv(): NodeJS.ProcessEnv {
-        return process.env;
-    }
+  static getEnv(): NodeJS.ProcessEnv {
+    return process.env;
+  }
 
-    static getUserHomePath(): string {
-        return Platform.identify({
-            win32: () => Platform.ENV.USERPROFILE,
-            default: () => Platform.ENV.HOME
-        });
-    }
+  static getUserHomePath(): string {
+    return Platform.identify({
+      win32: () => Platform.ENV.USERPROFILE,
+      default: () => Platform.ENV.HOME
+    });
+  }
 }

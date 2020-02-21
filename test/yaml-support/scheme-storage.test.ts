@@ -13,50 +13,50 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Scheme storage', () => {
-    let sandbox: sinon.SinonSandbox;
-    let schemeStorage: TknSchemeStorage;
-    setup(() => {
-        sandbox = sinon.createSandbox();
-        schemeStorage = new TknSchemeStorage();
-    });
+  let sandbox: sinon.SinonSandbox;
+  let schemeStorage: TknSchemeStorage;
+  setup(() => {
+    sandbox = sinon.createSandbox();
+    schemeStorage = new TknSchemeStorage();
+  });
 
-    teardown(() => {
-        sandbox.restore();
-    });
+  teardown(() => {
+    sandbox.restore();
+  });
 
-    test('should call generator', async () => {
-        const doc = { getText: () => 'Some text', version: 1, uri: vscode.Uri.parse('file:///fos/bar.yaml') } as vscode.TextDocument;
-        const generator = sinon.fake.resolves('Foo');
+  test('should call generator', async () => {
+    const doc = { getText: () => 'Some text', version: 1, uri: vscode.Uri.parse('file:///fos/bar.yaml') } as vscode.TextDocument;
+    const generator = sinon.fake.resolves('Foo');
 
-        const result = await schemeStorage.getScheme(doc, generator);
-        expect(result).equal('Foo');
-        expect(generator.calledOnce).to.be.true;
-    });
+    const result = await schemeStorage.getScheme(doc, generator);
+    expect(result).equal('Foo');
+    expect(generator.calledOnce).to.be.true;
+  });
 
-    test('should check version', async () => {
-        const doc = { getText: () => 'Some text', version: 1, uri: vscode.Uri.parse('file:///fos/bar.yaml') } as vscode.TextDocument;
-        const generator = sinon.fake.resolves('Foo');
+  test('should check version', async () => {
+    const doc = { getText: () => 'Some text', version: 1, uri: vscode.Uri.parse('file:///fos/bar.yaml') } as vscode.TextDocument;
+    const generator = sinon.fake.resolves('Foo');
 
-        const result = await schemeStorage.getScheme(doc, generator);
-        const secondResult = await schemeStorage.getScheme(doc, generator);
+    const result = await schemeStorage.getScheme(doc, generator);
+    const secondResult = await schemeStorage.getScheme(doc, generator);
 
-        expect(result).equal('Foo');
-        expect(generator.calledOnce).to.be.true;
-        expect(secondResult).equal('Foo');
-    });
+    expect(result).equal('Foo');
+    expect(generator.calledOnce).to.be.true;
+    expect(secondResult).equal('Foo');
+  });
 
-    test('should call generator if version changed', async () => {
-        const doc = { getText: () => 'Some text', version: 1, uri: vscode.Uri.parse('file:///fos/bar.yaml') } as vscode.TextDocument;
-        const generator = sinon.fake.resolves('Foo');
+  test('should call generator if version changed', async () => {
+    const doc = { getText: () => 'Some text', version: 1, uri: vscode.Uri.parse('file:///fos/bar.yaml') } as vscode.TextDocument;
+    const generator = sinon.fake.resolves('Foo');
 
-        const result = await schemeStorage.getScheme(doc, generator);
-        const doc2 = { getText: () => 'Some text', version: 2, uri: vscode.Uri.parse('file:///fos/bar.yaml') } as vscode.TextDocument;
+    const result = await schemeStorage.getScheme(doc, generator);
+    const doc2 = { getText: () => 'Some text', version: 2, uri: vscode.Uri.parse('file:///fos/bar.yaml') } as vscode.TextDocument;
 
-        const secondResult = await schemeStorage.getScheme(doc2, generator);
+    const secondResult = await schemeStorage.getScheme(doc2, generator);
 
-        expect(result).equal('Foo');
-        expect(generator.calledTwice).to.be.true;
-        expect(secondResult).equal('Foo');
-    });
+    expect(result).equal('Foo');
+    expect(generator.calledTwice).to.be.true;
+    expect(secondResult).equal('Foo');
+  });
 
 });

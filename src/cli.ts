@@ -8,105 +8,105 @@ import { SpawnOptions, spawn } from 'child_process';
 
 
 export interface CliExitData {
-    readonly error: string | Error;
-    readonly stdout: string;
+  readonly error: string | Error;
+  readonly stdout: string;
 }
 
 export interface Cli {
-    execute(cmd: CliCommand, opts?: SpawnOptions): Promise<CliExitData>;
+  execute(cmd: CliCommand, opts?: SpawnOptions): Promise<CliExitData>;
 }
 
 export interface TknChannel {
-    print(text: string): void;
-    show(): void;
+  print(text: string): void;
+  show(): void;
 }
 
 export interface CliCommand {
-    cliCommand: string;
-    cliArguments: string[];
+  cliCommand: string;
+  cliArguments: string[];
 }
 
 export function createCliCommand(cliCommand: string, ...cliArguments: string[]): CliCommand {
-    if (!cliArguments) {
-        cliArguments = [];
-    }
-    return { cliCommand, cliArguments };
+  if (!cliArguments) {
+    cliArguments = [];
+  }
+  return { cliCommand, cliArguments };
 }
 
 export function cliCommandToString(command: CliCommand): string {
-    return `${command.cliCommand} ${command.cliArguments.join(' ')}`;
+  return `${command.cliCommand} ${command.cliArguments.join(' ')}`;
 }
 
 export class CliImpl implements Cli {
-    private static instance: CliImpl;
-    private tknChannel: TknChannel = new TknChannelImpl();
+  private static instance: CliImpl;
+  private tknChannel: TknChannel = new TknChannelImpl();
 
-    static getInstance(): CliImpl {
-        if (!CliImpl.instance) {
-            CliImpl.instance = new CliImpl();
-        }
-        return CliImpl.instance;
+  static getInstance(): CliImpl {
+    if (!CliImpl.instance) {
+      CliImpl.instance = new CliImpl();
     }
+    return CliImpl.instance;
+  }
 
-    async showOutputChannel(): Promise<void> {
-        this.tknChannel.show();
-    }
+  async showOutputChannel(): Promise<void> {
+    this.tknChannel.show();
+  }
 
-    async execute(cmd: CliCommand, opts: SpawnOptions = {}): Promise<CliExitData> {
-        return new Promise<CliExitData>((resolve) => {
-            this.tknChannel.print(cliCommandToString(cmd));
-            if (opts.windowsHide === undefined) {
-                opts.windowsHide = true;
-            }
-            if (opts.shell === undefined) {
-                opts.shell = true;
-            }
-            const tkn = spawn(cmd.cliCommand, cmd.cliArguments, opts);
-            let stdout = '';
-            let error: string | Error;
-            tkn.stdout.on('data', (data) => {
-                stdout += data;
-            });
-            tkn.stderr.on('data', (data) => {
-                error += data;
-            });
-            tkn.on('error', err => {
-                // do not reject it here, because caller in some cases need the error and the streams
-                // to make a decision
-                error = err;
-            });
-            tkn.on('close', () => {
-                resolve({ error, stdout });
-            });
-        });
-    }
+  async execute(cmd: CliCommand, opts: SpawnOptions = {}): Promise<CliExitData> {
+    return new Promise<CliExitData>((resolve) => {
+      this.tknChannel.print(cliCommandToString(cmd));
+      if (opts.windowsHide === undefined) {
+        opts.windowsHide = true;
+      }
+      if (opts.shell === undefined) {
+        opts.shell = true;
+      }
+      const tkn = spawn(cmd.cliCommand, cmd.cliArguments, opts);
+      let stdout = '';
+      let error: string | Error;
+      tkn.stdout.on('data', (data) => {
+        stdout += data;
+      });
+      tkn.stderr.on('data', (data) => {
+        error += data;
+      });
+      tkn.on('error', err => {
+        // do not reject it here, because caller in some cases need the error and the streams
+        // to make a decision
+        error = err;
+      });
+      tkn.on('close', () => {
+        resolve({ error, stdout });
+      });
+    });
+  }
 }
 
 class TknChannelImpl implements TknChannel {
-    private readonly channel: vscode.OutputChannel = vscode.window.createOutputChannel('Tekton Pipelines');
+  private readonly channel: vscode.OutputChannel = vscode.window.createOutputChannel('Tekton Pipelines');
 
-    show(): void {
-        this.channel.show();
-    }
+  show(): void {
+    this.channel.show();
+  }
 
-    prettifyJson(str: string): string {
-        let jsonData: string;
-        try {
-            jsonData = JSON.stringify(JSON.parse(str), null, 2);
-        } catch (ignore) {
-            return str;
-        }
-        return jsonData;
+  prettifyJson(str: string): string {
+    let jsonData: string;
+    try {
+      jsonData = JSON.stringify(JSON.parse(str), null, 2);
+    } catch (ignore) {
+      return str;
     }
+    return jsonData;
+  }
 
-    print(text: string): void {
-        const textData = this.prettifyJson(text);
-        this.channel.append(textData);
-        if (textData.charAt(textData.length - 1) !== '\n') {
-            this.channel.append('\n');
-        }
-        if (vscode.workspace.getConfiguration('vs-tekton').get<boolean>('showChannelOnOutput')) {
-            this.channel.show();
-        }
+  print(text: string): void {
+    const textData = this.prettifyJson(text);
+    this.channel.append(textData);
+    if (textData.charAt(textData.length - 1) !== '\n') {
+      this.channel.append('\n');
     }
+    if (vscode.workspace.getConfiguration('vs-tekton').get<boolean>('showChannelOnOutput')) {
+      this.channel.show();
+    }
+  }
 }

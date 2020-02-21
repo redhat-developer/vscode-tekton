@@ -20,18 +20,18 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('TektonResourceVirtualFileSystemProvider', () => {
-    let sandbox: sinon.SinonSandbox;
-    let v1Stub: sinon.SinonStub;
-    let osStub: sinon.SinonStub;
-    let unlinkStub: sinon.SinonStub;
-    let openTextStub: sinon.SinonStub;
-    let executeCommandStub: sinon.SinonStub;
-    let workspaceFoldersStub: sinon.SinonStub;
-    let writeFileStub: sinon.SinonStub;
-    let trvfsp: TektonResourceVirtualFileSystemProvider;
-    let execStub: sinon.SinonStub;
-    const tknUri = 'tknsss://loadtektonresourceload/pipeline-petclinic-deploy-pipeline.yaml?value%3Dpipeline%2Fpetclinic-deploy-pipeline%26_%3D1581402784093';
-    const getYaml = `apiVersion: tekton.dev/v1alpha1
+  let sandbox: sinon.SinonSandbox;
+  let v1Stub: sinon.SinonStub;
+  let osStub: sinon.SinonStub;
+  let unlinkStub: sinon.SinonStub;
+  let openTextStub: sinon.SinonStub;
+  let executeCommandStub: sinon.SinonStub;
+  let workspaceFoldersStub: sinon.SinonStub;
+  let writeFileStub: sinon.SinonStub;
+  let trvfsp: TektonResourceVirtualFileSystemProvider;
+  let execStub: sinon.SinonStub;
+  const tknUri = 'tknsss://loadtektonresourceload/pipeline-petclinic-deploy-pipeline.yaml?value%3Dpipeline%2Fpetclinic-deploy-pipeline%26_%3D1581402784093';
+  const getYaml = `apiVersion: tekton.dev/v1alpha1
     kind: Pipeline
     metadata:
       creationTimestamp: "2020-01-30T08:46:16Z"
@@ -73,155 +73,155 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
         taskRef:
           name: openshift-client
     `;
-    const textDocument: TextDocument = {
-        uri: undefined,
-        fileName: 'tmpServerConnector-server.json',
-        isClosed: false,
-        isDirty: false,
-        isUntitled: false,
-        languageId: '',
-        version: 1,
-        eol: EndOfLine.CRLF,
-        save: undefined,
-        lineCount: 33,
-        lineAt: undefined,
-        getText: () => '',
-        getWordRangeAtPosition: undefined,
-        offsetAt: undefined,
-        positionAt: undefined,
-        validatePosition: undefined,
-        validateRange: undefined
+  const textDocument: TextDocument = {
+    uri: undefined,
+    fileName: 'tmpServerConnector-server.json',
+    isClosed: false,
+    isDirty: false,
+    isUntitled: false,
+    languageId: '',
+    version: 1,
+    eol: EndOfLine.CRLF,
+    save: undefined,
+    lineCount: 33,
+    lineAt: undefined,
+    getText: () => '',
+    getWordRangeAtPosition: undefined,
+    offsetAt: undefined,
+    positionAt: undefined,
+    validatePosition: undefined,
+    validateRange: undefined
+  };
+  const fixtureFolder = path.join(__dirname, '..', '..', 'test', 'fixtures').normalize();
+  const folderUri = Uri.file(path.join(fixtureFolder));
+  const wsFolder1 = { uri: folderUri, index: 0, name: 'folder' };
+
+  setup(() => {
+    sandbox = sinon.createSandbox();
+    execStub = sandbox.stub(CliImpl.getInstance(), 'execute').resolves({ error: undefined, stdout: getYaml });
+    trvfsp = new TektonResourceVirtualFileSystemProvider();
+    workspaceFoldersStub = sandbox.stub(workspace, 'workspaceFolders').value([wsFolder1]);
+    writeFileStub = sandbox.stub(fs, 'writeFile');
+    sandbox.stub(window, 'showErrorMessage');
+    const api: k8s.API<k8s.KubectlV1> = {
+      available: false,
+      reason: 'extension-not-available'
     };
-    const fixtureFolder = path.join(__dirname, '..', '..', 'test', 'fixtures').normalize();
-    const folderUri = Uri.file(path.join(fixtureFolder));
-    const wsFolder1 = { uri: folderUri, index: 0, name: 'folder' };
+    v1Stub = sandbox.stub(k8s.extension.kubectl, 'v1').value(api);
+    osStub = sandbox.stub(os, 'tmpdir');
+    unlinkStub = sandbox.stub(fs, 'unlink');
+    openTextStub = sandbox.stub(workspace, 'openTextDocument').resolves(textDocument);
+    executeCommandStub = sandbox.stub(commands, 'executeCommand');
+  });
 
-    setup(() => {
-        sandbox = sinon.createSandbox();
-        execStub = sandbox.stub(CliImpl.getInstance(), 'execute').resolves({ error: undefined, stdout: getYaml });
-        trvfsp = new TektonResourceVirtualFileSystemProvider();
-        workspaceFoldersStub = sandbox.stub(workspace, 'workspaceFolders').value([wsFolder1]);
-        writeFileStub = sandbox.stub(fs, 'writeFile');
-        sandbox.stub(window, 'showErrorMessage');
-        const api: k8s.API<k8s.KubectlV1> = {
-            available: false,
-            reason: 'extension-not-available'
-        };
-        v1Stub = sandbox.stub(k8s.extension.kubectl, 'v1').value(api);
-        osStub = sandbox.stub(os, 'tmpdir');
-        unlinkStub = sandbox.stub(fs, 'unlink');
-        openTextStub = sandbox.stub(workspace, 'openTextDocument').resolves(textDocument);
-        executeCommandStub = sandbox.stub(commands, 'executeCommand');
-    });
+  teardown(() => {
+    sandbox.restore();
+  });
 
-    teardown(() => {
-        sandbox.restore();
-    });
+  test('should able to read file', async () => {
+    const result = await trvfsp.readFile(Uri.parse(tknUri));
+    expect(result.toString()).deep.equals(getYaml);
+    expect(execStub).calledOnce;
+  });
 
-    test('should able to read file', async () => {
-        const result = await trvfsp.readFile(Uri.parse(tknUri));
-        expect(result.toString()).deep.equals(getYaml);
-        expect(execStub).calledOnce;
-    });
+  test('should able to get yaml data from kubectl', async () => {
+    const api: k8s.API<k8s.KubectlV1> = {
+      available: true,
+      api: {
+        invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0}),
+        portForward: sandbox.stub()
+      }
+    };
+    v1Stub.onFirstCall().value(api);
+    const result = await trvfsp.readFile(Uri.parse(tknUri));
+    expect(result.toString()).deep.equals(getYaml);
+  });
 
-    test('should able to get yaml data from kubectl', async () => {
-        const api: k8s.API<k8s.KubectlV1> = {
-            available: true,
-            api: {
-                invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0}),
-                portForward: sandbox.stub()
-            }
-        };
-        v1Stub.onFirstCall().value(api);
-        const result = await trvfsp.readFile(Uri.parse(tknUri));
-        expect(result.toString()).deep.equals(getYaml);
-    });
+  test('throw error if command fails', async () => {
+    execStub.onFirstCall().resolves({ error: 'error', stdout: undefined });
+    try {
+      await trvfsp.readFile(Uri.parse(tknUri));
+    } catch (err) {
+      expect(err).deep.equals('error');
+      expect(execStub).calledOnce;
+    }
+  });
 
-    test('throw error if command fails', async () => {
-        execStub.onFirstCall().resolves({ error: 'error', stdout: undefined });
-        try {
-            await trvfsp.readFile(Uri.parse(tknUri));
-        } catch (err) {
-            expect(err).deep.equals('error');
-            expect(execStub).calledOnce;
+  test('should able to apply and save yaml data', async () => {
+    const content = await trvfsp.readFile(Uri.parse(tknUri));
+    if (process.platform === 'win32') {
+      osStub.onFirstCall().resolves('c:\\temp');
+    } else {
+      osStub.onFirstCall().resolves('/temp');
+    }
+    const api: k8s.API<k8s.KubectlV1> = {
+      available: true,
+      api: {
+        invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0}),
+        portForward: sandbox.stub()
+      }
+    };
+    v1Stub.onFirstCall().value(api);
+    await trvfsp.writeFile(Uri.parse(tknUri), content);
+    writeFileStub.calledOnce;
+    executeCommandStub.calledOnce;
+    openTextStub.calledOnce;
+    unlinkStub.calledOnce;
+  });
+
+  test('return undefined if temp folder is not found', async () => {
+    const content = await trvfsp.readFile(Uri.parse(tknUri));
+    if (process.platform === 'win32') {
+      osStub.onFirstCall().resolves(undefined);
+    } else {
+      osStub.onFirstCall().resolves(undefined);
+    }
+    const result = await trvfsp.writeFile(Uri.parse(tknUri), content);
+    expect(result).equals(undefined);
+  });
+
+  test('throw error if command fails to update yaml file', async () => {
+    execStub.onSecondCall().resolves({ error: 'error', stdout: undefined });
+    try {
+      const content = await trvfsp.readFile(Uri.parse(tknUri));
+      if (process.platform === 'win32') {
+        osStub.onFirstCall().resolves('c:\\temp');
+      } else {
+        osStub.onFirstCall().resolves('/temp');
+      }
+      await trvfsp.writeFile(Uri.parse(tknUri), content);
+    } catch (err) {
+      expect(err.message).equals('error');
+      expect(execStub).calledTwice;
+    }
+  });
+
+  test('throw error if kubectl command fails to update yaml file', async () => {
+    try {
+      const content = await trvfsp.readFile(Uri.parse(tknUri));
+      if (process.platform === 'win32') {
+        osStub.onFirstCall().resolves('c:\\temp');
+      } else {
+        osStub.onFirstCall().resolves('/temp');
+      }
+      const api: k8s.API<k8s.KubectlV1> = {
+        available: true,
+        api: {
+          invokeCommand: sandbox.stub().resolves({ stdout: '', stderr: 'error', code: 0}),
+          portForward: sandbox.stub()
         }
-    });
+      };
+      v1Stub.onSecondCall().value(api);
+      await trvfsp.writeFile(Uri.parse(tknUri), content);
+    } catch (err) {
+      expect(err.message).equals('error');
+    }
+  });
 
-    test('should able to apply and save yaml data', async () => {
-        const content = await trvfsp.readFile(Uri.parse(tknUri));
-        if (process.platform === 'win32') {
-            osStub.onFirstCall().resolves('c:\\temp');
-        } else {
-            osStub.onFirstCall().resolves('/temp');
-        }
-        const api: k8s.API<k8s.KubectlV1> = {
-            available: true,
-            api: {
-                invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0}),
-                portForward: sandbox.stub()
-            }
-        };
-        v1Stub.onFirstCall().value(api);
-        await trvfsp.writeFile(Uri.parse(tknUri), content);
-        writeFileStub.calledOnce;
-        executeCommandStub.calledOnce;
-        openTextStub.calledOnce;
-        unlinkStub.calledOnce;
-    });
-
-    test('return undefined if temp folder is not found', async () => {
-        const content = await trvfsp.readFile(Uri.parse(tknUri));
-        if (process.platform === 'win32') {
-            osStub.onFirstCall().resolves(undefined);
-        } else {
-            osStub.onFirstCall().resolves(undefined);
-        }
-        const result = await trvfsp.writeFile(Uri.parse(tknUri), content);
-        expect(result).equals(undefined);
-    });
-
-    test('throw error if command fails to update yaml file', async () => {
-        execStub.onSecondCall().resolves({ error: 'error', stdout: undefined });
-        try {
-            const content = await trvfsp.readFile(Uri.parse(tknUri));
-            if (process.platform === 'win32') {
-                osStub.onFirstCall().resolves('c:\\temp');
-            } else {
-                osStub.onFirstCall().resolves('/temp');
-            }
-            await trvfsp.writeFile(Uri.parse(tknUri), content);
-        } catch (err) {
-            expect(err.message).equals('error');
-            expect(execStub).calledTwice;
-        }
-    });
-
-    test('throw error if kubectl command fails to update yaml file', async () => {
-        try {
-            const content = await trvfsp.readFile(Uri.parse(tknUri));
-            if (process.platform === 'win32') {
-                osStub.onFirstCall().resolves('c:\\temp');
-            } else {
-                osStub.onFirstCall().resolves('/temp');
-            }
-            const api: k8s.API<k8s.KubectlV1> = {
-                available: true,
-                api: {
-                    invokeCommand: sandbox.stub().resolves({ stdout: '', stderr: 'error', code: 0}),
-                    portForward: sandbox.stub()
-                }
-            };
-            v1Stub.onSecondCall().value(api);
-            await trvfsp.writeFile(Uri.parse(tknUri), content);
-        } catch (err) {
-            expect(err.message).equals('error');
-        }
-    });
-
-    test('create file system uri parse', async () => {
-        workspaceFoldersStub.onFirstCall().resolves(wsFolder1);
-        const content = kubefsUri('pipeline/petclinic-deploy-pipeline', 'yaml');
-        const nonce = new Date().getTime();
-        expect(content).deep.equals(Uri.parse(`tekton://loadtektonresource/pipeline-petclinic-deploy-pipeline.yaml?value=pipeline/petclinic-deploy-pipeline&_=${nonce}`));
-    });
+  test('create file system uri parse', async () => {
+    workspaceFoldersStub.onFirstCall().resolves(wsFolder1);
+    const content = kubefsUri('pipeline/petclinic-deploy-pipeline', 'yaml');
+    const nonce = new Date().getTime();
+    expect(content).deep.equals(Uri.parse(`tekton://loadtektonresource/pipeline-petclinic-deploy-pipeline.yaml?value=pipeline/petclinic-deploy-pipeline&_=${nonce}`));
+  });
 });

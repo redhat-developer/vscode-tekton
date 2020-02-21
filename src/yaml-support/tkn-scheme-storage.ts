@@ -5,35 +5,35 @@
 import * as vscode from 'vscode';
 
 interface TknSchemeCacheItem {
-    scheme: string;
-    version: number;
+  scheme: string;
+  version: number;
 }
 
 export interface SchemeGenerator {
-    (vsDocument: vscode.TextDocument): Promise<string>;
+  (vsDocument: vscode.TextDocument): Promise<string>;
 }
 
 export class TknSchemeStorage {
 
-    private cache: { [key: string]: TknSchemeCacheItem } = {};
+  private cache: { [key: string]: TknSchemeCacheItem } = {};
 
-    async getScheme(vsDocument: vscode.TextDocument, generator: SchemeGenerator): Promise<string> {
-        const key = vsDocument.uri.toString();
-        await this.ensureCache(key, vsDocument, generator);
-        return this.cache[key].scheme;
+  async getScheme(vsDocument: vscode.TextDocument, generator: SchemeGenerator): Promise<string> {
+    const key = vsDocument.uri.toString();
+    await this.ensureCache(key, vsDocument, generator);
+    return this.cache[key].scheme;
+  }
+
+  private async ensureCache(key: string, doc: vscode.TextDocument, generator: SchemeGenerator): Promise<void> {
+    if (!this.cache[key]) {
+      this.cache[key] = { version: -1 } as TknSchemeCacheItem;
     }
 
-    private async ensureCache(key: string, doc: vscode.TextDocument, generator: SchemeGenerator): Promise<void> {
-        if (!this.cache[key]) {
-            this.cache[key] = { version: -1 } as TknSchemeCacheItem;
-        }
-
-        if (this.cache[key].version !== doc.version) {
-            const scheme = await generator(doc);
-            this.cache[key].scheme = scheme;
-            this.cache[key].version = doc.version;
-        }
+    if (this.cache[key].version !== doc.version) {
+      const scheme = await generator(doc);
+      this.cache[key].scheme = scheme;
+      this.cache[key].version = doc.version;
     }
+  }
 }
 
 const schemeStorage = new TknSchemeStorage();

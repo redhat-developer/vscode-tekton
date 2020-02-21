@@ -7,30 +7,30 @@ import { commands } from 'vscode';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
 
 export enum VSCodeCommands {
-    SetContext = 'setContext',
+  SetContext = 'setContext',
 }
 
 
 export enum CommandContext {
-    TreeZenMode = 'tekton:zenMode'
+  TreeZenMode = 'tekton:zenMode'
 }
 
 
 export function setCommandContext(key: CommandContext | string, value: string | boolean): PromiseLike<void> {
-    return commands.executeCommand(VSCodeCommands.SetContext, key, value);
+  return commands.executeCommand(VSCodeCommands.SetContext, key, value);
 }
 
 export function enterZenMode(): void {
-    setCommandContext(CommandContext.TreeZenMode, true);
-    customTektonExplorer.showSelected(true);
+  setCommandContext(CommandContext.TreeZenMode, true);
+  customTektonExplorer.showSelected(true);
 
 }
 
 export function exitZenMode(): void {
-    setCommandContext(CommandContext.TreeZenMode, false);
-    customTektonExplorer.showSelected(false);
+  setCommandContext(CommandContext.TreeZenMode, false);
+  customTektonExplorer.showSelected(false);
 }
 
 export function refreshCustomTree(): void {
-    customTektonExplorer.refresh();
+  customTektonExplorer.refresh();
 }
