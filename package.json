@@ -133,6 +133,16 @@
     ],
     "commands": [
       {
+        "command": "tekton.pipeline.preview",
+        "title": "Open Pipeline preview to the Side",
+        "category": "Tekton",
+        "enablement": "tekton:pipelinePreview",
+        "icon": {
+          "dark": "images/dark/preview-right.svg",
+          "light": "images/light/preview-right.svg"
+        }
+      },
+      {
         "command": "tekton.about",
         "title": "About",
         "category": "Tekton"
@@ -666,6 +676,13 @@
           "when": "view == tektonPipelineExplorer && viewItem == task",
           "group": "c0@1"
         }
+      ],
+      "editor/title": [
+        {
+          "command": "tekton.pipeline.preview",
+          "group": "navigation",
+          "when": "tekton:pipelinePreview"
+        }
       ]
     }
   },
@@ -678,12 +695,15 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "clean": "rm -rf out || rmdir out /s /q",
+    "clean": "rimraf out && rimraf preview",
     "test": "npm run clean && npm run compile && npm run verify && node ./out/build/install-vscode.js && node ./out/build/unit-tests.js",
     "update-deps": "node_modules/.bin/ncu --upgrade --loglevel verbose --packageFile package.json && npm update",
     "coverage:upload": "codecov -f coverage/coverage-final.json",
-    "build": "npm run clean && eslint . --ext .js,.ts && npm run compile",
-    "lint:fix": "eslint . --ext .js,.ts --fix"
+    "build": "npm run clean && npm run lint && npm run compile && npm run build-preview",
+    "lint": "eslint . --ext .js,.ts",
+    "lint:fix": "eslint . --ext .js,.ts --fix",
+    "build-preview": "webpack-cli --mode production",
+    "preview-watch": "webpack-cli -w --mode development"
   },
   "devDependencies": {
     "@types/byline": "^4.2.31",
@@ -709,6 +729,8 @@
     "@typescript-eslint/parser": "^2.12.0",
     "chai": "^4.2.0",
     "codecov": "^3.5.0",
+    "cytoscape": "^3.14.0",
+    "cytoscape-dagre": "^2.2.2",
     "decache": "^4.5.1",
     "eslint": "^6.7.2",
     "eslint-plugin-header": "^3.0.0",
@@ -718,13 +740,17 @@
     "mocha-jenkins-reporter": "^0.4.1",
     "proxyquire": "^2.1.0",
     "remap-istanbul": "^0.13.0",
+    "rimraf": "^3.0.2",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "source-map-support": "^0.5.16",
     "tmp": "0.1.0",
+    "ts-loader": "^6.2.1",
     "typescript": "^3.5.2",
     "vscode-test": "^1.2.3",
-    "walker": "^1.0.7"
+    "walker": "^1.0.7",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11"
   },
   "dependencies": {
     "@kubernetes/client-node": "^0.10.2",

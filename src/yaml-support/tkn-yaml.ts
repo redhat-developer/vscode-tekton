@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
-import { yamlLocator, YamlMap, YamlSequence, YamlNode } from './yaml-locator';
+import { yamlLocator, YamlMap, YamlSequence, YamlNode, YamlDocument } from './yaml-locator';
 import * as _ from 'lodash';
 
 const TEKTON_API_VERSION = 'tekton.dev/v1alpha1';
@@ -19,6 +19,13 @@ export enum TektonYamlType {
 export interface DeclaredResource {
   name: string;
   type: string;
+}
+
+export interface DeclaredTask {
+  name: string;
+  taskRef: string;
+  runAfter: string[];
+  kind: 'Task' | 'ClusterTask' | string;
 }
 
 export function isTektonYaml(vsDocument: vscode.TextDocument): TektonYamlType | undefined {
@@ -78,6 +85,76 @@ export function getPipelineTasksName(vsDocument: vscode.TextDocument): string[] 
   return result;
 }
 
+export function getTektonDocuments(vsDocument: vscode.TextDocument, type: TektonYamlType): YamlDocument[] | undefined {
+  const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
+  if (!yamlDocuments) {
+    return undefined;
+  }
+  const result: YamlDocument[] = [];
+  for (const doc of yamlDocuments) {
+    const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+    if (rootMap) {
+      const apiVersion = getYamlMappingValue(rootMap, 'apiVersion');
+      const kind = getYamlMappingValue(rootMap, 'kind');
+      if (apiVersion && apiVersion === TEKTON_API_VERSION && kind === type) {
+        result.push(doc);
+      }
+    }
+  }
+
+  return result;
+
+}
+
+export function getPipelineTasks(doc: YamlDocument): DeclaredTask[] {
+  const result: DeclaredTask[] = [];
+  const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+  if (rootMap) {
+    const specMap = getSpecMap(rootMap);
+    if (specMap) {
+      const tasksSeq = getTasksSeq(specMap);
+      if (tasksSeq) {
+        for (const taskNode of tasksSeq.items) {
+          if (taskNode.kind === 'MAPPING') {
+            const decTask = {} as DeclaredTask;
+            const nameValue = findNodeByKey<YamlNode>('name', taskNode as YamlMap);
+            if (nameValue) {
+              decTask.name = nameValue.raw;
+            }
+
+            const taskRef = findNodeByKey<YamlMap>('taskRef', taskNode as YamlMap);
+            if (taskRef) {
+              const taskRefName = findNodeByKey<YamlNode>('name', taskRef);
+              decTask.taskRef = taskRefName.raw;
+              const kindName = findNodeByKey<YamlNode>('kind', taskRef);
+              if (kindName) {
+                decTask.kind = kindName.raw;
+              } else {
+                decTask.kind = 'Task';
+              }
+            }
+
+            decTask.runAfter = getRunAfter(taskNode as YamlMap);
+            result.push(decTask);
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+}
+
+export function getMetadataName(doc: YamlDocument): string | undefined {
+  const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+  if (rootMap) {
+    const metadata = findNodeByKey<YamlMap>('metadata', rootMap);
+    return getYamlMappingValue(metadata, 'name');
+  }
+
+  return undefined;
+}
+
 export function getDeclaredResources(vsDocument: vscode.TextDocument): DeclaredResource[] {
   const result: DeclaredResource[] = [];
   if (isTektonYaml(vsDocument) === TektonYamlType.Pipeline) {
@@ -93,6 +170,37 @@ export function getDeclaredResources(vsDocument: vscode.TextDocument): DeclaredR
               if (res.kind === 'MAPPING') {
                 result.push(getDeclaredResource(res as YamlMap));
               }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
+function getRunAfter(taskNode: YamlMap): string[] {
+  const result: string[] = [];
+  const runAfter = findNodeByKey<YamlSequence>('runAfter', taskNode);
+  if (runAfter) {
+    for (const run of runAfter.items) {
+      if (run.kind === 'SCALAR') {
+        result.push(run.raw);
+      }
+    }
+  }
+
+  const resources = findNodeByKey<YamlMap>('resources', taskNode);
+  if (resources) {
+    const inputs = findNodeByKey<YamlSequence>('inputs', resources);
+    if (inputs) {
+      for (const input of inputs.items) {
+        const fromKey = findNodeByKey<YamlSequence>('from', input as YamlMap);
+        if (fromKey) {
+          for (const key of fromKey.items) {
+            if (key.kind === 'SCALAR') {
+              result.push(key.raw);
             }
           }
         }
