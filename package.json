@@ -341,16 +341,16 @@
       }
     ],
     "viewsContainers": {
-      "activitybar1": [
+      "activitybar": [
         {
-          "id": "tektonView",
+          "id": "tekton",
           "title": "Tekton Pipelines",
           "icon": "images/tekton.svg"
         }
       ]
     },
     "views": {
-      "explorer": [
+      "tekton": [
         {
           "id": "tektonPipelineExplorer",
           "name": "Tekton Pipelines"
