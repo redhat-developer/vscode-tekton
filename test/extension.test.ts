@@ -96,7 +96,7 @@ suite('Tekton Pipeline Extension', async () => {
   test('should load pipeline, task, clustertasks and pipelineresources', async () => {
     sandbox.stub(TknImpl.prototype, 'execute').resolves({error: '', stdout: ''});
     const pipelinenodes = await TknImpl.Instance.getPipelineNodes();
-    expect(pipelinenodes.length).is.equals(4);
+    expect(pipelinenodes.length).equals(7);
   });
 
   test('should load pipelineruns from pipeline folder', async () => {
