@@ -709,6 +709,7 @@
     "@types/byline": "^4.2.31",
     "@types/chai": "^4.1.7",
     "@types/collections": "^5.0.0",
+    "@types/cytoscape": "^3.14.0",
     "@types/fs-extra": "^8.0.0",
     "@types/humanize-duration": "^3.18.0",
     "@types/js-yaml": "^3.12.1",

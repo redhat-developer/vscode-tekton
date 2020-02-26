@@ -13,6 +13,15 @@ cytoscape.use(dagre); // register extension
 
 
 let images: { [id: string]: string };
+let cy: cytoscape.Core;
+
+// Check if we have an old state to restore from
+const previousState = vscode.getState();
+if (previousState) {
+  restore(previousState);
+}
+
+
 window.addEventListener('message', event => {
 
   switch (event.data.type) {
@@ -31,13 +40,33 @@ function showData(data: NodeOrEdge[]): void {
   render(data);
 }
 
+function startUpdatingState(): void {
+  let timer: number | undefined;
+  cy.on('render', () => {
+
+    if (timer) {
+      window.clearTimeout(timer);
+    }
+    timer = window.setTimeout(() => {
+      vscode.setState(cy.json());
+      console.log('State Updated!');
+    }, 1000);
+  });
+}
+
+function restore(state: any): void {
+  cy = cytoscape({ container: document.getElementById('cy') });
+  cy.json(state);
+  startUpdatingState();
+}
+
 function render(data: NodeOrEdge[]): void {
   const labelColor = getComputedStyle(document.body).getPropertyValue('color');
   const backgroundColor = getComputedStyle(document.body).getPropertyValue('background-color');
   const fontSize = getComputedStyle(document.body).getPropertyValue('font-size');
   const fontFamily = getComputedStyle(document.body).getPropertyValue('font-family');
   const arrowColor = getComputedStyle(document.documentElement).getPropertyValue('--vscode-notificationLink-foreground');
-  const cy = cytoscape({
+  cy = cytoscape({
     container: document.getElementById('cy'), // container to render in
     elements: data,
 
@@ -88,9 +117,11 @@ function render(data: NodeOrEdge[]): void {
       padding: 30, // fit padding
       animate: false,
       nodeSep: 100,
-    },
+    } as any, // to make TSC happy, there are no typings for cytoscape-dagre plugin
     headless: false,
   });
+
+  startUpdatingState();
 }
 
 // const cy = cytoscape({
