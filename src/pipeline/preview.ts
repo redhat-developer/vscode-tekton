@@ -8,6 +8,7 @@ import { contextGlobalState } from '../extension';
 import * as path from 'path';
 import { calculatePipelineGraph } from './pipeline-graph';
 import { Disposable } from '../util/disposable';
+import { debounce } from 'debounce';
 
 export interface PipelinePreviewInput {
   readonly document: vscode.TextDocument;
@@ -37,10 +38,12 @@ export class PipelinePreview extends Disposable {
 
   private editor: vscode.WebviewPanel;
   private document: vscode.TextDocument;
+  private updateFunc = debounce(() => this.doUpdate(), 1000);
   private readonly onDisposeEmitter = new vscode.EventEmitter<void>();
   public readonly onDispose = this.onDisposeEmitter.event;
   private readonly onDidChangeViewStateEmitter = new vscode.EventEmitter<vscode.WebviewPanelOnDidChangeViewStateEvent>();
   public readonly onDidChangeViewState = this.onDidChangeViewStateEmitter.event;
+
 
   constructor(webview: vscode.WebviewPanel, input: PipelinePreviewInput) {
     super();
@@ -48,6 +51,12 @@ export class PipelinePreview extends Disposable {
     this.document = input.document;
     this.register(this.editor.onDidDispose(() => {
       this.dispose();
+    }));
+
+    this.register(vscode.workspace.onDidChangeTextDocument(e => {
+      if (e.document.fileName === this.document.fileName) {
+        this.update(e.document);
+      }
     }));
     this.doUpdate();
   }
@@ -69,8 +78,10 @@ export class PipelinePreview extends Disposable {
     this.editor.reveal(viewColumn);
   }
 
-  update(document: vscode.TextDocument, isRefresh = true): void {
-    //TODO: implement this
+  update(document: vscode.TextDocument): void {
+    if (this.document.fileName === document.fileName) {
+      this.updateFunc();
+    }
   }
 
   private async doUpdate(): Promise<void> {

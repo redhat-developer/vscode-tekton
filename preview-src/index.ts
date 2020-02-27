@@ -6,6 +6,7 @@
 import * as cytoscape from 'cytoscape';
 import { NodeOrEdge } from './model';
 import * as dagre from 'cytoscape-dagre';
+import { debounce } from 'debounce';
 
 declare let acquireVsCodeApi: any;
 const vscode = acquireVsCodeApi();
@@ -14,6 +15,9 @@ cytoscape.use(dagre); // register extension
 
 let images: { [id: string]: string };
 let cy: cytoscape.Core;
+const saveState = debounce(()=> {
+  vscode.setState(cy.json());
+}, 1000)
 
 // Check if we have an old state to restore from
 const previousState = vscode.getState();
@@ -41,17 +45,7 @@ function showData(data: NodeOrEdge[]): void {
 }
 
 function startUpdatingState(): void {
-  let timer: number | undefined;
-  cy.on('render', () => {
-
-    if (timer) {
-      window.clearTimeout(timer);
-    }
-    timer = window.setTimeout(() => {
-      vscode.setState(cy.json());
-      console.log('State Updated!');
-    }, 1000);
-  });
+  cy.on('render', () => saveState());
 }
 
 function restore(state: any): void {
