@@ -157,11 +157,11 @@ function migrateFromTkn018(): void {
 
 function expandMoreItem(context: number, parent: TektonNode, treeViewId: string): void {
   parent.visibleChildren += context;
-  if (treeViewId === 'tektonPipelineExplorer') {
+  if (treeViewId === 'tektonPipelineExplorerView') {
     pipelineExplorer.refresh(parent);
   }
 
-  if (treeViewId === 'tektonCustomTree') {
+  if (treeViewId === 'tektonCustomTreeView') {
     customTektonExplorer.refresh(parent);
   }
 

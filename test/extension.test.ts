@@ -94,19 +94,19 @@ suite('Tekton Pipeline Extension', async () => {
   });
 
   test('should load pipeline, task, clustertasks and pipelineresources', async () => {
-    sandbox.stub(TknImpl.prototype, 'execute').resolves({error: '', stdout: ''});
+    sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: '', stdout: '' });
     const pipelinenodes = await TknImpl.Instance.getPipelineNodes();
     expect(pipelinenodes.length).is.equals(4);
   });
 
   test('should load pipelineruns from pipeline folder', async () => {
-    sandbox.stub(TknImpl.prototype, 'execute').resolves({error: undefined, stdout: ''});
+    sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '' });
     const pipelinerun = await TknImpl.Instance.getPipelineRuns(pipelineItem);
     expect(pipelinerun.length).is.equals(1);
   });
 
   test('should load taskruns from pipelinerun folder', async () => {
-    sandbox.stub(TknImpl.prototype, 'execute').resolves({error: undefined, stdout: ''});
+    sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '' });
     const taskrun = await TknImpl.Instance.getTaskRuns(pipelinerunItem);
     expect(taskrun.length).is.equals(1);
   });
@@ -138,9 +138,9 @@ suite('Tekton Pipeline Extension', async () => {
   });
 
   test('more command should call refresh on parent item', async () => {
-    const refreshStub = sandbox.stub(PipelineExplorer.prototype, 'refresh'); 
+    const refreshStub = sandbox.stub(PipelineExplorer.prototype, 'refresh');
     const parentItem = sandbox.mock(pipelineItem);
-    await vscode.commands.executeCommand('_tekton.explorer.more', 42, parentItem, 'tektonPipelineExplorer');
+    await vscode.commands.executeCommand('_tekton.explorer.more', 42, parentItem, 'tektonPipelineExplorerView');
     expect(refreshStub).calledWith(parentItem);
   });
 });
