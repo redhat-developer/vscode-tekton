@@ -2,7 +2,7 @@
  *  Copyright (c) Red Hat, Inc. All rights reserved.
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
-import { TextDocument, ViewColumn, window, WebviewPanelSerializer, WebviewPanel } from 'vscode';
+import { TextDocument, ViewColumn } from 'vscode';
 import { PipelinePreview } from './preview';
 import { Disposable } from '../util/disposable';
 
@@ -41,7 +41,6 @@ export class PreviewManager extends Disposable {
       },
       settings.previewColumn);
 
-    this.setPreviewActiveContext(true);
     this.activePreview = preview;
     return this.registerPipelinePreview(document.uri.toString(), preview);
   }
@@ -64,21 +63,14 @@ export class PreviewManager extends Disposable {
 
   private trackActive(preview: PipelinePreview): void {
     preview.onDidChangeViewState(({ webviewPanel }) => {
-      this.setPreviewActiveContext(webviewPanel.active);
       this.activePreview = webviewPanel.active ? preview : undefined;
     });
 
     preview.onDispose(() => {
       if (this.activePreview === preview) {
-        this.setPreviewActiveContext(false);
         this.activePreview = undefined;
       }
     });
-  }
-
-  private setPreviewActiveContext(value: boolean): void {
-    // vscode.commands.executeCommand('setContext', MarkdownPreviewManager.markdownPreviewActiveContextKey, value);
-    //TODO: implement this
   }
 
 }

@@ -4,19 +4,27 @@
  *-----------------------------------------------------------------------------------------------*/
 
 export interface BaseData {
-    id: string;
+  id: string;
 }
 
 export interface NodeData extends BaseData {
-    name: string;
-    type?: string;
+  name: string;
+  type?: string;
 }
 
 export interface EdgeData extends BaseData {
-    source: string;
-    target: string;
+  source: string;
+  target: string;
 }
 
 export interface NodeOrEdge {
-    data: EdgeData | NodeData;
+  data: EdgeData | NodeData;
+}
+
+export interface CyTheme {
+  arrowColor: string;
+  backgroundColor: string;
+  fontSize: string;
+  labelColor: string;
+  fontFamily: string;
 }

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
-import { isTektonYaml, TektonYamlType, getTektonDocuments } from '../yaml-support/tkn-yaml';
+import { TektonYamlType, getTektonDocuments } from '../yaml-support/tkn-yaml';
 import { previewManager } from './preview-manager';
 import { CommandContext, setCommandContext } from '../commands';
 
