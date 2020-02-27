@@ -16,7 +16,7 @@ export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Dispo
   private items: TektonNode[];
 
   constructor() {
-    this.treeView = window.createTreeView('tektonCustomTree', { treeDataProvider: this });
+    this.treeView = window.createTreeView('tektonCustomTreeView', { treeDataProvider: this });
   }
 
   dispose(): void {
@@ -25,7 +25,7 @@ export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Dispo
 
   getTreeItem(element: TektonNode): TreeItem | Thenable<TreeItem> {
     if (element instanceof MoreNode) {
-      element.command.arguments.push('tektonCustomTree');
+      element.command.arguments.push('tektonCustomTreeView');
     }
     return element; //TODO: modify view state if item there
   }

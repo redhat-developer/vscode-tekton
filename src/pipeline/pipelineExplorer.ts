@@ -21,12 +21,12 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
   constructor() {
     this.fsw = WatchUtil.watchFileForContextChange(kubeConfigFolder, 'config');
     this.fsw.emitter.on('file-changed', this.refresh.bind(this));
-    this.treeView = window.createTreeView('tektonPipelineExplorer', { treeDataProvider: this, canSelectMany: true });
+    this.treeView = window.createTreeView('tektonPipelineExplorerView', { treeDataProvider: this, canSelectMany: true });
   }
 
   getTreeItem(element: TektonNode): TreeItem | Thenable<TreeItem> {
     if (element instanceof MoreNode) {
-      element.command.arguments.push('tektonPipelineExplorer');
+      element.command.arguments.push('tektonPipelineExplorerView');
     }
     return element;
   }
