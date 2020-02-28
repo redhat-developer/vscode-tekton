@@ -15,7 +15,6 @@ import { ToolsConfig } from '../src/tools';
 import { WindowUtil } from '../src/util/windowUtils';
 import { StartPipelineObject, PipeResources, PipeParams } from '../src/tekton/pipeline';
 import { Terminal } from 'vscode';
-import jsYaml = require('js-yaml');
 import { TestItem } from './tekton/testTektonitem';
 import { ExecException } from 'child_process';
 import * as path from 'path';
@@ -116,7 +115,7 @@ suite('tkn', () => {
   });
 
   suite('item listings', () => {
-    let execStub: sinon.SinonStub, yamlStub: sinon.SinonStub;
+    let execStub: sinon.SinonStub;
     let getPipelines: sinon.SinonStub;
     const pipelineNodeItem = new TestItem(tkn.TknImpl.ROOT, 'pipelinenode', tkn.ContextType.PIPELINENODE);
     const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', tkn.ContextType.PIPELINE);
@@ -133,7 +132,6 @@ suite('tkn', () => {
 
     setup(() => {
       execStub = sandbox.stub(tknCli, 'execute');
-      yamlStub = sandbox.stub(jsYaml, 'safeLoad');
     });
 
     test('startPipeline returns items from tkn pipeline start command', async () => {
