@@ -3,28 +3,28 @@
     "description": "A CLI for interacting with Tekton",
     "vendor": "",
     "name": "tkn",
-    "version": "0.7.1",
-    "versionRange": "0.7.1",
-    "versionRangeLabel": "v0.7.1",
+    "version": "0.8.0",
+    "versionRange": "0.8.0",
+    "versionRangeLabel": "v0.8.0",
     "dlFileName": "tkn",
     "cmdFileName": "tkn",
     "filePrefix": "",
     "platform": {
       "win32": {
-        "url": "https://github.com/tektoncd/cli/releases/download/v0.7.1/tkn_0.7.1_Windows_x86_64.zip",
-        "sha256sum": "592c79c96fce12b8e8dc4f853c1d8d6fac76e18ac7a3b2118d44a238a5274875",
-        "dlFileName": "tkn_0.7.1_Windows_x86_64.zip",
+        "url": "https://github.com/tektoncd/cli/releases/download/v0.8.0/tkn_0.8.0_Windows_x86_64.zip",
+        "sha256sum": "dceb9ca365bd167e547bf99ccd5be6f24ce431d353cf6c4bcdd7e3847a6acc42",
+        "dlFileName": "tkn_0.8.0_Windows_x86_64.zip",
         "cmdFileName": "tkn.exe"
       },
       "darwin": {
-        "url": "https://github.com/tektoncd/cli/releases/download/v0.7.1/tkn_0.7.1_Darwin_x86_64.tar.gz",
-        "sha256sum": "0db328406aec10571fe9ca5f262c5e3d7b4f29df54712adb6ecc8ba5868aea4c",
-        "dlFileName": "tkn_0.7.1_Darwin_x86_64.tar.gz"
+        "url": "https://github.com/tektoncd/cli/releases/download/v0.8.0/tkn_0.8.0_Darwin_x86_64.tar.gz",
+        "sha256sum": "d06d3571e019ee49cdb22b71178fa3cd53043267a84b9bb7cb42ed7dec81a5b0",
+        "dlFileName": "tkn_0.8.0_Darwin_x86_64.tar.gz"
       },
       "linux": {
-        "url": "https://github.com/tektoncd/cli/releases/download/v0.7.1/tkn_0.7.1_Linux_x86_64.tar.gz",
-        "sha256sum": "e67039f4994e1d8f2d2f368853b89ca51132c7f3433a2ce804516f68ab961812",
-        "dlFileName": "tkn_0.7.1_Linux_x86_64.tar.gz"
+        "url": "https://github.com/tektoncd/cli/releases/download/v0.8.0/tkn_0.8.0_Linux_x86_64.tar.gz",
+        "sha256sum": "e131865fbd7b406ae7ad471fb9561f270f8b60de2cb29e1dc15485ffb60944b6",
+        "dlFileName": "tkn_0.8.0_Linux_x86_64.tar.gz"
       }
     }
   }
