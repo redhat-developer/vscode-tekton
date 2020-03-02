@@ -6,7 +6,9 @@ import * as vscode from 'vscode';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
-import { isTektonYaml, TektonYamlType, getPipelineTasksRefName, getPipelineTasksName, getDeclaredResources } from '../../src/yaml-support/tkn-yaml';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { isTektonYaml, TektonYamlType, getPipelineTasksRefName, getPipelineTasksName, getDeclaredResources, getTektonDocuments, getMetadataName, getPipelineTasks } from '../../src/yaml-support/tkn-yaml';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -77,6 +79,84 @@ suite('Tekton yaml', () => {
       expect(tknType).is.undefined;
     });
 
+    test('"getTektonDocuments" should provide documents by type (Pipeline)', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/multitype.yaml'));
+      const docs = getTektonDocuments({ getText: () => yaml.toString(), version: 1, uri: vscode.Uri.parse('file:///foo/multitype.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      expect(docs).is.not.undefined;
+      expect(docs).not.empty;
+      expect(docs.length).be.equal(1);
+    });
+
+    test('"getTektonDocuments" should provide documents by type (PipelineResource)', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/multitype.yaml'));
+      const docs = getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///foo/multitype.yaml') } as vscode.TextDocument, TektonYamlType.PipelineResource);
+      expect(docs).is.not.undefined;
+      expect(docs).not.empty;
+      expect(docs.length).be.equal(4);
+    });
+
+    test('"getTektonDocuments" should return empty if no type match', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/multitype.yaml'));
+      const docs = getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///foo/multitype.yaml') } as vscode.TextDocument, TektonYamlType.PipelineRun);
+      expect(docs).is.not.undefined;
+      expect(docs).is.empty;
+    });
+
+    test('"getTektonDocuments" should return undefined if yaml', () => {
+      const docs = getTektonDocuments({ getText: () => 'Some string', version: 2, uri: vscode.Uri.parse('file:///foo/multitype.yaml') } as vscode.TextDocument, TektonYamlType.PipelineRun);
+      expect(docs).is.not.undefined;
+      expect(docs).is.empty;
+    });
+
+    test('"getMetadataName" should return name', () => {
+      const yaml = `
+            apiVersion: tekton.dev/v1alpha1
+            kind: Pipeline
+            metadata:
+              name: pipeline-with-parameters
+            `;
+      const docs = getTektonDocuments({ getText: () => yaml, version: 1, uri: vscode.Uri.parse('file:///name/pipeline.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const name = getMetadataName(docs[0]);
+      expect(name).to.be.equal('pipeline-with-parameters');
+    });
+
+    test('"getPipelineTasks" should return tasks description', () => {
+      const yaml = `
+      apiVersion: tekton.dev/v1alpha1
+      kind: Pipeline
+      metadata:
+        name: pipeline-with-parameters
+      spec:
+        tasks:
+          - name: build-skaffold-web
+            taskRef:
+              name: build-push
+            params:
+              - name: pathToDockerFile
+                value: Dockerfile
+              - name: pathToContext
+                value: "$(params.context)"
+            runAfter:
+              - fooTask
+      `
+      const docs = getTektonDocuments({ getText: () => yaml, version: 1, uri: vscode.Uri.parse('file:///tasks/pipeline.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = getPipelineTasks(docs[0]);
+      expect(tasks).is.not.empty;
+      const task = tasks[0];
+      expect(task.kind).to.equal('Task');
+      expect(task.name).equal('build-skaffold-web');
+      expect(task.taskRef).equal('build-push');
+      expect(task.runAfter).to.eql(['fooTask']);
+
+    });
+
+    test('"getPipelineTasks" should return "from" statement', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/pipeline-ordering.yaml'));
+      const docs = getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///ordering/multitype.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = getPipelineTasks(docs[0]);
+      const task = tasks.find(t => t.name === 'deploy-web');
+      expect(task.runAfter).eql(['build-skaffold-web']);
+    });
   });
 
   suite('Tekton tasks detections', () => {
@@ -171,7 +251,7 @@ suite('Tekton yaml', () => {
 
       const pipelineResources = getDeclaredResources({ getText: () => yaml, version: 1, uri: vscode.Uri.parse('file:///foo/pipeline/resources.yaml') } as vscode.TextDocument);
       expect(pipelineResources).is.not.empty;
-      expect(pipelineResources).to.eql([{name: 'api-repo', type: 'git'}, {name: 'api-image', type: 'image'}]);
+      expect(pipelineResources).to.eql([{ name: 'api-repo', type: 'git' }, { name: 'api-image', type: 'image' }]);
     });
   });
 

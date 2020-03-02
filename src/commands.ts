@@ -12,7 +12,8 @@ export enum VSCodeCommands {
 
 
 export enum CommandContext {
-  TreeZenMode = 'tekton:zenMode'
+  TreeZenMode = 'tekton:zenMode',
+  PipelinePreview = 'tekton:pipelinePreview'
 }
 
 
