@@ -53,11 +53,6 @@ export class PreviewManager extends Disposable {
     });
 
     this.trackActive(preview);
-
-    preview.onDidChangeViewState(() => {
-      // Remove other dynamic previews in our column
-      // disposeAll(Array.from(this._dynamicPreviews).filter(otherPreview => preview !== otherPreview && preview.matches(otherPreview)));
-    });
     return preview;
   }
 
