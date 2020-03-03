@@ -81,7 +81,6 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
         if (sr['stderr']) {
           message = sr['stderr'];
         }
-        // this.host.showErrorMessage('Get command failed: ' + message);
         throw message;
       }
 
@@ -93,7 +92,7 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
       if (kubectl.available) {
         return await kubectl.api.invokeCommand(`-o ${outputFormat} get ${value}`);
       }
-      return await TektonResourceVirtualFileSystemProvider.cli.execute(Command.getYaml(outputFormat, value));
+      return {error: new Error('kubectl is not available, check k8\'s documentation to install "kubectl"'), stdout: 'kubectl is not available'};
     }
 
     writeFile(uri: Uri, content: Uint8Array): void | Thenable<void> {
@@ -105,7 +104,7 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
       // create subdirectories.
       // TODO: not loving prompting as part of the write when it should really be part of a separate
       // 'save' workflow - but needs must, I think
-      const tempPath = await os.tmpdir();
+      const tempPath = os.tmpdir();
       if (!tempPath) {
         return;
       }

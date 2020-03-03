@@ -88,8 +88,8 @@ function newTknCommand(...tknArguments: string[]): CliCommand {
   return createCliCommand('tkn', ...tknArguments);
 }
 
-function newOcCommand(...ocArguments: string[]): CliCommand {
-  return createCliCommand('oc', ...ocArguments);
+function newK8sCommand(...k8sArguments): CliCommand {
+  return createCliCommand('kubectl', ...k8sArguments);
 }
 
 export class Command {
@@ -237,10 +237,7 @@ export class Command {
     return newTknCommand('resource', 'create', '-f', yamlFile);
   }
   static tknStatus(): CliCommand {
-    return newOcCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'oc', 'get', 'pipeline.tekton.dev');
-  }
-  static getYaml(outputFormat: string, value: string): CliCommand {
-    return newOcCommand('-o', outputFormat, 'get', value)
+    return newK8sCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'kubectl', 'get', 'pipeline.tekton.dev');
   }
   static updateYaml(fsPath: string): CliCommand {
     return newTknCommand('apply', '-f', fsPath);
