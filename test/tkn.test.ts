@@ -129,6 +129,9 @@ suite('tkn', () => {
     const taskItem2 = new TestItem(taskNodeItem, 'task2', tkn.ContextType.TASK);
     const clustertaskNodeItem = new TestItem(tkn.TknImpl.ROOT, 'clustertasknode', tkn.ContextType.CLUSTERTASKNODE);
     const clustertaskItem = new TestItem(clustertaskNodeItem, 'clustertask1', tkn.ContextType.CLUSTERTASK);
+    const triggerTemplatesItem = new TestItem(tkn.TknImpl.ROOT, 'triggertemplates', tkn.ContextType.TRIGGERTEMPLATES);
+    const triggerBindingItem = new TestItem(tkn.TknImpl.ROOT, 'triggerbinding', tkn.ContextType.TRIGGERBINDING);
+    const eventListenerItem = new TestItem(tkn.TknImpl.ROOT, 'eventlistener', tkn.ContextType.EVENTLISTENER);
 
     setup(() => {
       execStub = sandbox.stub(tknCli, 'execute');
@@ -224,6 +227,112 @@ suite('tkn', () => {
       sandbox.stub(tkn.TknImpl.prototype, 'getPipelines').resolves([]);
       execStub.resolves({ stdout: '', error: null });
       const result = await tknCli.getPipelines(pipelineNodeItem);
+
+      // tslint:disable-next-line: no-unused-expression
+      expect(result).empty;
+    });
+
+
+    test('getTriggerTemplates returns items from tkn trigger templates list command', async () => {
+      const tknPipelines = ['triggertemplates1', 'triggertemplates2', 'triggertemplates3'];
+      execStub.resolves({
+        error: null, stdout: JSON.stringify({
+          'items': [{
+            'kind': 'TriggerTemplates',
+            'apiVersion': 'tekton.dev/v1alpha1',
+            'metadata': {
+              'name': 'triggertemplates1'
+            }
+          }, {
+            'kind': 'TriggerTemplates',
+            'apiVersion': 'tekton.dev/v1alpha1',
+            'metadata': {
+              'name': 'triggertemplates2'
+            }
+          }, {
+            'kind': 'TriggerTemplates',
+            'apiVersion': 'tekton.dev/v1alpha1',
+            'metadata': {
+              'name': 'triggertemplates3'
+            }
+          }]
+        })
+      });
+      const result = await tknCli.getTriggerTemplates(triggerTemplatesItem);
+
+      expect(execStub).calledOnceWith(tkn.Command.listTriggerTemplates());
+      expect(result.length).equals(3);
+      for (let i = 1; i < result.length; i++) {
+        expect(result[i].getName()).equals(tknPipelines[i]);
+      }
+    });
+
+    test('getTriggerTemplates returns empty list if tkn produces no output', async () => {
+      sandbox.stub(tkn.TknImpl.prototype, 'getTriggerTemplates').resolves([]);
+      execStub.resolves({ stdout: '', error: null });
+      const result = await tknCli.getTriggerTemplates(triggerTemplatesItem);
+
+      // tslint:disable-next-line: no-unused-expression
+      expect(result).empty;
+    });
+
+    test('getTriggerBinding returns items from tkn trigger binding list command', async () => {
+      const tknPipelines = ['triggerBinding1'];
+      execStub.resolves({
+        error: null, stdout: JSON.stringify({
+          'items': [{
+            'kind': 'TriggerBinding',
+            'apiVersion': 'tekton.dev/v1alpha1',
+            'metadata': {
+              'name': 'triggerBinding1'
+            }
+          }]
+        })
+      });
+      const result = await tknCli.getTriggerBinding(triggerBindingItem);
+
+      expect(execStub).calledOnceWith(tkn.Command.listTriggerBinding());
+      expect(result.length).equals(1);
+      for (let i = 1; i < result.length; i++) {
+        expect(result[i].getName()).equals(tknPipelines[i]);
+      }
+    });
+
+    test('getTriggerBinding returns empty list if tkn produces no output', async () => {
+      sandbox.stub(tkn.TknImpl.prototype, 'getTriggerBinding').resolves([]);
+      execStub.resolves({ stdout: '', error: null });
+      const result = await tknCli.getTriggerBinding(triggerBindingItem);
+
+      // tslint:disable-next-line: no-unused-expression
+      expect(result).empty;
+    });
+
+    test('getEventListener returns items from tkn event listener list command', async () => {
+      const tknPipelines = ['eventlistener1'];
+      execStub.resolves({
+        error: null, stdout: JSON.stringify({
+          'items': [{
+            'kind': 'EventListener',
+            'apiVersion': 'tekton.dev/v1alpha1',
+            'metadata': {
+              'name': 'eventlistener1'
+            }
+          }]
+        })
+      });
+      const result = await tknCli.getEventListener(eventListenerItem);
+
+      expect(execStub).calledOnceWith(tkn.Command.listEventListener());
+      expect(result.length).equals(1);
+      for (let i = 1; i < result.length; i++) {
+        expect(result[i].getName()).equals(tknPipelines[i]);
+      }
+    });
+
+    test('getEventListener returns empty list if tkn produces no output', async () => {
+      sandbox.stub(tkn.TknImpl.prototype, 'getEventListener').resolves([]);
+      execStub.resolves({ stdout: '', error: null });
+      const result = await tknCli.getEventListener(eventListenerItem);
 
       // tslint:disable-next-line: no-unused-expression
       expect(result).empty;
