@@ -13,7 +13,6 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { TektonResourceVirtualFileSystemProvider, kubefsUri } from '../../src/util/tektonresources.virtualfs';
 import { Uri, workspace, window, commands, TextDocument, EndOfLine } from 'vscode';
-import { CliImpl } from '../../src/cli';
 import * as k8s from 'vscode-kubernetes-tools-api';
 
 const expect = chai.expect;
@@ -29,6 +28,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
   let workspaceFoldersStub: sinon.SinonStub;
   let writeFileStub: sinon.SinonStub;
   let trvfsp: TektonResourceVirtualFileSystemProvider;
+  let nonce: sinon.SinonFakeTimers;
   const tknUri = 'tknsss://loadtektonresourceload/pipeline-petclinic-deploy-pipeline.yaml?value%3Dpipeline%2Fpetclinic-deploy-pipeline%26_%3D1581402784093';
   const getYaml = `apiVersion: tekton.dev/v1alpha1
     kind: Pipeline
@@ -110,6 +110,10 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
     unlinkStub = sandbox.stub(fs, 'unlink');
     openTextStub = sandbox.stub(workspace, 'openTextDocument').resolves(textDocument);
     executeCommandStub = sandbox.stub(commands, 'executeCommand');
+    nonce = sinon.useFakeTimers({
+      now: new Date(),
+      shouldAdvanceTime: true
+    });
   });
 
   teardown(() => {
@@ -237,7 +241,6 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
   test('create file system uri parse', async () => {
     workspaceFoldersStub.onFirstCall().resolves(wsFolder1);
     const content = kubefsUri('pipeline/petclinic-deploy-pipeline', 'yaml');
-    const nonce = new Date().getTime();
-    expect(content).deep.equals(Uri.parse(`tekton://loadtektonresource/pipeline-petclinic-deploy-pipeline.yaml?value=pipeline/petclinic-deploy-pipeline&_=${nonce}`));
+    expect(content).deep.equals(Uri.parse(`tekton://loadtektonresource/pipeline-petclinic-deploy-pipeline.yaml?value=pipeline/petclinic-deploy-pipeline&_=${nonce.Date().getTime()}`));
   });
 });
