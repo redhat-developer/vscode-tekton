@@ -12,15 +12,14 @@ import open = require('open');
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fsex from 'fs-extra';
-import * as fs from 'fs';
 import { createCliCommand, CliImpl } from './cli';
 import semver = require('semver');
 import configData = require('./tools.json');
 
-
 export class ToolsConfig {
 
   public static tool: object = ToolsConfig.loadMetadata(configData, Platform.OS);
+  private static extensionContext: vscode.ExtensionContext;
 
   public static loadMetadata(requirements, platform): object {
     const req = JSON.parse(JSON.stringify(requirements));
@@ -39,6 +38,10 @@ export class ToolsConfig {
     ToolsConfig.tool = ToolsConfig.loadMetadata(configData, Platform.OS);
   }
 
+  public static setExtensionContext(context: vscode.ExtensionContext): void {
+    ToolsConfig.extensionContext = context;
+  }
+
   public static async detectOrDownload(): Promise<string> {
 
     let toolLocation: string = ToolsConfig.tool['tkn'].location;
@@ -51,13 +54,23 @@ export class ToolsConfig {
       toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tool['tkn'].versionRange);
       const downgradeVersion = `Downgrade to ${ToolsConfig.tool['tkn'].version}`;
 
-      if (toolLocation && await ToolsConfig.getVersion(toolLocation) !== ToolsConfig.tool['tkn'].version) {
-        response = await vscode.window.showWarningMessage(`Detected higher tkn version: ${await ToolsConfig.getVersion(toolLocation)} which is not yet supported. Supported tkn version: ${ToolsConfig.tool['tkn'].version}.`, downgradeVersion, 'Cancel');
+      const currentVersion = await ToolsConfig.getVersion(toolLocation);
+      // const useNewTkn = ToolsConfig.extensionContext.globalState.get('useNewTkn');
+      if (toolLocation && currentVersion !== ToolsConfig.tool['tkn'].version) {
+        // if (!useNewTkn) {
+        response = await vscode.window.showWarningMessage(`Detected higher tkn version: ${currentVersion} which is not yet supported. Supported tkn version: ${ToolsConfig.tool['tkn'].version}.`, `Use ${currentVersion}`, downgradeVersion, 'Cancel');
+        // } else {
+        // response = `Use ${currentVersion}`;
+        // }
       }
       if (await ToolsConfig.getVersion(toolCacheLocation) === ToolsConfig.tool['tkn'].version && response !== 'Cancel') {
         response = 'Cancel';
         toolLocation = toolCacheLocation;
+        ToolsConfig.extensionContext.globalState.update('useNewTkn', false);
       }
+      // else if (response === `Use ${currentVersion}`) {
+      //   ToolsConfig.extensionContext.globalState.update('useNewTkn', true);
+      // }
 
       if (toolLocation === undefined || response === downgradeVersion) {
         // otherwise request permission to download
@@ -68,7 +81,7 @@ export class ToolsConfig {
           response = await vscode.window.showInformationMessage(
             `Cannot find Tekton CLI ${ToolsConfig.tool['tkn'].versionRangeLabel} for interacting with Tekton Pipelines.`, installRequest, 'Help', 'Cancel');
         }
-        fsex.ensureDirSync(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
+        await fsex.ensureDir(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
         if (response === installRequest || response === downgradeVersion) {
           let action: string;
           do {
@@ -77,14 +90,12 @@ export class ToolsConfig {
               cancellable: true,
               location: vscode.ProgressLocation.Notification,
               title: `Downloading ${ToolsConfig.tool['tkn'].description}`
-            },
-            (progress: vscode.Progress<{ increment: number; message: string }>) => {
-              return DownloadUtil.downloadFile(
-                ToolsConfig.tool['tkn'].url,
-                toolDlLocation,
-                (dlProgress, increment) => progress.report({ increment, message: `${dlProgress}%` })
-              );
-            });
+            }, (progress: vscode.Progress<{ increment: number; message: string }>) => DownloadUtil.downloadFile(
+              ToolsConfig.tool['tkn'].url,
+              toolDlLocation,
+              (dlProgress, increment) => progress.report({ increment, message: `${dlProgress}%` }))
+            );
+
             const sha256sum: string = await hasha.fromFile(toolDlLocation, { algorithm: 'sha256' });
             if (sha256sum !== ToolsConfig.tool['tkn'].sha256sum) {
               fsex.removeSync(toolDlLocation);
@@ -99,9 +110,9 @@ export class ToolsConfig {
             } else if (toolDlLocation.endsWith('.gz')) {
               await Archive.unzip(toolDlLocation, toolCacheLocation, ToolsConfig.tool['tkn'].filePrefix);
             }
-            fsex.removeSync(toolDlLocation);
+            await fsex.remove(toolDlLocation);
             if (Platform.OS !== 'win32') {
-              fs.chmodSync(toolCacheLocation, '765');
+              await fsex.chmod(toolCacheLocation, '765');
             }
             toolLocation = toolCacheLocation;
           }
@@ -120,7 +131,7 @@ export class ToolsConfig {
 
   public static async getVersion(location: string): Promise<string> {
     let detectedVersion: string;
-    if (fs.existsSync(location)) {
+    if (await fsex.pathExists(location)) {
       const version = new RegExp('^Client version:\\s[v]?([0-9]+\\.[0-9]+\\.[0-9]+)$');
       const result = await CliImpl.getInstance().execute(createCliCommand(`"${location}"`, 'version'));
       if (result.stdout) {
@@ -138,8 +149,9 @@ export class ToolsConfig {
   public static async selectTool(locations: string[], versionRange: string): Promise<string> {
     let result: string;
     for (const location of locations) {
-      if (fs.existsSync(location)) {
-        if (location && (await ToolsConfig.getVersion(location) > versionRange) || semver.satisfies(await ToolsConfig.getVersion(location), versionRange)) {
+      if (await fsex.pathExists(location)) {
+        const configVersion = await ToolsConfig.getVersion(location);
+        if (location && (configVersion > versionRange) || semver.satisfies(configVersion, versionRange)) {
           result = location;
           break;
         }

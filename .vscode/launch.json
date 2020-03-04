@@ -23,6 +23,7 @@
 			"name": "Extension Tests Debug",
 			"type": "extensionHost",
 			"request": "launch",
+			"sourceMaps": true,
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
@@ -40,6 +41,7 @@
 			"name": "Extension Tests Coverage",
 			"type": "extensionHost",
 			"request": "launch",
+			"sourceMaps": true,
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
