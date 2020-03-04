@@ -312,7 +312,7 @@
       },
       {
         "command": "tekton.explorer.enterZenMode",
-        "title": "Show in custom items",
+        "title": "Select Tekton resources (use Shift to multi-select)",
         "category": "Tekton",
         "icon": {
           "dark": "images/dark/icon-focus.svg",
@@ -357,7 +357,7 @@
         },
         {
           "id": "tektonCustomTreeView",
-          "name": "Custom Tekton items",
+          "name": "Selected Tekton Resources",
           "when": "tekton:zenMode"
         }
       ]
