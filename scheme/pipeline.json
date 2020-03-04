@@ -144,6 +144,13 @@
                         "$ref": "#/definitions/PipelineTask"
                     },
                     "type": "array"
+                },
+                "workspaces": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "$ref": "#/definitions/WorkspaceDeclaration"
+                    },
+                    "type": "array"
                 }
             },
             "additionalProperties": false,
@@ -186,6 +193,17 @@
                 "taskRef": {
                     "$schema": "http://json-schema.org/draft-07/schema#",
                     "$ref": "#/definitions/TaskRef"
+                },
+                "workspaces": {
+                    "items": {
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "$ref": "#/definitions/WorkspacePipelineTaskBinding"
+                    },
+                    "type": "array"
+                },
+                "timeout": {
+                    "type": "string",
+                    "description": "Time after which the TaskRun times out. Defaults to 1 hour. Specified TaskRun timeout should be less than 24h. Refer Go's ParseDuration documentation for expected format: https://golang.org/pkg/time/#ParseDuration"
                 }
             },
             "additionalProperties": false,
@@ -289,6 +307,38 @@
                 }
             },
             "additionalProperties": false,
+            "type": "object",
+            "required": [
+                "name"
+            ]
+        },
+        "WorkspacePipelineTaskBinding": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name is the name of the workspace as declared by the task"
+                },
+                "workspace": {
+                    "type": "string",
+                    "description": "Workspace is the name of the workspace declared by the pipeline"
+                }
+            },
+            "type": "object",
+            "required": [
+                "name"
+            ]
+        },
+        "WorkspaceDeclaration": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name is the name by which you can bind the volume at runtime."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description is an optional human readable description of this volume."
+                }
+            },
             "type": "object",
             "required": [
                 "name"
