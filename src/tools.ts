@@ -19,7 +19,6 @@ import configData = require('./tools.json');
 export class ToolsConfig {
 
   public static tool: object = ToolsConfig.loadMetadata(configData, Platform.OS);
-  private static extensionContext: vscode.ExtensionContext;
 
   public static loadMetadata(requirements, platform): object {
     const req = JSON.parse(JSON.stringify(requirements));
@@ -38,10 +37,6 @@ export class ToolsConfig {
     ToolsConfig.tool = ToolsConfig.loadMetadata(configData, Platform.OS);
   }
 
-  public static setExtensionContext(context: vscode.ExtensionContext): void {
-    ToolsConfig.extensionContext = context;
-  }
-
   public static async detectOrDownload(): Promise<string> {
 
     let toolLocation: string = ToolsConfig.tool['tkn'].location;
@@ -52,37 +47,30 @@ export class ToolsConfig {
       const whichLocation = which('tkn');
       const toolLocations: string[] = [whichLocation ? whichLocation.stdout : null, toolCacheLocation];
       toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tool['tkn'].versionRange);
-      const downgradeVersion = `Downgrade to ${ToolsConfig.tool['tkn'].version}`;
+      const downloadVersion = `Download ${ToolsConfig.tool['tkn'].version}`;
 
       const currentVersion = await ToolsConfig.getVersion(toolLocation);
-      // const useNewTkn = ToolsConfig.extensionContext.globalState.get('useNewTkn');
-      if (toolLocation && currentVersion !== ToolsConfig.tool['tkn'].version) {
-        // if (!useNewTkn) {
-        response = await vscode.window.showWarningMessage(`Detected higher tkn version: ${currentVersion} which is not yet supported. Supported tkn version: ${ToolsConfig.tool['tkn'].version}.`, `Use ${currentVersion}`, downgradeVersion, 'Cancel');
-        // } else {
-        // response = `Use ${currentVersion}`;
-        // }
+      if (toolLocation) {
+        if(!semver.satisfies(currentVersion, ToolsConfig.tool['tkn'].versionRange)) {
+          response = await vscode.window.showWarningMessage(`Detected unsupported tkn version: ${currentVersion}. Supported tkn version: ${ToolsConfig.tool['tkn'].versionRangeLabel}.`, downloadVersion, 'Cancel');
+        }
       }
       if (await ToolsConfig.getVersion(toolCacheLocation) === ToolsConfig.tool['tkn'].version && response !== 'Cancel') {
         response = 'Cancel';
         toolLocation = toolCacheLocation;
-        ToolsConfig.extensionContext.globalState.update('useNewTkn', false);
       }
-      // else if (response === `Use ${currentVersion}`) {
-      //   ToolsConfig.extensionContext.globalState.update('useNewTkn', true);
-      // }
 
-      if (toolLocation === undefined || response === downgradeVersion) {
+      if (toolLocation === undefined || response === downloadVersion) {
         // otherwise request permission to download
         const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].dlFileName);
         const installRequest = `Download and install v${ToolsConfig.tool['tkn'].version}`;
 
-        if (response !== downgradeVersion) {
+        if (response !== downloadVersion) {
           response = await vscode.window.showInformationMessage(
             `Cannot find Tekton CLI ${ToolsConfig.tool['tkn'].versionRangeLabel} for interacting with Tekton Pipelines.`, installRequest, 'Help', 'Cancel');
         }
         await fsex.ensureDir(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
-        if (response === installRequest || response === downgradeVersion) {
+        if (response === installRequest || response === downloadVersion) {
           let action: string;
           do {
             action = undefined;
