@@ -18,24 +18,12 @@ import hasha = require('hasha');
 suite('tool configuration', () => {
   let sb: sinon.SinonSandbox;
   let chmodStub: sinon.SinonStub;
-  let extensionContext;
-  let globalStateGetMock: sinon.SinonStub;
-  let globalStateUpdateMock: sinon.SinonStub;
 
   setup(() => {
     sb = sinon.createSandbox();
     chmodStub = sb.stub(fsex, 'chmod');
     chmodStub.resolves(true);
-    globalStateGetMock = sb.stub();
-    globalStateUpdateMock = sb.stub();
-    extensionContext = {
-      globalState: {
-        get: globalStateGetMock,
-        update: globalStateUpdateMock
-      } as vscode.Memento
-    }
     ToolsConfig.resetConfiguration();
-    ToolsConfig.setExtensionContext(extensionContext);
   });
 
   teardown(() => {
@@ -104,7 +92,6 @@ suite('tool configuration', () => {
       sb.stub(shelljs, 'which').returns({ stdout: 'tkn' } as string & shelljs.ShellReturnValue);
       sb.stub(fsex, 'pathExists').resolves(false);
       getVersionStub.returns(ToolsConfig.tool['tkn'].version);
-      globalStateGetMock.returns(false);
       const toolLocation = await ToolsConfig.detectOrDownload();
       assert.equal(toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
     });
@@ -113,7 +100,6 @@ suite('tool configuration', () => {
       sb.stub(shelljs, 'which');
       sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.returns(ToolsConfig.tool['tkn'].version);
-      globalStateGetMock.returns(false);
       const toolLocation = await ToolsConfig.detectOrDownload();
       assert.equal(toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
     });

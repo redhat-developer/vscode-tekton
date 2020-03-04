@@ -22,7 +22,6 @@ import { customTektonExplorer } from './pipeline/customTektonExplorer';
 import { TektonResourceVirtualFileSystemProvider, TKN_RESOURCE_SCHEME } from './util/tektonresources.virtualfs';
 import { TektonItem } from './tekton/tektonitem';
 import { showPipelinePreview, registerPipelinePreviewContext } from './pipeline/pipeline-preview';
-import { ToolsConfig } from './tools';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -33,8 +32,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   contextGlobalState = context;
   migrateFromTkn018();
-
-  ToolsConfig.setExtensionContext(context);
 
   const disposables = [
     vscode.commands.registerCommand('tekton.about', (context) => execute(Pipeline.about, context)),
