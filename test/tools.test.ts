@@ -12,17 +12,17 @@ import * as shelljs from 'shelljs';
 import { Platform } from '../src/util/platform';
 import { Archive } from '../src/util/archive';
 import * as path from 'path';
-import * as fs from 'fs';
 import * as fsex from 'fs-extra';
 import hasha = require('hasha');
 
 suite('tool configuration', () => {
   let sb: sinon.SinonSandbox;
-  let chmodSyncStub: sinon.SinonStub;
+  let chmodStub: sinon.SinonStub;
 
   setup(() => {
     sb = sinon.createSandbox();
-    chmodSyncStub = sb.stub(fs, 'chmodSync');
+    chmodStub = sb.stub(fsex, 'chmod');
+    chmodStub.resolves(true);
     ToolsConfig.resetConfiguration();
   });
 
@@ -34,7 +34,7 @@ suite('tool configuration', () => {
     test('returns version number with expected output', async () => {
       const testData: CliExitData = { stdout: 'Client version: 0.2.0', error: undefined };
       sb.stub(CliImpl.prototype, 'execute').resolves(testData);
-      sb.stub(fs, 'existsSync').returns(true);
+      sb.stub(fsex, 'pathExists').resolves(true);
 
       const result: string = await ToolsConfig.getVersion('tkn');
       assert.equal(result, '0.2.0');
@@ -43,7 +43,7 @@ suite('tool configuration', () => {
     test('returns version number with expected output when version number start with "v"', async () => {
       const testData: CliExitData = { stdout: 'Client version: v0.2.0', error: undefined };
       sb.stub(CliImpl.prototype, 'execute').resolves(testData);
-      sb.stub(fs, 'existsSync').returns(true);
+      sb.stub(fsex, 'pathExists').resolves(true);
 
       const result: string = await ToolsConfig.getVersion('tkn');
       assert.equal(result, '0.2.0');
@@ -52,7 +52,7 @@ suite('tool configuration', () => {
     test('returns version undefined for unexpected output', async () => {
       const invalidData: CliExitData = { error: undefined, stdout: 'tknunexpected v0.1.2 (43e2a41) \n line two' };
       sb.stub(CliImpl.prototype, 'execute').resolves(invalidData);
-      sb.stub(fs, 'existsSync').returns(true);
+      sb.stub(fsex, 'pathExists').resolves(true);
 
       const result: string = await ToolsConfig.getVersion('tkn');
       assert.equal(result, undefined);
@@ -61,7 +61,7 @@ suite('tool configuration', () => {
     test('returns version undefined for not existing tool', async () => {
       const invalidData: CliExitData = { error: undefined, stdout: 'tknunexpected v0.1.2 (43e2a41) \n line two' };
       sb.stub(CliImpl.prototype, 'execute').resolves(invalidData);
-      sb.stub(fs, 'existsSync').returns(false);
+      sb.stub(fsex, 'pathExists').resolves(false);
 
       const result: string = await ToolsConfig.getVersion('odo');
       assert.equal(result, undefined);
@@ -70,7 +70,7 @@ suite('tool configuration', () => {
     test('returns version undefined for tool that does not support version parameter', async () => {
       const invalidData: CliExitData = { error: new Error('something bad happened'), stdout: 'tknunexpected v0.1.2 (43e2a41) \n line two' };
       sb.stub(CliImpl.prototype, 'execute').resolves(invalidData);
-      sb.stub(fs, 'existsSync').returns(true);
+      sb.stub(fsex, 'pathExists').resolves(true);
 
       const result: string = await ToolsConfig.getVersion('tkn');
       assert.equal(result, undefined);
@@ -89,8 +89,8 @@ suite('tool configuration', () => {
     });
 
     test('returns path to tool detected form PATH locations if detected version is correct', async () => {
-      sb.stub(shelljs, 'which').returns({stdout: 'tkn'} as string & shelljs.ShellReturnValue);
-      sb.stub(fs, 'existsSync').returns(false);
+      sb.stub(shelljs, 'which').returns({ stdout: 'tkn' } as string & shelljs.ShellReturnValue);
+      sb.stub(fsex, 'pathExists').resolves(false);
       getVersionStub.returns(ToolsConfig.tool['tkn'].version);
       const toolLocation = await ToolsConfig.detectOrDownload();
       assert.equal(toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
@@ -98,24 +98,24 @@ suite('tool configuration', () => {
 
     test('returns path to previously downloaded tool if detected version is correct', async () => {
       sb.stub(shelljs, 'which');
-      sb.stub(fs, 'existsSync').returns(true);
+      sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.returns(ToolsConfig.tool['tkn'].version);
       const toolLocation = await ToolsConfig.detectOrDownload();
-      assert.equal( toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
+      assert.equal(toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
     });
 
     test('show warning message when greater version is detected', async () => {
       sb.stub(shelljs, 'which');
-      sb.stub(fs, 'existsSync').returns(true);
+      sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.returns('2.0.1');
       const toolLocation = await ToolsConfig.detectOrDownload();
       assert.ok(warningMessageStub.calledOnce);
-      assert.equal( toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
+      assert.equal(toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
     });
 
     test('ask to download tool if previously downloaded version is not correct and download if requested by user', async () => {
       sb.stub(shelljs, 'which');
-      sb.stub(fs, 'existsSync').returns(true);
+      sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.resolves('0.0.0');
       const showInfo = sb.stub(vscode.window, 'showInformationMessage').resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
       const stub = sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tool['tkn'].sha256sum);
@@ -124,13 +124,13 @@ suite('tool configuration', () => {
       const toolLocation = await ToolsConfig.detectOrDownload();
       assert.ok(showInfo.calledOnce);
       assert.ok(withProgress.calledOnce);
-      assert.equal( toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
+      assert.equal(toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
       showInfo.resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
     });
 
     test('ask to download tool if previously downloaded version is not correct and skip download if canceled by user', async () => {
       sb.stub(shelljs, 'which');
-      sb.stub(fs, 'existsSync').returns(true);
+      sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.resolves('0.0.0');
       const showInfo = sb.stub(vscode.window, 'showInformationMessage').resolves('Cancel');
       const toolLocation = await ToolsConfig.detectOrDownload();
@@ -140,29 +140,29 @@ suite('tool configuration', () => {
 
     test('downloads tool, ask to download again if checksum does not match and finish if consecutive download successful', async () => {
       sb.stub(shelljs, 'which');
-      sb.stub(fs, 'existsSync').returns(true);
+      sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.resolves('0.0.0');
       const showInfo = sb.stub(vscode.window, 'showInformationMessage').onFirstCall().resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
       showInfo.onSecondCall().resolves('Download again');
       const fromFile = sb.stub(hasha, 'fromFile').onFirstCall().resolves('not really sha256');
       fromFile.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
-      sb.stub(fsex, 'removeSync');
+      sb.stub(fsex, 'remove').resolves();
       sb.stub(Archive, 'unzip').resolves();
       const toolLocation = await ToolsConfig.detectOrDownload();
       assert.ok(withProgress.calledTwice);
       assert.ok(showInfo.calledTwice);
-      assert.equal( toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
+      assert.equal(toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
     });
 
     test('downloads tool, ask to download again if checksum does not match and exits if canceled', async () => {
       sb.stub(shelljs, 'which');
-      sb.stub(fs, 'existsSync').returns(true);
+      sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.resolves('0.0.0');
       const showInfo = sb.stub(vscode.window, 'showInformationMessage').onFirstCall().resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
       showInfo.onSecondCall().resolves('Cancel');
       const fromFile = sb.stub(hasha, 'fromFile').onFirstCall().resolves('not really sha256');
       fromFile.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
-      sb.stub(fsex, 'removeSync');
+      sb.stub(fsex, 'remove').resolves();
       sb.stub(Archive, 'unzip').resolves();
       const toolLocation = await ToolsConfig.detectOrDownload();
       assert.ok(withProgress.calledOnce);
@@ -181,15 +181,15 @@ suite('tool configuration', () => {
 
       test('does not set executable attribute for tool file', async () => {
         sb.stub(shelljs, 'which');
-        sb.stub(fs, 'existsSync').returns(true);
-        sb.stub(fsex, 'ensureDirSync').returns();
+        sb.stub(fsex, 'pathExists').resolves(true);
+        sb.stub(fsex, 'ensureDir').resolves();
         getVersionStub.resolves('0.0.0');
         sb.stub(vscode.window, 'showInformationMessage').resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
         const stub = sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tool['tkn'].sha256sum);
         stub.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
         sb.stub(Archive, 'unzip').resolves();
         await ToolsConfig.detectOrDownload();
-        assert.ok(!chmodSyncStub.called);
+        assert.ok(!chmodStub.called);
       });
     });
 
@@ -203,14 +203,14 @@ suite('tool configuration', () => {
       });
       test('set executable attribute for tool file', async () => {
         sb.stub(shelljs, 'which');
-        sb.stub(fs, 'existsSync').returns(false);
-        sb.stub(fsex, 'ensureDirSync').returns();
+        sb.stub(fsex, 'pathExists').resolves(true);
+        sb.stub(fsex, 'ensureDir').resolves();
         getVersionStub.resolves('0.0.0');
         sb.stub(vscode.window, 'showInformationMessage').resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
         sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tool['tkn'].sha256sum);
         sb.stub(Archive, 'unzip').resolves();
         await ToolsConfig.detectOrDownload();
-        assert.ok(chmodSyncStub.called);
+        assert.ok(chmodStub.called);
       });
     });
   });
