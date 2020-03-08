@@ -64,7 +64,7 @@ suite('Tekton/PipelineResource', () => {
 
 
     test('show warning message if file is not yaml', async () => {
-      await PipelineResource.create();
+      await PipelineResource.create(pipelineresourceItem);
       expect(warnStub).is.calledOnce;
     });
 
@@ -81,7 +81,7 @@ suite('Tekton/PipelineResource', () => {
           save: sinon.stub().returns(true)
         },
       });
-      const result = await PipelineResource.create();
+      const result = await PipelineResource.create(pipelineresourceItem);
       expect(result).equals('PipelineResources were successfully created.');
     });
 
@@ -93,7 +93,7 @@ suite('Tekton/PipelineResource', () => {
           isDirty: true,
         },
       });
-      await PipelineResource.create();
+      await PipelineResource.create(pipelineresourceItem);
       expect(warnStub).is.calledOnce;
       expect(infoMsg).is.calledOnce;
     });
@@ -104,7 +104,7 @@ suite('Tekton/PipelineResource', () => {
         stdout: 'text'
       });
       sandbox.stub(window, 'activeTextEditor').value(TextEditorMock);
-      const result = await PipelineResource.create();
+      const result = await PipelineResource.create(pipelineresourceItem);
       expect(result).equals('PipelineResources were successfully created.');
     });
 
@@ -113,7 +113,7 @@ suite('Tekton/PipelineResource', () => {
       execStub.rejects(errorMessage);
       sandbox.stub(window, 'activeTextEditor').value(TextEditorMock);
       try {
-        await PipelineResource.create();
+        await PipelineResource.create(pipelineresourceItem);
       } catch (err) {
         savedErr = err;
       }

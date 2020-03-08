@@ -26,6 +26,7 @@ export class Task extends TektonItem {
     if (value === 'Yes') {
       return Progress.execFunctionWithProgress(`Deleting the Task '${task.getName()}'.`, () =>
         Task.tkn.execute(Command.deleteTask(task.getName())))
+        .then(() => Task.explorer.refresh(task ? task.getParent() : undefined))
         .then(() => `The Task '${task.getName()}' successfully deleted.`)
         .catch((err) => Promise.reject(`Failed to delete the Task '${task.getName()}': '${err}'.`));
     }
