@@ -263,32 +263,32 @@ export class Command {
 export class TektonNodeImpl implements TektonNode {
   private readonly CONTEXT_DATA = {
     pipelinenode: {
-      icon: 'pipe.png',
+      icon: 'PL.svg',
       tooltip: 'Pipelines: {label}',
       getChildren: () => this.tkn.getPipelines(this)
     },
     pipelineresourcenode: {
-      icon: 'pipe.png',
+      icon: 'PLR.svg',
       tooltip: 'PipelineResources: {label}',
       getChildren: () => this.tkn.getPipelineResources(this)
     },
     pipelineresource: {
-      icon: 'pipe.png',
+      icon: 'PLR.svg',
       tooltip: 'PipelineResources: {label}',
       getChildren: () => []
     },
     tasknode: {
-      icon: 'task.png',
+      icon: 'T.svg',
       tooltip: 'Tasks: {label}',
       getChildren: () => this.tkn.getTasks(this)
     },
     clustertasknode: {
-      icon: 'clustertask.png',
+      icon: 'CT.svg',
       tooltip: 'ClusterTasks: {label}',
       getChildren: () => this.tkn.getClusterTasks(this)
     },
     pipeline: {
-      icon: 'pipe.png',
+      icon: 'PL.svg',
       tooltip: 'Pipeline: {label}',
       getChildren: () => this.tkn.getPipelineRuns(this)
     },
@@ -298,7 +298,7 @@ export class TektonNodeImpl implements TektonNode {
       getChildren: () => this.tkn.getTaskRuns(this)
     },
     task: {
-      icon: 'task.png',
+      icon: 'T.svg',
       tooltip: 'Task: {label}',
       getChildren: () => this.tkn.getTaskRunsforTasks(this)
     },
@@ -308,7 +308,7 @@ export class TektonNodeImpl implements TektonNode {
       getChildren: () => []
     },
     clustertask: {
-      icon: 'clustertask.png',
+      icon: 'CT.svg',
       tooltip: 'Clustertask: {label}',
       getChildren: () => this.tkn.getTaskRunsforTasks(this)
     },
@@ -318,17 +318,17 @@ export class TektonNodeImpl implements TektonNode {
       getChildren: () => []
     },
     triggertemplates: {
-      icon: 'pipe.png',
+      icon: 'TT.svg',
       tooltip: 'TriggerTemplates: {label}',
       getChildren: () => this.tkn.getTriggerTemplates(this)
     },
     triggerbinding: {
-      icon: 'pipe.png',
+      icon: 'TB.svg',
       tooltip: 'TriggerBinding: {label}',
       getChildren: () => this.tkn.getTriggerBinding(this)
     },
     eventlistener: {
-      icon: 'pipe.png',
+      icon: 'EL.svg',
       tooltip: 'EventListener: {label}',
       getChildren: () => this.tkn.getEventListener(this)
     },
