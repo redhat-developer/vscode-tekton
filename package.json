@@ -695,15 +695,15 @@
     "verify": "node ./out/build/verify-tools.js",
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "watch": "tsc -watch -p ./ & npm run preview-watch",
     "clean": "rimraf out && rimraf preview",
     "test": "npm run clean && npm run compile && npm run verify && node ./out/build/install-vscode.js && node ./out/build/unit-tests.js",
     "update-deps": "node_modules/.bin/ncu --upgrade --loglevel verbose --packageFile package.json && npm update",
     "coverage:upload": "codecov -f coverage/coverage-final.json",
-    "build": "npm run clean && npm run lint && npm run compile && npm run build-preview",
+    "build": "npm run clean && npm run lint && npm run compile && npm run preview-build",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",
-    "build-preview": "webpack-cli --mode production",
+    "preview-build": "webpack-cli --mode production",
     "preview-watch": "webpack-cli -w --mode development"
   },
   "devDependencies": {
