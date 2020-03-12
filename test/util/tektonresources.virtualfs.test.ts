@@ -110,7 +110,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
     unlinkStub = sandbox.stub(fs, 'unlink');
     openTextStub = sandbox.stub(workspace, 'openTextDocument').resolves(textDocument);
     executeCommandStub = sandbox.stub(commands, 'executeCommand');
-    nonce = sinon.useFakeTimers({
+    nonce = sandbox.useFakeTimers({
       now: new Date(),
       shouldAdvanceTime: true
     });
