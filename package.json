@@ -693,7 +693,7 @@
   ],
   "scripts": {
     "verify": "node ./out/build/verify-tools.js",
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run build",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "clean": "rimraf out && rimraf preview",
