@@ -17,7 +17,7 @@ import { TektonItem } from '../../src/tekton/tektonitem';
 const expect = chai.expect;
 chai.use(sinonChai);
 
-suite('Tekton/PipelineRun', () => {
+suite.skip('Tekton/PipelineRun', () => {
   let sandbox: sinon.SinonSandbox;
   let execStub: sinon.SinonStub;
   let getPipelineNamesStub: sinon.SinonStub;
