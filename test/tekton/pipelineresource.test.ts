@@ -58,9 +58,9 @@ suite('Tekton/PipelineResource', () => {
     sandbox.restore();
   });
 
-  suite('create', async () => {
+  suite('create', () => {
 
-    setup(async () => {
+    setup(() => {
       warnStub = sandbox.stub(window, 'showWarningMessage');
     });
 
@@ -123,7 +123,7 @@ suite('Tekton/PipelineResource', () => {
     });
   });
 
-  suite('list command', async () => {
+  suite('list command', () => {
     let termStub: sinon.SinonStub;
 
     setup(() => {
