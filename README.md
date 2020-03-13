@@ -62,10 +62,10 @@ Development of the Tekton Pipelines Extension is largely following development o
 
 #### Icons Representation
 
-<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/PL.svg" width="15" height="15" /><span style="margin: 20px">Pipeline Node</span></div>
-<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/T.svg" width="15" height="15" /><span style="margin: 20px">Task Node</span></div>
-<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/CT.svg" width="15" height="15" /><span style="margin: 20px">ClusterTask Node</span></div>
-<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/PLR.svg" width="15" height="15" /><span style="margin: 20px">PipelineResource Node</span></div>
+<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/PL.svg?sanitize=true" width="15" height="15" /><span style="margin: 20px">Pipeline Node</span></div>
+<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/T.svg?sanitize=true" width="15" height="15" /><span style="margin: 20px">Task Node</span></div>
+<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/CT.svg?sanitize=true" width="15" height="15" /><span style="margin: 20px">ClusterTask Node</span></div>
+<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/PLR.svg?sanitize=true" width="15" height="15" /><span style="margin: 20px">PipelineResource Node</span></div>
 <div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/running.gif" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Running</span></div>
 <div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/success.png" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Successful Run</span></div>
 <div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/failed.png" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Failed Run</span></div>
