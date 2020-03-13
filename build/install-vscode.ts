@@ -7,7 +7,7 @@ import cp = require('child_process');
 import path = require('path');
 import { platform } from 'os';
 const downloadAndUnzipVSCode = require('vscode-test').downloadAndUnzipVSCode;
-downloadAndUnzipVSCode('1.41.0').then((executable: string) => {
+downloadAndUnzipVSCode().then((executable: string) => {
   if (platform() === 'darwin') {
     executable = `'${path.join(executable.substring(0, executable.indexOf('.app')+4), 'Contents', 'Resources', 'app', 'bin', 'code')}'`;
   } else {
