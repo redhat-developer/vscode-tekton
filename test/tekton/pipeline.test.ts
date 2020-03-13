@@ -19,7 +19,7 @@ import { cliCommandToString } from '../../src/cli';
 const expect = chai.expect;
 chai.use(sinonChai);
 
-suite('Tekton/Pipeline', () => {
+suite.skip('Tekton/Pipeline', () => {
   let sandbox: sinon.SinonSandbox;
   let execStub: sinon.SinonStub;
   let getPipelineStub: sinon.SinonStub;
