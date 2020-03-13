@@ -59,7 +59,7 @@ export function run(): any {
         reject(error);
       } else {
         files.forEach((f): Mocha => {
-          if(f.includes('util')){
+          if(f.includes('util') || f.includes('tekton')){
             return;
           }
           return mocha.addFile(paths.join(testsRoot, f))
