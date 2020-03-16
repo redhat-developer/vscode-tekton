@@ -22,7 +22,10 @@
   "icon": "images/tekton.png",
   "activationEvents": [
     "onView:tektonPipelineExplorerView",
+    "onView:tektonCustomTreeView",
     "onView:extension.vsKubernetesExplorer",
+    "onCommand:tekton.output",
+    "onCommand:tekton.about",
     "onCommand:tekton.pipeline.restart",
     "onCommand:tekton.pipeline.start",
     "onCommand:tekton.openInEditor",
@@ -52,8 +55,7 @@
     "onCommand:tekton.taskrun.followLogs",
     "onCommand:tekton.taskrun.delete",
     "onCommand:tekton.explorer.refresh",
-    "onCommand:tekton.about",
-    "onCommand:tekton.output",
+    "onCommand:tekton.pipeline.preview",
     "onCommand:tekton.explorer.reportIssue",
     "onLanguage:yaml"
   ],
@@ -688,7 +690,6 @@
     }
   },
   "extensionDependencies": [
-    "ms-kubernetes-tools.vscode-kubernetes-tools",
     "redhat.vscode-yaml"
   ],
   "scripts": {
@@ -697,7 +698,7 @@
     "compile": "tsc -p ./ && npm run build-preview",
     "watch": "tsc -watch -p ./",
     "clean": "rimraf out && rimraf preview",
-    "test": "npm run clean && npm run compile && npm run verify && node ./out/build/install-vscode.js && node ./out/build/unit-tests.js",
+    "test": "npm run clean && npm run compile && npm run verify && node ./out/build/unit-tests.js",
     "update-deps": "node_modules/.bin/ncu --upgrade --loglevel verbose --packageFile package.json && npm update",
     "coverage:upload": "codecov -f coverage/coverage-final.json",
     "build": "npm run clean && npm run lint && npm run compile",

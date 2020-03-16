@@ -41,13 +41,10 @@ suite('Tekton Pipeline Extension', async () => {
 
   setup(async () => {
     sandbox = sinon.createSandbox();
-    const stub = sandbox.stub(Pipeline, 'about');
     try {
-      await vscode.commands.executeCommand('tekton.about');
+      await vscode.commands.executeCommand('tekton.output');
       // eslint-disable-next-line no-empty
     } catch (ignore) {
-    } finally {
-      stub.restore();
     }
     sandbox.stub(TknImpl.prototype, '_getPipelines').resolves([pipelineItem]);
     sandbox.stub(TknImpl.prototype, '_getTasks').resolves([taskItem]);
@@ -76,7 +73,7 @@ suite('Tekton Pipeline Extension', async () => {
     return [...mths];
   }
 
-  test.skip('should activate extension', async () => {
+  test('should activate extension', async () => {
     sandbox.stub(vscode.window, 'showErrorMessage');
     const cmds: string[] = await vscode.commands.getCommands();
     const tekton: string[] = cmds.filter((item) => item.startsWith('tekton.'));
@@ -113,8 +110,7 @@ suite('Tekton Pipeline Extension', async () => {
 
   test('should register all extension commands declared commands in package descriptor', async () => {
     return await vscode.commands.getCommands(true).then((commands) => {
-      packagejson.contributes.commands.forEach(value => {
-        // tslint:disable-next-line: no-unused-expression
+      packagejson.contributes.commands.forEach((value)=> {
         expect(commands.indexOf(value.command) > -1, `Command '${value.command}' handler is not registered during activation`).true;
       });
     });
