@@ -26,7 +26,7 @@ suite('pipeline preview', () => {
     activeEditor = {} as vscode.TextEditor;
     sandbox.stub(vscode.window, 'activeTextEditor').value(activeEditor);
     tknDocuments = sandbox.stub(tknYaml, 'getTektonDocuments');
-    previewManager = sandbox.stub(preview.PreviewManager.prototype, 'showPreview');
+    previewManager = sandbox.stub(preview.previewManager, 'showPreview');
   });
 
   teardown(() => {

@@ -18,7 +18,7 @@ import * as k8s from 'vscode-kubernetes-tools-api';
 const expect = chai.expect;
 chai.use(sinonChai);
 
-suite.skip('TektonResourceVirtualFileSystemProvider', () => {
+suite('TektonResourceVirtualFileSystemProvider', () => {
   let sandbox: sinon.SinonSandbox;
   let v1Stub: sinon.SinonStub;
   let osStub: sinon.SinonStub;
