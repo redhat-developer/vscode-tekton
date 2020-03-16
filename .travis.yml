@@ -9,6 +9,8 @@ matrix:
     - os: linux
       dist: trusty
     - os: osx
+      env:
+        - NODE_OPTIONS="--no-force-async-hooks-checks" # this is temporary see https://github.com/microsoft/vscode/issues/85601
 
 before_install:
 - if [ $TRAVIS_OS_NAME == "linux" ]; then

@@ -30,6 +30,8 @@ jobs:
     pool:
       name: Hosted macOS
       demands: npm
+    variables:
+      NODE_OPTIONS: "--no-force-async-hooks-checks" # this is temporary see https://github.com/microsoft/vscode/issues/85601
     steps:
       - task: NodeTool@0
         displayName: 'Use Node 10.x'
