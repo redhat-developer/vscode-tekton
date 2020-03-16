@@ -58,7 +58,7 @@ suite('Tekton/PipelineResource', () => {
     sandbox.restore();
   });
 
-  suite.skip('create', () => {
+  suite('create', () => {
 
     setup(() => {
       warnStub = sandbox.stub(window, 'showWarningMessage');
@@ -130,7 +130,7 @@ suite('Tekton/PipelineResource', () => {
       termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal').resolves();
     });
 
-    suite('called from \'Tekton Pipelines Explorer\'', () => {
+    suite.skip('called from \'Tekton Pipelines Explorer\'', () => {
 
       test('executes the list tkn command in terminal', async () => {
         await PipelineResource.list(pipelineresourceItem);
@@ -139,7 +139,7 @@ suite('Tekton/PipelineResource', () => {
 
     });
 
-    suite('called from command palette', () => {
+    suite.skip('called from command palette', () => {
 
       test('calls the appropriate error message when no pipelineresource found', async () => {
         getPipelineNamesStub.restore();
@@ -153,7 +153,7 @@ suite('Tekton/PipelineResource', () => {
       });
     });
 
-    suite('called from command bar', () => {
+    suite.skip('called from command bar', () => {
 
       test('returns null when clustertask is not defined properly', async () => {
         const result = await PipelineResource.list(null);
@@ -168,7 +168,7 @@ suite('Tekton/PipelineResource', () => {
       });
     });
 
-    suite('describe', () => {
+    suite.skip('describe', () => {
 
       test('returns null when cancelled', async () => {
         const result = await PipelineResource.describe(null);
@@ -183,7 +183,7 @@ suite('Tekton/PipelineResource', () => {
 
     });
 
-    suite('delete command', () => {
+    suite.skip('delete command', () => {
       let warnStub: sinon.SinonStub;
 
       setup(() => {
