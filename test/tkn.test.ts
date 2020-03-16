@@ -24,7 +24,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 // This needs to be edited to actually make sense wrt Tasks/TaskRuns in particular and nesting of resources
-suite('tkn', () => {
+suite.skip('tkn', () => {
   const tknCli: tkn.Tkn = tkn.TknImpl.Instance;
   let startPipelineObj: StartPipelineObject;
   let sandbox: sinon.SinonSandbox;
