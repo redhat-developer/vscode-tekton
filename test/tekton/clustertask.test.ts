@@ -17,7 +17,7 @@ import * as vscode from 'vscode';
 const expect = chai.expect;
 chai.use(sinonChai);
 
-suite.skip('Tekton/Clustertask', () => {
+suite('Tekton/Clustertask', () => {
   let execStub: sinon.SinonStub;
   let sandbox: sinon.SinonSandbox;
   let getClusterTaskStub: sinon.SinonStub;
