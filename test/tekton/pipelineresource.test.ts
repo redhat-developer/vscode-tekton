@@ -58,7 +58,7 @@ suite('Tekton/PipelineResource', () => {
     sandbox.restore();
   });
 
-  suite.skip('create', () => {
+  suite('create', () => {
 
     setup(() => {
       warnStub = sandbox.stub(window, 'showWarningMessage');
