@@ -8,7 +8,10 @@ import { previewManager } from './preview-manager';
 import { CommandContext, setCommandContext } from '../commands';
 
 export function showPipelinePreview(): void {
-  const document = vscode.window.activeTextEditor.document;
+  const document = vscode.window.activeTextEditor?.document;
+  if (!document) {
+    return;
+  }
   const resourceColumn = (vscode.window.activeTextEditor && vscode.window.activeTextEditor.viewColumn) || vscode.ViewColumn.One;
   const pipelines = getTektonDocuments(document, TektonYamlType.Pipeline)
   if (pipelines) {

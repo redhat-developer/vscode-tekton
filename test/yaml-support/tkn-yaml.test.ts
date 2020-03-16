@@ -5,7 +5,6 @@
 import * as vscode from 'vscode';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
-import * as sinon from 'sinon';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { isTektonYaml, TektonYamlType, getPipelineTasksRefName, getPipelineTasksName, getDeclaredResources, getTektonDocuments, getMetadataName, getPipelineTasks } from '../../src/yaml-support/tkn-yaml';
@@ -14,15 +13,6 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton yaml', () => {
-  let sandbox: sinon.SinonSandbox;
-
-  setup(() => {
-    sandbox = sinon.createSandbox();
-  });
-
-  teardown(() => {
-    sandbox.restore();
-  });
 
   suite('Tekton detection', () => {
     test('Should detect Pipeline', () => {

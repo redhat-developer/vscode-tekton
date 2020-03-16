@@ -12,7 +12,7 @@ import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { PipelineResource } from '../../src/tekton/pipelineresource';
 import { TestItem } from './testTektonitem';
 import { TektonItem } from '../../src/tekton/tektonitem';
-import { window } from 'vscode';
+import { window, MessageItem, MessageOptions } from 'vscode';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -21,7 +21,7 @@ suite('Tekton/PipelineResource', () => {
   let sandbox: sinon.SinonSandbox;
   const errorMessage = 'FATAL ERROR';
   let execStub: sinon.SinonStub;
-  let warnStub: sinon.SinonStub<[string, import('vscode').MessageOptions, ...import('vscode').MessageItem[]], Thenable<import('vscode').MessageItem>>;
+  let warnStub: sinon.SinonStub<[string, MessageOptions, ...MessageItem[]], Thenable<MessageItem>>;
   let getPipelineNamesStub: sinon.SinonStub;
   const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
   const pipelineresourceItem = new TestItem(pipelineItem, 'pipelineresource', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
@@ -51,16 +51,15 @@ suite('Tekton/PipelineResource', () => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '' });
     sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([pipelineresourceItem]);
     getPipelineNamesStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
-    sandbox.stub(window, 'showInputBox');
   });
 
   teardown(() => {
     sandbox.restore();
   });
 
-  suite('create', async () => {
+  suite('create', () => {
 
-    setup(async () => {
+    setup(() => {
       warnStub = sandbox.stub(window, 'showWarningMessage');
     });
 
@@ -123,7 +122,7 @@ suite('Tekton/PipelineResource', () => {
     });
   });
 
-  suite('list command', async () => {
+  suite('list command', () => {
     let termStub: sinon.SinonStub;
 
     setup(() => {

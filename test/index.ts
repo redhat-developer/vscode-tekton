@@ -58,7 +58,9 @@ export function run(): any {
       if (error) {
         reject(error);
       } else {
-        files.forEach((f): Mocha => mocha.addFile(paths.join(testsRoot, f)));
+        files.forEach((f): Mocha => {
+          return mocha.addFile(paths.join(testsRoot, f))
+        });
         mocha.run(failures => {
           if (failures > 0) {
             reject(new Error(`${failures} tests failed.`));

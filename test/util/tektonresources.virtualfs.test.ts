@@ -112,7 +112,8 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
     executeCommandStub = sandbox.stub(commands, 'executeCommand');
     nonce = sandbox.useFakeTimers({
       now: new Date(),
-      shouldAdvanceTime: true
+      shouldAdvanceTime: true,
+      toFake: ['Date']
     });
   });
 
