@@ -17,7 +17,7 @@ import { window } from 'vscode';
 const expect = chai.expect;
 chai.use(sinonChai);
 
-suite.skip('Tekton/PipelineResource', () => {
+suite('Tekton/PipelineResource', () => {
   let sandbox: sinon.SinonSandbox;
   const errorMessage = 'FATAL ERROR';
   let execStub: sinon.SinonStub;
