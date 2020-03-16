@@ -76,7 +76,7 @@ suite('Tekton Pipeline Extension', async () => {
     return [...mths];
   }
 
-  test('should activate extension', async () => {
+  test.skip('should activate extension', async () => {
     sandbox.stub(vscode.window, 'showErrorMessage');
     const cmds: string[] = await vscode.commands.getCommands();
     const tekton: string[] = cmds.filter((item) => item.startsWith('tekton.'));
