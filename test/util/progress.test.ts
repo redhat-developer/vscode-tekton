@@ -45,7 +45,6 @@ suite('Progress Utility', () => {
     expect(execStub).calledTwice;
     expect(execStub.getCall(0).args[0]).equals(command1.command);
     expect(execStub.getCall(1).args[0]).equals(command2.command);
-    sandbox.restore();
   });
 
   test('calls progress with given options', async () => {
@@ -54,7 +53,6 @@ suite('Progress Utility', () => {
     await Progress.execWithProgress(options, steps, TknImpl.Instance);
 
     expect(spy).calledOnceWith(options, sinon.match.func);
-    sandbox.restore();
   });
 
   test('throw an error if a command fails', async () => {
@@ -70,7 +68,6 @@ suite('Progress Utility', () => {
     if (!e) {
       expect.fail('no error thrown');
     }
-    sandbox.restore();
   });
 
   test('execCmdWithProgress returned promise resolves in case of cmd finished successfully', () => {
@@ -78,7 +75,6 @@ suite('Progress Utility', () => {
     Progress.execCmdWithProgress('title', createCliCommand('cmd')).catch(() => {
       expect.fail(true, false, 'returned promise should not be rejected');
     });
-    sandbox.restore();
   });
 
   test('execCmdWithProgress returned promise rejects in case of cmd finished with failure', async () => {
@@ -94,6 +90,5 @@ suite('Progress Utility', () => {
     if (!e) {
       expect.fail('no error thrown');
     }
-    sandbox.restore();
   });
 });
