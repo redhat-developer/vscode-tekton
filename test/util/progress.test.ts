@@ -16,7 +16,7 @@ import { createCliCommand } from '../../src/cli';
 const expect = chai.expect;
 chai.use(sinonChai);
 
-suite('Progress Utility', () => {
+suite.skip('Progress Utility', () => {
   let sandbox: sinon.SinonSandbox;
   let execStub: sinon.SinonStub;
   const options = {
