@@ -67,7 +67,10 @@ export function run(): any {
           } else {
             resolve();
           }
-        }).on('end', () => coverageRunner && coverageRunner.reportCoverage()).uncaught(err => console.error(err));
+        }).on('end', () => coverageRunner && coverageRunner.reportCoverage())
+          .on('fail', (test, err) => {
+            console.log(err);
+          });
       }
     });
   });
