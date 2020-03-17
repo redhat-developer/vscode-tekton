@@ -40,7 +40,7 @@ suite('tkn', () => {
     sandbox.restore();
   });
 
-  suite.skip('command execution', () => {
+  suite('command execution', () => {
     let execStub: sinon.SinonStub, toolsStub: sinon.SinonStub;
     const command = createCliCommand('tkn', 'do', 'whatever', 'you', 'do');
 
