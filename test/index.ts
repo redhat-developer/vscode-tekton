@@ -65,12 +65,16 @@ export function run(): any {
 
         try {
           mocha.run(failures => {
+            console.error('Tests finished!!!');
             if (failures > 0) {
               reject(new Error(`${failures} tests failed.`));
             } else {
               resolve();
             }
-          }).on('end', () => coverageRunner && coverageRunner.reportCoverage());
+          }).on('end', () => {
+            console.error('On Test End!');
+            coverageRunner && coverageRunner.reportCoverage();
+          });
         } catch (err) {
           console.error(err);
           reject(new Error(`Tests failed: ${err}`));
