@@ -35,7 +35,7 @@ suite('Tekton/Pipeline', () => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
     getPipelineStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
-    sandbox.stub(vscode.window, 'showInputBox');
+    sandbox.stub(vscode.window, 'showInputBox').resolves();
     termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal').resolves();
   });
 
