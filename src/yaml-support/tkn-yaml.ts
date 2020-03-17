@@ -108,7 +108,7 @@ export function getTektonDocuments(vsDocument: vscode.TextDocument, type: Tekton
 
 export function getPipelineTasks(doc: YamlDocument): DeclaredTask[] {
   const result: DeclaredTask[] = [];
-  const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+  const rootMap = doc ? doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap: undefined;
   if (rootMap) {
     const specMap = getSpecMap(rootMap);
     if (specMap) {

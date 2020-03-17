@@ -53,13 +53,15 @@ async function askToSelectPipeline(pipeDocs: YamlDocument[]): Promise<YamlDocume
 
 function convertTasksToNode(tasks: DeclaredTask[]): NodeOrEdge[] {
   const result: NodeOrEdge[] = [];
-  const tasksIndex = tasks.map(task => task.name);
+  const tasksIndex = tasks? tasks.map(task => task.name): undefined;
 
-  for (const task of tasks) {
-    result.push({ data: { id: task.name, name: task.name, type: task.kind, taskRef: task.taskRef } as NodeData });
-    for (const after of task.runAfter) {
-      if (tasksIndex.includes(after)) {
-        result.push({ data: { source: after, target: task.name, id: `${after}-${task.name}` } as EdgeData });
+  if (tasksIndex) {
+    for (const task of tasks) {
+      result.push({ data: { id: task.name, name: task.name, type: task.kind, taskRef: task.taskRef } as NodeData });
+      for (const after of task.runAfter) {
+        if (tasksIndex.includes(after)) {
+          result.push({ data: { source: after, target: task.name, id: `${after}-${task.name}` } as EdgeData });
+        }
       }
     }
   }
