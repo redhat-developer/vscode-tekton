@@ -109,7 +109,7 @@ suite.skip('TektonResourceVirtualFileSystemProvider', () => {
     osStub = sandbox.stub(os, 'tmpdir');
     unlinkStub = sandbox.stub(fs, 'unlink');
     openTextStub = sandbox.stub(workspace, 'openTextDocument').resolves(textDocument);
-    executeCommandStub = sandbox.stub(commands, 'executeCommand');
+    executeCommandStub = sandbox.stub(commands, 'executeCommand').resolves();
     nonce = sandbox.useFakeTimers({
       now: new Date(),
       shouldAdvanceTime: true,

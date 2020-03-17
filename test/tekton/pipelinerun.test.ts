@@ -144,7 +144,7 @@ suite('Tekton/PipelineRun', () => {
       let warnStub: sinon.SinonStub;
 
       setup(() => {
-        warnStub = sandbox.stub(vscode.window, 'showWarningMessage');
+        warnStub = sandbox.stub(vscode.window, 'showWarningMessage').resolves();
       });
 
       test('calls the appropriate tkn command if confirmed', async () => {
