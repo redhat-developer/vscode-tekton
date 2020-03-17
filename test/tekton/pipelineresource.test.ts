@@ -17,7 +17,7 @@ import { window, MessageItem, MessageOptions } from 'vscode';
 const expect = chai.expect;
 chai.use(sinonChai);
 
-suite('Tekton/PipelineResource', () => {
+suite.skip('Tekton/PipelineResource', () => {
   let sandbox: sinon.SinonSandbox;
   const errorMessage = 'FATAL ERROR';
   let execStub: sinon.SinonStub;
@@ -60,7 +60,7 @@ suite('Tekton/PipelineResource', () => {
   suite('create', () => {
 
     setup(() => {
-      warnStub = sandbox.stub(window, 'showWarningMessage');
+      warnStub = sandbox.stub(window, 'showWarningMessage').resolves();
     });
 
 
@@ -186,7 +186,7 @@ suite('Tekton/PipelineResource', () => {
       let warnStub: sinon.SinonStub;
 
       setup(() => {
-        warnStub = sandbox.stub(window, 'showWarningMessage');
+        warnStub = sandbox.stub(window, 'showWarningMessage').resolves();
       });
 
       test('calls the appropriate tkn command if confirmed', async () => {
