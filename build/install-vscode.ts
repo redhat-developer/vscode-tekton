@@ -14,5 +14,5 @@ downloadAndUnzipVSCode('1.42.1').then((executable: string) => {
     executable = path.join(path.dirname(executable), 'bin', 'code');
   }
   const installLog = cp.execSync(`${executable} --install-extension ms-kubernetes-tools.vscode-kubernetes-tools`);
-  console.log(`Installing ms-kubernetes-tools.vscode-kubernetes-tools done, log: ${installLog}`);
+  console.log(installLog.toString());
 });

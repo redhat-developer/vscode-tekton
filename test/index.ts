@@ -59,6 +59,18 @@ export function run(): any {
       if (error) {
         reject(error);
       } else {
+        // always run extension.test.js first
+        files = files.sort((a, b) => {
+          if (a === 'extension.test.js') {
+            return -1;
+          }
+          if (b === 'extension.test.js') {
+            return 1;
+          }
+
+          return a.localeCompare(b);
+        });
+
         files.forEach((f): Mocha => {
           return mocha.addFile(paths.join(testsRoot, f))
         });
