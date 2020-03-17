@@ -39,6 +39,11 @@ suite('Tekton Pipeline Extension', () => {
   const taskItem = new TektonNodeImpl(taskNode, 'test-tasks', ContextType.TASK, TknImpl.Instance, vscode.TreeItemCollapsibleState.None);
   const clustertaskItem = new TektonNodeImpl(clustertaskNode, 'test-Clustertask', ContextType.CLUSTERTASK, TknImpl.Instance, vscode.TreeItemCollapsibleState.None);
 
+  suiteSetup(() => {
+    console.log('Installed extensions:');
+    vscode.extensions.all.forEach(e => console.log(e.id));
+  });
+
   setup(async () => {
     sandbox = sinon.createSandbox();
 
