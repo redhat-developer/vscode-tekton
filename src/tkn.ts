@@ -12,6 +12,7 @@ import format = require('string-format');
 import { StartPipelineObject } from './tekton/pipeline';
 import humanize = require('humanize-duration');
 import { TknPipelineResource, TknTask } from './tekton';
+import { PipelineExplorer } from './pipeline/pipelineExplorer';
 
 const humanizer = humanize.humanizer(createConfig());
 
@@ -685,6 +686,15 @@ export class TknImpl implements Tkn {
 
   }
 
+  async getPipelineStatus(listOfPipelineRuns: TektonNode[]): Promise<void> {
+    listOfPipelineRuns.map(async (pipelineRuns) => {
+      if (pipelineRuns.state === 'Unknown') {
+        await this.execute(Command.watchPipelineRuns(pipelineRuns.getName()));
+        await PipelineExplorer.getInstance().refresh(pipelineRuns.getParent());
+      }
+    })
+  }
+
   async getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> {
     if (!pipeline.visibleChildren) {
       pipeline.visibleChildren = this.defaultPageSize;
@@ -694,7 +704,9 @@ export class TknImpl implements Tkn {
       pipelineRuns = await this._getPipelineRuns(pipeline);
       this.cache.set(pipeline, pipelineRuns);
     }
-
+    // const sudhir = await this.execute(Command.watchPipelineRuns('petclinic-deploy-pipeline-run-jrvzm'));
+    // console.log(sudhir);
+    this.getPipelineStatus(pipelineRuns);
     const currentRuns = pipelineRuns.slice(0, Math.min(pipeline.visibleChildren, pipelineRuns.length))
     if (pipeline.visibleChildren < pipelineRuns.length) {
       let nextPage = this.defaultPageSize;
