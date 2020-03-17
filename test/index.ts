@@ -31,7 +31,8 @@ const config: any = {
   reporter: 'mocha-jenkins-reporter',
   ui: 'tdd',
   timeout: 15000,
-  color: true
+  color: true,
+  fullStackTrace: true,
 };
 
 if (process.env.BUILD_ID && process.env.BUILD_NUMBER) {
@@ -61,13 +62,20 @@ export function run(): any {
         files.forEach((f): Mocha => {
           return mocha.addFile(paths.join(testsRoot, f))
         });
-        mocha.run(failures => {
-          if (failures > 0) {
-            reject(new Error(`${failures} tests failed.`));
-          } else {
-            resolve();
-          }
-        }).on('end', () => coverageRunner && coverageRunner.reportCoverage());
+
+        try {
+          mocha.run(failures => {
+            if (failures > 0) {
+              reject(new Error(`${failures} tests failed.`));
+            } else {
+              resolve();
+            }
+          }).on('end', () => coverageRunner && coverageRunner.reportCoverage());
+        } catch (err) {
+          console.error(err);
+          reject(new Error(`Tests failed: ${err}`));
+        }
+
       }
     });
   });
