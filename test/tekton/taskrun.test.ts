@@ -38,7 +38,7 @@ suite('Tekton/TaskRun', () => {
     sandbox.restore();
   });
 
-  suite('list command', async () => {
+  suite('list command', () => {
     let termStub: sinon.SinonStub;
 
     setup(() => {
@@ -79,7 +79,7 @@ suite('Tekton/TaskRun', () => {
       });
     });
 
-    suite('listFromTasks command', async () => {
+    suite('listFromTasks command', () => {
       const taskItem = new TestItem(null, 'task', ContextType.TASK);
 
       setup(() => {
