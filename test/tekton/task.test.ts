@@ -30,7 +30,7 @@ suite('Tekton/Task', () => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskItem]);
     getTaskStub = sandbox.stub(TektonItem, 'getTaskNames').resolves([taskItem]);
-    sandbox.stub(vscode.window, 'showInputBox');
+    sandbox.stub(vscode.window, 'showInputBox').resolves();
   });
 
   teardown(() => {
@@ -70,7 +70,7 @@ suite('Tekton/Task', () => {
     let warnStub: sinon.SinonStub;
 
     setup(() => {
-      warnStub = sandbox.stub(vscode.window, 'showWarningMessage');
+      warnStub = sandbox.stub(vscode.window, 'showWarningMessage').resolves();
     });
 
     test('calls the appropriate tkn command if confirmed', async () => {

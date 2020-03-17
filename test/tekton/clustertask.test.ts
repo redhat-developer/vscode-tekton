@@ -30,7 +30,7 @@ suite('Tekton/Clustertask', () => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({error: null, stdout: '', stderr: ''});
     sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([clustertaskItem]);
     getClusterTaskStub = sandbox.stub(TektonItem, 'getClusterTaskNames').resolves([clustertaskItem]);
-    sandbox.stub(vscode.window, 'showInputBox');
+    sandbox.stub(vscode.window, 'showInputBox').resolves();
   });
 
   teardown(() => {
@@ -38,7 +38,7 @@ suite('Tekton/Clustertask', () => {
   });
 
 
-  suite('list command', async () => {
+  suite('list command', () => {
     let termStub: sinon.SinonStub;
 
     setup(() => {
@@ -74,7 +74,7 @@ suite('Tekton/Clustertask', () => {
     let warnStub: sinon.SinonStub;
 
     setup(() => {
-      warnStub = sandbox.stub(vscode.window, 'showWarningMessage');
+      warnStub = sandbox.stub(vscode.window, 'showWarningMessage').resolves();
     });
 
     test('calls the appropriate tkn command if confirmed', async () => {

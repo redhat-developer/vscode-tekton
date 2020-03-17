@@ -29,7 +29,7 @@ suite('Tekton/PipelineRun', () => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     sandbox.stub(TknImpl.prototype, 'getPipelineRuns').resolves([pipelinerunItem]);
     getPipelineNamesStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
-    sandbox.stub(vscode.window, 'showInputBox');
+    sandbox.stub(vscode.window, 'showInputBox').resolves();
   });
 
   teardown(() => {
@@ -144,7 +144,7 @@ suite('Tekton/PipelineRun', () => {
       let warnStub: sinon.SinonStub;
 
       setup(() => {
-        warnStub = sandbox.stub(vscode.window, 'showWarningMessage');
+        warnStub = sandbox.stub(vscode.window, 'showWarningMessage').resolves();
       });
 
       test('calls the appropriate tkn command if confirmed', async () => {

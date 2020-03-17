@@ -31,7 +31,8 @@ const config: any = {
   reporter: 'mocha-jenkins-reporter',
   ui: 'tdd',
   timeout: 15000,
-  color: true
+  color: true,
+  fullStackTrace: true,
 };
 
 if (process.env.BUILD_ID && process.env.BUILD_NUMBER) {
@@ -58,16 +59,38 @@ export function run(): any {
       if (error) {
         reject(error);
       } else {
+        // always run extension.test.js first
+        files = files.sort((a, b) => {
+          if (a === 'extension.test.js') {
+            return -1;
+          }
+          if (b === 'extension.test.js') {
+            return 1;
+          }
+
+          return a.localeCompare(b);
+        });
+
         files.forEach((f): Mocha => {
           return mocha.addFile(paths.join(testsRoot, f))
         });
-        mocha.run(failures => {
-          if (failures > 0) {
-            reject(new Error(`${failures} tests failed.`));
-          } else {
-            resolve();
-          }
-        }).on('end', () => coverageRunner && coverageRunner.reportCoverage());
+
+        try {
+
+          mocha.run(failures => {
+            if (failures > 0) {
+              reject(new Error(`${failures} tests failed.`));
+            } else {
+              resolve();
+            }
+          }).on('end', () => {
+            coverageRunner && coverageRunner.reportCoverage();
+          });
+        } catch (err) {
+          console.error(err);
+          reject(err);
+        }
+
       }
     });
   });

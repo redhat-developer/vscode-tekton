@@ -100,7 +100,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
     trvfsp = new TektonResourceVirtualFileSystemProvider();
     workspaceFoldersStub = sandbox.stub(workspace, 'workspaceFolders').value([wsFolder1]);
     writeFileStub = sandbox.stub(fs, 'writeFile');
-    sandbox.stub(window, 'showErrorMessage');
+    sandbox.stub(window, 'showErrorMessage').resolves();
     const api: k8s.API<k8s.KubectlV1> = {
       available: false,
       reason: 'extension-not-available'
@@ -109,7 +109,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
     osStub = sandbox.stub(os, 'tmpdir');
     unlinkStub = sandbox.stub(fs, 'unlink');
     openTextStub = sandbox.stub(workspace, 'openTextDocument').resolves(textDocument);
-    executeCommandStub = sandbox.stub(commands, 'executeCommand');
+    executeCommandStub = sandbox.stub(commands, 'executeCommand').resolves();
     nonce = sandbox.useFakeTimers({
       now: new Date(),
       shouldAdvanceTime: true,

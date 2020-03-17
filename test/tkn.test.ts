@@ -468,7 +468,7 @@ suite('tkn', () => {
 
     test('getPipelineRuns returns empty list if no tkn pipelineruns are present', async () => {
       sandbox.stub(tkn.TknImpl.prototype, 'getPipelineRuns').resolves([]);
-      execStub.returns({
+      execStub.resolves({
         error: undefined,
         stdout: JSON.stringify({
           items: []

@@ -60,7 +60,7 @@ suite('Tekton/PipelineResource', () => {
   suite('create', () => {
 
     setup(() => {
-      warnStub = sandbox.stub(window, 'showWarningMessage');
+      warnStub = sandbox.stub(window, 'showWarningMessage').resolves();
     });
 
 
@@ -186,7 +186,7 @@ suite('Tekton/PipelineResource', () => {
       let warnStub: sinon.SinonStub;
 
       setup(() => {
-        warnStub = sandbox.stub(window, 'showWarningMessage');
+        warnStub = sandbox.stub(window, 'showWarningMessage').resolves();
       });
 
       test('calls the appropriate tkn command if confirmed', async () => {

@@ -145,7 +145,7 @@ suite('TektonItem', () => {
 
     setup(() => {
       openTextStub = sandbox.stub(workspace, 'openTextDocument').resolves(textDocument);
-      sandbox.stub(window, 'showTextDocument');
+      sandbox.stub(window, 'showTextDocument').resolves();
     });
 
     test('open yaml file in editor', async ()=> {

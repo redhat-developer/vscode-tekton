@@ -28,7 +28,7 @@ import { TektonItem } from '../src/tekton/tektonitem';
 const expect = chai.expect;
 chai.use(sinonChai);
 
-suite('Tekton Pipeline Extension', async () => {
+suite('Tekton Pipeline Extension', () => {
   let sandbox: sinon.SinonSandbox;
   const pipelineNode = new TektonNodeImpl(TknImpl.ROOT, 'Pipelines', ContextType.PIPELINENODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
   const taskNode = new TektonNodeImpl(TknImpl.ROOT, 'Tasks', ContextType.TASKNODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
@@ -41,6 +41,8 @@ suite('Tekton Pipeline Extension', async () => {
 
   setup(async () => {
     sandbox = sinon.createSandbox();
+
+    //Activate extension
     const stub = sandbox.stub(Pipeline, 'about');
     try {
       await vscode.commands.executeCommand('tekton.about');
@@ -77,7 +79,7 @@ suite('Tekton Pipeline Extension', async () => {
   }
 
   test('should activate extension', async () => {
-    sandbox.stub(vscode.window, 'showErrorMessage');
+    sandbox.stub(vscode.window, 'showErrorMessage').resolves();
     const cmds: string[] = await vscode.commands.getCommands();
     const tekton: string[] = cmds.filter((item) => item.startsWith('tekton.'));
     const mths: string[] = await getStaticMethodsToStub(tekton);
@@ -122,8 +124,8 @@ suite('Tekton Pipeline Extension', async () => {
 
   test('sync command wrapper shows message returned from command', async () => {
     sandbox.stub(Pipeline, 'about');
-    sandbox.stub(vscode.window, 'showErrorMessage');
-    const simStub: sinon.SinonStub = sandbox.stub(vscode.window, 'showInformationMessage');
+    sandbox.stub(vscode.window, 'showErrorMessage').resolves();
+    const simStub: sinon.SinonStub = sandbox.stub(vscode.window, 'showInformationMessage').resolves();
     await vscode.commands.executeCommand('tekton.about');
     // tslint:disable-next-line: no-unused-expression
     expect(simStub).not.called;
