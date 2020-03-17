@@ -19,7 +19,7 @@ async function main(): Promise<void> {
 
     // Download VS Code, unzip it and run the integration test
     console.log(extensionDevelopmentPath, extensionTestsPath);
-    await runTests({ extensionDevelopmentPath, extensionTestsPath, version: '1.42.1' });
+    await runTests({ extensionDevelopmentPath, extensionTestsPath });
   } catch (err) {
     console.error(err);
     process.exit(1);
