@@ -81,15 +81,17 @@ suite('tool configuration', () => {
     let withProgress;
     let getVersionStub;
     let warningMessageStub;
+    let whichStub;
 
     setup(() => {
+      whichStub = sb.stub(shelljs, 'which').resolves();
       withProgress = sb.stub(vscode.window, 'withProgress').resolves();
       getVersionStub = sb.stub(ToolsConfig, 'getVersion').resolves();
-      warningMessageStub = sb.stub(vscode.window, 'showWarningMessage');
+      warningMessageStub = sb.stub(vscode.window, 'showWarningMessage').resolves();
     });
 
     test('returns path to tool detected form PATH locations if detected version is correct', async () => {
-      sb.stub(shelljs, 'which').returns({ stdout: 'tkn' } as string & shelljs.ShellReturnValue);
+      whichStub.returns({ stdout: 'tkn' } as string & shelljs.ShellReturnValue);
       sb.stub(fsex, 'pathExists').resolves(false);
       getVersionStub.returns(ToolsConfig.tool['tkn'].version);
       const toolLocation = await ToolsConfig.detectOrDownload();
@@ -97,7 +99,6 @@ suite('tool configuration', () => {
     });
 
     test('returns path to previously downloaded tool if detected version is correct', async () => {
-      sb.stub(shelljs, 'which');
       sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.returns(ToolsConfig.tool['tkn'].version);
       const toolLocation = await ToolsConfig.detectOrDownload();
@@ -105,7 +106,6 @@ suite('tool configuration', () => {
     });
 
     test('show warning message when greater version is detected', async () => {
-      sb.stub(shelljs, 'which');
       sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.returns('2.0.1');
       const toolLocation = await ToolsConfig.detectOrDownload();
@@ -114,7 +114,6 @@ suite('tool configuration', () => {
     });
 
     test('ask to download tool if previously downloaded version is not correct and download if requested by user', async () => {
-      sb.stub(shelljs, 'which');
       sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.resolves('0.0.0');
       const showInfo = sb.stub(vscode.window, 'showInformationMessage').resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
@@ -129,7 +128,6 @@ suite('tool configuration', () => {
     });
 
     test('ask to download tool if previously downloaded version is not correct and skip download if canceled by user', async () => {
-      sb.stub(shelljs, 'which');
       sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.resolves('0.0.0');
       const showInfo = sb.stub(vscode.window, 'showInformationMessage').resolves('Cancel');
@@ -139,7 +137,6 @@ suite('tool configuration', () => {
     });
 
     test('downloads tool, ask to download again if checksum does not match and finish if consecutive download successful', async () => {
-      sb.stub(shelljs, 'which');
       sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.resolves('0.0.0');
       const showInfo = sb.stub(vscode.window, 'showInformationMessage').onFirstCall().resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
@@ -155,7 +152,6 @@ suite('tool configuration', () => {
     });
 
     test('downloads tool, ask to download again if checksum does not match and exits if canceled', async () => {
-      sb.stub(shelljs, 'which');
       sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.resolves('0.0.0');
       const showInfo = sb.stub(vscode.window, 'showInformationMessage').onFirstCall().resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
@@ -180,7 +176,6 @@ suite('tool configuration', () => {
       });
 
       test('does not set executable attribute for tool file', async () => {
-        sb.stub(shelljs, 'which');
         sb.stub(fsex, 'pathExists').resolves(true);
         sb.stub(fsex, 'ensureDir').resolves();
         getVersionStub.resolves('0.0.0');
@@ -202,7 +197,6 @@ suite('tool configuration', () => {
         ToolsConfig.resetConfiguration();
       });
       test('set executable attribute for tool file', async () => {
-        sb.stub(shelljs, 'which');
         sb.stub(fsex, 'pathExists').resolves(true);
         sb.stub(fsex, 'ensureDir').resolves();
         getVersionStub.resolves('0.0.0');
