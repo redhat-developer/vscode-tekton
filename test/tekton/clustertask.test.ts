@@ -38,7 +38,7 @@ suite('Tekton/Clustertask', () => {
   });
 
 
-  suite('list command', async () => {
+  suite('list command', () => {
     let termStub: sinon.SinonStub;
 
     setup(() => {

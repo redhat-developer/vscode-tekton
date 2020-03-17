@@ -28,7 +28,7 @@ import { TektonItem } from '../src/tekton/tektonitem';
 const expect = chai.expect;
 chai.use(sinonChai);
 
-suite('Tekton Pipeline Extension', async () => {
+suite('Tekton Pipeline Extension', () => {
   let sandbox: sinon.SinonSandbox;
   const pipelineNode = new TektonNodeImpl(TknImpl.ROOT, 'Pipelines', ContextType.PIPELINENODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
   const taskNode = new TektonNodeImpl(TknImpl.ROOT, 'Tasks', ContextType.TASKNODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
@@ -41,6 +41,8 @@ suite('Tekton Pipeline Extension', async () => {
 
   setup(async () => {
     sandbox = sinon.createSandbox();
+
+    //Activate extension
     const stub = sandbox.stub(Pipeline, 'about');
     try {
       await vscode.commands.executeCommand('tekton.about');
