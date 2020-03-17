@@ -51,36 +51,37 @@ function loadCoverageRunner(testsRoot: string): CoverageRunner | undefined {
   return coverageRunner;
 }
 
-export function run(): any {
-  return new Promise((resolve, reject) => {
-    const testsRoot = paths.resolve(__dirname);
-    const coverageRunner = loadCoverageRunner(testsRoot);
-    glob('**/**.test.js', { cwd: testsRoot }, (error, files): any => {
-      if (error) {
-        reject(error);
-      } else {
-        files.forEach((f): Mocha => {
-          return mocha.addFile(paths.join(testsRoot, f))
+export function run(testsRootOrig: string, cb: (error: any, failures?: number) => void): any {
+  // return new Promise((resolve, reject) => {
+  const testsRoot = paths.resolve(__dirname);
+  const coverageRunner = loadCoverageRunner(testsRoot);
+  glob('**/**.test.js', { cwd: testsRoot }, (error, files): any => {
+    if (error) {
+      cb(error);
+    } else {
+      files.forEach((f): Mocha => {
+        return mocha.addFile(paths.join(testsRoot, f))
+      });
+
+      try {
+        mocha.run(failures => {
+          console.error('Tests finished!!!');
+          // if (failures > 0) {
+          //   reject(new Error(`${failures} tests failed.`));
+          // } else {
+          //   resolve();
+          // }
+          cb(null, failures);
+        }).on('end', () => {
+          console.error('On Test End!');
+          coverageRunner && coverageRunner.reportCoverage();
         });
-
-        try {
-          mocha.run(failures => {
-            console.error('Tests finished!!!');
-            if (failures > 0) {
-              reject(new Error(`${failures} tests failed.`));
-            } else {
-              resolve();
-            }
-          }).on('end', () => {
-            console.error('On Test End!');
-            coverageRunner && coverageRunner.reportCoverage();
-          });
-        } catch (err) {
-          console.error(err);
-          reject(new Error(`Tests failed: ${err}`));
-        }
-
+      } catch (err) {
+        console.error(err);
+        cb(err);
       }
-    });
+
+    }
   });
+  // });
 }
