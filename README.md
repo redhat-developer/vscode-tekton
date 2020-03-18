@@ -13,7 +13,7 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 ## New and Noteworthy
 
 ### Pipeline preview
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/demo_0.0.6.gif" width="710" height="499" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_preview_0.0.6.gif" width="710" height="499" /></div>
 
 ### New icons and Tekton resources
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/new_items_and_icons.png" width="710" height="499" /></div>
