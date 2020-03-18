@@ -704,8 +704,6 @@ export class TknImpl implements Tkn {
       pipelineRuns = await this._getPipelineRuns(pipeline);
       this.cache.set(pipeline, pipelineRuns);
     }
-    // const sudhir = await this.execute(Command.watchPipelineRuns('petclinic-deploy-pipeline-run-jrvzm'));
-    // console.log(sudhir);
     this.getPipelineStatus(pipelineRuns);
     const currentRuns = pipelineRuns.slice(0, Math.min(pipeline.visibleChildren, pipelineRuns.length))
     if (pipeline.visibleChildren < pipelineRuns.length) {
@@ -737,6 +735,15 @@ export class TknImpl implements Tkn {
       .filter((value) => value.spec.pipelineRef.name === pipeline.getName())
       .map((value) => new PipelineRun(pipeline, value.metadata.name, this, value))
       .sort(compareTimeNewestFirst);
+  }
+
+  async getTaskRunStatus(listOfTaskrun: TektonNode[]): Promise<void> {
+    listOfTaskrun.map(async (taskRun) => {
+      if (taskRun.state === 'Unknown') {
+        await this.execute(Command.watchTaskRuns(taskRun.getName()));
+        await PipelineExplorer.getInstance().refresh(taskRun.getParent().getParent());
+      }
+    })
   }
 
   public async getTaskRunsforTasks(task: TektonNode): Promise<TektonNode[]> {
@@ -776,7 +783,7 @@ export class TknImpl implements Tkn {
       taskRuns = await this._getTaskRuns(pipelineRun);
       this.cache.set(pipelineRun, taskRuns);
     }
-
+    this.getTaskRunStatus(taskRuns);
     const currentRuns = taskRuns.slice(0, Math.min(pipelineRun.visibleChildren, taskRuns.length))
     if (pipelineRun.visibleChildren < taskRuns.length) {
       let nextPage = this.defaultPageSize;
