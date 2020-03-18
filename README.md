@@ -8,13 +8,20 @@
 ## Overview
 
 A Visual Studio Code extension for interacting with Tekton Pipelines.
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/demo_0.0.6.gif" width="710" height="499" /></div>
 
+## New and Noteworthy
 
-- Provides editing support for Pipeline yaml
+### Pipeline preview
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/demo_0.0.6.gif" width="710" height="499" /></div>
+
+### New icons and Tekton resources
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/new_items_and_icons.png" width="710" height="499" /></div>
+
+### Provides editing support for Pipeline yaml
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/editing-demo.gif" width="710" height="499" /></div>
 
-- Uses `tkn` CLI commands to interact with Tekton Pipelines
-- Provides snippets for creating Pipeline Resources
+### Provides snippets for creating Pipeline Resources
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/demo.gif" width="710" height="499" /></div>
 
 ### Setup kubernetes cluster to use with extension
@@ -62,10 +69,10 @@ Development of the Tekton Pipelines Extension is largely following development o
 
 #### Icons Representation
 
-<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/PL.png" width="15" height="15" /><span style="margin: 20px">Pipeline Node</span></div>
-<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/T.png" width="15" height="15" /><span style="margin: 20px">Task Node</span></div>
-<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/CT.png" width="15" height="15" /><span style="margin: 20px">ClusterTask Node</span></div>
-<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/PLR.png" width="15" height="15" /><span style="margin: 20px">PipelineResource Node</span></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/PL.png" width="15" height="15" /><span style="margin: 20px">Pipeline Node</span></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/T.png" width="15" height="15" /><span style="margin: 20px">Task Node</span></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/CT.png" width="15" height="15" /><span style="margin: 20px">ClusterTask Node</span></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/PLR.png" width="15" height="15" /><span style="margin: 20px">PipelineResource Node</span></div>
 <div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/running.gif" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Running</span></div>
 <div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/success.png" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Successful Run</span></div>
 <div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/failed.png" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Failed Run</span></div>

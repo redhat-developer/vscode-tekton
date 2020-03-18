@@ -1,5 +1,21 @@
 # Change Log
 
+## 0.0.6 (March 18, 2020)
+
+This release brings to you:
+
+* [#151](https://github.com/redhat-developer/vscode-tekton/issues/151) Add Tekton to activity bar
+* [#150](https://github.com/redhat-developer/vscode-tekton/issues/150) Add pipeline diagram preview
+* [#165](https://github.com/redhat-developer/vscode-tekton/issues/165) Update tkn version to 0.8
+* [#147](https://github.com/redhat-developer/vscode-tekton/issues/147) Add support for trigger resource types
+* [#148](https://github.com/redhat-developer/vscode-tekton/issues/148) Allow editing trigger resources
+* [#191](https://github.com/redhat-developer/vscode-tekton/pull/191) Added new icon in tree view resource
+* Bugfixes for minor issues:
+  * [#167](https://github.com/redhat-developer/vscode-tekton/issues/167) oc is required for certain operations
+  * [#172](https://github.com/redhat-developer/vscode-tekton/issues/172) Add more description tooltip to select icon
+  * [#170](https://github.com/redhat-developer/vscode-tekton/issues/170) YAML validation complains about workspace
+  * [#154](https://github.com/redhat-developer/vscode-tekton/issues/154) New minor version of tkn should work
+
 ## 0.0.5 (February 21, 2020)
 
 This release brings to you:
