@@ -12,7 +12,6 @@ import * as path from 'path';
 const kubeConfigFolder: string = path.join(Platform.getUserHomePath(), '.kube');
 
 export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposable {
-  private static instance: PipelineExplorer;
   private static tkn: Tkn = TknImpl.Instance;
   private treeView: TreeView<TektonNode>;
   private fsw: FileContentChangeNotifier;
@@ -23,13 +22,6 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     this.fsw = WatchUtil.watchFileForContextChange(kubeConfigFolder, 'config');
     this.fsw.emitter.on('file-changed', this.refresh.bind(this));
     this.treeView = window.createTreeView('tektonPipelineExplorerView', { treeDataProvider: this, canSelectMany: true });
-  }
-
-  static getInstance(): PipelineExplorer {
-    if (!PipelineExplorer.instance) {
-      PipelineExplorer.instance = new PipelineExplorer();
-    }
-    return PipelineExplorer.instance;
   }
 
   getTreeItem(element: TektonNode): TreeItem | Thenable<TreeItem> {

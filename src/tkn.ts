@@ -12,7 +12,7 @@ import format = require('string-format');
 import { StartPipelineObject } from './tekton/pipeline';
 import humanize = require('humanize-duration');
 import { TknPipelineResource, TknTask } from './tekton';
-import { PipelineExplorer } from './pipeline/pipelineExplorer';
+import { pipelineExplorer, PipelineExplorer  } from './pipeline/pipelineExplorer';
 
 const humanizer = humanize.humanizer(createConfig());
 
@@ -627,16 +627,12 @@ function getStderrString(data: string | Error): string {
 export class TknImpl implements Tkn {
 
   public static ROOT: TektonNode = new TektonNodeImpl(undefined, 'root', undefined, undefined);
+  protected static readonly explorer: PipelineExplorer = pipelineExplorer;
   private cache: Map<TektonNode, TektonNode[]> = new Map();
   private static cli: Cli = CliImpl.getInstance();
   private static instance: Tkn;
   // Get page size from configuration, in case configuration is not present(dev mode) use hard coded value
   defaultPageSize: number = workspace.getConfiguration('vs-tekton').has('treePaginationLimit') ? workspace.getConfiguration('vs-tekton').get('treePaginationLimit') : 5;
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private constructor() {
-
-  }
 
   public static get Instance(): Tkn {
     if (!TknImpl.instance) {
@@ -690,7 +686,7 @@ export class TknImpl implements Tkn {
     listOfPipelineRuns.map(async (pipelineRuns) => {
       if (pipelineRuns.state === 'Unknown') {
         await this.execute(Command.watchPipelineRuns(pipelineRuns.getName()));
-        await PipelineExplorer.getInstance().refresh(pipelineRuns.getParent());
+        TknImpl.explorer.refresh();
       }
     })
   }
@@ -741,7 +737,7 @@ export class TknImpl implements Tkn {
     listOfTaskrun.map(async (taskRun) => {
       if (taskRun.state === 'Unknown') {
         await this.execute(Command.watchTaskRuns(taskRun.getName()));
-        await PipelineExplorer.getInstance().refresh(taskRun.getParent().getParent());
+        pipelineExplorer.refresh();
       }
     })
   }

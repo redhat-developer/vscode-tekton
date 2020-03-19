@@ -98,7 +98,7 @@ export class CliImpl implements Cli {
       let error: string | Error;
       tkn.stdout.on('data', (data) => {
         stdout += data;
-        const regexStatus = /\sSucceeded\s/;
+        const regexStatus = /\sSucceeded\s|\sFailed\s/;
         if(regexStatus.test(data.toString())) {
           resolve({ error, stdout });
         }

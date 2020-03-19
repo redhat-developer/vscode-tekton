@@ -22,7 +22,7 @@ import { Task } from '../src/tekton/task';
 import { ClusterTask } from '../src/tekton/clustertask';
 import packagejson = require('../package.json');
 import { TknImpl, TektonNodeImpl, ContextType } from '../src/tkn';
-import { PipelineExplorer } from '../src/pipeline/pipelineExplorer';
+import { PipelineExplorer, pipelineExplorer } from '../src/pipeline/pipelineExplorer';
 import { TektonItem } from '../src/tekton/tektonitem';
 
 const expect = chai.expect;
