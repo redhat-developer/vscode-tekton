@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { Tkn, TknImpl, TektonNode } from '../tkn';
-import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer';
+import { PipelineExplorer } from '../pipeline/pipelineExplorer';
 import { workspace, window } from 'vscode';
 import { kubefsUri } from '../util/tektonresources.virtualfs';
 
@@ -17,21 +17,9 @@ const errorMessage = {
   ClusterTask: 'You need at least one ClusterTask available. Please create new Tekton ClusterTask and try again.',
 };
 
-/* export class QuickPickCommand implements QuickPickItem {
-    constructor (public label: string,
-        public command: () => Promise<string>,
-        public description?: string,
-        public detail?: string,
-        public picked?: boolean,
-        public alwaysShow?: boolean
-    ) {
-
-    }
-} */
-
 export abstract class TektonItem {
   protected static readonly tkn: Tkn = TknImpl.Instance;
-  protected static readonly explorer: PipelineExplorer = pipelineExplorer;
+  protected static readonly explorer: PipelineExplorer = PipelineExplorer.getInstance();
 
   static validateUniqueName(data: Array<TektonNode>, value: string): string {
     const tektonNode = data.find((tektonNode) => tektonNode.getName() === value);

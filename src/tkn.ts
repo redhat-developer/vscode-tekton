@@ -12,7 +12,7 @@ import format = require('string-format');
 import { StartPipelineObject } from './tekton/pipeline';
 import humanize = require('humanize-duration');
 import { TknPipelineResource, TknTask } from './tekton';
-import { pipelineExplorer, PipelineExplorer  } from './pipeline/pipelineExplorer';
+import { PipelineExplorer } from './pipeline/pipelineExplorer';
 
 const humanizer = humanize.humanizer(createConfig());
 
@@ -627,7 +627,6 @@ function getStderrString(data: string | Error): string {
 export class TknImpl implements Tkn {
 
   public static ROOT: TektonNode = new TektonNodeImpl(undefined, 'root', undefined, undefined);
-  protected static readonly explorer: PipelineExplorer = pipelineExplorer;
   private cache: Map<TektonNode, TektonNode[]> = new Map();
   private static cli: Cli = CliImpl.getInstance();
   private static instance: Tkn;
@@ -686,7 +685,7 @@ export class TknImpl implements Tkn {
     listOfPipelineRuns.map(async (pipelineRuns) => {
       if (pipelineRuns.state === 'Unknown') {
         await this.execute(Command.watchPipelineRuns(pipelineRuns.getName()));
-        TknImpl.explorer.refresh();
+        PipelineExplorer.getInstance().refresh(pipelineRuns.getParent().getParent());
       }
     })
   }
@@ -737,7 +736,7 @@ export class TknImpl implements Tkn {
     listOfTaskrun.map(async (taskRun) => {
       if (taskRun.state === 'Unknown') {
         await this.execute(Command.watchTaskRuns(taskRun.getName()));
-        pipelineExplorer.refresh();
+        PipelineExplorer.getInstance().refresh(taskRun.getParent().getParent().getParent());
       }
     })
   }

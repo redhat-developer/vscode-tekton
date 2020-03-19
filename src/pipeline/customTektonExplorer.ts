@@ -5,11 +5,12 @@
 
 import { TreeDataProvider, Disposable, TreeView, window, Event, ProviderResult, TreeItem, EventEmitter, TreeItemCollapsibleState } from 'vscode';
 import { TektonNode, MoreNode } from '../tkn';
-import { pipelineExplorer } from './pipelineExplorer';
+import { PipelineExplorer } from './pipelineExplorer';
 
 export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Disposable {
 
   private treeView: TreeView<TektonNode>;
+  protected static readonly explorer: PipelineExplorer = PipelineExplorer.getInstance();
   private onDidChangeTreeDataEmitter: EventEmitter<TektonNode | undefined> = new EventEmitter<TektonNode | undefined>();
   readonly onDidChangeTreeData: Event<TektonNode | undefined> = this.onDidChangeTreeDataEmitter.event;
 
@@ -53,7 +54,7 @@ export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Dispo
 
   showSelected(show: boolean): void {
     if (show) {
-      const selection = pipelineExplorer.getSelection();
+      const selection = CustomTektonExplorer.explorer.getSelection();
       if (selection) {
         const orig = this.originalSelection;
         this.originalSelection = this.originalSelection.concat(selection.filter(node => {
