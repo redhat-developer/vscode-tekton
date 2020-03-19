@@ -43,7 +43,7 @@ export interface TektonNode {
   state?: string;
   visibleChildren?: number;
   getChildren(): ProviderResult<TektonNode[]>;
-  getParent(): TektonNode;
+  getParent(): TektonNode | undefined;
   getName(): string;
 }
 
