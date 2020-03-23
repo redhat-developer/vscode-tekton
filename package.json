@@ -640,17 +640,17 @@
         {
           "command": "tekton.triggertemplate.delete",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == triggertemplates",
-          "group": "c2"
+          "group": "c1"
         },
         {
           "command": "tekton.triggerbinding.delete",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == triggerbinding",
-          "group": "c2"
+          "group": "c1"
         },
         {
           "command": "tekton.eventlistener.delete",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == eventlistener",
-          "group": "c2"
+          "group": "c1"
         },
         {
           "command": "tekton.clustertask.start",
