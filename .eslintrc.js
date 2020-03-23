@@ -22,7 +22,8 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': [1],
         "@typescript-eslint/explicit-function-return-type": [1, { "allowExpressions": true }],
         "indent": ["error", 2, { "SwitchCase": 1 }],
-        "quotes": ["error", "single"]
+        "quotes": ["error", "single"],
+        "eol-last": ["error"]
     },
 
 };
