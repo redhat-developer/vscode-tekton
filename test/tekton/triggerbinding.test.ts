@@ -19,8 +19,8 @@ chai.use(sinonChai);
 suite('Tekton/TriggerBinding', () => {
   let sandbox: sinon.SinonSandbox;
   let execStub: sinon.SinonStub;
-  const triggerBindingNode = new TestItem(TknImpl.ROOT, 'test-trigger', ContextType.TASKNODE, null);
-  const triggerBindingItem = new TestItem(triggerBindingNode, 'TriggerBinding', ContextType.TASK, null);
+  const triggerBindingNode = new TestItem(TknImpl.ROOT, 'test-trigger', ContextType.TRIGGERBINDING, null);
+  const triggerBindingItem = new TestItem(triggerBindingNode, 'TriggerBinding', ContextType.EVENTLISTENER, null);
 
 
   setup(() => {

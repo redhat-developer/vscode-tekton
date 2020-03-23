@@ -23,4 +23,4 @@ export class TriggerBinding extends TektonItem {
     return null;
   }
 
-}  
+}

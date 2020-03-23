@@ -22,4 +22,4 @@ export class TriggerTemplate extends TektonItem {
     }
     return null;
   }
-}  
+}

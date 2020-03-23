@@ -19,8 +19,8 @@ chai.use(sinonChai);
 suite('Tekton/EventListener', () => {
   let sandbox: sinon.SinonSandbox;
   let execStub: sinon.SinonStub;
-  const eventListenerNode = new TestItem(TknImpl.ROOT, 'test-trigger', ContextType.TASKNODE, null);
-  const eventListenerItem = new TestItem(eventListenerNode, 'EventListener', ContextType.TASK, null);
+  const eventListenerNode = new TestItem(TknImpl.ROOT, 'test-trigger', ContextType.EVENTLISTENER, null);
+  const eventListenerItem = new TestItem(eventListenerNode, 'EventListener', ContextType.EVENTLISTENER, null);
 
 
   setup(() => {

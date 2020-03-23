@@ -19,8 +19,8 @@ chai.use(sinonChai);
 suite('Tekton/TriggerTemplate', () => {
   let sandbox: sinon.SinonSandbox;
   let execStub: sinon.SinonStub;
-  const triggerTemplateNode = new TestItem(TknImpl.ROOT, 'test-trigger', ContextType.TASKNODE, null);
-  const triggerTemplateItem = new TestItem(triggerTemplateNode, 'TriggerTemplate', ContextType.TASK, null);
+  const triggerTemplateNode = new TestItem(TknImpl.ROOT, 'test-trigger', ContextType.TRIGGERTEMPLATES, null);
+  const triggerTemplateItem = new TestItem(triggerTemplateNode, 'TriggerTemplate', ContextType.EVENTLISTENER, null);
 
 
   setup(() => {

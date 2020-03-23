@@ -21,4 +21,4 @@ export class EventListener extends TektonItem {
     }
     return null;
   }
-}  
+}
