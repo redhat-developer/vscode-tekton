@@ -6,6 +6,7 @@ import * as vscode from 'vscode';
 import { TektonYamlType, getTektonDocuments } from '../yaml-support/tkn-yaml';
 import { previewManager } from './preview-manager';
 import { CommandContext, setCommandContext } from '../commands';
+import { calculatePipelineGraph, calculatePipelineRunGraph } from './pipeline-graph';
 
 export function showPipelinePreview(): void {
   const document = vscode.window.activeTextEditor?.document;
@@ -14,8 +15,14 @@ export function showPipelinePreview(): void {
   }
   const resourceColumn = (vscode.window.activeTextEditor && vscode.window.activeTextEditor.viewColumn) || vscode.ViewColumn.One;
   const pipelines = getTektonDocuments(document, TektonYamlType.Pipeline)
-  if (pipelines) {
-    previewManager.showPreview(document, { resourceColumn, previewColumn: resourceColumn + 1 });
+  if (pipelines?.length > 0) {
+    previewManager.showPipelinePreview(document, { resourceColumn, previewColumn: resourceColumn + 1, graphProvider: calculatePipelineGraph });
+    return;
+  }
+
+  const pipelineRun = getTektonDocuments(document, TektonYamlType.PipelineRun);
+  if (pipelineRun?.length > 0) {
+    previewManager.showPipelinePreview(document, { resourceColumn, previewColumn: resourceColumn + 1, graphProvider: calculatePipelineRunGraph });
   }
 }
 
@@ -36,7 +43,11 @@ function getContext(document?: vscode.TextDocument): boolean {
   if (document.languageId === 'yaml') {
     const pipelines = getTektonDocuments(document, TektonYamlType.Pipeline);
     if (pipelines && pipelines.length > 0) {
+      return true;
+    }
 
+    const pipelineRuns = getTektonDocuments(document, TektonYamlType.PipelineRun);
+    if (pipelineRuns?.length > 0) {
       return true;
     }
   }

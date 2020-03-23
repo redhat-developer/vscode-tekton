@@ -147,6 +147,14 @@ suite('Tekton yaml', () => {
       const task = tasks.find(t => t.name === 'deploy-web');
       expect(task.runAfter).eql(['build-skaffold-web']);
     });
+
+    test('"getPipelineTasks" should return "from" statement from conditions', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/conditional-pipeline.yaml'));
+      const docs = getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///ordering/conditional-pipeline.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = getPipelineTasks(docs[0]);
+      const task = tasks.find(t => t.name === 'then-check');
+      expect(task.runAfter).eql(['first-create-file']);
+    });
   });
 
   suite('Tekton tasks detections', () => {

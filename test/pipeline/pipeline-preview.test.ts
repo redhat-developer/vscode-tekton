@@ -12,6 +12,7 @@ import * as tknYaml from '../../src/yaml-support/tkn-yaml';
 import * as preview from '../../src/pipeline/preview-manager';
 import { showPipelinePreview } from '../../src/pipeline/pipeline-preview';
 import { TektonYamlType } from '../../src/yaml-support/tkn-yaml';
+import { calculatePipelineGraph } from '../../src/pipeline/pipeline-graph';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -26,7 +27,7 @@ suite('pipeline preview', () => {
     activeEditor = {} as vscode.TextEditor;
     sandbox.stub(vscode.window, 'activeTextEditor').value(activeEditor);
     tknDocuments = sandbox.stub(tknYaml, 'getTektonDocuments');
-    previewManager = sandbox.stub(preview.previewManager, 'showPreview');
+    previewManager = sandbox.stub(preview.previewManager, 'showPipelinePreview');
   });
 
   teardown(() => {
@@ -38,16 +39,17 @@ suite('pipeline preview', () => {
     const doc = sandbox.mock();
     activeEditor.document = doc;
     showPipelinePreview();
-    expect(tknDocuments.calledOnce).true
+    expect(tknDocuments.calledTwice).true
     expect(tknDocuments.calledWith(doc, TektonYamlType.Pipeline)).true;
   });
-  test('showPipelinePreview() should calls "showPreview"', () => {
+
+  test('showPipelinePreview() should calls "previewManager.showPipelinePreview"', () => {
     const doc = sandbox.mock();
     activeEditor.document = doc;
     tknDocuments.returns([{}]);
 
     showPipelinePreview();
-    expect(previewManager.calledOnceWith(doc, { resourceColumn: vscode.ViewColumn.One, previewColumn: vscode.ViewColumn.One + 1 })).true;
+    expect(previewManager.calledOnceWith(doc, { resourceColumn: vscode.ViewColumn.One, previewColumn: vscode.ViewColumn.One + 1,  graphProvider: calculatePipelineGraph})).true;
   });
 
 });

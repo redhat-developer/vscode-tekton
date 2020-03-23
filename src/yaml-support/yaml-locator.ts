@@ -69,6 +69,15 @@ export interface YamlMatchedElement {
 }
 
 /**
+ * An abstraction based on `vscode.TextDocument`, allow to work not only with documents opened in editor
+ */
+export interface VirtualDocument {
+  uri: vscode.Uri;
+  version: number;
+  getText(): string;
+}
+
+/**
  * A yaml interpreter parse the yaml text and find the matched ast node from vscode location.
  */
 export class YamlLocator {
@@ -82,7 +91,7 @@ export class YamlLocator {
    * @param {vscode.Position} pos vscode position
    * @returns {YamlMatchedElement} the search results of yaml elements at the given position
    */
-  public getMatchedElement(textDocument: vscode.TextDocument, pos: vscode.Position): YamlMatchedElement {
+  public getMatchedElement(textDocument: VirtualDocument, pos: vscode.Position): YamlMatchedElement {
     const key: string = textDocument.uri.toString();
     this.ensureCache(key, textDocument);
     const cacheEntry = this.cache[key];
@@ -95,15 +104,14 @@ export class YamlLocator {
    *
    * @param {vscode.TextDocument} textDocument vscode text document
    * @param {vscode.Position} pos vscode position
-   * @returns {YamlMatchedElement} the search results of yaml elements at the given position
    */
-  public getYamlDocuments(textDocument: vscode.TextDocument): YamlDocument[] {
+  public getYamlDocuments(textDocument: VirtualDocument): YamlDocument[] {
     const key: string = textDocument.uri.toString();
     this.ensureCache(key, textDocument);
     return this.cache[key].yamlDocs;
   }
 
-  private ensureCache(key: string, textDocument: vscode.TextDocument): void {
+  private ensureCache(key: string, textDocument: VirtualDocument): void {
     if (!this.cache[key]) {
       this.cache[key] = { version: -1 } as YamlCachedDocuments;
     }
