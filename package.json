@@ -43,6 +43,9 @@
     "onCommand:tekton.task.start",
     "onCommand:tekton.task.list",
     "onCommand:tekton.task.delete",
+    "onCommand:tekton.triggertemplate.delete",
+    "onCommand:tekton.triggerbinding.delete",
+    "onCommand:tekton.eventlistener.delete",
     "onCommand:tekton.clustertask.start",
     "onCommand:tekton.clustertask.list",
     "onCommand:tekton.clustertask.delete",
@@ -254,6 +257,21 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.triggertemplate.delete",
+        "title": "Delete",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.triggerbinding.delete",
+        "title": "Delete",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.eventlistener.delete",
+        "title": "Delete",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.clustertask.start",
         "title": "Start",
         "category": "Tekton"
@@ -442,6 +460,18 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
+          "command": "tekton.triggertemplate.delete",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
+          "command": "tekton.triggerbinding.delete",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
+          "command": "tekton.eventlistener.delete",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
           "command": "tekton.clustertask.start",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -605,6 +635,21 @@
         {
           "command": "tekton.task.delete",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == task",
+          "group": "c2"
+        },
+        {
+          "command": "tekton.triggertemplate.delete",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == triggertemplates",
+          "group": "c2"
+        },
+        {
+          "command": "tekton.triggerbinding.delete",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == triggerbinding",
+          "group": "c2"
+        },
+        {
+          "command": "tekton.eventlistener.delete",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == eventlistener",
           "group": "c2"
         },
         {

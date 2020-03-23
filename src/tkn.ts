@@ -151,6 +151,15 @@ export class Command {
   static listEventListener(): CliCommand {
     return newTknCommand('eventlistener', 'list', '-o', 'json');
   }
+  static deleteTriggerTemplate(name: string): CliCommand {
+    return newTknCommand('triggertemplate', 'delete', name, '-f');
+  }
+  static deleteTriggerBinding(name: string): CliCommand {
+    return newTknCommand('triggerbinding', 'delete', name, '-f');
+  }
+  static deleteEventListeners(name: string): CliCommand {
+    return newTknCommand('eventlistener', 'delete', name, '-f');
+  }
   @verbose
   static listPipelineResourcesInTerminal(name: string): CliCommand {
     return newTknCommand('resource', 'list', name);
