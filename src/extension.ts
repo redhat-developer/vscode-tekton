@@ -22,6 +22,9 @@ import { customTektonExplorer } from './pipeline/customTektonExplorer';
 import { TektonResourceVirtualFileSystemProvider, TKN_RESOURCE_SCHEME } from './util/tektonresources.virtualfs';
 import { TektonItem } from './tekton/tektonitem';
 import { showPipelinePreview, registerPipelinePreviewContext } from './pipeline/pipeline-preview';
+import { TriggerTemplate } from './tekton/triggertemplate';
+import { TriggerBinding } from './tekton/triggerbinding';
+import { EventListener } from './tekton/eventlistener';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -60,6 +63,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.task.start', (context) => execute(Task.start, context)),
     vscode.commands.registerCommand('tekton.task.list', (context) => execute(Task.list, context)),
     vscode.commands.registerCommand('tekton.task.delete', (context) => execute(Task.delete, context)),
+    vscode.commands.registerCommand('tekton.triggertemplate.delete', (context) => execute(TriggerTemplate.delete, context)),
+    vscode.commands.registerCommand('tekton.triggerbinding.delete', (context) => execute(TriggerBinding.delete, context)),
+    vscode.commands.registerCommand('tekton.eventlistener.delete', (context) => execute(EventListener.delete, context)),
     vscode.commands.registerCommand('tekton.clustertask.start', (context) => execute(ClusterTask.start, context)),
     vscode.commands.registerCommand('tekton.clustertask.list', (context) => execute(ClusterTask.list, context)),
     vscode.commands.registerCommand('tekton.clustertask.delete', (context) => execute(ClusterTask.delete, context)),
