@@ -29,6 +29,7 @@ suite('Tekton Application Explorer', () => {
 
   setup(() => {
     tektonInstance = new PipelineExplorer();
+    sandbox.stub(TknImpl.prototype, 'getPipelineNodes').resolves([pipelineNode]);
     sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
     sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskItem]);
     sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([clustertaskItem]);
