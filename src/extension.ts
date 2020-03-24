@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { PipelineExplorer } from './pipeline/pipelineExplorer';
+import { PipelineExplorer, pipelineExplorer } from './pipeline/pipelineExplorer';
 import { Pipeline } from './tekton/pipeline';
 import { PipelineRun } from './tekton/pipelinerun';
 import { Task } from './tekton/task';
@@ -165,7 +165,7 @@ function migrateFromTkn018(): void {
 function expandMoreItem(context: number, parent: TektonNode, treeViewId: string): void {
   parent.visibleChildren += context;
   if (treeViewId === 'tektonPipelineExplorerView') {
-    PipelineExplorer.getInstance().refresh(parent);
+    pipelineExplorer.refresh(parent);
   }
 
   if (treeViewId === 'tektonCustomTreeView') {

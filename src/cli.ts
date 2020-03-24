@@ -98,6 +98,35 @@ export class CliImpl implements Cli {
       let error: string | Error;
       tkn.stdout.on('data', (data) => {
         stdout += data;
+      });
+      tkn.stderr.on('data', (data) => {
+        error += data;
+      });
+      tkn.on('error', err => {
+        // do not reject it here, because caller in some cases need the error and the streams
+        // to make a decision
+        error = err;
+      });
+      tkn.on('close', () => {
+        resolve({ error, stdout });
+      });
+    });
+  }
+
+  async runWatchCommand(cmd: CliCommand, opts: SpawnOptions = {}): Promise<CliExitData> {
+    return new Promise<CliExitData>((resolve) => {
+      this.tknChannel.print(cliCommandToString(cmd));
+      if (opts.windowsHide === undefined) {
+        opts.windowsHide = true;
+      }
+      if (opts.shell === undefined) {
+        opts.shell = true;
+      }
+      const tkn = spawn(cmd.cliCommand, cmd.cliArguments, opts);
+      let stdout = '';
+      let error: string | Error;
+      tkn.stdout.on('data', (data) => {
+        stdout += data;
         const regexStatus = /\sSucceeded\s|\sFailed\s/;
         if(regexStatus.test(data.toString())) {
           resolve({ error, stdout });

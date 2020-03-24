@@ -7,7 +7,7 @@ import * as sinon from 'sinon';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import { CustomTektonExplorer } from '../../src/pipeline/customTektonExplorer';
-import { PipelineExplorer } from '../../src/pipeline/pipelineExplorer';
+import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { TestItem } from '../tekton/testTektonitem';
 import * as tkn from '../../src/tkn';
 import { TektonNode } from '../../src/tkn';

@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TreeDataProvider, TreeView, Event, EventEmitter, TreeItem, ProviderResult, Disposable, window, extensions, commands, Uri, version } from 'vscode';
-import { Tkn, TektonNode, TknImpl, MoreNode } from '../tkn';
+import { Tkn, TektonNode, MoreNode, tknInstance } from '../tkn';
 import { WatchUtil, FileContentChangeNotifier } from '../util/watch';
 import { Platform } from '../util/platform';
 import * as path from 'path';
@@ -12,25 +12,16 @@ import * as path from 'path';
 const kubeConfigFolder: string = path.join(Platform.getUserHomePath(), '.kube');
 
 export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposable {
-  private tkn: Tkn;
-  private static instance: PipelineExplorer
+  protected static readonly tkn: Tkn = tknInstance;
   private treeView: TreeView<TektonNode>;
   private fsw: FileContentChangeNotifier;
   private onDidChangeTreeDataEmitter: EventEmitter<TektonNode | undefined> = new EventEmitter<TektonNode | undefined>();
   readonly onDidChangeTreeData: Event<TektonNode | undefined> = this.onDidChangeTreeDataEmitter.event;
 
   constructor() {
-    this.tkn = TknImpl.Instance;
     this.fsw = WatchUtil.watchFileForContextChange(kubeConfigFolder, 'config');
     this.fsw.emitter.on('file-changed', this.refresh.bind(this));
     this.treeView = window.createTreeView('tektonPipelineExplorerView', { treeDataProvider: this, canSelectMany: true });
-  }
-
-  static getInstance(): PipelineExplorer {
-    if (!PipelineExplorer.instance) {
-      PipelineExplorer.instance = new PipelineExplorer();
-    }
-    return PipelineExplorer.instance;
   }
 
   getTreeItem(element: TektonNode): TreeItem | Thenable<TreeItem> {
@@ -44,7 +35,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     if (element) {
       return element.getChildren();
     } else {
-      return this.tkn.getPipelineNodes();
+      return PipelineExplorer.tkn.getPipelineNodes();
     }
 
   }
@@ -55,7 +46,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
 
   refresh(target?: TektonNode): void {
     if (!target) {
-      this.tkn.clearCache();
+      PipelineExplorer.tkn.clearCache();
     }
     this.onDidChangeTreeDataEmitter.fire(target);
   }
@@ -95,3 +86,5 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
   }
 
 }
+
+export const pipelineExplorer = new PipelineExplorer();

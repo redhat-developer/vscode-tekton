@@ -12,7 +12,7 @@ import format = require('string-format');
 import { StartPipelineObject } from './tekton/pipeline';
 import humanize = require('humanize-duration');
 import { TknPipelineResource, TknTask } from './tekton';
-import { PipelineExplorer } from './pipeline/pipelineExplorer';
+import { pipelineExplorer } from './pipeline/pipelineExplorer';
 
 const humanizer = humanize.humanizer(createConfig());
 
@@ -590,6 +590,7 @@ export interface Tkn {
   getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]>;
   getRawClusterTasks(): Promise<TknTask[]>;
   execute(command: CliCommand, cwd?: string, fail?: boolean): Promise<CliExitData>;
+  runWatchCommand(command: CliCommand, cwd?: string, fail?: boolean): Promise<CliExitData>;
   executeInTerminal(command: CliCommand, cwd?: string): void;
   getTaskRunsforTasks(task: TektonNode): Promise<TektonNode[]>;
   getTriggerTemplates(triggerTemplates: TektonNode): Promise<TektonNode[]>;
@@ -681,13 +682,18 @@ export class TknImpl implements Tkn {
 
   }
 
+  async refreshPipelineRun(command: CliCommand, taskNpipelineRun: TektonNode): Promise<void> {
+    const status: TektonNode = taskNpipelineRun;
+    await this.runWatchCommand(command);
+    pipelineExplorer.refresh(status? status.getParent().getParent(): undefined);
+  }
+
   async getPipelineStatus(listOfPipelineRuns: TektonNode[]): Promise<void> {
-    listOfPipelineRuns.map(async (pipelineRuns) => {
-      if (pipelineRuns.state === 'Unknown') {
-        await this.execute(Command.watchPipelineRuns(pipelineRuns.getName()));
-        PipelineExplorer.getInstance().refresh(pipelineRuns.getParent().getParent());
+    for (const pipelineRun of listOfPipelineRuns) {
+      if (pipelineRun.state === 'Unknown') {
+        this.refreshPipelineRun(Command.watchPipelineRuns(pipelineRun.getName()), pipelineRun);
       }
-    })
+    }
   }
 
   async getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> {
@@ -732,13 +738,18 @@ export class TknImpl implements Tkn {
       .sort(compareTimeNewestFirst);
   }
 
+  async refreshTaskRun(command: CliCommand, taskNpipelineRun: TektonNode): Promise<void> {
+    const status: TektonNode = taskNpipelineRun;
+    await this.runWatchCommand(command);
+    pipelineExplorer.refresh(status? status.getParent().getParent().getParent(): undefined);
+  }
+
   async getTaskRunStatus(listOfTaskrun: TektonNode[]): Promise<void> {
-    listOfTaskrun.map(async (taskRun) => {
+    for (const taskRun of listOfTaskrun) {
       if (taskRun.state === 'Unknown') {
-        await this.execute(Command.watchTaskRuns(taskRun.getName()));
-        PipelineExplorer.getInstance().refresh(taskRun.getParent().getParent().getParent());
+        this.refreshTaskRun(Command.watchTaskRuns(taskRun.getName()), taskRun)
       }
-    })
+    }
   }
 
   public async getTaskRunsforTasks(task: TektonNode): Promise<TektonNode[]> {
@@ -1011,7 +1022,21 @@ export class TknImpl implements Tkn {
       .catch((err) => fail ? Promise.reject(err) : Promise.resolve({ error: null, stdout: '', stderr: '' }));
   }
 
+  public async runWatchCommand(command: CliCommand, cwd?: string, fail = true): Promise<CliExitData> {
+    const toolLocation = await ToolsConfig.detectOrDownload();
+    if (toolLocation) {
+      command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);
+    }
+
+
+    return TknImpl.cli.runWatchCommand(command, cwd ? { cwd } : {})
+      .then(async (result) => result.error && fail ? Promise.reject(result.error) : result)
+      .catch((err) => fail ? Promise.reject(err) : Promise.resolve({ error: null, stdout: '', stderr: '' }));
+  }
+
   clearCache(): void {
     this.cache.clear();
   }
 }
+
+export const tknInstance = new TknImpl();
