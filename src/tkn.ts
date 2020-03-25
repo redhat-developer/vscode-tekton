@@ -682,8 +682,8 @@ export class TknImpl implements Tkn {
 
   }
 
-  async refreshPipelineRun(command: CliCommand, taskNpipelineRun: TektonNode): Promise<void> {
-    const status: TektonNode = taskNpipelineRun;
+  async refreshPipelineRun(command: CliCommand, pipelineRun?: TektonNode): Promise<void> {
+    const status: TektonNode = pipelineRun;
     await this.runWatchCommand(command);
     pipelineExplorer.refresh(status? status.getParent().getParent(): undefined);
   }
@@ -738,20 +738,6 @@ export class TknImpl implements Tkn {
       .sort(compareTimeNewestFirst);
   }
 
-  async refreshTaskRun(command: CliCommand, taskNpipelineRun: TektonNode): Promise<void> {
-    const status: TektonNode = taskNpipelineRun;
-    await this.runWatchCommand(command);
-    pipelineExplorer.refresh(status? status.getParent().getParent().getParent(): undefined);
-  }
-
-  async getTaskRunStatus(listOfTaskrun: TektonNode[]): Promise<void> {
-    for (const taskRun of listOfTaskrun) {
-      if (taskRun.state === 'Unknown') {
-        this.refreshTaskRun(Command.watchTaskRuns(taskRun.getName()), taskRun)
-      }
-    }
-  }
-
   public async getTaskRunsforTasks(task: TektonNode): Promise<TektonNode[]> {
     let taskruns: TektonNode[] = this.cache.get(task);
     if (!taskruns) {
@@ -777,6 +763,14 @@ export class TknImpl implements Tkn {
       .filter((value) => value.spec.taskRef.name === task.getName())
       .map((value) => new TaskRun(task, value.metadata.name, this, value))
       .sort(compareTimeNewestFirst);
+  }
+
+  async getTaskRunStatus(listOfTaskRuns: TektonNode[]): Promise<void> {
+    for (const taskRun of listOfTaskRuns) {
+      if (taskRun.state === 'Unknown') {
+        this.refreshPipelineRun(Command.watchTaskRuns(taskRun.getName()));
+      }
+    }
   }
 
   async getTaskRuns(pipelineRun: TektonNode): Promise<TektonNode[]> {

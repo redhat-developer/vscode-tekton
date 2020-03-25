@@ -70,7 +70,7 @@ export class Pipeline extends TektonItem {
 
       return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
         Pipeline.tkn.startPipeline(inputStartPipeline)
-          .then(async () => Pipeline.explorer.refresh())
+          .then(() => Pipeline.explorer.refresh())
           .then(() => `Pipeline '${inputStartPipeline.name}' successfully started`)
           .catch((error) => Promise.reject(`Failed to start Pipeline with error '${error}'`))
       );
