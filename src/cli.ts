@@ -129,6 +129,7 @@ export class CliImpl implements Cli {
         stdout += data;
         const regexStatus = /\sSucceeded\s|\sFailed\s/;
         if(regexStatus.test(data.toString())) {
+          tkn.kill();
           resolve({ error, stdout });
         }
       });

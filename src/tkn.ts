@@ -682,8 +682,8 @@ export class TknImpl implements Tkn {
 
   }
 
-  async refreshPipelineRun(command: CliCommand, pipelineRun?: TektonNode): Promise<void> {
-    const status: TektonNode = pipelineRun;
+  async refreshPipelineNtaskRun(command: CliCommand, pipelineNtaskRun?: TektonNode): Promise<void> {
+    const status: TektonNode = pipelineNtaskRun;
     await this.runWatchCommand(command);
     pipelineExplorer.refresh(status? status.getParent().getParent(): undefined);
   }
@@ -691,7 +691,7 @@ export class TknImpl implements Tkn {
   async getPipelineStatus(listOfPipelineRuns: TektonNode[]): Promise<void> {
     for (const pipelineRun of listOfPipelineRuns) {
       if (pipelineRun.state === 'Unknown') {
-        this.refreshPipelineRun(Command.watchPipelineRuns(pipelineRun.getName()), pipelineRun);
+        this.refreshPipelineNtaskRun(Command.watchPipelineRuns(pipelineRun.getName()), pipelineRun);
       }
     }
   }
@@ -768,7 +768,7 @@ export class TknImpl implements Tkn {
   async getTaskRunStatus(listOfTaskRuns: TektonNode[]): Promise<void> {
     for (const taskRun of listOfTaskRuns) {
       if (taskRun.state === 'Unknown') {
-        this.refreshPipelineRun(Command.watchTaskRuns(taskRun.getName()));
+        this.refreshPipelineNtaskRun(Command.watchTaskRuns(taskRun.getName()));
       }
     }
   }
