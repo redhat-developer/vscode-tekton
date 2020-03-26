@@ -35,3 +35,7 @@ export function exitZenMode(): void {
 export function refreshCustomTree(): void {
   customTektonExplorer.refresh();
 }
+
+export function removeItemFromCustomTree(): void {
+  customTektonExplorer.removeItem();
+}

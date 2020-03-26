@@ -54,4 +54,20 @@ suite('Custom explorer test', () => {
     expect(itemToShow.length).equal(1);
     expect(itemToShow[0]).eql(taskrunItem);
   });
+
+  test('removeItem should remove selected items', () => {
+
+    pipelineExpStub.returns([pipelineNodeItem, pipelineItem1, pipelinerunItem, taskrunItem]);
+    const explorer = new CustomTektonExplorer();
+    sandbox.stub(explorer, 'refresh');
+    const treeView = {
+      selection: [pipelineItem1]
+    };
+    createTreeViewStub.returns(treeView);
+
+    explorer.removeItem();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const itemToShow: TektonNode[] = (explorer as any).itemsToShow;
+    expect(itemToShow.length).equal(0);
+  });
 });
