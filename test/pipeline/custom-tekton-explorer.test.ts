@@ -58,16 +58,16 @@ suite('Custom explorer test', () => {
   test('removeItem should remove selected items', () => {
 
     pipelineExpStub.returns([pipelineNodeItem, pipelineItem1, pipelinerunItem, taskrunItem]);
-    const explorer = new CustomTektonExplorer();
-    sandbox.stub(explorer, 'refresh');
     const treeView = {
       selection: [pipelineItem1]
     };
     createTreeViewStub.returns(treeView);
+    const explorer = new CustomTektonExplorer();
+    sandbox.stub(explorer, 'refresh');
 
     explorer.removeItem();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const itemToShow: TektonNode[] = (explorer as any).itemsToShow;
-    expect(itemToShow.length).equal(0);
+    const itemsToHide: TektonNode[] = (explorer as any).itemsToHide;
+    expect(itemsToHide.length).equal(1);
   });
 });
