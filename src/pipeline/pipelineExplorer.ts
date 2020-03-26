@@ -12,14 +12,12 @@ import * as path from 'path';
 const kubeConfigFolder: string = path.join(Platform.getUserHomePath(), '.kube');
 
 export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposable {
-  private tkn: Tkn;
   private treeView: TreeView<TektonNode>;
   private fsw: FileContentChangeNotifier;
   private onDidChangeTreeDataEmitter: EventEmitter<TektonNode | undefined> = new EventEmitter<TektonNode | undefined>();
   readonly onDidChangeTreeData: Event<TektonNode | undefined> = this.onDidChangeTreeDataEmitter.event;
 
   constructor() {
-    this.tkn = tknInstance
     this.fsw = WatchUtil.watchFileForContextChange(kubeConfigFolder, 'config');
     this.fsw.emitter.on('file-changed', this.refresh.bind(this));
     this.treeView = window.createTreeView('tektonPipelineExplorerView', { treeDataProvider: this, canSelectMany: true });
@@ -36,7 +34,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     if (element) {
       return element.getChildren();
     } else {
-      return this.tkn.getPipelineNodes();
+      return tknInstance.getPipelineNodes();
     }
 
   }
@@ -47,7 +45,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
 
   refresh(target?: TektonNode): void {
     if (!target) {
-      this.tkn.clearCache();
+      tknInstance.clearCache();
     }
     this.onDidChangeTreeDataEmitter.fire(target);
   }

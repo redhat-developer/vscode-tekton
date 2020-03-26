@@ -271,7 +271,6 @@ export class Command {
   static listConditions(): CliCommand {
     return newK8sCommand('get', 'conditions', '-o', 'json');
   }
-
 }
 
 export class TektonNodeImpl implements TektonNode {
@@ -682,16 +681,16 @@ export class TknImpl implements Tkn {
 
   }
 
-  async refreshPipelineNtaskRun(command: CliCommand, pipelineNtaskRun?: TektonNode): Promise<void> {
+  async refreshPipelineRun(command: CliCommand, pipelineNtaskRun?: TektonNode): Promise<void> {
     const status: TektonNode = pipelineNtaskRun;
-    await this.runWatchCommand(command);
+    await this.runWatchCommand(command, process.cwd(), false, pipelineNtaskRun);
     pipelineExplorer.refresh(status? status.getParent().getParent(): undefined);
   }
 
   async getPipelineStatus(listOfPipelineRuns: TektonNode[]): Promise<void> {
     for (const pipelineRun of listOfPipelineRuns) {
       if (pipelineRun.state === 'Unknown') {
-        this.refreshPipelineNtaskRun(Command.watchPipelineRuns(pipelineRun.getName()), pipelineRun);
+        this.refreshPipelineRun(Command.watchPipelineRuns(pipelineRun.getName()), pipelineRun);
       }
     }
   }
@@ -765,10 +764,15 @@ export class TknImpl implements Tkn {
       .sort(compareTimeNewestFirst);
   }
 
+  async refreshTaskRun(command: CliCommand, taskRun?: TektonNode): Promise<void> {
+    await this.runWatchCommand(command, process.cwd(), false, taskRun);
+    pipelineExplorer.refresh();
+  }
+
   async getTaskRunStatus(listOfTaskRuns: TektonNode[]): Promise<void> {
     for (const taskRun of listOfTaskRuns) {
       if (taskRun.state === 'Unknown') {
-        this.refreshPipelineNtaskRun(Command.watchTaskRuns(taskRun.getName()));
+        this.refreshTaskRun(Command.watchTaskRuns(taskRun.getName()), taskRun);
       }
     }
   }
@@ -1016,14 +1020,14 @@ export class TknImpl implements Tkn {
       .catch((err) => fail ? Promise.reject(err) : Promise.resolve({ error: null, stdout: '', stderr: '' }));
   }
 
-  public async runWatchCommand(command: CliCommand, cwd?: string, fail = true): Promise<CliExitData> {
+  public async runWatchCommand(command: CliCommand, cwd?: string, fail = true, pipelineRunOrTaskRun?: TektonNode): Promise<CliExitData> {
     const toolLocation = await ToolsConfig.detectOrDownload();
     if (toolLocation) {
       command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);
     }
 
 
-    return TknImpl.cli.runWatchCommand(command, cwd ? { cwd } : {})
+    return TknImpl.cli.runWatchCommand(command, cwd ? { cwd } : {}, pipelineRunOrTaskRun)
       .then(async (result) => result.error && fail ? Promise.reject(result.error) : result)
       .catch((err) => fail ? Promise.reject(err) : Promise.resolve({ error: null, stdout: '', stderr: '' }));
   }

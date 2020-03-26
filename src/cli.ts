@@ -113,7 +113,7 @@ export class CliImpl implements Cli {
     });
   }
 
-  async runWatchCommand(cmd: CliCommand, opts: SpawnOptions = {}): Promise<CliExitData> {
+  async runWatchCommand(cmd: CliCommand, opts: SpawnOptions = {}, pipelineRunOrTaskRun?: TektonNode): Promise<CliExitData> {
     return new Promise<CliExitData>((resolve) => {
       this.tknChannel.print(cliCommandToString(cmd));
       if (opts.windowsHide === undefined) {
@@ -122,26 +122,35 @@ export class CliImpl implements Cli {
       if (opts.shell === undefined) {
         opts.shell = true;
       }
-      const tkn = spawn(cmd.cliCommand, cmd.cliArguments, opts);
+      const runCliCommand = spawn(cmd.cliCommand, cmd.cliArguments, opts);
       let stdout = '';
       let error: string | Error;
-      tkn.stdout.on('data', (data) => {
+      runCliCommand.stdout.on('data', async (data) => {
+        const checkStatus = pipelineRunOrTaskRun ? pipelineRunOrTaskRun: undefined;
         stdout += data;
-        const regexStatus = /\sSucceeded\s|\sFailed\s/;
-        if(regexStatus.test(data.toString())) {
-          tkn.kill();
-          resolve({ error, stdout });
+        if (checkStatus) {
+          const result = await this.execute(Command.getPipelineRunOrTaskRunStatus(checkStatus.contextValue, checkStatus.getName()));
+          let r: JSON;
+          try {
+            r = JSON.parse(result.stdout);
+            // eslint-disable-next-line no-empty
+          } catch (ignore) {
+          }
+          if (r['status'].conditions[0].status === 'True') {
+            runCliCommand.kill();
+            resolve({ error, stdout });
+          }
         }
       });
-      tkn.stderr.on('data', (data) => {
+      runCliCommand.stderr.on('data', (data) => {
         error += data;
       });
-      tkn.on('error', err => {
+      runCliCommand.on('error', err => {
         // do not reject it here, because caller in some cases need the error and the streams
         // to make a decision
         error = err;
       });
-      tkn.on('close', () => {
+      runCliCommand.on('close', () => {
         resolve({ error, stdout });
       });
     });
