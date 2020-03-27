@@ -39,7 +39,7 @@ export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Dispo
     if (element) {
       return Promise.resolve(element.getChildren()).then(c => this.filterChildren(c));
     } else {
-      return this.rootItems;
+      return this.rootItems.filter(rootItem => !this.itemsToHide.includes(rootItem));
     }
   }
   getParent?(element: TektonNode): ProviderResult<TektonNode> {
