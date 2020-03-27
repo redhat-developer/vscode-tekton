@@ -15,6 +15,8 @@ export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Dispo
 
   private rootItems: TektonNode[] | undefined;
   private itemsToShow: TektonNode[] | undefined;
+  private originalSelection: TektonNode[] = [];
+  private itemsToHide: TektonNode[] = [];
 
   constructor() {
     this.treeView = window.createTreeView('tektonCustomTreeView', { treeDataProvider: this });
@@ -37,7 +39,7 @@ export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Dispo
     if (element) {
       return Promise.resolve(element.getChildren()).then(c => this.filterChildren(c));
     } else {
-      return this.rootItems;
+      return this.rootItems.filter(rootItem => !this.itemsToHide.includes(rootItem));
     }
   }
   getParent?(element: TektonNode): ProviderResult<TektonNode> {
@@ -53,16 +55,38 @@ export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Dispo
     if (show) {
       const selection = pipelineExplorer.getSelection();
       if (selection) {
-        this.itemsToShow = this.filterParents(selection);
-        this.rootItems = this.getRoots(selection);
+        const orig = this.originalSelection;
+        this.originalSelection = this.originalSelection.concat(selection.filter(node => {
+          return !orig.find(findNode => findNode.getName() === node.getName());
+        }));
+        this.itemsToShow = this.filterParents(this.originalSelection);
+        this.rootItems = this.getRoots(this.originalSelection);
+        this.itemsToHide = this.itemsToHide.filter(item => {
+          for (const selItem of selection) {
+            if(selItem.getName() === item.getName()){
+              return false;
+            }
+          }
+          return true;
+        });
         this.refresh();
       }
     } else {
       this.rootItems = undefined;
       this.itemsToShow = undefined;
+      this.originalSelection = [];
+      this.itemsToHide = [];
       this.refresh();
     }
 
+  }
+
+  removeItem(): void {
+    const selection = this.treeView.selection;
+    if (selection) {
+      this.itemsToHide = this.itemsToHide.concat(selection);
+      this.refresh();
+    }
   }
 
   private getRoots(nodes: TektonNode[]): TektonNode[] {
@@ -98,7 +122,12 @@ export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Dispo
 
   private filterChildren(nodes: TektonNode[]): TektonNode[] {
     const result = [];
-    for (const node of nodes) {
+    mainFor: for (const node of nodes) {
+      for (const hideItem of this.itemsToHide) {
+        if (node.getName() === hideItem.getName()) {
+          continue mainFor; //remove items that in itemsToHide list
+        }
+      }
       for (const targetNode of this.itemsToShow) {
         if (this.isParent(targetNode, node)) {
           result.push(node);

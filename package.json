@@ -357,6 +357,16 @@
           "dark": "images/dark/icon-refresh.svg",
           "light": "images/light/icon-refresh.svg"
         }
+      },
+      {
+        "command": "tekton.custom.explorer.removeItem",
+        "title": "Remove selected",
+        "category": "Tekton",
+        "enablement": "tekton:zenMode",
+        "icon": {
+          "dark": "images/dark/icon-delete.svg",
+          "light": "images/light/icon-delete.svg"
+        }
       }
     ],
     "viewsContainers": {
@@ -523,10 +533,15 @@
         {
           "command": "tekton.custom.explorer.exitZenMode",
           "when": "view == tektonCustomTreeView",
-          "group": "navigation@2"
+          "group": "navigation@3"
         },
         {
           "command": "tekton.custom.explorer.refresh",
+          "when": "view == tektonCustomTreeView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "tekton.custom.explorer.removeItem",
           "when": "view == tektonCustomTreeView",
           "group": "navigation@1"
         }
