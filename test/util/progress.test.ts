@@ -17,7 +17,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Progress Utility', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
   const options = {
     cancellable: false,
@@ -28,10 +28,6 @@ suite('Progress Utility', () => {
   const command2 = { command: createCliCommand('command', 'two'), increment: 50 };
   const steps = [command1, command2];
   const errorMessage = 'An error';
-
-  setup(() => {
-    sandbox = sinon.createSandbox();
-  });
 
   teardown(() => {
     sandbox.restore();

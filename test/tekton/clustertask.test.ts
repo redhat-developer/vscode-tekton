@@ -18,15 +18,14 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/Clustertask', () => {
+  const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
-  let sandbox: sinon.SinonSandbox;
   let getClusterTaskStub: sinon.SinonStub;
   const clustertaskNode = new TestItem(TknImpl.ROOT, 'test-clustertask', ContextType.CLUSTERTASK, null);
   const clustertaskItem = new TestItem(clustertaskNode, 'test-clustertask', ContextType.CLUSTERTASK, null);
 
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({error: null, stdout: '', stderr: ''});
     sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([clustertaskItem]);
     getClusterTaskStub = sandbox.stub(TektonItem, 'getClusterTaskNames').resolves([clustertaskItem]);

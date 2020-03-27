@@ -18,7 +18,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Archive Utility', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let tarStub: sinon.SinonStub, zipStub: sinon.SinonStub;
   const errorMessage = 'FATAL ERROR';
   const extractTo = 'here';
@@ -26,7 +26,6 @@ suite('Archive Utility', () => {
   const gzipPath = 'file.gz';
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     tarStub = sandbox.stub(targz, 'decompress').yields();
     zipStub = sandbox.stub(Archive, 'gunzip').resolves();
   });

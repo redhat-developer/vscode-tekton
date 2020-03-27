@@ -19,11 +19,12 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('TektonResourceVirtualFileSystemProvider', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let v1Stub: sinon.SinonStub;
   let osStub: sinon.SinonStub;
   let unlinkStub: sinon.SinonStub;
   let openTextStub: sinon.SinonStub;
+  let showTextStub: sinon.SinonStub;
   let executeCommandStub: sinon.SinonStub;
   let workspaceFoldersStub: sinon.SinonStub;
   let writeFileStub: sinon.SinonStub;
@@ -96,7 +97,6 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
   const wsFolder1 = { uri: folderUri, index: 0, name: 'folder' };
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     trvfsp = new TektonResourceVirtualFileSystemProvider();
     workspaceFoldersStub = sandbox.stub(workspace, 'workspaceFolders').value([wsFolder1]);
     writeFileStub = sandbox.stub(fs, 'writeFile');
@@ -109,6 +109,11 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
     osStub = sandbox.stub(os, 'tmpdir');
     unlinkStub = sandbox.stub(fs, 'unlink');
     openTextStub = sandbox.stub(workspace, 'openTextDocument').resolves(textDocument);
+    showTextStub = sandbox.stub(window, 'showTextDocument').resolves({
+      revealRange: () => {
+        //
+      }
+    });
     executeCommandStub = sandbox.stub(commands, 'executeCommand').resolves();
     nonce = sandbox.useFakeTimers({
       now: new Date(),
@@ -129,7 +134,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
       expect(err).is.not.undefined;
       isErr = true
     }
-    
+
     expect(isErr).true;
   });
 
@@ -137,7 +142,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
     const api: k8s.API<k8s.KubectlV1> = {
       available: true,
       api: {
-        invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0}),
+        invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0 }),
         portForward: sandbox.stub()
       }
     };
@@ -163,7 +168,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
     const api: k8s.API<k8s.KubectlV1> = {
       available: true,
       api: {
-        invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0}),
+        invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0 }),
         portForward: sandbox.stub()
       }
     };
@@ -180,7 +185,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
     const api: k8s.API<k8s.KubectlV1> = {
       available: true,
       api: {
-        invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0}),
+        invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0 }),
         portForward: sandbox.stub()
       }
     };
@@ -200,7 +205,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
       const api: k8s.API<k8s.KubectlV1> = {
         available: true,
         api: {
-          invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0}),
+          invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0 }),
           portForward: sandbox.stub()
         }
       };
@@ -222,7 +227,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
       const api: k8s.API<k8s.KubectlV1> = {
         available: true,
         api: {
-          invokeCommand: sandbox.stub().resolves({ stdout: '', stderr: 'error', code: 0}),
+          invokeCommand: sandbox.stub().resolves({ stdout: '', stderr: 'error', code: 0 }),
           portForward: sandbox.stub()
         }
       };

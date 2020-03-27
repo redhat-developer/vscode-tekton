@@ -14,12 +14,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Platform Utility', () => {
-  let sandbox: sinon.SinonSandbox;
-
-  setup(() => {
-    sandbox = sinon.createSandbox();
-  });
-
+  const sandbox = sinon.createSandbox();
   teardown(() => {
     sandbox.restore();
   });

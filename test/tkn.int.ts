@@ -13,10 +13,10 @@ import { Pipeline } from '../src/tekton/pipeline';
 suite('tkn integration', () => {
   const tk: tkn.Tkn = tkn.getInstance();
   const pipelineItem = new TestItem(null, 'pipeline', tkn.ContextType.PIPELINE);
-  let sb: sinon.SinonSandbox;
+  const sb = sinon.createSandbox();
 
   setup(() => {
-    sb = sinon.createSandbox();
+
     sb.stub(vscode.window, 'showInformationMessage').resolves('Download and install');
   });
 
@@ -24,7 +24,7 @@ suite('tkn integration', () => {
     sb.restore();
   });
 
-  suite('explorer', ()=> {
+  suite('explorer', () => {
 
     test('getPipelines()', async () => {
       const pipelines = await tk.getPipelines(pipelineItem);

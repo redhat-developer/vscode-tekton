@@ -16,7 +16,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Custom explorer test', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let createTreeViewStub: sinon.SinonStub;
   let pipelineExpStub: sinon.SinonStub;
   const pipelineNodeItem = new TestItem(tkn.TknImpl.ROOT, 'pipelinenode', tkn.ContextType.PIPELINENODE);
@@ -25,10 +25,8 @@ suite('Custom explorer test', () => {
   const taskrunItem = new TestItem(pipelinerunItem, 'taskrun1', tkn.ContextType.TASKRUN, undefined, '2019-07-25T12:03:01Z', 'True');
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     createTreeViewStub = sandbox.stub(vscode.window, 'createTreeView');
     pipelineExpStub = sandbox.stub(pipelineExplorer, 'getSelection');
-
   });
 
   teardown(() => {
