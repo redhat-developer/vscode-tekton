@@ -29,7 +29,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton Pipeline Extension', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   const pipelineNode = new TektonNodeImpl(TknImpl.ROOT, 'Pipelines', ContextType.PIPELINENODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
   const taskNode = new TektonNodeImpl(TknImpl.ROOT, 'Tasks', ContextType.TASKNODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
   const clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, 'Clustertasks', ContextType.CLUSTERTASKNODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
@@ -40,7 +40,6 @@ suite('Tekton Pipeline Extension', () => {
   const clustertaskItem = new TektonNodeImpl(clustertaskNode, 'test-Clustertask', ContextType.CLUSTERTASK, TknImpl.Instance, vscode.TreeItemCollapsibleState.None);
 
   setup(async () => {
-    sandbox = sinon.createSandbox();
 
     //Activate extension
     const stub = sandbox.stub(Pipeline, 'about');

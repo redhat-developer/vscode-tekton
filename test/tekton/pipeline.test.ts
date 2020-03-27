@@ -20,7 +20,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/Pipeline', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
   let getPipelineStub: sinon.SinonStub;
   let termStub: sinon.SinonStub;
@@ -31,7 +31,6 @@ suite('Tekton/Pipeline', () => {
 
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
     getPipelineStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);

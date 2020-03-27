@@ -17,13 +17,12 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('File Watch Utility', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let ensureStub: sinon.SinonStub, watchStub: sinon.SinonStub;
   const location = 'location';
   const filename = 'file';
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     ensureStub = sandbox.stub(fs, 'ensureDirSync');
     watchStub = sandbox.stub(fs, 'watch');
   });

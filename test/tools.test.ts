@@ -16,11 +16,10 @@ import * as fsex from 'fs-extra';
 import hasha = require('hasha');
 
 suite('tool configuration', () => {
-  let sb: sinon.SinonSandbox;
+  const sb = sinon.createSandbox();
   let chmodStub: sinon.SinonStub;
 
   setup(() => {
-    sb = sinon.createSandbox();
     chmodStub = sb.stub(fsex, 'chmod');
     chmodStub.resolves(true);
     ToolsConfig.resetConfiguration();

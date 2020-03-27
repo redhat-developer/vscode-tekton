@@ -18,7 +18,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/Task', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
   let getTaskStub: sinon.SinonStub;
   const taskNode = new TestItem(TknImpl.ROOT, 'test-task', ContextType.TASKNODE, null);
@@ -26,7 +26,6 @@ suite('Tekton/Task', () => {
 
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskItem]);
     getTaskStub = sandbox.stub(TektonItem, 'getTaskNames').resolves([taskItem]);
@@ -89,7 +88,7 @@ suite('Tekton/Task', () => {
       expect(result).equals(`The Task '${taskItem.getName()}' successfully deleted.`);
     });
 
-    test('returns null when cancelled', async() => {
+    test('returns null when cancelled', async () => {
       warnStub.resolves('Cancel');
 
       const result = await Task.delete(taskItem);

@@ -7,7 +7,6 @@
 
 require('source-map-support').install();
 
-/* tslint:disable no-require-imports */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as fs from 'fs';
 import * as glob from 'glob';
@@ -15,7 +14,6 @@ import * as paths from 'path';
 import Mocha = require('mocha');
 import { TestRunnerOptions, CoverageRunner } from './coverage';
 
-// declare var global: any;
 
 // Linux: prevent a weird NPE when mocha on Linux requires the window size from the TTY
 // Since we are not running in a tty environment, we just implement the method statically
@@ -28,7 +26,6 @@ if (!tty.getWindowSize) {
 }
 
 const config: any = {
-  reporter: 'mocha-jenkins-reporter',
   ui: 'tdd',
   timeout: 15000,
   color: true,
@@ -51,47 +48,46 @@ function loadCoverageRunner(testsRoot: string): CoverageRunner | undefined {
   return coverageRunner;
 }
 
-export function run(): any {
-  return new Promise((resolve, reject) => {
-    const testsRoot = paths.resolve(__dirname);
-    const coverageRunner = loadCoverageRunner(testsRoot);
-    glob('**/**.test.js', { cwd: testsRoot }, (error, files): any => {
-      if (error) {
-        reject(error);
-      } else {
-        // always run extension.test.js first
-        files = files.sort((a, b) => {
-          if (a === 'extension.test.js') {
-            return -1;
-          }
-          if (b === 'extension.test.js') {
-            return 1;
-          }
+export function run(testsRoots: string, cb: (error: any, failures?: number) => void): void {
 
-          return a.localeCompare(b);
-        });
-
-        files.forEach((f): Mocha => {
-          return mocha.addFile(paths.join(testsRoot, f))
-        });
-
-        try {
-
-          mocha.run(failures => {
-            if (failures > 0) {
-              reject(new Error(`${failures} tests failed.`));
-            } else {
-              resolve();
-            }
-          }).on('end', () => {
-            coverageRunner && coverageRunner.reportCoverage();
-          });
-        } catch (err) {
-          console.error(err);
-          reject(err);
+  const testsRoot = paths.resolve(__dirname);
+  const coverageRunner = loadCoverageRunner(testsRoot);
+  glob('**/**.test.js', { cwd: testsRoot }, (error, files): any => {
+    if (error) {
+      cb(error);
+    } else {
+      // always run extension.test.js first
+      files = files.sort((a, b) => {
+        if (a === 'extension.test.js') {
+          return -1;
+        }
+        if (b === 'extension.test.js') {
+          return 1;
         }
 
+        return a.localeCompare(b);
+      });
+
+      files.forEach((f): Mocha => {
+        return mocha.addFile(paths.join(testsRoot, f))
+      });
+
+      try {
+        mocha.run(failures => {
+          if (failures > 0) {
+            cb(new Error(`${failures} tests failed.`));
+          } else {
+            cb(null, failures);
+          }
+        }).on('end', () => {
+          coverageRunner && coverageRunner.reportCoverage();
+        });
+
+      } catch (err) {
+        console.error(err);
+        cb(err);
       }
-    });
+
+    }
   });
 }

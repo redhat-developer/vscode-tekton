@@ -27,11 +27,10 @@ chai.use(sinonChai);
 suite('tkn', () => {
   const tknCli: tkn.Tkn = tkn.TknImpl.Instance;
   let startPipelineObj: StartPipelineObject;
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   const errorMessage = 'Error';
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     sandbox.stub(ToolsConfig, 'getVersion').resolves('0.2.0');
     tknCli.clearCache();
   });

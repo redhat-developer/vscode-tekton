@@ -18,7 +18,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/PipelineResource', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   const errorMessage = 'FATAL ERROR';
   let execStub: sinon.SinonStub;
   let warnStub: sinon.SinonStub<[string, MessageOptions, ...MessageItem[]], Thenable<MessageItem>>;
@@ -47,7 +47,6 @@ suite('Tekton/PipelineResource', () => {
   };
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '' });
     sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([pipelineresourceItem]);
     getPipelineNamesStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
@@ -68,7 +67,7 @@ suite('Tekton/PipelineResource', () => {
       await PipelineResource.create();
       expect(warnStub).is.calledOnce;
     });
-    
+
     test('Save the file if user click on Save button', async () => {
       execStub.resolves({
         error: undefined,
@@ -85,7 +84,7 @@ suite('Tekton/PipelineResource', () => {
       const result = await PipelineResource.create();
       expect(result).equals('PipelineResources were successfully created.');
     });
-    
+
     test('show warning message if file content is changed', async () => {
       const infoMsg = sandbox.stub(window, 'showInformationMessage').resolves(undefined);
       sandbox.stub(window, 'activeTextEditor').value({
@@ -98,7 +97,7 @@ suite('Tekton/PipelineResource', () => {
       expect(warnStub).is.calledOnce;
       expect(infoMsg).is.calledOnce;
     });
-    
+
     test('Creates an tekton PipelineResources using .yaml file location from an active editor', async () => {
       execStub.resolves({
         error: undefined,
@@ -108,7 +107,7 @@ suite('Tekton/PipelineResource', () => {
       const result = await PipelineResource.create();
       expect(result).equals('PipelineResources were successfully created.');
     });
-    
+
     test('errors when fail too create resource', async () => {
       let savedErr: Error;
       execStub.rejects(errorMessage);

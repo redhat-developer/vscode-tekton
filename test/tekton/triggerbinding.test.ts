@@ -17,14 +17,13 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/TriggerBinding', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
   const triggerBindingNode = new TestItem(TknImpl.ROOT, 'test-trigger', ContextType.TRIGGERBINDING, null);
   const triggerBindingItem = new TestItem(triggerBindingNode, 'TriggerBinding', ContextType.EVENTLISTENER, null);
 
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     sandbox.stub(TknImpl.prototype, 'getTriggerTemplates').resolves([triggerBindingItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();

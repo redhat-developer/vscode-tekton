@@ -17,14 +17,13 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/TriggerTemplate', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
   const triggerTemplateNode = new TestItem(TknImpl.ROOT, 'test-trigger', ContextType.TRIGGERTEMPLATES, null);
   const triggerTemplateItem = new TestItem(triggerTemplateNode, 'TriggerTemplate', ContextType.EVENTLISTENER, null);
 
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     sandbox.stub(TknImpl.prototype, 'getTriggerTemplates').resolves([triggerTemplateItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();
@@ -57,7 +56,7 @@ suite('Tekton/TriggerTemplate', () => {
       expect(result).equals(`The TriggerTemplate '${triggerTemplateItem.getName()}' successfully deleted.`);
     });
 
-    test('returns null when cancelled', async() => {
+    test('returns null when cancelled', async () => {
       warnStub.resolves('Cancel');
 
       const result = await TriggerTemplate.delete(triggerTemplateItem);

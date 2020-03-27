@@ -17,7 +17,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Cli', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let spawnStub: sinon.SinonStub;
   let procMock: childProcess.ChildProcess;
   const cli = CliImpl.getInstance();
@@ -31,7 +31,6 @@ suite('Cli', () => {
   };
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     procMock = new events.EventEmitter() as childProcess.ChildProcess;
     procMock.stdin = new stream.Writable();
     procMock.stdout = new events.EventEmitter() as stream.Readable;

@@ -16,11 +16,10 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Window Utility', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let termStub: sinon.SinonStub;
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     termStub = sandbox.stub(window, 'createTerminal');
   });
 

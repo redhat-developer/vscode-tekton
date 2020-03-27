@@ -12,12 +12,11 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Task provider', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
   const tknCli: tkn.Tkn = tkn.TknImpl.Instance;
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     execStub = sandbox.stub(tknCli, 'execute');
   });
 
