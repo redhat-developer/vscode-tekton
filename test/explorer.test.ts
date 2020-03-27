@@ -49,9 +49,9 @@ suite('Tekton Application Explorer', () => {
     pipelinerunItem.getChildren().push(taskrunItem);
     taskrunItem.getChildren().push(taskItem);
     const pipelineNodes = await tektonInstance.getChildren();
-    expect(pipelineNodes.length).equals(7);
+    expect(pipelineNodes.length).equals(8);
     pipelineNodes.forEach((value) => 
-      expect(value.getName()).oneOf(['Pipelines', 'Tasks', 'ClusterTasks','PipelineResources', 'TriggerTemplates', 'TriggerBinding', 'EventListener']));
+      expect(value.getName()).oneOf(['Pipelines', 'Tasks', 'ClusterTasks','PipelineResources', 'TriggerTemplates', 'TriggerBinding', 'EventListener', 'Conditions']));
     const pipelinetest = await tektonInstance.getChildren(pipelineNode);
     expect(pipelinetest[0]).equals(pipelineItem);
     const tasktest = await tektonInstance.getChildren(taskNode);
