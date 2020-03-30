@@ -92,7 +92,7 @@ function newTknCommand(...tknArguments: string[]): CliCommand {
   return createCliCommand('tkn', ...tknArguments);
 }
 
-function newK8sCommand(...k8sArguments): CliCommand {
+export function newK8sCommand(...k8sArguments): CliCommand {
   return createCliCommand('kubectl', ...k8sArguments);
 }
 
@@ -486,7 +486,7 @@ export class TaskRun extends TektonNodeImpl {
 }
 
 
-type PipelineRunData = {
+export type PipelineRunData = {
   metadata: {
     creationTimestamp: string;
     name: string;
