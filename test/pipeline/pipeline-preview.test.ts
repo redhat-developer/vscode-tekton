@@ -16,14 +16,15 @@ import { calculatePipelineGraph } from '../../src/pipeline/pipeline-graph';
 
 const expect = chai.expect;
 chai.use(sinonChai);
+
 suite('pipeline preview', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let activeEditor: any;
   let tknDocuments: sinon.SinonStub;
   let previewManager: sinon.SinonStub;
+
   setup(() => {
-    sandbox = sinon.createSandbox();
     activeEditor = {} as vscode.TextEditor;
     sandbox.stub(vscode.window, 'activeTextEditor').value(activeEditor);
     tknDocuments = sandbox.stub(tknYaml, 'getTektonDocuments');

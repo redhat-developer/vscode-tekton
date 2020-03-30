@@ -13,10 +13,10 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Scheme storage', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let schemeStorage: TknSchemeStorage;
+
   setup(() => {
-    sandbox = sinon.createSandbox();
     schemeStorage = new TknSchemeStorage();
   });
 

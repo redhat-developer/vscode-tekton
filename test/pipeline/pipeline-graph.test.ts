@@ -12,15 +12,15 @@ import { calculatePipelineGraph } from '../../src/pipeline/pipeline-graph';
 const expect = chai.expect;
 chai.use(sinonChai);
 
+
 suite('pipeline graph', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let tknDocuments: sinon.SinonStub;
   let metadataName: sinon.SinonStub;
   let showQuickPick: sinon.SinonStub;
   let getPipelineTasks: sinon.SinonStub;
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     tknDocuments = sandbox.stub(tknYaml, 'getTektonDocuments');
     metadataName = sandbox.stub(tknYaml, 'getMetadataName');
     getPipelineTasks = sandbox.stub(tknYaml, 'getPipelineTasks');

@@ -18,14 +18,13 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/PipelineRun', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
   let getPipelineNamesStub: sinon.SinonStub;
   const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
   const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     sandbox.stub(TknImpl.prototype, 'getPipelineRuns').resolves([pipelinerunItem]);
     getPipelineNamesStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);

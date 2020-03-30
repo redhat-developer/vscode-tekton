@@ -17,7 +17,7 @@ import { ClusterTask } from './tekton/clustertask';
 import { PipelineResource } from './tekton/pipelineresource';
 import { TektonNode } from './tkn';
 import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
-import { setCommandContext, CommandContext, enterZenMode, exitZenMode, refreshCustomTree } from './commands';
+import { setCommandContext, CommandContext, enterZenMode, exitZenMode, refreshCustomTree, removeItemFromCustomTree } from './commands';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
 import { TKN_RESOURCE_SCHEME, resourceDocProvider } from './util/tektonresources.virtualfs';
 import { TektonItem } from './tekton/tektonitem';
@@ -79,6 +79,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.explorer.enterZenMode', enterZenMode),
     vscode.commands.registerCommand('tekton.custom.explorer.exitZenMode', exitZenMode),
     vscode.commands.registerCommand('tekton.custom.explorer.refresh', refreshCustomTree),
+    vscode.commands.registerCommand('tekton.custom.explorer.removeItem', removeItemFromCustomTree),
     pipelineExplorer,
     // Temporarily loaded resource providers
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME, resourceDocProvider, { /* TODO: case sensitive? */ }),

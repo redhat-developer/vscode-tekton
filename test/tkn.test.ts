@@ -27,11 +27,10 @@ chai.use(sinonChai);
 suite('tkn', () => {
   const tknCli: tkn.Tkn = tkn.TknImpl.Instance;
   let startPipelineObj: StartPipelineObject;
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   const errorMessage = 'Error';
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     sandbox.stub(ToolsConfig, 'getVersion').resolves('0.2.0');
     tknCli.clearCache();
   });
@@ -132,6 +131,7 @@ suite('tkn', () => {
     const triggerTemplatesItem = new TestItem(tkn.TknImpl.ROOT, 'triggertemplates', tkn.ContextType.TRIGGERTEMPLATES);
     const triggerBindingItem = new TestItem(tkn.TknImpl.ROOT, 'triggerbinding', tkn.ContextType.TRIGGERBINDING);
     const eventListenerItem = new TestItem(tkn.TknImpl.ROOT, 'eventlistener', tkn.ContextType.EVENTLISTENER);
+    const conditionItem = new TestItem(tkn.TknImpl.ROOT, 'condition', tkn.ContextType.CONDITIONS  );
 
     setup(() => {
       execStub = sandbox.stub(tknCli, 'execute');
@@ -227,6 +227,49 @@ suite('tkn', () => {
       sandbox.stub(tkn.TknImpl.prototype, 'getPipelines').resolves([]);
       execStub.resolves({ stdout: '', error: null });
       const result = await tknCli.getPipelines(pipelineNodeItem);
+
+      // tslint:disable-next-line: no-unused-expression
+      expect(result).empty;
+    });
+
+    test('getCondition returns items from tkn trigger templates list command', async () => {
+      const tknPipelines = ['condition1', 'condition2', 'condition3'];
+      execStub.resolves({
+        error: null, stdout: JSON.stringify({
+          'items': [{
+            'kind': 'Condition',
+            'apiVersion': 'tekton.dev/v1alpha1',
+            'metadata': {
+              'name': 'condition1'
+            }
+          }, {
+            'kind': 'Condition',
+            'apiVersion': 'tekton.dev/v1alpha1',
+            'metadata': {
+              'name': 'condition2'
+            }
+          }, {
+            'kind': 'Condition',
+            'apiVersion': 'tekton.dev/v1alpha1',
+            'metadata': {
+              'name': 'condition3'
+            }
+          }]
+        })
+      });
+      const result = await tknCli.getConditions(conditionItem);
+
+      expect(execStub).calledOnceWith(tkn.Command.listConditions());
+      expect(result.length).equals(3);
+      for (let i = 1; i < result.length; i++) {
+        expect(result[i].getName()).equals(tknPipelines[i]);
+      }
+    });
+
+    test('getCondition returns empty list if tkn produces no output', async () => {
+      sandbox.stub(tkn.TknImpl.prototype, 'getConditions').resolves([]);
+      execStub.resolves({ stdout: '', error: null });
+      const result = await tknCli.getConditions(conditionItem);
 
       // tslint:disable-next-line: no-unused-expression
       expect(result).empty;

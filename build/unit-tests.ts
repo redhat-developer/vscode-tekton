@@ -21,10 +21,11 @@ async function main(): Promise<void> {
     console.log(extensionDevelopmentPath, extensionTestsPath);
     await runTests({
       extensionDevelopmentPath, extensionTestsPath, version: '1.42.1',
-      // launchArgs: [
-      //   // This disables all extensions except the one being testing
-      //   '--disable-extensions'
-      // ],
+      launchArgs: [
+        // This disables all extensions except the one being testing
+        // '--disable-extensions',
+        // '--verbose',
+      ],
     });
   } catch (err) {
     console.error(err);

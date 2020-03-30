@@ -7,6 +7,7 @@ import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
 import { window } from 'vscode';
 import { Progress } from '../util/progress';
+import { kubectl } from '../kubectl';
 
 export class PipelineRun extends TektonItem {
 

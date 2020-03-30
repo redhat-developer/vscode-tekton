@@ -357,6 +357,16 @@
           "dark": "images/dark/icon-refresh.svg",
           "light": "images/light/icon-refresh.svg"
         }
+      },
+      {
+        "command": "tekton.custom.explorer.removeItem",
+        "title": "Remove selected",
+        "category": "Tekton",
+        "enablement": "tekton:zenMode",
+        "icon": {
+          "dark": "images/dark/icon-delete.svg",
+          "light": "images/light/icon-delete.svg"
+        }
       }
     ],
     "viewsContainers": {
@@ -523,10 +533,15 @@
         {
           "command": "tekton.custom.explorer.exitZenMode",
           "when": "view == tektonCustomTreeView",
-          "group": "navigation@2"
+          "group": "navigation@3"
         },
         {
           "command": "tekton.custom.explorer.refresh",
+          "when": "view == tektonCustomTreeView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "tekton.custom.explorer.removeItem",
           "when": "view == tektonCustomTreeView",
           "group": "navigation@1"
         }
@@ -738,7 +753,7 @@
   ],
   "scripts": {
     "verify": "node ./out/build/verify-tools.js",
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run build",
     "compile": "tsc -p ./ && npm run build-preview",
     "watch": "tsc -watch -p ./",
     "clean": "rimraf out && rimraf preview",
@@ -794,7 +809,7 @@
     "tmp": "0.1.0",
     "ts-loader": "^6.2.1",
     "typescript": "^3.5.2",
-    "vscode-test": "^1.2.3",
+    "vscode-test": "^1.3.0",
     "walker": "^1.0.7",
     "webpack": "^4.41.6",
     "webpack-cli": "^3.3.11"
@@ -811,6 +826,7 @@
     "git-transport-protocol": "^0.1.0",
     "hasha": "5.0.0",
     "humanize-duration": "^3.21.0",
+    "jstream": "^1.1.1",
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
     "node-yaml-parser": "0.0.9",

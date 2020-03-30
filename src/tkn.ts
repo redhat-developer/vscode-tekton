@@ -62,6 +62,7 @@ export enum ContextType {
   TRIGGERTEMPLATES = 'triggertemplates',
   TRIGGERBINDING= 'triggerbinding',
   EVENTLISTENER= 'eventlistener',
+  CONDITIONS = 'conditions',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -91,7 +92,7 @@ function newTknCommand(...tknArguments: string[]): CliCommand {
   return createCliCommand('tkn', ...tknArguments);
 }
 
-function newK8sCommand(...k8sArguments): CliCommand {
+export function newK8sCommand(...k8sArguments): CliCommand {
   return createCliCommand('kubectl', ...k8sArguments);
 }
 
@@ -266,6 +267,9 @@ export class Command {
   static updateYaml(fsPath: string): CliCommand {
     return newTknCommand('apply', '-f', fsPath);
   }
+  static listConditions(): CliCommand {
+    return newK8sCommand('get', 'conditions', '-o', 'json');
+  }
 
 }
 
@@ -341,6 +345,11 @@ export class TektonNodeImpl implements TektonNode {
       tooltip: 'EventListener: {label}',
       getChildren: () => this.tkn.getEventListener(this)
     },
+    conditions: {
+      icon: 'C.svg',
+      tooltip: 'Conditions: {label}',
+      getChildren: () => this.tkn.getConditions(this)
+    },
   };
 
   constructor(private parent: TektonNode,
@@ -381,7 +390,7 @@ export class TektonNodeImpl implements TektonNode {
   }
 
   get command(): vsCommand | undefined {
-    const arrName = ['Pipelines', 'Tasks', 'ClusterTasks', 'PipelineResources', 'TriggerTemplates', 'TriggerBinding', 'EventListener'];
+    const arrName = ['Pipelines', 'Tasks', 'ClusterTasks', 'PipelineResources', 'TriggerTemplates', 'TriggerBinding', 'EventListener', 'Conditions'];
     if (arrName.includes(this.name)) {
       return undefined;
     } else {
@@ -477,7 +486,7 @@ export class TaskRun extends TektonNodeImpl {
 }
 
 
-type PipelineRunData = {
+export type PipelineRunData = {
   metadata: {
     creationTimestamp: string;
     name: string;
@@ -585,6 +594,7 @@ export interface Tkn {
   getTriggerTemplates(triggerTemplates: TektonNode): Promise<TektonNode[]>;
   getTriggerBinding(triggerBinding: TektonNode): Promise<TektonNode[]>;
   getEventListener(EventListener: TektonNode): Promise<TektonNode[]>;
+  getConditions(conditions: TektonNode): Promise<TektonNode[]>;
   clearCache?(): void;
 }
 
@@ -661,7 +671,8 @@ export class TknImpl implements Tkn {
     const triggerTemplatesNode = new TektonNodeImpl(TknImpl.ROOT, 'TriggerTemplates', ContextType.TRIGGERTEMPLATES, this, TreeItemCollapsibleState.Collapsed);
     const triggerBindingNode = new TektonNodeImpl(TknImpl.ROOT, 'TriggerBinding', ContextType.TRIGGERBINDING, this, TreeItemCollapsibleState.Collapsed);
     const eventListenerNode = new TektonNodeImpl(TknImpl.ROOT, 'EventListener', ContextType.EVENTLISTENER, this, TreeItemCollapsibleState.Collapsed);
-    pipelineTree.push(pipelineNode, taskNode, clustertaskNode, pipelineResourceNode, triggerTemplatesNode, triggerBindingNode, eventListenerNode);
+    const conditionsNode = new TektonNodeImpl(TknImpl.ROOT, 'Conditions', ContextType.CONDITIONS, this, TreeItemCollapsibleState.Collapsed);
+    pipelineTree.push(pipelineNode, taskNode, clustertaskNode, pipelineResourceNode, triggerTemplatesNode, triggerBindingNode, eventListenerNode, conditionsNode);
     this.cache.set(pipelineNode, await this.getPipelines(pipelineNode));
     this.cache.set(taskNode, await this.getTasks(taskNode));
     this.cache.set(clustertaskNode, await this.getClusterTasks(clustertaskNode));
@@ -669,6 +680,7 @@ export class TknImpl implements Tkn {
     this.cache.set(triggerTemplatesNode, await this.getTriggerTemplates(triggerTemplatesNode));
     this.cache.set(triggerBindingNode, await this.getTriggerBinding(eventListenerNode));
     this.cache.set(eventListenerNode, await this.getEventListener(eventListenerNode));
+    this.cache.set(conditionsNode, await this.getConditions(conditionsNode));
     return pipelineTree;
 
   }
@@ -823,6 +835,26 @@ export class TknImpl implements Tkn {
     }
     const pipelineresources: string[] = data.map((value) => value.metadata.name);
     return pipelineresources.map<TektonNode>((value) => new TektonNodeImpl(pipelineResource, value, ContextType.PIPELINERESOURCE, this, TreeItemCollapsibleState.None)).sort(compareNodes);
+  }
+
+  async getConditions(conditionsNode: TektonNode): Promise<TektonNode[]> {
+    return (await this._getConditions(conditionsNode, Command.listConditions(), ContextType.CONDITIONS));
+  }
+
+  private async _getConditions(conditionResource: TektonNode, command: CliCommand, conditionContextType: ContextType): Promise<TektonNode[]> {
+    let data: TknPipelineResource[] = [];
+    const result = await this.execute(command, process.cwd(), false);
+    if (result.error) {
+      return [new TektonNodeImpl(conditionResource, getStderrString(result.error), conditionContextType, this, TreeItemCollapsibleState.Expanded)];
+    }
+    try {
+      data = JSON.parse(result.stdout).items;
+    } catch (ignore) {
+      //show no pipelines if output is not correct json
+    }
+    let condition: string[] = data.map((value) => value.metadata.name);
+    condition = [...new Set(condition)];
+    return condition.map<TektonNode>((value) => new TektonNodeImpl(conditionResource, value, conditionContextType, this, TreeItemCollapsibleState.None)).sort(compareNodes);
   }
 
   async getTriggerTemplates(triggerTemplatesNode: TektonNode): Promise<TektonNode[]> {

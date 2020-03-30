@@ -17,14 +17,13 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/EventListener', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
   const eventListenerNode = new TestItem(TknImpl.ROOT, 'test-trigger', ContextType.EVENTLISTENER, null);
   const eventListenerItem = new TestItem(eventListenerNode, 'EventListener', ContextType.EVENTLISTENER, null);
 
 
   setup(() => {
-    sandbox = sinon.createSandbox();
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     sandbox.stub(TknImpl.prototype, 'getTriggerTemplates').resolves([eventListenerItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();
