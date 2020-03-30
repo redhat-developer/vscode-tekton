@@ -5,7 +5,9 @@
 
 import * as vscode from 'vscode';
 import { SpawnOptions, spawn } from 'child_process';
-
+import * as stream from 'stream';
+import * as JStream from 'jstream';
+import * as events from 'events';
 
 export interface CliExitData {
   readonly error: string | Error;
@@ -14,6 +16,13 @@ export interface CliExitData {
 
 export interface Cli {
   execute(cmd: CliCommand, opts?: SpawnOptions): Promise<CliExitData>;
+  executeWatch(cmd: CliCommand, opts?: SpawnOptions): WatchProcess;
+  /**
+   * Execute command, receive parsed JSON output as JS object in on('object') event
+    * @param cmd 
+   * @param opts 
+   */
+  executeWatchJSO(cmd: CliCommand, opts?: SpawnOptions): JSOWatchProcess;
 }
 
 export interface TknChannel {
@@ -24,6 +33,29 @@ export interface TknChannel {
 export interface CliCommand {
   cliCommand: string;
   cliArguments: string[];
+}
+
+export interface WatchProcess extends events.EventEmitter {
+  stdout: stream.Readable;
+  stderr: stream.Readable;
+  kill();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  on(event: string, listener: (...args: any[]) => void): this;
+  on(event: 'error', listener: (err: Error) => void): this;
+  on(event: 'close', listener: (code: number) => void): this;
+}
+
+export interface JSOWatchProcess {
+  stderr: stream.Readable;
+  kill();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  on(event: string, listener: (...args: any[]) => void): this;
+  on(event: 'error', listener: (err: Error) => void): this;
+  on(event: 'close', listener: (code: number) => void): this;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  on(event: 'object', listener: (obj: any) => void): this;
 }
 
 export function createCliCommand(cliCommand: string, ...cliArguments: string[]): CliCommand {
@@ -80,7 +112,28 @@ export class CliImpl implements Cli {
       });
     });
   }
+
+  executeWatch(cmd: CliCommand, opts: SpawnOptions = {}): WatchProcess {
+    if (opts.windowsHide === undefined) {
+      opts.windowsHide = true;
+    }
+    if (opts.shell === undefined) {
+      opts.shell = true;
+    }
+    const commandProcess = spawn(cmd.cliCommand, cmd.cliArguments, opts);
+
+    return commandProcess;
+  }
+
+  executeWatchJSO(cmd: CliCommand, opts: SpawnOptions = {}): JSOWatchProcess {
+    const proc = this.executeWatch(cmd, opts);
+    proc.stdout.pipe(new JStream()).on('data', (obj) => {
+      proc.emit('object', obj);
+    });
+    return proc;
+  }
 }
+
 
 class TknChannelImpl implements TknChannel {
   private readonly channel: vscode.OutputChannel = vscode.window.createOutputChannel('Tekton Pipelines');
