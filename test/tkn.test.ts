@@ -14,7 +14,7 @@ import * as assert from 'assert';
 import { ToolsConfig } from '../src/tools';
 import { WindowUtil } from '../src/util/windowUtils';
 import { StartPipelineObject, PipeResources, PipeParams } from '../src/tekton/pipeline';
-import { Terminal } from 'vscode';
+import { Terminal, TerminalOptions, ExtensionTerminalOptions } from 'vscode';
 import { TestItem } from './tekton/testTektonitem';
 import { ExecException } from 'child_process';
 import * as path from 'path';
@@ -101,7 +101,9 @@ suite('tkn', () => {
         sendText: sinon.stub(),
         show: sinon.stub(),
         hide: sinon.stub(),
-        dispose: sinon.stub()
+        dispose: sinon.stub(),
+        exitStatus: {code: 0},
+        creationOptions: {},
       };
       toolsStub.restore();
       toolsStub = sandbox.stub(ToolsConfig, 'detectOrDownload').resolves(path.join('segment1', 'segment2'));

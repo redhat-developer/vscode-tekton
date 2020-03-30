@@ -22,7 +22,7 @@ export interface Cli {
     * @param cmd 
    * @param opts 
    */
-  executeWatchJSO(cmd: CliCommand, opts?: SpawnOptions): JSOWatchProcess;
+  executeWatchJSON(cmd: CliCommand, opts?: SpawnOptions): JSONWatchProcess;
 }
 
 export interface TknChannel {
@@ -46,7 +46,7 @@ export interface WatchProcess extends events.EventEmitter {
   on(event: 'close', listener: (code: number) => void): this;
 }
 
-export interface JSOWatchProcess {
+export interface JSONWatchProcess {
   stderr: stream.Readable;
   kill();
 
@@ -113,49 +113,6 @@ export class CliImpl implements Cli {
     });
   }
 
-  async runWatchCommand(cmd: CliCommand, opts: SpawnOptions = {}, pipelineRunOrTaskRun?: TektonNode): Promise<CliExitData> {
-    return new Promise<CliExitData>((resolve) => {
-      this.tknChannel.print(cliCommandToString(cmd));
-      if (opts.windowsHide === undefined) {
-        opts.windowsHide = true;
-      }
-      if (opts.shell === undefined) {
-        opts.shell = true;
-      }
-      const runCliCommand = spawn(cmd.cliCommand, cmd.cliArguments, opts);
-      let stdout = '';
-      let error: string | Error;
-      runCliCommand.stdout.on('data', async (data) => {
-        const checkStatus = pipelineRunOrTaskRun ? pipelineRunOrTaskRun: undefined;
-        stdout += data;
-        if (checkStatus) {
-          const result = await this.execute(Command.getPipelineRunOrTaskRunStatus(checkStatus.contextValue, checkStatus.getName()));
-          let r: JSON;
-          try {
-            r = JSON.parse(result.stdout);
-            // eslint-disable-next-line no-empty
-          } catch (ignore) {
-          }
-          if (r['status'].conditions[0].status === 'True') {
-            runCliCommand.kill();
-            resolve({ error, stdout });
-          }
-        }
-      });
-      runCliCommand.stderr.on('data', (data) => {
-        error += data;
-      });
-      runCliCommand.on('error', err => {
-        // do not reject it here, because caller in some cases need the error and the streams
-        // to make a decision
-        error = err;
-      });
-      runCliCommand.on('close', () => {
-        resolve({ error, stdout });
-      });
-    });
-  }
-
   executeWatch(cmd: CliCommand, opts: SpawnOptions = {}): WatchProcess {
     if (opts.windowsHide === undefined) {
       opts.windowsHide = true;
@@ -168,7 +125,7 @@ export class CliImpl implements Cli {
     return commandProcess;
   }
 
-  executeWatchJSO(cmd: CliCommand, opts: SpawnOptions = {}): JSOWatchProcess {
+  executeWatchJSON(cmd: CliCommand, opts: SpawnOptions = {}): JSONWatchProcess {
     const proc = this.executeWatch(cmd, opts);
     proc.stdout.pipe(new JStream()).on('data', (obj) => {
       proc.emit('object', obj);
