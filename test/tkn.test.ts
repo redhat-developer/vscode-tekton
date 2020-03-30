@@ -101,9 +101,7 @@ suite('tkn', () => {
         sendText: sinon.stub(),
         show: sinon.stub(),
         hide: sinon.stub(),
-        dispose: sinon.stub(),
-        exitStatus: {code: 0},
-        creationOptions: {},
+        dispose: sinon.stub()
       };
       toolsStub.restore();
       toolsStub = sandbox.stub(ToolsConfig, 'detectOrDownload').resolves(path.join('segment1', 'segment2'));
