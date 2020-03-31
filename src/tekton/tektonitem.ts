@@ -17,18 +17,6 @@ const errorMessage = {
   ClusterTask: 'You need at least one ClusterTask available. Please create new Tekton ClusterTask and try again.',
 };
 
-/* export class QuickPickCommand implements QuickPickItem {
-    constructor (public label: string,
-        public command: () => Promise<string>,
-        public description?: string,
-        public detail?: string,
-        public picked?: boolean,
-        public alwaysShow?: boolean
-    ) {
-
-    }
-} */
-
 export abstract class TektonItem {
   protected static readonly tkn: Tkn = TknImpl.Instance;
   protected static readonly explorer: PipelineExplorer = pipelineExplorer;

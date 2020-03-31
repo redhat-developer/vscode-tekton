@@ -13,6 +13,7 @@ import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { PipelineRun } from '../../src/tekton/pipelinerun';
 import { TestItem } from './testTektonitem';
 import { TektonItem } from '../../src/tekton/tektonitem';
+import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -143,6 +144,7 @@ suite('Tekton/PipelineRun', () => {
       let warnStub: sinon.SinonStub;
 
       setup(() => {
+        sandbox.stub(pipelineExplorer, 'refresh').resolves();
         warnStub = sandbox.stub(vscode.window, 'showWarningMessage').resolves();
       });
 

@@ -5,7 +5,7 @@
 
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
-import { pipelineExplorer as tektonInstance  } from '../src/pipeline/pipelineExplorer';
+import { PipelineExplorer  } from '../src/pipeline/pipelineExplorer';
 import { TknImpl, ContextType } from '../src/tkn';
 import { TestItem } from './tekton/testTektonitem';
 import sinon = require('sinon');
@@ -14,6 +14,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton Application Explorer', () => {
+  let tektonInstance: PipelineExplorer;
   const pipelineNode = new TestItem(TknImpl.ROOT, 'Pipelines', ContextType.PIPELINENODE);
   const taskNode = new TestItem(TknImpl.ROOT, 'Tasks', ContextType.TASKNODE);
   const clusterTaskNode = new TestItem(TknImpl.ROOT, 'ClusterTasks', ContextType.CLUSTERTASKNODE);
@@ -27,6 +28,8 @@ suite('Tekton Application Explorer', () => {
   const sandbox = sinon.createSandbox();
 
   setup(() => {
+    tektonInstance = new PipelineExplorer();
+    sandbox.stub(TknImpl.prototype, 'getPipelineNodes').resolves([pipelineNode]);
     sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
     sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskItem]);
     sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([clustertaskItem]);
@@ -49,7 +52,7 @@ suite('Tekton Application Explorer', () => {
     pipelinerunItem.getChildren().push(taskrunItem);
     taskrunItem.getChildren().push(taskItem);
     const pipelineNodes = await tektonInstance.getChildren();
-    expect(pipelineNodes.length).equals(8);
+    expect(pipelineNodes.length).equals(1);
     pipelineNodes.forEach((value) => 
       expect(value.getName()).oneOf(['Pipelines', 'Tasks', 'ClusterTasks','PipelineResources', 'TriggerTemplates', 'TriggerBinding', 'EventListener', 'Conditions']));
     const pipelinetest = await tektonInstance.getChildren(pipelineNode);

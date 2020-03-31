@@ -17,13 +17,14 @@ export type PipelineRunCallback = (pr: PipelineRunData) => void;
 export class Kubectl {
   watchPipelineRun(name: string, callback?: PipelineRunCallback): Promise<void> {
     return new Promise((resolve, reject) => {
-      const watch = CliImpl.getInstance().executeWatchJSO(KubectlCommands.watchPipelineRuns(name));
+      const watch = CliImpl.getInstance().executeWatchJSON(KubectlCommands.watchPipelineRuns(name));
       watch.on('object', obj => {
         if (callback) {
           callback(obj);
         }
         if (obj.status?.completionTime !== undefined) {
           watch.kill(); // PipelineRun finished
+          resolve();
         }
       });
 

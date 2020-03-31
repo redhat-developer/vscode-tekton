@@ -10,7 +10,7 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { Pipeline, StartPipelineObject, PipeResources, PipeParams, PipelineTrigger, NameType } from '../../src/tekton/pipeline';
-import { PipelineExplorer } from '../../src/pipeline/pipelineExplorer';
+import { PipelineExplorer, pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
@@ -85,6 +85,7 @@ suite('Tekton/Pipeline', () => {
       }
     });
     test('restart returns expected string with pipeline restart', async () => {
+      sandbox.stub(pipelineExplorer, 'refresh').resolves();
       getPipelineStub.restore();
       sandbox.stub(TknImpl.prototype, 'restartPipeline').resolves();
       const result = await Pipeline.restart(pipelineItem);

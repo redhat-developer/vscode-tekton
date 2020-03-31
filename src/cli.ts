@@ -22,7 +22,7 @@ export interface Cli {
     * @param cmd 
    * @param opts 
    */
-  executeWatchJSO(cmd: CliCommand, opts?: SpawnOptions): JSOWatchProcess;
+  executeWatchJSON(cmd: CliCommand, opts?: SpawnOptions): JSONWatchProcess;
 }
 
 export interface TknChannel {
@@ -46,7 +46,7 @@ export interface WatchProcess extends events.EventEmitter {
   on(event: 'close', listener: (code: number) => void): this;
 }
 
-export interface JSOWatchProcess {
+export interface JSONWatchProcess {
   stderr: stream.Readable;
   kill();
 
@@ -125,7 +125,7 @@ export class CliImpl implements Cli {
     return commandProcess;
   }
 
-  executeWatchJSO(cmd: CliCommand, opts: SpawnOptions = {}): JSOWatchProcess {
+  executeWatchJSON(cmd: CliCommand, opts: SpawnOptions = {}): JSONWatchProcess {
     const proc = this.executeWatch(cmd, opts);
     proc.stdout.pipe(new JStream()).on('data', (obj) => {
       proc.emit('object', obj);
