@@ -12,6 +12,8 @@ import format = require('string-format');
 import { StartPipelineObject } from './tekton/pipeline';
 import humanize = require('humanize-duration');
 import { TknPipelineResource, TknTask } from './tekton';
+import { kubectl } from './kubectl';
+import { pipelineExplorer } from './pipeline/pipelineExplorer';
 
 const humanizer = humanize.humanizer(createConfig());
 
@@ -270,7 +272,6 @@ export class Command {
   static listConditions(): CliCommand {
     return newK8sCommand('get', 'conditions', '-o', 'json');
   }
-
 }
 
 export class TektonNodeImpl implements TektonNode {
@@ -632,11 +633,6 @@ export class TknImpl implements Tkn {
   // Get page size from configuration, in case configuration is not present(dev mode) use hard coded value
   defaultPageSize: number = workspace.getConfiguration('vs-tekton').has('treePaginationLimit') ? workspace.getConfiguration('vs-tekton').get('treePaginationLimit') : 5;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private constructor() {
-
-  }
-
   public static get Instance(): Tkn {
     if (!TknImpl.instance) {
       TknImpl.instance = new TknImpl();
@@ -685,6 +681,20 @@ export class TknImpl implements Tkn {
 
   }
 
+  async refreshPipelineRun(pipelineName: string, PipelineRun: TektonNode): Promise<void> {
+    const status: TektonNode = PipelineRun;
+    await kubectl.watchPipelineRun(pipelineName);
+    pipelineExplorer.refresh(status? status.getParent().getParent(): undefined);
+  }
+
+  async getPipelineStatus(listOfPipelineRuns: TektonNode[]): Promise<void> {
+    for (const pipelineRun of listOfPipelineRuns) {
+      if (pipelineRun.state === 'Unknown') {
+        this.refreshPipelineRun(pipelineRun.getName(), pipelineRun);
+      }
+    }
+  }
+
   async getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> {
     if (!pipeline.visibleChildren) {
       pipeline.visibleChildren = this.defaultPageSize;
@@ -694,7 +704,7 @@ export class TknImpl implements Tkn {
       pipelineRuns = await this._getPipelineRuns(pipeline);
       this.cache.set(pipeline, pipelineRuns);
     }
-
+    this.getPipelineStatus(pipelineRuns);
     const currentRuns = pipelineRuns.slice(0, Math.min(pipeline.visibleChildren, pipelineRuns.length))
     if (pipeline.visibleChildren < pipelineRuns.length) {
       let nextPage = this.defaultPageSize;
@@ -764,7 +774,6 @@ export class TknImpl implements Tkn {
       taskRuns = await this._getTaskRuns(pipelineRun);
       this.cache.set(pipelineRun, taskRuns);
     }
-
     const currentRuns = taskRuns.slice(0, Math.min(pipelineRun.visibleChildren, taskRuns.length))
     if (pipelineRun.visibleChildren < taskRuns.length) {
       let nextPage = this.defaultPageSize;
@@ -1001,3 +1010,5 @@ export class TknImpl implements Tkn {
     this.cache.clear();
   }
 }
+
+export const tknInstance = new TknImpl();

@@ -70,6 +70,7 @@ export class Pipeline extends TektonItem {
 
       return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
         Pipeline.tkn.startPipeline(inputStartPipeline)
+          .then(() => Pipeline.explorer.refresh())
           .then(() => `Pipeline '${inputStartPipeline.name}' successfully started`)
           .catch((error) => Promise.reject(`Failed to start Pipeline with error '${error}'`))
       );
@@ -242,6 +243,7 @@ export class Pipeline extends TektonItem {
     if (pipeline) {
       return Progress.execFunctionWithProgress(`Creating the Pipeline '${pipeline.getName()}'.`, () =>
         Pipeline.tkn.restartPipeline(pipeline)
+          .then(() => Pipeline.explorer.refresh())
           .then(() => `Pipeline '${pipeline.getName()}' successfully created`)
           .catch((error) => Promise.reject(`Failed to create Pipeline with error '${error}'`))
       );
@@ -275,6 +277,7 @@ export class Pipeline extends TektonItem {
     if (value === 'Yes') {
       return Progress.execFunctionWithProgress(`Deleting the Pipeline '${pipeline.getName()}'.`, () =>
         Pipeline.tkn.execute(Command.deletePipeline(pipeline.getName())))
+        .then(() => Pipeline.explorer.refresh(pipeline ? pipeline.getParent() : undefined))
         .then(() => `The Pipeline '${pipeline.getName()}' successfully deleted.`)
         .catch((err) => Promise.reject(`Failed to delete the Pipeline '${pipeline.getName()}': '${err}'.`));
     }

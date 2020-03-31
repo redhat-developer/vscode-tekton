@@ -10,7 +10,7 @@ import { window } from 'vscode';
 
 export class PipelineResource extends TektonItem {
 
-  static async create(): Promise<string> {
+  static async create(context: TektonNode): Promise<string> {
     const document = window.activeTextEditor ? window.activeTextEditor.document : undefined;
     const pleaseSave = 'Please save your changes before executing \'Tekton: Create\' command.';
     let message: string;
@@ -38,6 +38,7 @@ export class PipelineResource extends TektonItem {
     } else {
       return Progress.execFunctionWithProgress('Creating PipelineResource', () =>
         PipelineResource.tkn.execute(Command.createPipelineResource(document.fileName)))
+        .then(() => PipelineResource.explorer.refresh(context ? context : undefined))
         .then(() => 'PipelineResources were successfully created.')
         .catch((err) => Promise.reject(`Failed to Create PipelineResources with error: ${err}`));
     }
@@ -57,6 +58,7 @@ export class PipelineResource extends TektonItem {
     if (value === 'Yes') {
       return Progress.execFunctionWithProgress(`Deleting the Resource '${pipelineresource.getName()}'.`, () =>
         PipelineResource.tkn.execute(Command.deletePipelineResource(pipelineresource.getName())))
+        .then(() => PipelineResource.explorer.refresh(pipelineresource ? pipelineresource.getParent() : undefined))
         .then(() => `The Resource '${pipelineresource.getName()}' successfully deleted.`)
         .catch((err) => Promise.reject(`Failed to delete the Resource '${pipelineresource.getName()}': '${err}'.`));
     }

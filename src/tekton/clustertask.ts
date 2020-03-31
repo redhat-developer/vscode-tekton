@@ -24,6 +24,7 @@ export class ClusterTask extends TektonItem {
     if (value === 'Yes') {
       return Progress.execFunctionWithProgress(`Deleting the ClusterTask '${clustertask.getName()}'.`, () =>
         ClusterTask.tkn.execute(Command.deleteClusterTask(clustertask.getName())))
+        .then(() => ClusterTask.explorer.refresh(clustertask ? clustertask.getParent() : undefined))
         .then(() => `The ClusterTask '${clustertask.getName()}' successfully deleted.`)
         .catch((err) => Promise.reject(`Failed to delete the ClusterTask '${clustertask.getName()}': '${err}'.`));
     }
