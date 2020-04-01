@@ -145,7 +145,7 @@
       "      command: ",
       "      - ${7:/bin/bash}",
       "      args: ",
-      "      - ${8:'-c', 'echo hello world'}]"
+      "      - [${8:'-c', 'echo hello world'}]"
     ],
     "description": "Create a Tekton Task Resource"
   },
