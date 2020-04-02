@@ -116,7 +116,7 @@ function getStyle(style: CyTheme): cytoscape.Stylesheet[] {
         'color': style.labelColor,
         'font-family': style.fontFamily,
         'font-size': style.fontSize,
-        'curve-style': 'bezier',
+        'curve-style': 'taxi',
         'target-arrow-shape': 'triangle',
         'target-arrow-color': style.arrowColor,
       }
