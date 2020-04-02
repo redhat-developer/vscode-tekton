@@ -8,8 +8,10 @@ export interface BaseData {
 }
 
 export interface NodeData extends BaseData {
-  name: string;
+  label: string;
   type?: string;
+  id: string;
+  state?: 'Cancelled'| 'Finished' | 'Started' | 'Failed' | 'Unknown';
 }
 
 export interface EdgeData extends BaseData {

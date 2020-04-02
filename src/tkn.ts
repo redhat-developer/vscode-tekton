@@ -11,11 +11,11 @@ import { ToolsConfig } from './tools';
 import format = require('string-format');
 import { StartPipelineObject } from './tekton/pipeline';
 import humanize = require('humanize-duration');
-import { TknPipelineResource, TknTask } from './tekton';
+import { TknPipelineResource, TknTask, PipelineRunData } from './tekton';
 import { kubectl } from './kubectl';
 import { pipelineExplorer } from './pipeline/pipelineExplorer';
 
-const humanizer = humanize.humanizer(createConfig());
+export const humanizer = humanize.humanizer(createConfig());
 
 function createConfig(): humanize.HumanizerOptions {
   return {
@@ -486,25 +486,6 @@ export class TaskRun extends TektonNodeImpl {
   }
 }
 
-
-export type PipelineRunData = {
-  metadata: {
-    creationTimestamp: string;
-    name: string;
-    generateName: string;
-  };
-  spec: {
-    pipelineRef: {
-      name: string;
-    };
-  };
-  status: {
-    completionTime: string;
-    conditions: [{
-      status: string;
-    }];
-  };
-};
 
 export class PipelineRun extends TektonNodeImpl {
   private started: string;

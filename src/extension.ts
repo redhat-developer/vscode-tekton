@@ -19,7 +19,7 @@ import { TektonNode } from './tkn';
 import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
 import { setCommandContext, CommandContext, enterZenMode, exitZenMode, refreshCustomTree, removeItemFromCustomTree } from './commands';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
-import { TektonResourceVirtualFileSystemProvider, TKN_RESOURCE_SCHEME } from './util/tektonresources.virtualfs';
+import { TKN_RESOURCE_SCHEME, resourceDocProvider } from './util/tektonresources.virtualfs';
 import { TektonItem } from './tekton/tektonitem';
 import { showPipelinePreview, registerPipelinePreviewContext } from './pipeline/pipeline-preview';
 import { TriggerTemplate } from './tekton/triggertemplate';
@@ -31,7 +31,6 @@ let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 
-  const resourceDocProvider = new TektonResourceVirtualFileSystemProvider();
 
   contextGlobalState = context;
   migrateFromTkn018();

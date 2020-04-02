@@ -7,7 +7,7 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { isTektonYaml, TektonYamlType, getPipelineTasksRefName, getPipelineTasksName, getDeclaredResources, getTektonDocuments, getMetadataName, getPipelineTasks } from '../../src/yaml-support/tkn-yaml';
+import { isTektonYaml, TektonYamlType, getPipelineTasksRefName, getPipelineTasksName, getDeclaredResources, getTektonDocuments, getMetadataName, getPipelineTasks, addPipelineRunTasks, DeclaredTask, getPipelineRunName, getPipelineRunStatus } from '../../src/yaml-support/tkn-yaml';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -147,6 +147,22 @@ suite('Tekton yaml', () => {
       const task = tasks.find(t => t.name === 'deploy-web');
       expect(task.runAfter).eql(['build-skaffold-web']);
     });
+
+    test('"getPipelineTasks" should return "from" statement from conditions', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/conditional-pipeline.yaml'));
+      const docs = getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///ordering/conditional-pipeline.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = getPipelineTasks(docs[0]);
+      const task = tasks.find(t => t.name === 'then-check');
+      expect(task.runAfter).eql(['first-create-file']);
+    });
+
+    test('"getPipelineTasks" should return "from" statement from conditions', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/conditional-pipeline.yaml'));
+      const docs = getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///ordering/conditional-pipeline.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = getPipelineTasks(docs[0]);
+      const task = tasks.find(t => t.name === 'then-check');
+      expect(task.conditions).eql(['file-exists']);
+    });
   });
 
   suite('Tekton tasks detections', () => {
@@ -244,5 +260,79 @@ suite('Tekton yaml', () => {
       expect(pipelineResources).to.eql([{ name: 'api-repo', type: 'git' }, { name: 'api-image', type: 'image' }]);
     });
   });
+  suite('PipelineRun', () => {
+    test('should return pipelinerun tasks', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/pipelinerun.yaml'));
+      const docs = getTektonDocuments({ getText: () => yaml.toString(), version: 1, uri: vscode.Uri.parse('file:///pipelinerun/pipelinerun.yaml') } as vscode.TextDocument, TektonYamlType.PipelineRun);
+      const tasks: DeclaredTask[] = [
+        {
+          name: 'build',
+          kind: '',
+          taskRef: 'buildRef',
+          runAfter: []
+        },
+        {
+          name: 'deploy',
+          kind: '',
+          taskRef: 'buildRef',
+          runAfter: []
+        }
+      ];
+      const result = addPipelineRunTasks(docs[0], tasks);
+      expect(result).is.not.undefined;
+      expect(result).length(2);
+      expect(result[0].state).eq('Finished');
+      expect(result[0].startTime).eq('2020-03-30T08:03:42Z');
+      expect(result[0].completionTime).eq('2020-03-30T08:05:50Z');
+      expect(result[1].state).eq('Failed');
+    });
 
+    test('should return pipelinerun tasks', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/pipelinerun.yaml'));
+      const docs = getTektonDocuments({ getText: () => yaml.toString(), version: 1, uri: vscode.Uri.parse('file:///pipelinerun/pipelinerun.yaml') } as vscode.TextDocument, TektonYamlType.PipelineRun);
+      const tasks: DeclaredTask[] = [
+        {
+          name: 'build',
+          kind: '',
+          taskRef: 'buildRef',
+          runAfter: []
+        },
+      ];
+      const result = addPipelineRunTasks(docs[1], tasks);
+      expect(result).length(1);
+      expect(result[0].state).eq('Started');
+    });
+
+    test('should return pipelinerun tasks canceled state', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/pipelinerun.yaml'));
+      const docs = getTektonDocuments({ getText: () => yaml.toString(), version: 1, uri: vscode.Uri.parse('file:///pipelinerun/pipelinerun.yaml') } as vscode.TextDocument, TektonYamlType.PipelineRun);
+      const tasks: DeclaredTask[] = [
+        {
+          name: 'build-image',
+          kind: '',
+          taskRef: 'buildRef',
+          runAfter: []
+        },
+      ];
+      const result = addPipelineRunTasks(docs[2], tasks);
+      expect(result).length(1);
+      expect(result[0].state).eq('Cancelled');
+    });
+
+    test('should return pipelinerun name', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/pipelinerun.yaml'));
+      const docs = getTektonDocuments({ getText: () => yaml.toString(), version: 1, uri: vscode.Uri.parse('file:///pipelinerun/pipelinerun.yaml') } as vscode.TextDocument, TektonYamlType.PipelineRun);
+
+      const result = getPipelineRunName(docs[0]);
+      expect(result).eql('nodejs-ex-git-twbd85-nlhww');
+    });
+
+    test('should return pipelinerun state', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/pipelinerun.yaml'));
+      const docs = getTektonDocuments({ getText: () => yaml.toString(), version: 1, uri: vscode.Uri.parse('file:///pipelinerun/pipelinerun.yaml') } as vscode.TextDocument, TektonYamlType.PipelineRun);
+
+      const result = getPipelineRunStatus(docs[0]);
+      expect(result).eql('Failed');
+    });
+  });
 });

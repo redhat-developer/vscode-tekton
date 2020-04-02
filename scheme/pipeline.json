@@ -90,22 +90,6 @@
             "additionalProperties": false,
             "type": "object"
         },
-        "PipelineConditionResource": {
-            "required": [
-                "name",
-                "resource"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "resource": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false,
-            "type": "object"
-        },
         "PipelineDeclaredResource": {
             "required": [
                 "name",
@@ -227,7 +211,7 @@
                 "resources": {
                     "items": {
                         "$schema": "http://json-schema.org/draft-07/schema#",
-                        "$ref": "#/definitions/PipelineConditionResource"
+                        "$ref": "#/definitions/PipelineTaskInputResource"
                     },
                     "type": "array"
                 }

@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: conditional-pipeline
+spec:
+  resources:
+    - name: source-repo
+      type: git
+  params:
+    - name: "path"
+      default: "README.md"
+  tasks:
+    - name: first-create-file
+      taskRef:
+        name: create-readme-file
+      resources:
+        outputs:
+          - name: workspace
+            resource: source-repo
+    - name: then-check
+      conditions:
+        - conditionRef: "file-exists"
+          params:
+            - name: "path"
+              value: "$(params.path)"
+          resources:
+            - name: workspace
+              resource: source-repo
+              from: [first-create-file]
+      taskRef:
+        name: echo-hello

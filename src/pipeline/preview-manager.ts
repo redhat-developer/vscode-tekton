@@ -5,11 +5,15 @@
 import { TextDocument, ViewColumn } from 'vscode';
 import { PipelinePreview } from './preview';
 import { Disposable } from '../util/disposable';
+import { GraphProvider } from './pipeline-graph';
 
 
 export interface PreviewSettings {
   readonly resourceColumn: ViewColumn;
   readonly previewColumn: ViewColumn;
+  readonly graphProvider: GraphProvider;
+  readonly pipelineRunName?: string;
+  readonly pipelineRunStatus?: string;
 }
 
 
@@ -22,22 +26,25 @@ export class PreviewManager extends Disposable {
     super();
   }
 
-  showPreview(document: TextDocument, settings: PreviewSettings): void {
+  showPipelinePreview(document: TextDocument, settings: PreviewSettings): void {
     let preview = this.previews.get(document.uri.toString());
     if (preview) {
       preview.reveal(settings.previewColumn);
     } else {
-      preview = this.createTektonPreview(document, settings);
+      preview = this.createPipelinePreview(document, settings);
     }
 
     preview.update(document);
   }
 
-  createTektonPreview(document: TextDocument, settings: PreviewSettings): PipelinePreview {
+  createPipelinePreview(document: TextDocument, settings: PreviewSettings): PipelinePreview {
     const preview = PipelinePreview.create(
       {
         document,
         resourceColumn: settings.resourceColumn,
+        graphProvider: settings.graphProvider,
+        pipelineRunName: settings.pipelineRunName,
+        pipelineRunStatus: settings.pipelineRunStatus
       },
       settings.previewColumn);
 

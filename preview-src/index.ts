@@ -75,9 +75,9 @@ function render(data: NodeOrEdge[]): void {
     layout: {
       name: 'dagre',
       fit: true, // whether to fit to viewport
-      padding: 30, // fit padding
+      padding: 20, // fit padding
       animate: false,
-      nodeSep: 100,
+      nodeSep: 50,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any, // to make TSC happy, there are no typings for cytoscape-dagre plugin
     headless: false,
@@ -112,38 +112,82 @@ function getStyle(style: CyTheme): cytoscape.Stylesheet[] {
       style: {
         'width': 3,
         'line-color': style.arrowColor,
-        'curve-style': 'bezier',
+        'label': 'data(label)',
+        'color': style.labelColor,
+        'font-family': style.fontFamily,
+        'font-size': style.fontSize,
+        'curve-style': 'taxi',
         'target-arrow-shape': 'triangle',
         'target-arrow-color': style.arrowColor,
       }
     },
     {
+      selector: 'edge[state = "Cancelled"]',
+      style: {
+        'width': 3,
+        'line-color': 'red',
+        'curve-style': 'bezier',
+        'target-arrow-shape': 'diamond',
+        'target-arrow-color': 'red',
+      }
+    },
+    {
       selector: 'node',
       style: {
-        'background-color': style.backgroundColor,
+        'background-color': 'green',
         'background-fit': 'contain',
-        'label': 'data(name)',
+        'label': 'data(label)',
         'font-size': style.fontSize,
         'text-wrap': 'wrap',
-        'text-valign': 'bottom',
+        'text-valign': 'center',
         'text-halign': 'center',
-        'color': style.labelColor,
+        'color': '#d4d4d4',
         'font-family': style.fontFamily,
+        'width': 150,
+        'height': 30
       }
     },
     {
       selector: 'node[type = "Task"]',
       style: {
-        'background-image': images['task'],
-        'shape': 'rectangle',
+        'shape': 'round-rectangle',
       },
     },
     {
       selector: 'node[type = "ClusterTask"]',
       style: {
-        'background-image': images['clustertask'],
         'shape': 'round-rectangle',
       },
-    }
+    },
+    {
+      selector: 'node[state = "Started"]',
+      style: {
+        'background-color': '#1471f4',
+      }
+    },
+    {
+      selector: 'node[state = "Cancelled"]',
+      style: {
+        'background-color': 'grey',
+      }
+    },
+    {
+      selector: 'node[state = "Failed"]',
+      style: {
+        'background-color': 'red',
+      }
+    },
+    {
+      selector: 'node[state = "Finished"]',
+      style: {
+        'background-color': '#38812f',
+      }
+    },
+    {
+      selector: 'node[state = "Unknown"]',
+      style: {
+        'background-color': 'grey',
+      }
+    },
   ];
 }

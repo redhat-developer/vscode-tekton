@@ -6,14 +6,19 @@
 import * as vscode from 'vscode';
 import { contextGlobalState } from '../extension';
 import * as path from 'path';
-import { calculatePipelineGraph } from './pipeline-graph';
+import { GraphProvider } from './pipeline-graph';
 import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
+import { kubectl } from '../kubectl';
+import { PipelineRunData } from '../tekton';
 
 export interface PipelinePreviewInput {
   readonly document: vscode.TextDocument;
   readonly resourceColumn: vscode.ViewColumn;
   readonly line?: number;
+  readonly graphProvider: GraphProvider;
+  readonly pipelineRunName?: string;
+  readonly pipelineRunStatus?: string;
 }
 export class PipelinePreview extends Disposable {
   static viewType = 'tekton.pipeline.preview';
@@ -38,7 +43,8 @@ export class PipelinePreview extends Disposable {
 
   private editor: vscode.WebviewPanel;
   private document: vscode.TextDocument;
-  private updateFunc = debounce(() => this.doUpdate(), 1000);
+  private updateFunc = debounce(() => this.doUpdate(), 500);
+  private graphProvider: GraphProvider;
   private readonly onDisposeEmitter = new vscode.EventEmitter<void>();
   public readonly onDispose = this.onDisposeEmitter.event;
   private readonly onDidChangeViewStateEmitter = new vscode.EventEmitter<vscode.WebviewPanelOnDidChangeViewStateEvent>();
@@ -49,6 +55,7 @@ export class PipelinePreview extends Disposable {
     super();
     this.editor = webview;
     this.document = input.document;
+    this.graphProvider = input.graphProvider;
     this.register(this.editor.onDidDispose(() => {
       this.dispose();
     }));
@@ -58,15 +65,27 @@ export class PipelinePreview extends Disposable {
         this.update(e.document);
       }
     }));
-    this.doUpdate();
+
+    if (input.pipelineRunName && (input.pipelineRunStatus === 'Started' || input.pipelineRunStatus === 'Unknown')) {
+      const watchControl = kubectl.watchPipelineRunWithControl(input.pipelineRunName, run => {
+        this.updatePipelineRun(run);
+      });
+      this.register({
+        dispose: () => {
+          if (!watchControl.terminated) {
+            watchControl.kill();
+          }
+        }
+      })
+    }
+    this.updateFunc();
   }
 
-  public dispose(): void {
+  dispose(): void {
     if (this.disposed) {
       return;
     }
 
-    this.disposed = true;
     this.onDisposeEmitter.fire();
     this.onDisposeEmitter.dispose();
 
@@ -91,10 +110,20 @@ export class PipelinePreview extends Disposable {
     const html = this.getHmlContent();
     this.setContent(html);
 
-    // this.editor.webview.postMessage({type: 'showData', data: 'AAAAAA'})
-    const graph = await calculatePipelineGraph(this.document);
-    this.editor.webview.postMessage({ type: 'images', data: this.getImagesUri() })
-    this.editor.webview.postMessage({ type: 'showData', data: graph })
+    const graph = await this.graphProvider(this.document);
+    // this.editor.webview.postMessage({ type: 'images', data: this.getImagesUri() })
+    this.postMessage({ type: 'showData', data: graph });
+  }
+
+  private async updatePipelineRun(run: PipelineRunData): Promise<void> {
+    const graph = await this.graphProvider(this.document, run);
+    this.postMessage({ type: 'showData', data: graph });
+  }
+
+  private postMessage(msg: {}): void {
+    if (!this.disposed) {
+      this.editor.webview.postMessage(msg);
+    }
   }
 
   private setContent(html: string): void {
