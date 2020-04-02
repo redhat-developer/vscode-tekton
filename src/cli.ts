@@ -39,6 +39,7 @@ export interface WatchProcess extends events.EventEmitter {
   stdout: stream.Readable;
   stderr: stream.Readable;
   kill();
+  readonly killed: boolean;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on(event: string, listener: (...args: any[]) => void): this;
@@ -49,6 +50,7 @@ export interface WatchProcess extends events.EventEmitter {
 export interface JSONWatchProcess {
   stderr: stream.Readable;
   kill();
+  readonly killed: boolean;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on(event: string, listener: (...args: any[]) => void): this;

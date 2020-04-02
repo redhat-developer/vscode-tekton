@@ -1,0 +1,288 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  creationTimestamp: "2020-03-30T08:03:42Z"
+  generateName: nodejs-ex-git-twbd85-
+  generation: 1
+  labels:
+    app.kubernetes.io/instance: nodejs-ex-git
+    pipeline.openshift.io/runtime: nodejs
+    tekton.dev/pipeline: nodejs-ex-git
+  name: nodejs-ex-git-twbd85-nlhww
+  namespace: default
+  resourceVersion: "135164"
+  selfLink: /apis/tekton.dev/v1alpha1/namespaces/default/pipelineruns/nodejs-ex-git-twbd85-nlhww
+  uid: 659b9d2f-af22-4aef-921c-7e3016428d7c
+spec:
+  params:
+  - name: IMAGE_NAME
+    value: a
+  pipelineRef:
+    name: nodejs-ex-git
+  resources:
+  - name: app-source
+    resourceRef:
+      name: git-w8a7me
+  - name: app-image
+    resourceRef:
+      name: image-qne84t
+  serviceAccountName: pipeline
+  timeout: 1h0m0s
+status:
+  completionTime: "2020-03-30T08:05:59Z"
+  conditions:
+  - lastTransitionTime: "2020-03-30T08:05:59Z"
+    message: TaskRun nodejs-ex-git-twbd85-nlhww-deploy-rnb2d has failed
+    reason: Failed
+    status: "False"
+    type: Succeeded
+  startTime: "2020-03-30T08:03:42Z"
+  taskRuns:
+    nodejs-ex-git-twbd85-nlhww-build-lxqm9:
+      pipelineTaskName: build
+      status:
+        completionTime: "2020-03-30T08:05:50Z"
+        conditions:
+        - lastTransitionTime: "2020-03-30T08:05:50Z"
+          message: All Steps have completed executing
+          reason: Succeeded
+          status: "True"
+          type: Succeeded
+        podName: nodejs-ex-git-twbd85-nlhww-build-lxqm9-pod-cnfhs
+        resourcesResult:
+        - digest: ""
+          key: commit
+          name: ""
+          resourceRef: {}
+          value: a096bd299d65517cef8079f4559e9b0b9f97ff57
+        startTime: "2020-03-30T08:03:42Z"
+        steps:
+        - container: step-generate
+          imageID: quay.io/openshift-pipeline/s2i@sha256:ffdacde51b8719548dfb727d6833b3df72fe4f598f0869d0b3815e838548688c
+          name: generate
+          terminated:
+            containerID: cri-o://4f673395ea6710f41b91246a2c271348925ef9af15c9807b68fde3a6a91bd24d
+            exitCode: 0
+            finishedAt: "2020-03-30T08:03:53Z"
+            reason: Completed
+            startedAt: "2020-03-30T08:03:53Z"
+        - container: step-build
+          imageID: quay.io/buildah/stable@sha256:52a993631e5f13f142c1de0ac19ed2188a1a4190bf4530ecaecb23bece0289c3
+          name: build
+          terminated:
+            containerID: cri-o://5852a50cf119644d6876cc5b044de50af1a9cc2798bdad33190ebd71298f263e
+            exitCode: 0
+            finishedAt: "2020-03-30T08:05:17Z"
+            reason: Completed
+            startedAt: "2020-03-30T08:03:53Z"
+        - container: step-push
+          imageID: quay.io/buildah/stable@sha256:52a993631e5f13f142c1de0ac19ed2188a1a4190bf4530ecaecb23bece0289c3
+          name: push
+          terminated:
+            containerID: cri-o://3a05dacc8e5dd66d191ce1717df756b7cabcdbc2eb82eb288b8fb91dd37bfa2a
+            exitCode: 0
+            finishedAt: "2020-03-30T08:05:50Z"
+            reason: Completed
+            startedAt: "2020-03-30T08:05:17Z"
+        - container: step-git-source-git-w8a7me-rp9pq
+          imageID: quay.io/openshift-pipeline/tektoncd-pipeline-git-init@sha256:0956ae04297fe4740af495ec1d6d51bd7fbd79686f5d5a4ea09ca44c4e9838cf
+          name: git-source-git-w8a7me-rp9pq
+          terminated:
+            containerID: cri-o://750b92c20e1125200cdf29f7a209b74ba577f97b7d9536031d2f66c7989c08a5
+            exitCode: 0
+            finishedAt: "2020-03-30T08:03:52Z"
+            message: '[{"name":"","digest":"","key":"commit","value":"a096bd299d65517cef8079f4559e9b0b9f97ff57","resourceRef":{}}]'
+            reason: Completed
+            startedAt: "2020-03-30T08:03:51Z"
+        - container: step-image-digest-exporter-2g76d
+          imageID: quay.io/openshift-pipeline/tektoncd-pipeline-imagedigestexporter@sha256:bc12f889c9f28f7f7efeb9854df0e390869fdf1b6505bea31a4c17b3014becd3
+          name: image-digest-exporter-2g76d
+          terminated:
+            containerID: cri-o://3be6fc91148b512050db02a3bcc2cc2606c4a7ff1450631e2195a6b57659754f
+            exitCode: 0
+            finishedAt: "2020-03-30T08:05:50Z"
+            reason: Completed
+            startedAt: "2020-03-30T08:05:50Z"
+        - container: step-create-dir-image-9x57f
+          imageID: registry.access.redhat.com/ubi8/ubi-minimal@sha256:01b8fb7b3ad16a575651a4e007e8f4d95b68f727b3a41fc57996be9a790dc4fa
+          name: create-dir-image-9x57f
+          terminated:
+            containerID: cri-o://75011a08838d989bc0c3443e4625b1d1368822ace2627b081f638830ceed93bc
+            exitCode: 0
+            finishedAt: "2020-03-30T08:03:51Z"
+            reason: Completed
+            startedAt: "2020-03-30T08:03:51Z"
+    nodejs-ex-git-twbd85-nlhww-deploy-rnb2d:
+      pipelineTaskName: deploy
+      status:
+        completionTime: "2020-03-30T08:05:59Z"
+        conditions:
+        - lastTransitionTime: "2020-03-30T08:05:59Z"
+          message: '"step-oc" exited with code 1 (image: "quay.io/openshift/origin-cli@sha256:5228c7612e0c71e63d8d8e5671934fe3117dac798e7d1c1afdf984a69b7fbaa4");
+            for logs run: kubectl -n default logs nodejs-ex-git-twbd85-nlhww-deploy-rnb2d-pod-s7xhr
+            -c step-oc'
+          reason: Failed
+          status: "False"
+          type: Succeeded
+        podName: nodejs-ex-git-twbd85-nlhww-deploy-rnb2d-pod-s7xhr
+        startTime: "2020-03-30T08:05:51Z"
+        steps:
+        - container: step-oc
+          imageID: quay.io/openshift/origin-cli@sha256:5228c7612e0c71e63d8d8e5671934fe3117dac798e7d1c1afdf984a69b7fbaa4
+          name: oc
+          terminated:
+            containerID: cri-o://76520cb6ab68d5eccf27140915c64b422369bddd92cb86eaa8b1b566e349d3e1
+            exitCode: 1
+            finishedAt: "2020-03-30T08:05:58Z"
+            reason: Error
+            startedAt: "2020-03-30T08:05:58Z"
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  creationTimestamp: "2020-03-30T13:02:17Z"
+  generateName: nodejs-ex-git-twbd85-
+  generation: 1
+  labels:
+    app.kubernetes.io/instance: nodejs-ex-git
+    pipeline.openshift.io/runtime: nodejs
+    tekton.dev/pipeline: nodejs-ex-git
+  name: nodejs-ex-git-twbd85-b7hfb
+  namespace: default
+  resourceVersion: "303982"
+  selfLink: /apis/tekton.dev/v1alpha1/namespaces/default/pipelineruns/nodejs-ex-git-twbd85-b7hfb
+  uid: 828240fe-ba19-4edb-8eab-feb999b32cdb
+spec:
+  params:
+  - name: IMAGE_NAME
+    value: a
+  pipelineRef:
+    name: nodejs-ex-git
+  resources:
+  - name: app-source
+    resourceRef:
+      name: git-w8a7me
+  - name: app-image
+    resourceRef:
+      name: image-qne84t
+  serviceAccountName: pipeline
+  timeout: 1h0m0s
+status:
+  conditions:
+  - lastTransitionTime: "2020-03-30T13:02:17Z"
+    message: Not all Tasks in the Pipeline have finished executing
+    reason: Running
+    status: Unknown
+    type: Succeeded
+  startTime: "2020-03-30T13:02:17Z"
+  taskRuns:
+    nodejs-ex-git-twbd85-b7hfb-build-ngnf7:
+      pipelineTaskName: build
+      status:
+        conditions:
+        - lastTransitionTime: "2020-03-30T13:02:24Z"
+          message: 'pod status "Ready":"False"; message: "containers with unready
+            status: [step-create-dir-image-8q96q step-git-source-git-w8a7me-9h8t7
+            step-generate step-build step-push step-image-digest-exporter-6zkjb]"'
+          reason: Pending
+          status: Unknown
+          type: Succeeded
+        podName: nodejs-ex-git-twbd85-b7hfb-build-ngnf7-pod-xpmj2
+        startTime: "2020-03-30T13:02:17Z"
+        steps:
+        - container: step-generate
+          name: generate
+          waiting:
+            reason: PodInitializing
+        - container: step-build
+          name: build
+          waiting:
+            reason: PodInitializing
+        - container: step-push
+          name: push
+          waiting:
+            reason: PodInitializing
+        - container: step-git-source-git-w8a7me-9h8t7
+          name: git-source-git-w8a7me-9h8t7
+          waiting:
+            reason: PodInitializing
+        - container: step-image-digest-exporter-6zkjb
+          name: image-digest-exporter-6zkjb
+          waiting:
+            reason: PodInitializing
+        - container: step-create-dir-image-8q96q
+          name: create-dir-image-8q96q
+          waiting:
+            reason: PodInitializing
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  creationTimestamp: "2020-03-31T07:40:33Z"
+  generateName: build-and-deploy-run-
+  generation: 2
+  labels:
+    tekton.dev/pipeline: build-and-deploy
+  name: build-and-deploy-run-qrj4j
+  namespace: pipelines-tutorial
+  resourceVersion: "94759"
+  selfLink: /apis/tekton.dev/v1alpha1/namespaces/pipelines-tutorial/pipelineruns/build-and-deploy-run-qrj4j
+  uid: 4a6cdd69-75d0-4422-bb7d-6bb12486cb58
+spec:
+  params:
+  - name: deployment-name
+    value: some
+  pipelineRef:
+    name: build-and-deploy
+  resources:
+  - name: git-repo
+    resourceRef:
+      name: api-repo
+  - name: image
+    resourceRef:
+      name: api-image
+  serviceAccountName: pipeline
+  status: PipelineRunCancelled
+  timeout: 1h0m0s
+status:
+  completionTime: "2020-03-31T07:41:07Z"
+  conditions:
+  - lastTransitionTime: "2020-03-31T07:41:06Z"
+    message: PipelineRun "build-and-deploy-run-qrj4j" was cancelled
+    reason: PipelineRunCancelled
+    status: "False"
+    type: Succeeded
+  startTime: "2020-03-31T07:40:33Z"
+  taskRuns:
+    build-and-deploy-run-qrj4j-build-image-zcqbv:
+      pipelineTaskName: build-image
+      status:
+        conditions:
+        - lastTransitionTime: "2020-03-31T07:41:06Z"
+          message: TaskRun "build-and-deploy-run-qrj4j-build-image-zcqbv" was cancelled
+          reason: TaskRunCancelled
+          status: "False"
+          type: Succeeded
+        podName: build-and-deploy-run-qrj4j-build-image-zcqbv-pod-l5x8n
+        startTime: "2020-03-31T07:40:33Z"
+        steps:
+        - container: step-build
+          name: build
+          waiting:
+            reason: PodInitializing
+        - container: step-push
+          name: push
+          waiting:
+            reason: PodInitializing
+        - container: step-git-source-api-repo-rq5jf
+          name: git-source-api-repo-rq5jf
+          waiting:
+            reason: PodInitializing
+        - container: step-image-digest-exporter-59dxc
+          name: image-digest-exporter-59dxc
+          waiting:
+            reason: PodInitializing
+        - container: step-create-dir-image-kgd8f
+          name: create-dir-image-kgd8f
+          waiting:
+            reason: PodInitializing

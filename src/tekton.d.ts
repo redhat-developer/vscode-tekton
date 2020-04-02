@@ -79,3 +79,54 @@ export interface TknTask {
   metadata: TknMetadata;
   spec: TknTaskSpec;
 }
+
+// JSON types
+
+export type PipelineRunData = {
+  metadata: {
+    creationTimestamp: string;
+    name: string;
+    generateName: string;
+  };
+  spec: {
+    pipelineRef: {
+      name: string;
+    };
+  };
+  status: {
+    completionTime: string;
+    conditions: PipelineRunConditions[];
+    taskRuns: TaskRuns;
+  };
+};
+
+export interface TaskRuns {
+  [key: string]: TaskRun;
+}
+
+export interface TaskRun {
+  pipelineTaskName: string;
+  status: TaskRunStatus;
+}
+
+export interface TaskRunStatus {
+  conditions: PipelineRunConditions[];
+  startTime?: string;
+  completionTime?: string;
+  steps: TaskRunSteps[];
+}
+
+export interface PipelineRunConditions {
+  message: string;
+  reason: string;
+  status: string;
+  type: string;
+}
+
+export interface TaskRunSteps {
+  name: string;
+  container: string;
+  //TODO: ass all fields
+  terminated: {};
+  waiting: {};
+}

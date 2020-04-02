@@ -5,13 +5,15 @@
 import { TextDocument, ViewColumn } from 'vscode';
 import { PipelinePreview } from './preview';
 import { Disposable } from '../util/disposable';
-import { calculatePipelineGraph, GraphProvider } from './pipeline-graph';
+import { GraphProvider } from './pipeline-graph';
 
 
 export interface PreviewSettings {
   readonly resourceColumn: ViewColumn;
   readonly previewColumn: ViewColumn;
   readonly graphProvider: GraphProvider;
+  readonly pipelineRunName?: string;
+  readonly pipelineRunStatus?: string;
 }
 
 
@@ -41,6 +43,8 @@ export class PreviewManager extends Disposable {
         document,
         resourceColumn: settings.resourceColumn,
         graphProvider: settings.graphProvider,
+        pipelineRunName: settings.pipelineRunName,
+        pipelineRunStatus: settings.pipelineRunStatus
       },
       settings.previewColumn);
 

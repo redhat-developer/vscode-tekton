@@ -3,8 +3,9 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { newK8sCommand, PipelineRunData } from './tkn';
+import { newK8sCommand } from './tkn';
 import { CliImpl, CliCommand } from './cli';
+import { PipelineRunData } from './tekton';
 
 export const KubectlCommands = {
   watchPipelineRuns(name: string): CliCommand {
@@ -13,6 +14,12 @@ export const KubectlCommands = {
 }
 
 export type PipelineRunCallback = (pr: PipelineRunData) => void;
+
+export interface WatchControl {
+  kill(): void;
+  waitFinish(): Promise<void>;
+  terminated: boolean;
+}
 
 export class Kubectl {
   watchPipelineRun(name: string, callback?: PipelineRunCallback): Promise<void> {
@@ -29,7 +36,7 @@ export class Kubectl {
       });
 
       watch.stderr.on('data', data => {
-        reject(data); // TODO: better error handling
+        console.error(data);
       });
 
       watch.on('close', code => {
@@ -40,6 +47,39 @@ export class Kubectl {
         }
       })
     });
+  }
+
+  watchPipelineRunWithControl(name: string, callback?: PipelineRunCallback): WatchControl {
+    const watch = CliImpl.getInstance().executeWatchJSON(KubectlCommands.watchPipelineRuns(name));
+    const finish = new Promise<void>((resolve, reject) => {
+      watch.on('object', obj => {
+        if (callback) {
+          callback(obj);
+        }
+        if (obj.status?.completionTime !== undefined) {
+          watch.kill(); // PipelineRun finished
+          resolve();
+        }
+      });
+
+      watch.stderr.on('data', data => {
+        console.error(data);
+      });
+
+      watch.on('close', code => {
+        if (code == 0) {
+          resolve();
+        } else {
+          reject(`Watch command exited with code: ${code}`);
+        }
+      })
+    });
+
+    return {
+      waitFinish: () => finish,
+      kill: watch.kill,
+      terminated: watch.killed
+    }
   }
 }
 

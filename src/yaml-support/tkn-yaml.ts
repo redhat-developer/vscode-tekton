@@ -26,7 +26,22 @@ export interface DeclaredTask {
   taskRef: string;
   runAfter: string[];
   kind: 'Task' | 'ClusterTask' | string;
+  conditions?: string[];
 }
+
+export type RunState = 'Cancelled' | 'Finished' | 'Started' | 'Failed' | 'Unknown';
+
+export interface PipelineRunTask extends DeclaredTask {
+  state?: RunState;
+  startTime?: string;
+  completionTime?: string;
+  stepsCount?: number;
+  finishedSteps?: number;
+}
+
+export const tektonYaml = {
+
+};
 
 export function isTektonYaml(vsDocument: vscode.TextDocument): TektonYamlType | undefined {
   const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
@@ -196,6 +211,7 @@ function collectTasks(specMap: YamlMap): DeclaredTask[] {
           }
 
           decTask.runAfter = getRunAfter(taskNode as YamlMap);
+          decTask.conditions = collectConditions(taskNode as YamlMap);
           result.push(decTask);
         }
       }
@@ -203,6 +219,20 @@ function collectTasks(specMap: YamlMap): DeclaredTask[] {
   }
 
   return result;
+}
+
+function collectConditions(taskNode: YamlMap): string[] | undefined {
+  const result: string[] = [];
+  const conditions = findNodeByKey<YamlSequence>('conditions', taskNode);
+  if (conditions) {
+    for (const condition of conditions.items) {
+      const ref = getYamlMappingValue(condition as YamlMap, 'conditionRef');
+      if (ref) {
+        result.push(_.trim(ref, '"'));
+      }
+    }
+    return result;
+  }
 }
 
 function getRunAfter(taskNode: YamlMap): string[] {
@@ -237,7 +267,7 @@ function getRunAfter(taskNode: YamlMap): string[] {
   if (conditions) {
     for (const condition of conditions.items) {
       const resources = findNodeByKey<YamlSequence>('resources', condition as YamlMap);
-      if(resources) {
+      if (resources) {
         for (const res of resources.items) {
           const fromKey = findNodeByKey<YamlSequence>('from', res as YamlMap);
           if (fromKey) {
@@ -253,6 +283,117 @@ function getRunAfter(taskNode: YamlMap): string[] {
   }
 
   return result;
+}
+
+export function getPipelineRunName(doc: YamlDocument): string {
+  const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+  if (rootMap) {
+    const metadata = findNodeByKey<YamlMap>('metadata', rootMap);
+    return getYamlMappingValue(metadata, 'name');
+  }
+
+  return 'PipelineRun name is not defined';
+}
+
+export function getPipelineRunStatus(doc: YamlDocument): RunState {
+  const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+  if (rootMap) {
+    const status = findNodeByKey<YamlMap>('status', rootMap);
+    if (status) {
+      return getPipelineRunTaskState(status);
+    }
+  }
+
+  return 'Unknown'; // default state
+}
+
+export function addPipelineRunTasks(doc: YamlDocument, tasks: DeclaredTask[]): PipelineRunTask[] {
+  const taskRuns = getTaskRuns(doc);
+  for (const task of tasks) {
+    const runTask = task as PipelineRunTask;
+    const taskRun = findTaskInTaskRun(task.name, taskRuns);
+    if (taskRun) {
+      const status = findNodeByKey<YamlMap>('status', taskRun);
+      if (status) {
+        const completionTime = findNodeByKey<YamlNode>('completionTime', status);
+        if (completionTime) {
+          runTask.completionTime = _.trim(completionTime.raw, '"');
+        }
+        const startTime = findNodeByKey<YamlNode>('startTime', status);
+        if (startTime) {
+          runTask.startTime = _.trim(startTime.raw, '"');
+        }
+        runTask.state = getPipelineRunTaskState(status);
+        const steps = findNodeByKey<YamlSequence>('steps', status);
+        if (steps) {
+          runTask.stepsCount = steps.items.length;
+          let finishedSteps = 0;
+          for (const step of steps.items) {
+            const terminated = findNodeByKey<YamlMap>('terminated', step as YamlMap);
+            if (terminated) {
+              finishedSteps++;
+            }
+          }
+
+          runTask.finishedSteps = finishedSteps;
+        }
+      }
+    } else {
+      runTask.state = 'Unknown'; // default state
+    }
+  }
+
+  return tasks as PipelineRunTask[];
+}
+
+function getPipelineRunTaskState(status: YamlMap): RunState {
+  let result: RunState = 'Unknown';
+  const startTime = findNodeByKey<YamlNode>('startTime', status);
+  if (startTime) {
+    result = 'Started';
+  }
+  const conditionStatus = findNodeByKey<YamlSequence>('conditions', status);
+  if (conditionStatus) {
+    const status = findNodeByKey<YamlNode>('status', conditionStatus.items[0] as YamlMap);
+    if (status) {
+      if (status.raw === '"True"') {
+        result = 'Finished';
+      } else if (status.raw === '"False"') {
+        const reason = findNodeByKey<YamlNode>('reason', conditionStatus.items[0] as YamlMap);
+        if (reason?.raw === 'TaskRunCancelled') {
+          result = 'Cancelled';
+        } else {
+          result = 'Failed';
+        }
+      }
+    }
+  }
+  return result;
+}
+
+function findTaskInTaskRun(name: string, taskRuns: YamlMap): YamlMap {
+  if (!taskRuns) {
+    return;
+  }
+  for (const task of taskRuns.mappings) {
+    const taskMap = task.value as YamlMap;
+    const result = taskMap.mappings.find(node => node.key.raw === 'pipelineTaskName' && node.value.raw === name);
+    if (result) {
+      return result.parent as YamlMap;
+    }
+  }
+}
+
+function getTaskRuns(pipelineRun: YamlDocument): YamlMap | undefined {
+  const rootMap = pipelineRun.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+  if (rootMap) {
+    const statusMap = findNodeByKey<YamlMap>('status', rootMap);
+    if (statusMap) {
+      return findNodeByKey<YamlMap>('taskRuns', statusMap);
+    }
+  }
+
+  return undefined;
 }
 
 function getDeclaredResource(resMap: YamlMap): DeclaredResource {
@@ -279,6 +420,9 @@ function getTasksSeq(specMap: YamlMap): YamlSequence | undefined {
 }
 
 function findNodeByKey<T>(key: string, yamlMap: YamlMap): T | undefined {
+  if (!yamlMap) {
+    return;
+  }
   const mapItem = yamlMap.mappings.find(item => item.key.raw === key);
   if (mapItem) {
     return mapItem.value as unknown as T;
