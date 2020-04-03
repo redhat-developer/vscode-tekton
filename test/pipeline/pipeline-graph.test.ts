@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
-import * as tknYaml from '../../src/yaml-support/tkn-yaml';
+import { tektonYaml, pipelineYaml, DeclaredTask}from '../../src/yaml-support/tkn-yaml';
 import { calculatePipelineGraph } from '../../src/pipeline/pipeline-graph';
 
 const expect = chai.expect;
@@ -21,9 +21,9 @@ suite('pipeline graph', () => {
   let getPipelineTasks: sinon.SinonStub;
 
   setup(() => {
-    tknDocuments = sandbox.stub(tknYaml, 'getTektonDocuments');
-    metadataName = sandbox.stub(tknYaml, 'getMetadataName');
-    getPipelineTasks = sandbox.stub(tknYaml, 'getPipelineTasks');
+    tknDocuments = sandbox.stub(tektonYaml, 'getTektonDocuments');
+    metadataName = sandbox.stub(tektonYaml, 'getMetadataName');
+    getPipelineTasks = sandbox.stub(pipelineYaml, 'getPipelineTasks');
     showQuickPick = sandbox.stub(vscode.window, 'showQuickPick');
   });
 
@@ -51,8 +51,8 @@ suite('pipeline graph', () => {
 
   test('Should convert tasks to node and edge', async () => {
     tknDocuments.returns([{}]);
-    getPipelineTasks.returns([{ name: 'Foo', kind: 'Task', taskRef: 'FooTask', runAfter: [] } as tknYaml.DeclaredTask,
-    { name: 'Bar', kind: 'Task', taskRef: 'BarTask', runAfter: ['Foo'] } as tknYaml.DeclaredTask]);
+    getPipelineTasks.returns([{ name: 'Foo', kind: 'Task', taskRef: 'FooTask', runAfter: [] } as DeclaredTask,
+    { name: 'Bar', kind: 'Task', taskRef: 'BarTask', runAfter: ['Foo'] } as DeclaredTask]);
     const result = await calculatePipelineGraph({} as vscode.TextDocument);
     expect(result.length).equal(3);
   });

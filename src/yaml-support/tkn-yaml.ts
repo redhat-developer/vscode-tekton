@@ -39,151 +39,224 @@ export interface PipelineRunTask extends DeclaredTask {
   finishedSteps?: number;
 }
 
-export const tektonYaml = {
 
-};
-
-export function isTektonYaml(vsDocument: vscode.TextDocument): TektonYamlType | undefined {
-  const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
-  for (const doc of yamlDocuments) {
-    const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
-    if (rootMap) {
-      const apiVersion = getYamlMappingValue(rootMap, 'apiVersion');
-      const kind = getYamlMappingValue(rootMap, 'kind');
-      if (apiVersion && apiVersion.startsWith(TEKTON_API)) {
-        return TektonYamlType[kind];
-      }
-    }
-  }
-  return undefined;
-}
-
-export function getPipelineTasksRefName(vsDocument: vscode.TextDocument): string[] {
-  const result: string[] = [];
-  if (isTektonYaml(vsDocument) === TektonYamlType.Pipeline) {
+export class TektonYaml {
+  isTektonYaml(vsDocument: vscode.TextDocument): TektonYamlType | undefined {
     const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
     for (const doc of yamlDocuments) {
       const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
       if (rootMap) {
-        const specMap = getSpecMap(rootMap);
-        if (specMap) {
-          const tasksSeq = getTasksSeq(specMap);
-          if (tasksSeq) {
-            result.push(...getTasksRefName(tasksSeq.items));
-          }
+        const apiVersion = getYamlMappingValue(rootMap, 'apiVersion');
+        const kind = getYamlMappingValue(rootMap, 'kind');
+        if (apiVersion && apiVersion.startsWith(TEKTON_API)) {
+          return TektonYamlType[kind];
         }
       }
     }
-  }
-
-  return result;
-}
-
-export function getPipelineTasksName(vsDocument: vscode.TextDocument): string[] {
-  const result: string[] = [];
-  if (isTektonYaml(vsDocument) === TektonYamlType.Pipeline) {
-    const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
-    for (const doc of yamlDocuments) {
-      const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
-      if (rootMap) {
-        const specMap = getSpecMap(rootMap);
-        if (specMap) {
-          const tasksSeq = getTasksSeq(specMap);
-          if (tasksSeq) {
-            result.push(...getTasksName(tasksSeq.items));
-          }
-        }
-      }
-    }
-  }
-
-  return result;
-}
-
-export function getTektonDocuments(vsDocument: VirtualDocument, type: TektonYamlType): YamlDocument[] | undefined {
-  const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
-  if (!yamlDocuments) {
     return undefined;
   }
-  const result: YamlDocument[] = [];
-  for (const doc of yamlDocuments) {
-    const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
-    if (rootMap) {
-      const apiVersion = getYamlMappingValue(rootMap, 'apiVersion');
-      const kind = getYamlMappingValue(rootMap, 'kind');
-      if (apiVersion && apiVersion.startsWith(TEKTON_API) && kind === type) {
-        result.push(doc);
+
+  getTektonDocuments(vsDocument: VirtualDocument, type: TektonYamlType): YamlDocument[] | undefined {
+    const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
+    if (!yamlDocuments) {
+      return undefined;
+    }
+    const result: YamlDocument[] = [];
+    for (const doc of yamlDocuments) {
+      const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+      if (rootMap) {
+        const apiVersion = getYamlMappingValue(rootMap, 'apiVersion');
+        const kind = getYamlMappingValue(rootMap, 'kind');
+        if (apiVersion && apiVersion.startsWith(TEKTON_API) && kind === type) {
+          result.push(doc);
+        }
       }
     }
+
+    return result;
   }
 
-  return result;
+  getMetadataName(doc: YamlDocument): string | undefined {
+    const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+    if (rootMap) {
+      const metadata = findNodeByKey<YamlMap>('metadata', rootMap);
+      return getYamlMappingValue(metadata, 'name');
+    }
 
+    return undefined;
+  }
 }
 
-export function getTektonPipelineRefOrSpec(doc: YamlDocument): string | DeclaredTask[] {
-  const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
-  if (rootMap) {
-    const specMap = getSpecMap(rootMap);
-    const pipelineRef = findNodeByKey<YamlMap>('pipelineRef', specMap);
-    if (pipelineRef) {
-      const nameValue = findNodeByKey<YamlNode>('name', pipelineRef);
-      if (nameValue) {
-        return nameValue.raw;
+export const tektonYaml = new TektonYaml();
+
+export class PipelineYaml {
+  getPipelineTasksRefName(vsDocument: vscode.TextDocument): string[] {
+    const result: string[] = [];
+    if (tektonYaml.isTektonYaml(vsDocument) === TektonYamlType.Pipeline) {
+      const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
+      for (const doc of yamlDocuments) {
+        const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+        if (rootMap) {
+          const specMap = getSpecMap(rootMap);
+          if (specMap) {
+            const tasksSeq = getTasksSeq(specMap);
+            if (tasksSeq) {
+              result.push(...getTasksRefName(tasksSeq.items));
+            }
+          }
+        }
       }
     }
-    const pipelineSpec = findNodeByKey<YamlMap>('pipelineSpec', specMap);
-    if (pipelineSpec) {
+
+    return result;
+  }
+
+  getPipelineTasksName(vsDocument: vscode.TextDocument): string[] {
+    const result: string[] = [];
+    if (tektonYaml.isTektonYaml(vsDocument) === TektonYamlType.Pipeline) {
+      const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
+      for (const doc of yamlDocuments) {
+        const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+        if (rootMap) {
+          const specMap = getSpecMap(rootMap);
+          if (specMap) {
+            const tasksSeq = getTasksSeq(specMap);
+            if (tasksSeq) {
+              result.push(...getTasksName(tasksSeq.items));
+            }
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
+  getPipelineTasks(doc: YamlDocument): DeclaredTask[] {
+    const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+    if (rootMap) {
+      const specMap = getSpecMap(rootMap);
       return collectTasks(specMap);
     }
   }
 
-  return undefined;
-}
-
-export function getPipelineTasks(doc: YamlDocument): DeclaredTask[] {
-
-  const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
-  if (rootMap) {
-    const specMap = getSpecMap(rootMap);
-    return collectTasks(specMap);
-  }
-}
-
-export function getMetadataName(doc: YamlDocument): string | undefined {
-  const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
-  if (rootMap) {
-    const metadata = findNodeByKey<YamlMap>('metadata', rootMap);
-    return getYamlMappingValue(metadata, 'name');
-  }
-
-  return undefined;
-}
-
-export function getDeclaredResources(vsDocument: vscode.TextDocument): DeclaredResource[] {
-  const result: DeclaredResource[] = [];
-  if (isTektonYaml(vsDocument) === TektonYamlType.Pipeline) {
-    const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
-    for (const doc of yamlDocuments) {
-      const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
-      if (rootMap) {
-        const specMap = getSpecMap(rootMap);
-        if (specMap) {
-          const resourcesSeq = findNodeByKey<YamlSequence>('resources', specMap);
-          if (resourcesSeq) {
-            for (const res of resourcesSeq.items) {
-              if (res.kind === 'MAPPING') {
-                result.push(getDeclaredResource(res as YamlMap));
+  getDeclaredResources(vsDocument: vscode.TextDocument): DeclaredResource[] {
+    const result: DeclaredResource[] = [];
+    if (tektonYaml.isTektonYaml(vsDocument) === TektonYamlType.Pipeline) {
+      const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
+      for (const doc of yamlDocuments) {
+        const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+        if (rootMap) {
+          const specMap = getSpecMap(rootMap);
+          if (specMap) {
+            const resourcesSeq = findNodeByKey<YamlSequence>('resources', specMap);
+            if (resourcesSeq) {
+              for (const res of resourcesSeq.items) {
+                if (res.kind === 'MAPPING') {
+                  result.push(getDeclaredResource(res as YamlMap));
+                }
               }
             }
           }
         }
       }
     }
+
+    return result;
+  }
+}
+
+
+export const pipelineYaml = new PipelineYaml();
+
+
+export class PipelineRunYaml {
+  getTektonPipelineRefOrSpec(doc: YamlDocument): string | DeclaredTask[] {
+    const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+    if (rootMap) {
+      const specMap = getSpecMap(rootMap);
+      const pipelineRef = findNodeByKey<YamlMap>('pipelineRef', specMap);
+      if (pipelineRef) {
+        const nameValue = findNodeByKey<YamlNode>('name', pipelineRef);
+        if (nameValue) {
+          return nameValue.raw;
+        }
+      }
+      const pipelineSpec = findNodeByKey<YamlMap>('pipelineSpec', specMap);
+      if (pipelineSpec) {
+        return collectTasks(specMap);
+      }
+    }
+
+    return undefined;
   }
 
-  return result;
+  getPipelineRunName(doc: YamlDocument): string {
+    const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+    if (rootMap) {
+      const metadata = findNodeByKey<YamlMap>('metadata', rootMap);
+      return getYamlMappingValue(metadata, 'name');
+    }
+
+    return 'PipelineRun name is not defined';
+  }
+
+  getPipelineRunStatus(doc: YamlDocument): RunState {
+    const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
+    if (rootMap) {
+      const status = findNodeByKey<YamlMap>('status', rootMap);
+      if (status) {
+        return getPipelineRunTaskState(status);
+      }
+    }
+
+    return 'Unknown'; // default state
+  }
+
+  addPipelineRunTasks(doc: YamlDocument, tasks: DeclaredTask[]): PipelineRunTask[] {
+    const taskRuns = getTaskRuns(doc);
+    for (const task of tasks) {
+      const runTask = task as PipelineRunTask;
+      const taskRun = findTaskInTaskRun(task.name, taskRuns);
+      if (taskRun) {
+        const status = findNodeByKey<YamlMap>('status', taskRun);
+        if (status) {
+          const completionTime = findNodeByKey<YamlNode>('completionTime', status);
+          if (completionTime) {
+            runTask.completionTime = _.trim(completionTime.raw, '"');
+          }
+          const startTime = findNodeByKey<YamlNode>('startTime', status);
+          if (startTime) {
+            runTask.startTime = _.trim(startTime.raw, '"');
+          }
+          runTask.state = getPipelineRunTaskState(status);
+          const steps = findNodeByKey<YamlSequence>('steps', status);
+          if (steps) {
+            runTask.stepsCount = steps.items.length;
+            let finishedSteps = 0;
+            for (const step of steps.items) {
+              const terminated = findNodeByKey<YamlMap>('terminated', step as YamlMap);
+              if (terminated) {
+                finishedSteps++;
+              }
+            }
+
+            runTask.finishedSteps = finishedSteps;
+          }
+        }
+      } else {
+        runTask.state = 'Unknown'; // default state
+      }
+    }
+
+    return tasks as PipelineRunTask[];
+  }
 }
+
+
+export const pipelineRunYaml = new PipelineRunYaml();
+
+
 
 function collectTasks(specMap: YamlMap): DeclaredTask[] {
   const result: DeclaredTask[] = [];
@@ -285,66 +358,6 @@ function getRunAfter(taskNode: YamlMap): string[] {
   return result;
 }
 
-export function getPipelineRunName(doc: YamlDocument): string {
-  const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
-  if (rootMap) {
-    const metadata = findNodeByKey<YamlMap>('metadata', rootMap);
-    return getYamlMappingValue(metadata, 'name');
-  }
-
-  return 'PipelineRun name is not defined';
-}
-
-export function getPipelineRunStatus(doc: YamlDocument): RunState {
-  const rootMap = doc.nodes.find(node => node.kind === 'MAPPING') as YamlMap;
-  if (rootMap) {
-    const status = findNodeByKey<YamlMap>('status', rootMap);
-    if (status) {
-      return getPipelineRunTaskState(status);
-    }
-  }
-
-  return 'Unknown'; // default state
-}
-
-export function addPipelineRunTasks(doc: YamlDocument, tasks: DeclaredTask[]): PipelineRunTask[] {
-  const taskRuns = getTaskRuns(doc);
-  for (const task of tasks) {
-    const runTask = task as PipelineRunTask;
-    const taskRun = findTaskInTaskRun(task.name, taskRuns);
-    if (taskRun) {
-      const status = findNodeByKey<YamlMap>('status', taskRun);
-      if (status) {
-        const completionTime = findNodeByKey<YamlNode>('completionTime', status);
-        if (completionTime) {
-          runTask.completionTime = _.trim(completionTime.raw, '"');
-        }
-        const startTime = findNodeByKey<YamlNode>('startTime', status);
-        if (startTime) {
-          runTask.startTime = _.trim(startTime.raw, '"');
-        }
-        runTask.state = getPipelineRunTaskState(status);
-        const steps = findNodeByKey<YamlSequence>('steps', status);
-        if (steps) {
-          runTask.stepsCount = steps.items.length;
-          let finishedSteps = 0;
-          for (const step of steps.items) {
-            const terminated = findNodeByKey<YamlMap>('terminated', step as YamlMap);
-            if (terminated) {
-              finishedSteps++;
-            }
-          }
-
-          runTask.finishedSteps = finishedSteps;
-        }
-      }
-    } else {
-      runTask.state = 'Unknown'; // default state
-    }
-  }
-
-  return tasks as PipelineRunTask[];
-}
 
 function getPipelineRunTaskState(status: YamlMap): RunState {
   let result: RunState = 'Unknown';

@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
-import * as tknYaml from '../../src/yaml-support/tkn-yaml';
+import { tektonYaml } from '../../src/yaml-support/tkn-yaml';
 import * as preview from '../../src/pipeline/preview-manager';
 import { showPipelinePreview } from '../../src/pipeline/pipeline-preview';
 import { TektonYamlType } from '../../src/yaml-support/tkn-yaml';
@@ -27,7 +27,7 @@ suite('pipeline preview', () => {
   setup(() => {
     activeEditor = {} as vscode.TextEditor;
     sandbox.stub(vscode.window, 'activeTextEditor').value(activeEditor);
-    tknDocuments = sandbox.stub(tknYaml, 'getTektonDocuments');
+    tknDocuments = sandbox.stub(tektonYaml, 'getTektonDocuments');
     previewManager = sandbox.stub(preview.previewManager, 'showPipelinePreview');
   });
 
@@ -50,7 +50,7 @@ suite('pipeline preview', () => {
     tknDocuments.returns([{}]);
 
     showPipelinePreview();
-    expect(previewManager.calledOnceWith(doc, { resourceColumn: vscode.ViewColumn.One, previewColumn: vscode.ViewColumn.One + 1,  graphProvider: calculatePipelineGraph})).true;
+    expect(previewManager.calledOnceWith(doc, { resourceColumn: vscode.ViewColumn.One, previewColumn: vscode.ViewColumn.One + 1, graphProvider: calculatePipelineGraph })).true;
   });
 
 });
