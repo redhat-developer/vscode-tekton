@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import * as semver from 'semver';
-import { isTektonYaml, TektonYamlType } from './tkn-yaml';
+import { tektonYaml, TektonYamlType } from './tkn-yaml';
 import { generateScheme } from './tkn-yaml-scheme-generator';
 
 enum MODIFICATION_ACTIONS {
@@ -90,7 +90,7 @@ async function activateYamlExtension(): Promise<YamlExtensionAPI | undefined> {
 function requestYamlSchemaUriCallback(resource: string): string | undefined {
   const textEditor = vscode.window.visibleTextEditors.find((editor) => editor.document.uri.toString() === resource);
   if (textEditor) {
-    const tektonYamlType = isTektonYaml(textEditor.document);
+    const tektonYamlType = tektonYaml.isTektonYaml(textEditor.document);
     if (tektonYamlType && tektonYamlType === TektonYamlType.Pipeline) {
       let resourceUrl = vscode.Uri.parse(resource);
       resourceUrl = resourceUrl.with({ scheme: 'tekton' });

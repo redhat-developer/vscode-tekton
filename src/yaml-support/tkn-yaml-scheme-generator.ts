@@ -7,7 +7,7 @@ import * as path from 'path';
 import { readFile } from 'fs-extra'
 import { Snippet, getTknTasksSnippets } from './tkn-tasks-provider';
 import { schemeStorage } from './tkn-scheme-storage'
-import { getPipelineTasksName, getDeclaredResources } from './tkn-yaml';
+import { pipelineYaml } from './tkn-yaml';
 
 let context: vscode.ExtensionContext;
 export function generateScheme(extContext: vscode.ExtensionContext, vsDocument: vscode.TextDocument): Promise<string> {
@@ -48,8 +48,8 @@ function injectResourceName(templateObj: any, resNames: string[]): {} {
 async function generate(doc: vscode.TextDocument): Promise<string> {
   const template = await readFile(path.join(context.extensionPath, 'scheme', 'pipeline.json'), 'UTF8');
   const snippets = await getTknTasksSnippets();
-  const definedTasks = getPipelineTasksName(doc);
-  const declaredResources = getDeclaredResources(doc);
+  const definedTasks = pipelineYaml.getPipelineTasksName(doc);
+  const declaredResources = pipelineYaml.getDeclaredResources(doc);
 
   const resNames = declaredResources.map(item => item.name);
   const templateObj = JSON.parse(template);

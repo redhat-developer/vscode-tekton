@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { getTektonDocuments, TektonYamlType, getMetadataName, getPipelineTasks, DeclaredTask, getTektonPipelineRefOrSpec, addPipelineRunTasks, PipelineRunTask, RunState } from '../yaml-support/tkn-yaml';
+import { tektonYaml, pipelineYaml, pipelineRunYaml, TektonYamlType, DeclaredTask, PipelineRunTask, RunState } from '../yaml-support/tkn-yaml';
 import { YamlDocument, VirtualDocument } from '../yaml-support/yaml-locator';
 import { ContextType, humanizer } from '../tkn';
 import { kubefsUri, resourceDocProvider } from '../util/tektonresources.virtualfs';
@@ -22,7 +22,7 @@ export async function calculatePipelineGraph(document: vscode.TextDocument): Pro
     return []; // TODO: throw error there
   }
 
-  const tasks = getPipelineTasks(doc);
+  const tasks = pipelineYaml.getPipelineTasks(doc);
 
   return convertTasksToNode(tasks);
 }
@@ -37,13 +37,13 @@ export async function calculatePipelineRunGraph(document: vscode.TextDocument, p
   if (pipelineRunTaskCache.has(uri)) {
     tasks = [...pipelineRunTaskCache.get(uri)];
   } else {
-    const refOrSpec = getTektonPipelineRefOrSpec(doc);
+    const refOrSpec = pipelineRunYaml.getTektonPipelineRefOrSpec(doc);
     if (typeof refOrSpec === 'string') {
       // get ref pipeline definition
       const uri = kubefsUri(`${ContextType.PIPELINE}/${refOrSpec}`, 'yaml');
       const pipelineDoc = await resourceDocProvider.loadTektonDocument(uri);
       const pipeDoc = await getPipelineDocument(pipelineDoc, TektonYamlType.Pipeline);
-      tasks = getPipelineTasks(pipeDoc);
+      tasks = pipelineYaml.getPipelineTasks(pipeDoc);
 
     } else if (Array.isArray(refOrSpec)) {
       tasks = refOrSpec;
@@ -57,14 +57,14 @@ export async function calculatePipelineRunGraph(document: vscode.TextDocument, p
   if (pipelineRun) {
     runTasks = updatePipelineRunTasks(pipelineRun, tasks);
   } else {
-    runTasks = addPipelineRunTasks(doc, tasks);
+    runTasks = pipelineRunYaml.addPipelineRunTasks(doc, tasks);
   }
   return convertTasksToNode(runTasks);
 
 }
 
 async function getPipelineDocument(document: VirtualDocument, type: TektonYamlType): Promise<YamlDocument | undefined> {
-  const pipeDocs = getTektonDocuments(document, type);
+  const pipeDocs = tektonYaml.getTektonDocuments(document, type);
   if (pipeDocs === undefined) {
     return undefined;
   }
@@ -83,7 +83,7 @@ async function getPipelineDocument(document: VirtualDocument, type: TektonYamlTy
 
 export async function askToSelectPipeline(pipeDocs: YamlDocument[], type: TektonYamlType): Promise<YamlDocument | undefined> {
   const map = new Map<string, YamlDocument>();
-  pipeDocs.forEach(doc => map.set(getMetadataName(doc), doc));
+  pipeDocs.forEach(doc => map.set(tektonYaml.getMetadataName(doc), doc));
   const name = await vscode.window.showQuickPick(Array.from(map.keys()), { placeHolder: `Your file contains more then one ${type}, please select one`, ignoreFocusOut: true });
   return map.get(name);
 }
