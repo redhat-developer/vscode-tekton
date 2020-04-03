@@ -63,7 +63,7 @@ export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Dispo
         this.rootItems = this.getRoots(this.originalSelection);
         this.itemsToHide = this.itemsToHide.filter(item => {
           for (const selItem of selection) {
-            if(selItem.getName() === item.getName()){
+            if (selItem.getName() === item.getName()) {
               return false;
             }
           }
@@ -72,7 +72,7 @@ export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Dispo
         this.refresh();
       }
     } else {
-      this.rootItems = undefined;
+      this.rootItems = [];
       this.itemsToShow = undefined;
       this.originalSelection = [];
       this.itemsToHide = [];
