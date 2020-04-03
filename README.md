@@ -12,6 +12,12 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 ## New and Noteworthy
 
+### Tekton tree auto refresh
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/tree_refresh_0.0.7.gif" width="710" height="499" /></div>
+
+### PipelineRun preview
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_run_preview_0.0.7.gif" width="710" height="499" /></div>
+
 ### Pipeline preview
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_preview_0.0.6.gif" width="710" height="499" /></div>
 
@@ -21,8 +27,6 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 ### Provides editing support for Pipeline yaml
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/editing-demo.gif" width="710" height="499" /></div>
 
-### Provides snippets for creating Pipeline Resources
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/demo.gif" width="710" height="499" /></div>
 
 ### Setup kubernetes cluster to use with extension
 

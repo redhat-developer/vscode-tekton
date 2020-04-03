@@ -1,5 +1,20 @@
 # Change Log
 
+## 0.0.7 (April 03, 2020)
+
+This release brings to you:
+
+* [#171](https://github.com/redhat-developer/vscode-tekton/issues/171) Show selected resources as a tree
+* [#182](https://github.com/redhat-developer/vscode-tekton/issues/182) Add delete action to trigger types
+* [#174](https://github.com/redhat-developer/vscode-tekton/issues/174) Add and remove resources to the selected Tekton resource window
+* [#149](https://github.com/redhat-developer/vscode-tekton/issues/149) Add support for conditions
+* [#109](https://github.com/redhat-developer/vscode-tekton/issues/109) Refresh tekton tree automatically
+* [#164](https://github.com/redhat-developer/vscode-tekton/issues/164) Refresh tree when resource delete is successfull
+* [#175](https://github.com/redhat-developer/vscode-tekton/issues/175) Diagram preview for PipelineRuns
+* Bugfixes for minor issues:
+  * [#212](https://github.com/redhat-developer/vscode-tekton/pull/212) Fix bug in task.yaml present in rawsnippets
+  * [#229](https://github.com/redhat-developer/vscode-tekton/issues/229) Tekton Task snippet contains a syntax error for args
+
 ## 0.0.6 (March 18, 2020)
 
 This release brings to you:
