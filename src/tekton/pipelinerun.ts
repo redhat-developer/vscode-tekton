@@ -54,7 +54,7 @@ export class PipelineRun extends TektonItem {
     if (value === 'Yes') {
       return Progress.execFunctionWithProgress(`Deleting the PipelineRun '${pipelinerun.getName()}'.`, () =>
         PipelineRun.tkn.execute(Command.deletePipelineRun(pipelinerun.getName())))
-        .then(() => PipelineRun.explorer.refresh(pipelinerun ? pipelinerun.getParent().getParent() : undefined))
+        .then(() => PipelineRun.explorer.refresh())
         .then(() => `The PipelineRun '${pipelinerun.getName()}' successfully deleted.`)
         .catch((err) => Promise.reject(`Failed to delete the PipelineRun '${pipelinerun.getName()}': '${err}'.`));
     }

@@ -65,6 +65,7 @@ export enum ContextType {
   TRIGGERBINDING= 'triggerbinding',
   EVENTLISTENER= 'eventlistener',
   CONDITIONS = 'conditions',
+  PIPELINERUNNODE = 'pipelinerunnode',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -272,6 +273,9 @@ export class Command {
   static listConditions(): CliCommand {
     return newK8sCommand('get', 'conditions', '-o', 'json');
   }
+  static listPipelineRun(): CliCommand {
+    return newTknCommand('pipelinerun', 'list' ,'-o', 'json');
+  }
 }
 
 export class TektonNodeImpl implements TektonNode {
@@ -282,12 +286,12 @@ export class TektonNodeImpl implements TektonNode {
       getChildren: () => this.tkn.getPipelines(this)
     },
     pipelineresourcenode: {
-      icon: 'PLR.svg',
+      icon: 'PR.svg',
       tooltip: 'PipelineResources: {label}',
       getChildren: () => this.tkn.getPipelineResources(this)
     },
     pipelineresource: {
-      icon: 'PLR.svg',
+      icon: 'PR.svg',
       tooltip: 'PipelineResources: {label}',
       getChildren: () => []
     },
@@ -351,6 +355,11 @@ export class TektonNodeImpl implements TektonNode {
       tooltip: 'Conditions: {label}',
       getChildren: () => this.tkn.getConditions(this)
     },
+    pipelinerunnode: {
+      icon: 'PLR.svg',
+      tooltip: 'PipelineRun: {label}',
+      getChildren: () => this.tkn.getPipelineRunsList(this)
+    },
   };
 
   constructor(private parent: TektonNode,
@@ -391,7 +400,7 @@ export class TektonNodeImpl implements TektonNode {
   }
 
   get command(): vsCommand | undefined {
-    const arrName = ['Pipelines', 'Tasks', 'ClusterTasks', 'PipelineResources', 'TriggerTemplates', 'TriggerBinding', 'EventListener', 'Conditions'];
+    const arrName = ['Pipelines', 'Tasks', 'ClusterTasks', 'PipelineResources', 'TriggerTemplates', 'TriggerBinding', 'EventListener', 'Conditions', 'PipelineRun'];
     if (arrName.includes(this.name)) {
       return undefined;
     } else {
@@ -494,8 +503,8 @@ export class PipelineRun extends TektonNodeImpl {
   constructor(parent: TektonNode,
     name: string,
     tkn: Tkn,
-    item: PipelineRunData) {
-    super(parent, name, ContextType.PIPELINERUN, tkn, TreeItemCollapsibleState.Expanded, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status : '');
+    item: PipelineRunData, collapsibleState: TreeItemCollapsibleState) {
+    super(parent, name, ContextType.PIPELINERUN, tkn, collapsibleState, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status : '');
     // destructuring assignment to save only required data from
     ({
       metadata: {
@@ -577,6 +586,7 @@ export interface Tkn {
   getTriggerBinding(triggerBinding: TektonNode): Promise<TektonNode[]>;
   getEventListener(EventListener: TektonNode): Promise<TektonNode[]>;
   getConditions(conditions: TektonNode): Promise<TektonNode[]>;
+  getPipelineRunsList(pipelineRun: TektonNode): Promise<TektonNode[]>;
   clearCache?(): void;
 }
 
@@ -649,7 +659,8 @@ export class TknImpl implements Tkn {
     const triggerBindingNode = new TektonNodeImpl(TknImpl.ROOT, 'TriggerBinding', ContextType.TRIGGERBINDING, this, TreeItemCollapsibleState.Collapsed);
     const eventListenerNode = new TektonNodeImpl(TknImpl.ROOT, 'EventListener', ContextType.EVENTLISTENER, this, TreeItemCollapsibleState.Collapsed);
     const conditionsNode = new TektonNodeImpl(TknImpl.ROOT, 'Conditions', ContextType.CONDITIONS, this, TreeItemCollapsibleState.Collapsed);
-    pipelineTree.push(pipelineNode, taskNode, clustertaskNode, pipelineResourceNode, triggerTemplatesNode, triggerBindingNode, eventListenerNode, conditionsNode);
+    const pipelineRunNode = new TektonNodeImpl(TknImpl.ROOT, 'PipelineRun', ContextType.PIPELINERUNNODE, this, TreeItemCollapsibleState.Collapsed);
+    pipelineTree.push(pipelineNode, taskNode, clustertaskNode, pipelineResourceNode, triggerTemplatesNode, triggerBindingNode, eventListenerNode, conditionsNode, pipelineRunNode);
     this.cache.set(pipelineNode, await this.getPipelines(pipelineNode));
     this.cache.set(taskNode, await this.getTasks(taskNode));
     this.cache.set(clustertaskNode, await this.getClusterTasks(clustertaskNode));
@@ -658,22 +669,56 @@ export class TknImpl implements Tkn {
     this.cache.set(triggerBindingNode, await this.getTriggerBinding(eventListenerNode));
     this.cache.set(eventListenerNode, await this.getEventListener(eventListenerNode));
     this.cache.set(conditionsNode, await this.getConditions(conditionsNode));
+    this.cache.set(pipelineRunNode, await this.getPipelineRunsList(pipelineRunNode));
     return pipelineTree;
 
   }
 
-  async refreshPipelineRun(pipelineName: string, PipelineRun: TektonNode): Promise<void> {
-    const status: TektonNode = PipelineRun;
+  async refreshPipelineRun(pipelineName: string): Promise<void> {
     await kubectl.watchPipelineRun(pipelineName);
-    pipelineExplorer.refresh(status? status.getParent().getParent(): undefined);
+    pipelineExplorer.refresh();
   }
 
   async getPipelineStatus(listOfPipelineRuns: TektonNode[]): Promise<void> {
     for (const pipelineRun of listOfPipelineRuns) {
       if (pipelineRun.state === 'Unknown') {
-        this.refreshPipelineRun(pipelineRun.getName(), pipelineRun);
+        this.refreshPipelineRun(pipelineRun.getName());
       }
     }
+  }
+
+  async getPipelineRunsList(pipelineRun: TektonNode): Promise<TektonNode[]> {
+    if (!pipelineRun.visibleChildren) {
+      pipelineRun.visibleChildren = this.defaultPageSize;
+    }
+    const pipelineRunList = await this._getPipelineRunsList(pipelineRun);
+    const currentRuns = pipelineRunList.slice(0, Math.min(pipelineRun.visibleChildren, pipelineRunList.length))
+    if (pipelineRun.visibleChildren < pipelineRunList.length) {
+      let nextPage = this.defaultPageSize;
+      if (pipelineRun.visibleChildren + this.defaultPageSize > pipelineRunList.length) {
+        nextPage = pipelineRunList.length - pipelineRun.visibleChildren;
+      }
+      currentRuns.push(new MoreNode(nextPage, pipelineRunList.length, pipelineRun));
+    }
+    return currentRuns;
+  }
+
+  async _getPipelineRunsList(pipelineRun: TektonNode): Promise<TektonNode[]> | undefined {
+    const result = await this.execute(Command.listPipelineRun());
+    if (result.error) {
+      console.log(result + ' Std.err when processing pipelines');
+      return [new TektonNodeImpl(pipelineRun, getStderrString(result.error), ContextType.PIPELINERUNNODE, this, TreeItemCollapsibleState.None)];
+    }
+
+    let data: PipelineRunData[] = [];
+    try {
+      const r = JSON.parse(result.stdout);
+      data = r.items ? r.items : data;
+      // eslint-disable-next-line no-empty
+    } catch (ignore) {
+    }
+
+    return data.map((value) => new PipelineRun(pipelineRun, value.metadata.name, this, value, TreeItemCollapsibleState.None));
   }
 
   async getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> {
@@ -714,7 +759,7 @@ export class TknImpl implements Tkn {
 
     return data
       .filter((value) => value.spec.pipelineRef.name === pipeline.getName())
-      .map((value) => new PipelineRun(pipeline, value.metadata.name, this, value))
+      .map((value) => new PipelineRun(pipeline, value.metadata.name, this, value, TreeItemCollapsibleState.Expanded))
       .sort(compareTimeNewestFirst);
   }
 
