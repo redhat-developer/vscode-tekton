@@ -687,20 +687,24 @@ export class TknImpl implements Tkn {
     }
   }
 
+  async limitView(context: TektonNode, pipelineRun: TektonNode[]): Promise<TektonNode[]> {
+    const currentRuns = pipelineRun.slice(0, Math.min(context.visibleChildren, pipelineRun.length))
+    if (context.visibleChildren < pipelineRun.length) {
+      let nextPage = this.defaultPageSize;
+      if (context.visibleChildren + this.defaultPageSize > pipelineRun.length) {
+        nextPage = pipelineRun.length - context.visibleChildren;
+      }
+      currentRuns.push(new MoreNode(nextPage, pipelineRun.length, context));
+    }
+    return currentRuns;
+  }
+
   async getPipelineRunsList(pipelineRun: TektonNode): Promise<TektonNode[]> {
     if (!pipelineRun.visibleChildren) {
       pipelineRun.visibleChildren = this.defaultPageSize;
     }
     const pipelineRunList = await this._getPipelineRunsList(pipelineRun);
-    const currentRuns = pipelineRunList.slice(0, Math.min(pipelineRun.visibleChildren, pipelineRunList.length))
-    if (pipelineRun.visibleChildren < pipelineRunList.length) {
-      let nextPage = this.defaultPageSize;
-      if (pipelineRun.visibleChildren + this.defaultPageSize > pipelineRunList.length) {
-        nextPage = pipelineRunList.length - pipelineRun.visibleChildren;
-      }
-      currentRuns.push(new MoreNode(nextPage, pipelineRunList.length, pipelineRun));
-    }
-    return currentRuns;
+    return this.limitView(pipelineRun, pipelineRunList);
   }
 
   async _getPipelineRunsList(pipelineRun: TektonNode): Promise<TektonNode[]> | undefined {
@@ -731,15 +735,7 @@ export class TknImpl implements Tkn {
       this.cache.set(pipeline, pipelineRuns);
     }
     this.getPipelineStatus(pipelineRuns);
-    const currentRuns = pipelineRuns.slice(0, Math.min(pipeline.visibleChildren, pipelineRuns.length))
-    if (pipeline.visibleChildren < pipelineRuns.length) {
-      let nextPage = this.defaultPageSize;
-      if (pipeline.visibleChildren + this.defaultPageSize > pipelineRuns.length) {
-        nextPage = pipelineRuns.length - pipeline.visibleChildren;
-      }
-      currentRuns.push(new MoreNode(nextPage, pipelineRuns.length, pipeline));
-    }
-    return currentRuns;
+    return this.limitView(pipeline, pipelineRuns);
   }
 
   async _getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> | undefined {
