@@ -132,6 +132,7 @@ suite('tkn', () => {
     const triggerBindingItem = new TestItem(tkn.TknImpl.ROOT, 'triggerbinding', tkn.ContextType.TRIGGERBINDING);
     const eventListenerItem = new TestItem(tkn.TknImpl.ROOT, 'eventlistener', tkn.ContextType.EVENTLISTENER);
     const conditionItem = new TestItem(tkn.TknImpl.ROOT, 'condition', tkn.ContextType.CONDITIONS  );
+    const pipelineRunNodeItem = new TestItem(tkn.TknImpl.ROOT, 'PipelineRun', tkn.ContextType.PIPELINERUNNODE);
 
     setup(() => {
       execStub = sandbox.stub(tknCli, 'execute');
@@ -227,6 +228,73 @@ suite('tkn', () => {
       sandbox.stub(tkn.TknImpl.prototype, 'getPipelines').resolves([]);
       execStub.resolves({ stdout: '', error: null });
       const result = await tknCli.getPipelines(pipelineNodeItem);
+
+      // tslint:disable-next-line: no-unused-expression
+      expect(result).empty;
+    });
+
+    test('getPipelineRunList returns items from tkn list command', async () => {
+      const tknPipelineRun = ['pipelineRun1'];
+      execStub.resolves({
+        error: null,
+        stdout: JSON.stringify({
+          items: [
+            {
+              'kind': 'PipelineRun',
+              'apiVersion': 'tekton.dev/v1alpha1',
+              'metadata': {
+                'name': 'pipelinerun1'
+              },
+              'spec': {
+                'pipelineRef': {
+                  'name': 'pipeline1'
+                }
+              },
+              'status': {
+                'conditions': [
+                  {
+                    'status': 'True',
+                  }
+                ],
+                'startTime': '2019-07-25T12:03:00Z',
+                'taskRuns': {
+                  'pipelinerun1-test-taskrun1-a1bcd': {
+                    'pipelineTaskName': 'taskrun1',
+                    'status': {
+                      'conditions': [{
+                        'status': 'True'
+                      }],
+                      'startTime': '2019-07-25T12:03:01Z'
+                    }
+                  },
+                  'pipelinerun1-test-taskrun2-a1bcd': {
+                    'pipelineTaskName': 'taskrun2',
+                    'status': {
+                      'conditions': [{
+                        'status': 'True'
+                      }],
+
+                      'startTime': '2019-07-25T12:03:02Z'
+                    }
+                  }
+                }
+              }
+            }]
+        })
+      });
+      const result = await tknCli.getPipelineRunsList(pipelineRunNodeItem);
+
+      expect(execStub).calledOnceWith(tkn.Command.listPipelineRun());
+      expect(result.length).equals(1);
+      for (let i = 1; i < result.length; i++) {
+        expect(result[i].getName()).equals(tknPipelineRun[i]);
+      }
+    });
+
+    test('getPipelineRunList returns empty list if tkn produces no output', async () => {
+      sandbox.stub(tkn.TknImpl.prototype, 'getPipelineRunsList').resolves([]);
+      execStub.resolves({ stdout: '', error: null });
+      const result = await tknCli.getPipelineRunsList(pipelineRunNodeItem);
 
       // tslint:disable-next-line: no-unused-expression
       expect(result).empty;
