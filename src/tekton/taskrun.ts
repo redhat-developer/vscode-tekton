@@ -31,7 +31,7 @@ export class TaskRun extends TektonItem {
     if (value === 'Yes') {
       return Progress.execFunctionWithProgress(`Deleting the TaskRun '${taskrun.getName()}'.`, () =>
         TaskRun.tkn.execute(Command.deleteTaskRun(taskrun.getName())))
-        .then(() => TaskRun.explorer.refresh(taskrun ? taskrun.getParent().getParent().getParent() : undefined))
+        .then(() => TaskRun.explorer.refresh())
         .then(() => `The TaskRun '${taskrun.getName()}' successfully deleted.`)
         .catch((err) => Promise.reject(`Failed to delete the TaskRun '${taskrun.getName()}': '${err}'.`));
     }

@@ -270,6 +270,9 @@ export class Command {
   static updateYaml(fsPath: string): CliCommand {
     return newTknCommand('apply', '-f', fsPath);
   }
+  static listTaskRun(): CliCommand {
+    return newTknCommand('taskrun', 'list' ,'-o', 'json');
+  }
   static listConditions(): CliCommand {
     return newK8sCommand('get', 'conditions', '-o', 'json');
   }
@@ -359,6 +362,11 @@ export class TektonNodeImpl implements TektonNode {
       icon: 'C.svg',
       tooltip: 'Conditions: {label}',
       getChildren: () => this.tkn.getConditions(this)
+    },
+    taskrunnode: {
+      icon: 'TR.svg',
+      tooltip: 'TaskRun: {label}',
+      getChildren: () => this.tkn.getTaskRunList(this)
     },
   };
 
@@ -670,6 +678,7 @@ export class TknImpl implements Tkn {
     this.cache.set(triggerBindingNode, await this.getTriggerBinding(eventListenerNode));
     this.cache.set(eventListenerNode, await this.getEventListener(eventListenerNode));
     this.cache.set(conditionsNode, await this.getConditions(conditionsNode));
+    this.cache.set(taskRunNode, await this.getTaskRunList(taskRunNode));
     return pipelineTree;
 
   }
@@ -786,6 +795,43 @@ export class TknImpl implements Tkn {
       .sort(compareTimeNewestFirst);
   }
 
+  async limitView(context: TektonNode, tektonNode: TektonNode[]): Promise<TektonNode[]> {
+    const currentRuns = tektonNode.slice(0, Math.min(context.visibleChildren, tektonNode.length))
+    if (context.visibleChildren < tektonNode.length) {
+      let nextPage = this.defaultPageSize;
+      if (context.visibleChildren + this.defaultPageSize > tektonNode.length) {
+        nextPage = tektonNode.length - context.visibleChildren;
+      }
+      currentRuns.push(new MoreNode(nextPage, tektonNode.length, context));
+    }
+    return currentRuns;
+  }
+
+  async getTaskRunList(taskRun: TektonNode): Promise<TektonNode[]> {
+    if (!taskRun.visibleChildren) {
+      taskRun.visibleChildren = this.defaultPageSize;
+    }
+    const taskRunList = await this._getTaskRunList(taskRun);
+    return this.limitView(taskRun, taskRunList);
+  }
+
+  async _getTaskRunList(taskRun: TektonNode): Promise<TektonNode[]> | undefined {
+    const result = await this.execute(Command.listTaskRun());
+    if (result.error) {
+      return [new TektonNodeImpl(taskRun, getStderrString(result.error), ContextType.TASKRUNNODE, this, TreeItemCollapsibleState.None)];
+    }
+
+    let data: PipelineTaskRunData[] = [];
+    try {
+      const r = JSON.parse(result.stdout);
+      data = r.items ? r.items : data;
+      // eslint-disable-next-line no-empty
+    } catch (ignore) {
+    }
+
+    return data.map((value) => new TaskRun(taskRun, value.metadata.name, this, value));
+  }
+
   async getTaskRuns(pipelineRun: TektonNode): Promise<TektonNode[]> {
     if (!pipelineRun.visibleChildren) {
       pipelineRun.visibleChildren = this.defaultPageSize;
@@ -796,15 +842,7 @@ export class TknImpl implements Tkn {
       taskRuns = await this._getTaskRuns(pipelineRun);
       this.cache.set(pipelineRun, taskRuns);
     }
-    const currentRuns = taskRuns.slice(0, Math.min(pipelineRun.visibleChildren, taskRuns.length))
-    if (pipelineRun.visibleChildren < taskRuns.length) {
-      let nextPage = this.defaultPageSize;
-      if (pipelineRun.visibleChildren + this.defaultPageSize > taskRuns.length) {
-        nextPage = taskRuns.length - pipelineRun.visibleChildren;
-      }
-      currentRuns.push(new MoreNode(nextPage, taskRuns.length, pipelineRun));
-    }
-    return currentRuns;
+    return this.limitView(pipelineRun, taskRuns);
   }
 
   async _getTaskRuns(pipelinerun: TektonNode): Promise<TektonNode[]> {
