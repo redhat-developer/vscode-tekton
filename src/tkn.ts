@@ -365,7 +365,7 @@ export class TektonNodeImpl implements TektonNode {
     },
     taskrunnode: {
       icon: 'TR.svg',
-      tooltip: 'TaskRun: {label}',
+      tooltip: 'TaskRuns: {label}',
       getChildren: () => this.tkn.getTaskRunList(this)
     },
   };
