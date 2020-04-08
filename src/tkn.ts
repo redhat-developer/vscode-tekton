@@ -285,6 +285,11 @@ export class TektonNodeImpl implements TektonNode {
       tooltip: 'Pipelines: {label}',
       getChildren: () => this.tkn.getPipelines(this)
     },
+    pipelinerunnode: {
+      icon: 'PLR.svg',
+      tooltip: 'PipelineRuns: {label}',
+      getChildren: () => this.tkn.getPipelineRunsList(this)
+    },
     pipelineresourcenode: {
       icon: 'PR.svg',
       tooltip: 'PipelineResources: {label}',
@@ -354,11 +359,6 @@ export class TektonNodeImpl implements TektonNode {
       icon: 'C.svg',
       tooltip: 'Conditions: {label}',
       getChildren: () => this.tkn.getConditions(this)
-    },
-    pipelinerunnode: {
-      icon: 'PLR.svg',
-      tooltip: 'PipelineRuns: {label}',
-      getChildren: () => this.tkn.getPipelineRunsList(this)
     },
   };
 
@@ -652,6 +652,7 @@ export class TknImpl implements Tkn {
   public async _getPipelineNodes(): Promise<TektonNode[]> {
     const pipelineTree: TektonNode[] = [];
     const pipelineNode = new TektonNodeImpl(TknImpl.ROOT, 'Pipelines', ContextType.PIPELINENODE, this, TreeItemCollapsibleState.Collapsed);
+    const pipelineRunNode = new TektonNodeImpl(TknImpl.ROOT, 'PipelineRuns', ContextType.PIPELINERUNNODE, this, TreeItemCollapsibleState.Collapsed);
     const taskNode = new TektonNodeImpl(TknImpl.ROOT, 'Tasks', ContextType.TASKNODE, this, TreeItemCollapsibleState.Collapsed);
     const clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, 'ClusterTasks', ContextType.CLUSTERTASKNODE, this, TreeItemCollapsibleState.Collapsed);
     const pipelineResourceNode = new TektonNodeImpl(TknImpl.ROOT, 'PipelineResources', ContextType.PIPELINERESOURCENODE, this, TreeItemCollapsibleState.Collapsed);
@@ -659,9 +660,9 @@ export class TknImpl implements Tkn {
     const triggerBindingNode = new TektonNodeImpl(TknImpl.ROOT, 'TriggerBinding', ContextType.TRIGGERBINDING, this, TreeItemCollapsibleState.Collapsed);
     const eventListenerNode = new TektonNodeImpl(TknImpl.ROOT, 'EventListener', ContextType.EVENTLISTENER, this, TreeItemCollapsibleState.Collapsed);
     const conditionsNode = new TektonNodeImpl(TknImpl.ROOT, 'Conditions', ContextType.CONDITIONS, this, TreeItemCollapsibleState.Collapsed);
-    const pipelineRunNode = new TektonNodeImpl(TknImpl.ROOT, 'PipelineRuns', ContextType.PIPELINERUNNODE, this, TreeItemCollapsibleState.Collapsed);
-    pipelineTree.push(pipelineNode, taskNode, clustertaskNode, pipelineResourceNode, triggerTemplatesNode, triggerBindingNode, eventListenerNode, conditionsNode, pipelineRunNode);
+    pipelineTree.push(pipelineNode, pipelineRunNode, taskNode, clustertaskNode, pipelineResourceNode, triggerTemplatesNode, triggerBindingNode, eventListenerNode, conditionsNode);
     this.cache.set(pipelineNode, await this.getPipelines(pipelineNode));
+    this.cache.set(pipelineRunNode, await this.getPipelineRunsList(pipelineRunNode));
     this.cache.set(taskNode, await this.getTasks(taskNode));
     this.cache.set(clustertaskNode, await this.getClusterTasks(clustertaskNode));
     this.cache.set(pipelineResourceNode, await this.getPipelineResources(pipelineResourceNode));
@@ -669,7 +670,6 @@ export class TknImpl implements Tkn {
     this.cache.set(triggerBindingNode, await this.getTriggerBinding(eventListenerNode));
     this.cache.set(eventListenerNode, await this.getEventListener(eventListenerNode));
     this.cache.set(conditionsNode, await this.getConditions(conditionsNode));
-    this.cache.set(pipelineRunNode, await this.getPipelineRunsList(pipelineRunNode));
     return pipelineTree;
 
   }
