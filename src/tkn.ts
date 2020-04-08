@@ -55,6 +55,7 @@ export enum ContextType {
   PIPELINE = 'pipeline',
   PIPELINERUN = 'pipelinerun',
   CLUSTERTASK = 'clustertask',
+  TASKRUNNODE = 'taskrunnode',
   PIPELINENODE = 'pipelinenode',
   PIPELINERESOURCENODE = 'pipelineresourcenode',
   PIPELINERESOURCE = 'pipelineresource',
@@ -595,6 +596,7 @@ export interface Tkn {
   getEventListener(EventListener: TektonNode): Promise<TektonNode[]>;
   getConditions(conditions: TektonNode): Promise<TektonNode[]>;
   getPipelineRunsList(pipelineRun: TektonNode): Promise<TektonNode[]>;
+  getTaskRunList(taskRun: TektonNode): Promise<TektonNode[]>;
   clearCache?(): void;
 }
 
@@ -663,22 +665,23 @@ export class TknImpl implements Tkn {
     const pipelineRunNode = new TektonNodeImpl(TknImpl.ROOT, 'PipelineRuns', ContextType.PIPELINERUNNODE, this, TreeItemCollapsibleState.Collapsed);
     const taskNode = new TektonNodeImpl(TknImpl.ROOT, 'Tasks', ContextType.TASKNODE, this, TreeItemCollapsibleState.Collapsed);
     const clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, 'ClusterTasks', ContextType.CLUSTERTASKNODE, this, TreeItemCollapsibleState.Collapsed);
+    const taskRunNode = new TektonNodeImpl(TknImpl.ROOT, 'TaskRuns', ContextType.TASKRUNNODE, this, TreeItemCollapsibleState.Collapsed);
     const pipelineResourceNode = new TektonNodeImpl(TknImpl.ROOT, 'PipelineResources', ContextType.PIPELINERESOURCENODE, this, TreeItemCollapsibleState.Collapsed);
     const triggerTemplatesNode = new TektonNodeImpl(TknImpl.ROOT, 'TriggerTemplates', ContextType.TRIGGERTEMPLATES, this, TreeItemCollapsibleState.Collapsed);
     const triggerBindingNode = new TektonNodeImpl(TknImpl.ROOT, 'TriggerBinding', ContextType.TRIGGERBINDING, this, TreeItemCollapsibleState.Collapsed);
     const eventListenerNode = new TektonNodeImpl(TknImpl.ROOT, 'EventListener', ContextType.EVENTLISTENER, this, TreeItemCollapsibleState.Collapsed);
     const conditionsNode = new TektonNodeImpl(TknImpl.ROOT, 'Conditions', ContextType.CONDITIONS, this, TreeItemCollapsibleState.Collapsed);
-    pipelineTree.push(pipelineNode, pipelineRunNode, taskNode, clustertaskNode, pipelineResourceNode, triggerTemplatesNode, triggerBindingNode, eventListenerNode, conditionsNode);
+    pipelineTree.push(pipelineNode, pipelineRunNode, taskNode, clustertaskNode, taskRunNode,pipelineResourceNode, triggerTemplatesNode, triggerBindingNode, eventListenerNode, conditionsNode);
     this.cache.set(pipelineNode, await this.getPipelines(pipelineNode));
     this.cache.set(pipelineRunNode, await this.getPipelineRunsList(pipelineRunNode));
     this.cache.set(taskNode, await this.getTasks(taskNode));
     this.cache.set(clustertaskNode, await this.getClusterTasks(clustertaskNode));
+    this.cache.set(taskRunNode, await this.getTaskRunList(taskRunNode));
     this.cache.set(pipelineResourceNode, await this.getPipelineResources(pipelineResourceNode));
     this.cache.set(triggerTemplatesNode, await this.getTriggerTemplates(triggerTemplatesNode));
     this.cache.set(triggerBindingNode, await this.getTriggerBinding(eventListenerNode));
     this.cache.set(eventListenerNode, await this.getEventListener(eventListenerNode));
     this.cache.set(conditionsNode, await this.getConditions(conditionsNode));
-    this.cache.set(taskRunNode, await this.getTaskRunList(taskRunNode));
     return pipelineTree;
 
   }
@@ -695,15 +698,14 @@ export class TknImpl implements Tkn {
       }
     }
   }
-
-  async limitView(context: TektonNode, pipelineRun: TektonNode[]): Promise<TektonNode[]> {
-    const currentRuns = pipelineRun.slice(0, Math.min(context.visibleChildren, pipelineRun.length))
-    if (context.visibleChildren < pipelineRun.length) {
+  async limitView(context: TektonNode, tektonNode: TektonNode[]): Promise<TektonNode[]> {
+    const currentRuns = tektonNode.slice(0, Math.min(context.visibleChildren, tektonNode.length))
+    if (context.visibleChildren < tektonNode.length) {
       let nextPage = this.defaultPageSize;
-      if (context.visibleChildren + this.defaultPageSize > pipelineRun.length) {
-        nextPage = pipelineRun.length - context.visibleChildren;
+      if (context.visibleChildren + this.defaultPageSize > tektonNode.length) {
+        nextPage = tektonNode.length - context.visibleChildren;
       }
-      currentRuns.push(new MoreNode(nextPage, pipelineRun.length, context));
+      currentRuns.push(new MoreNode(nextPage, tektonNode.length, context));
     }
     return currentRuns;
   }
@@ -793,18 +795,6 @@ export class TknImpl implements Tkn {
       .filter((value) => value.spec.taskRef.name === task.getName())
       .map((value) => new TaskRun(task, value.metadata.name, this, value))
       .sort(compareTimeNewestFirst);
-  }
-
-  async limitView(context: TektonNode, tektonNode: TektonNode[]): Promise<TektonNode[]> {
-    const currentRuns = tektonNode.slice(0, Math.min(context.visibleChildren, tektonNode.length))
-    if (context.visibleChildren < tektonNode.length) {
-      let nextPage = this.defaultPageSize;
-      if (context.visibleChildren + this.defaultPageSize > tektonNode.length) {
-        nextPage = tektonNode.length - context.visibleChildren;
-      }
-      currentRuns.push(new MoreNode(nextPage, tektonNode.length, context));
-    }
-    return currentRuns;
   }
 
   async getTaskRunList(taskRun: TektonNode): Promise<TektonNode[]> {

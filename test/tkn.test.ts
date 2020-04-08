@@ -133,6 +133,7 @@ suite('tkn', () => {
     const eventListenerItem = new TestItem(tkn.TknImpl.ROOT, 'eventlistener', tkn.ContextType.EVENTLISTENER);
     const conditionItem = new TestItem(tkn.TknImpl.ROOT, 'condition', tkn.ContextType.CONDITIONS  );
     const pipelineRunNodeItem = new TestItem(tkn.TknImpl.ROOT, 'PipelineRun', tkn.ContextType.PIPELINERUNNODE);
+    const taskRunNodeItem = new TestItem(tkn.TknImpl.ROOT, 'TaskRun', tkn.ContextType.TASKRUNNODE);
 
     setup(() => {
       execStub = sandbox.stub(tknCli, 'execute');
