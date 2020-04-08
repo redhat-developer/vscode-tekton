@@ -249,4 +249,18 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
     const content = kubefsUri('pipeline/petclinic-deploy-pipeline', 'yaml');
     expect(content).deep.equals(Uri.parse(`tekton://loadtektonresource/pipeline-petclinic-deploy-pipeline.yaml?value=pipeline/petclinic-deploy-pipeline&_=${nonce.Date().getTime()}`));
   });
+
+  test('loadTektonDocument() should request same output type as file extension', async () => {
+    const api: k8s.API<k8s.KubectlV1> = {
+      available: true,
+      api: {
+        invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0 }),
+        portForward: sandbox.stub()
+      }
+    };
+    v1Stub.value(api);
+    const content = kubefsUri('pipeline/petclinic-deploy-pipeline', 'json');
+    await trvfsp.loadTektonDocument(content);
+    expect(api.api.invokeCommand).calledOnceWith('-o json get pipeline/petclinic-deploy-pipeline');
+  });
 });

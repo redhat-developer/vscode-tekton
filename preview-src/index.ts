@@ -78,7 +78,7 @@ function render(data: NodeOrEdge[]): void {
       padding: 20, // fit padding
       animate: false,
       nodeSep: 50,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any, // to make TSC happy, there are no typings for cytoscape-dagre plugin
     headless: false,
   });
@@ -134,7 +134,7 @@ function getStyle(style: CyTheme): cytoscape.Stylesheet[] {
     {
       selector: 'node',
       style: {
-        'background-color': 'green',
+        'background-color': 'grey',
         'background-fit': 'contain',
         'label': 'data(label)',
         'font-size': style.fontSize,
@@ -157,6 +157,18 @@ function getStyle(style: CyTheme): cytoscape.Stylesheet[] {
       selector: 'node[type = "ClusterTask"]',
       style: {
         'shape': 'round-rectangle',
+      },
+    },
+    {
+      selector: 'node[type = "Condition"]',
+      style: {
+        'shape': 'diamond',
+        'width': 20,
+        'height': 20,
+        'text-wrap': 'wrap',
+        'text-valign': 'center',
+        'text-halign': 'left',
+        'color': style.labelColor,
       },
     },
     {

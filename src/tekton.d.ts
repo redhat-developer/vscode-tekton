@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
+import { V1ContainerState as ContainerState } from '@kubernetes/client-node';
+
 //Contains set JSON representation of tkn JSON objects
 
 export interface TknMetadata {
@@ -93,10 +95,10 @@ export type PipelineRunData = {
       name: string;
     };
   };
-  status: {
+  status?: {
     completionTime: string;
     conditions: PipelineRunConditions[];
-    taskRuns: TaskRuns;
+    taskRuns?: TaskRuns;
   };
 };
 
@@ -104,9 +106,25 @@ export interface TaskRuns {
   [key: string]: TaskRun;
 }
 
+export interface ConditionCheckStatus {
+  startTime?: string;
+  completionTime?: string;
+  check?: ContainerState;
+}
+
+export interface PipelineRunConditionCheckStatus {
+  conditionName: string;
+  status?: ConditionCheckStatus;
+}
+
+export interface PipelineRunConditionCheckStatusMap {
+  [key: string]: PipelineRunConditionCheckStatus;
+}
+
 export interface TaskRun {
   pipelineTaskName: string;
   status: TaskRunStatus;
+  conditionChecks?: PipelineRunConditionCheckStatusMap;
 }
 
 export interface TaskRunStatus {
@@ -123,10 +141,7 @@ export interface PipelineRunConditions {
   type: string;
 }
 
-export interface TaskRunSteps {
+export interface TaskRunSteps extends ContainerState {
   name: string;
   container: string;
-  //TODO: ass all fields
-  terminated: {};
-  waiting: {};
 }
