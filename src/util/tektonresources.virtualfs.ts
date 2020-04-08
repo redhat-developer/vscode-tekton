@@ -155,11 +155,26 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
   }
 
   async loadTektonDocument(uri: Uri): Promise<VirtualDocument> {
-    const text = await this.loadResource(uri);
+    const query = querystring.parse(uri.query);
+
+    const value = query.value as string;
+    const ext = path.extname(uri.fsPath);
+    const format = ext ? ext.substring(1) : TektonItem.getOutputFormat();
+
+    const sr = await this.execLoadResource(value, format);
+
+    if (!sr || sr['error'] || sr['stderr']) {
+      let message = sr ? sr['error'] : 'Unable to run command line tool';
+      if (sr['stderr']) {
+        message = sr['stderr'];
+      }
+      throw message;
+    }
+
     return {
       uri,
       version: 1,
-      getText: () => text
+      getText: () => sr.stdout
     };
   }
 }

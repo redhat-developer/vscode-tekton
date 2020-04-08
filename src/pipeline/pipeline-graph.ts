@@ -9,7 +9,7 @@ import { YamlDocument, VirtualDocument } from '../yaml-support/yaml-locator';
 import { ContextType, humanizer } from '../tkn';
 import { kubefsUri, resourceDocProvider } from '../util/tektonresources.virtualfs';
 import { NodeOrEdge, NodeData, EdgeData } from '../../preview-src/model';
-import { PipelineRunData, TaskRuns, TaskRun, TaskRunStatus } from '../tekton';
+import { PipelineRunData, TaskRuns, TaskRun, TaskRunStatus, PipelineRunConditionCheckStatus } from '../tekton';
 
 const pipelineRunTaskCache = new Map<string, DeclaredTask[]>();
 
@@ -57,7 +57,11 @@ export async function calculatePipelineRunGraph(document: vscode.TextDocument, p
   if (pipelineRun) {
     runTasks = updatePipelineRunTasks(pipelineRun, tasks);
   } else {
-    runTasks = pipelineRunYaml.addPipelineRunTasks(doc, tasks);
+    const pipelineRunName = tektonYaml.getMetadataName(doc);
+    const uri = kubefsUri(`${ContextType.PIPELINERUN}/${pipelineRunName}`, 'json');
+    const pipelineDoc = await resourceDocProvider.loadTektonDocument(uri);
+    const json = JSON.parse(pipelineDoc.getText());
+    runTasks = updatePipelineRunTasks(json, tasks);
   }
   return convertTasksToNode(runTasks);
 
@@ -70,7 +74,7 @@ async function getPipelineDocument(document: VirtualDocument, type: TektonYamlTy
   }
   let doc: YamlDocument;
   if (pipeDocs.length > 1) {
-    doc = await askToSelectPipeline(pipeDocs, TektonYamlType.Pipeline);
+    doc = await askToSelectPipeline(pipeDocs, type);
     if (doc === undefined) {
       return undefined;
     }
@@ -97,7 +101,7 @@ function convertTasksToNode(tasks: PipelineRunTask[]): NodeOrEdge[] {
     result.push({ data: { id: task.name, label: getLabel(task), type: task.kind, taskRef: task.taskRef, state: task.state } as NodeData });
     for (const after of task.runAfter) {
       if (tasksMap.has(after)) {
-        result.push({ data: { source: after, target: task.name, id: `${after}-${task.name}`, state: tasksMap.get(after).state, label: getEdgeLabel(task) } as EdgeData });
+        result.push({ data: { source: after, target: task.name, id: `${after}-${task.name}`, state: tasksMap.get(after).state } as EdgeData });
       }
     }
   }
@@ -105,15 +109,12 @@ function convertTasksToNode(tasks: PipelineRunTask[]): NodeOrEdge[] {
   return result;
 }
 
-function getEdgeLabel(task: PipelineRunTask): string | undefined {
-  if (task.conditions) {
-    return task.conditions.join('\n');
-  }
-  return undefined;
-}
 
 function getLabel(task: PipelineRunTask): string {
   let label = task.name;
+  if (task.kind === 'Condition') {
+    return label;
+  }
   if (task.stepsCount && task.finishedSteps) {
     label += ` (${task.finishedSteps}/${task.stepsCount})`;
   }
@@ -128,15 +129,21 @@ function getLabel(task: PipelineRunTask): string {
 }
 
 function updatePipelineRunTasks(pipelineRun: PipelineRunData, tasks: DeclaredTask[]): PipelineRunTask[] {
-  const taskRuns = pipelineRun.status.taskRuns;
+  const taskRuns = pipelineRun.status?.taskRuns;
   for (const task of tasks) {
     const runTask = task as PipelineRunTask;
-    const taskRun = findTaskInTaskRun(task.name, taskRuns);
+
+    let taskRun;
+    if (task.kind === 'Condition') {
+      taskRun = findConditionInTaskRun(task.name, taskRuns);
+    } else {
+      taskRun = findTaskInTaskRun(task.name, taskRuns);
+    }
     if (taskRun) {
       runTask.completionTime = taskRun.status?.completionTime;
       runTask.startTime = taskRun.status?.startTime;
       runTask.state = getPipelineRunTaskState(taskRun.status);
-      const steps = taskRun.status.steps;
+      const steps = taskRun.status?.steps;
       if (steps) {
         runTask.stepsCount = steps.length;
         let finishedSteps = 0;
@@ -166,8 +173,25 @@ function findTaskInTaskRun(name: string, taskRuns: TaskRuns): TaskRun | undefine
   }
 }
 
+function findConditionInTaskRun(name: string, taskRuns: TaskRuns): PipelineRunConditionCheckStatus | undefined {
+  for (const taskRun in taskRuns) {
+    const element = taskRuns[taskRun];
+    if (element.conditionChecks) {
+      for (const conditionRunName in element.conditionChecks) {
+        const condition = element.conditionChecks[conditionRunName];
+        if (condition.conditionName === name) {
+          return condition;
+        }
+      }
+    }
+  }
+}
+
 function getPipelineRunTaskState(status: TaskRunStatus): RunState {
   let result: RunState = 'Unknown';
+  if (!status) {
+    return result; // default state
+  }
   const startTime = status.startTime;
   if (startTime) {
     result = 'Started';

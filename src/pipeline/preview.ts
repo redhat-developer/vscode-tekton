@@ -110,14 +110,21 @@ export class PipelinePreview extends Disposable {
     const html = this.getHmlContent();
     this.setContent(html);
 
-    const graph = await this.graphProvider(this.document);
-    // this.editor.webview.postMessage({ type: 'images', data: this.getImagesUri() })
-    this.postMessage({ type: 'showData', data: graph });
+    try {
+      const graph = await this.graphProvider(this.document);
+      this.postMessage({ type: 'showData', data: graph });
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   private async updatePipelineRun(run: PipelineRunData): Promise<void> {
-    const graph = await this.graphProvider(this.document, run);
-    this.postMessage({ type: 'showData', data: graph });
+    try {
+      const graph = await this.graphProvider(this.document, run);
+      this.postMessage({ type: 'showData', data: graph });
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   private postMessage(msg: {}): void {
@@ -160,7 +167,7 @@ export class PipelinePreview extends Disposable {
                         justify-content: center; 
                         align-items: center; 
                         padding: 0;
-                        overflow: scroll;
+                        overflow: auto;
                     }
                 </style>
 			</head>

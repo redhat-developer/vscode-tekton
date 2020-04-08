@@ -6,14 +6,17 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
-import { tektonYaml, pipelineYaml, DeclaredTask}from '../../src/yaml-support/tkn-yaml';
-import { calculatePipelineGraph } from '../../src/pipeline/pipeline-graph';
+import { tektonYaml, pipelineYaml, DeclaredTask, pipelineRunYaml } from '../../src/yaml-support/tkn-yaml';
+import * as graph from '../../src/pipeline/pipeline-graph';
+import { resourceDocProvider, kubefsUri } from '../../src/util/tektonresources.virtualfs';
+import { VirtualDocument } from '../../src/yaml-support/yaml-locator';
+import { PipelineRunData } from '../../src/tekton';
 
 const expect = chai.expect;
 chai.use(sinonChai);
 
 
-suite('pipeline graph', () => {
+suite('Tekton graph', () => {
   const sandbox = sinon.createSandbox();
   let tknDocuments: sinon.SinonStub;
   let metadataName: sinon.SinonStub;
@@ -31,29 +34,111 @@ suite('pipeline graph', () => {
     sandbox.restore();
   });
 
-  test('Should return empty array if no pipeline yaml', async () => {
-    tknDocuments.returns(undefined);
-    const result = await calculatePipelineGraph({} as vscode.TextDocument);
-    expect(result).eql([]);
+  suite('Pipeline graph', () => {
+    test('Should return empty array if no pipeline yaml', async () => {
+      tknDocuments.returns(undefined);
+      const result = await graph.calculatePipelineGraph({} as vscode.TextDocument);
+      expect(result).eql([]);
+    });
+
+    test('Should ask to select pipeline if more then one detected', async () => {
+      tknDocuments.returns([{}, {}]);
+      metadataName.onFirstCall().returns('Foo');
+      metadataName.onSecondCall().returns('Bar');
+      showQuickPick.resolves('Foo');
+      getPipelineTasks.returns([]);
+      await graph.calculatePipelineGraph({} as vscode.TextDocument);
+
+      expect(showQuickPick.calledOnceWith(['Foo', 'Bar'], { placeHolder: 'Your file contains more then one Pipeline, please select one', ignoreFocusOut: true }));
+      expect(getPipelineTasks.calledOnce).true;
+    });
+
+    test('Should convert tasks to node and edge', async () => {
+      tknDocuments.returns([{}]);
+      getPipelineTasks.returns([{ name: 'Foo', kind: 'Task', taskRef: 'FooTask', runAfter: [] } as DeclaredTask,
+      { name: 'Bar', kind: 'Task', taskRef: 'BarTask', runAfter: ['Foo'] } as DeclaredTask]);
+      const result = await graph.calculatePipelineGraph({} as vscode.TextDocument);
+      expect(result.length).equal(3);
+    });
   });
 
-  test('Should ask to select pipeline if more then one detected', async () => {
-    tknDocuments.returns([{}, {}]);
-    metadataName.onFirstCall().returns('Foo');
-    metadataName.onSecondCall().returns('Bar');
-    showQuickPick.resolves('Foo');
-    getPipelineTasks.returns([]);
-    await calculatePipelineGraph({} as vscode.TextDocument);
+  suite('PipelineRun graph', () => {
+    let getTektonPipelineRefOrSpec: sinon.SinonStub;
+    let loadTektonDocument: sinon.SinonStub;
 
-    expect(showQuickPick.calledOnceWith(['Foo', 'Bar'], { placeHolder: 'Your file contains more then one Pipeline, please select one', ignoreFocusOut: true }));
-    expect(getPipelineTasks.calledOnce).true;
+    setup(() => {
+      getTektonPipelineRefOrSpec = sandbox.stub(pipelineRunYaml, 'getTektonPipelineRefOrSpec');
+      loadTektonDocument = sandbox.stub(resourceDocProvider, 'loadTektonDocument');
+      sandbox.useFakeTimers({
+        now: new Date(),
+        shouldAdvanceTime: true,
+        toFake: ['Date']
+      });
+    });
+
+    test('should ask to chose pipeline run', async () => {
+      getTektonPipelineRefOrSpec.returns([]);
+      metadataName.returns('Foo').returns('Bar');
+      loadTektonDocument.resolves(
+        {
+          getText: () => '{foo: "json"}'
+        } as VirtualDocument);
+
+      tknDocuments.returns([{ nodes: [{}] }, { nodes: [{}, {}] }]);
+      showQuickPick.resolves('Foo');
+
+      const document = {
+        uri: vscode.Uri.parse('file://some/pipelinerun.yaml')
+      } as vscode.TextDocument
+      await graph.calculatePipelineRunGraph(document);
+
+      expect(showQuickPick).calledOnce;
+    });
+
+    test('should load pipeline definition', async () => {
+      getTektonPipelineRefOrSpec.returns('FooPipeline');
+      metadataName.returns('Foo');
+      loadTektonDocument.onFirstCall().resolves(
+        {
+          getText: () => 'Some: yaml'
+        } as VirtualDocument);
+
+      loadTektonDocument.onSecondCall().resolves(
+        {
+          getText: () => '{}'
+        } as VirtualDocument);
+
+      tknDocuments.returns([{ nodes: [{}] }]);
+      getPipelineTasks.returns([]);
+
+      const document = {
+        uri: vscode.Uri.parse('file://some/pipelinerun.yaml'),
+
+      } as vscode.TextDocument
+      await graph.calculatePipelineRunGraph(document);
+
+      expect(loadTektonDocument).calledWith(kubefsUri('pipeline/FooPipeline', 'yaml'));
+    });
+
+    test('uses provided pipeline run', async () => {
+      getTektonPipelineRefOrSpec.returns('FooPipeline');
+      metadataName.returns('Foo');
+      loadTektonDocument.onFirstCall().resolves({
+        getText: () => 'Some: yaml'
+      } as VirtualDocument);
+
+      tknDocuments.returns([{ nodes: [{}] }]);
+      getPipelineTasks.returns([]);
+
+      const document = {
+        uri: vscode.Uri.parse('file://some/pipelinerun.yaml'),
+
+      } as vscode.TextDocument
+      const result = await graph.calculatePipelineRunGraph(document, {} as PipelineRunData);
+
+      expect(result).eql([]);
+    });
   });
 
-  test('Should convert tasks to node and edge', async () => {
-    tknDocuments.returns([{}]);
-    getPipelineTasks.returns([{ name: 'Foo', kind: 'Task', taskRef: 'FooTask', runAfter: [] } as DeclaredTask,
-    { name: 'Bar', kind: 'Task', taskRef: 'BarTask', runAfter: ['Foo'] } as DeclaredTask]);
-    const result = await calculatePipelineGraph({} as vscode.TextDocument);
-    expect(result.length).equal(3);
-  });
+
 });
