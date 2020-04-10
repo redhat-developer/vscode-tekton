@@ -85,7 +85,7 @@ export function run(): Promise<void> {
               } else {
                 resolve();
               }
-            }, 1000);
+            }, 5000);
           });
   
         } catch (err) {
