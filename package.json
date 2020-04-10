@@ -140,8 +140,8 @@
 				"command": "tekton.edit",
 				"title": "Open In Editor",
 				"icon": {
-					"light": "images/light/edit.svg",
-					"dark": "images/dark/edit.svg"
+					"light": "images/light/go-to-file.svg",
+					"dark": "images/dark/go-to-file.svg"
 				}
 			},
       {
