@@ -80,8 +80,10 @@ export class Pipeline extends TektonItem {
   }
 
   static async startPipelineObject(context: PipelineTrigger[]): Promise<StartPipelineObject> {
-    const resources: QuickPickItem[] = context[0].resources.map<QuickPickItem>(label => ({ label: label.name }));
+    const resources: QuickPickItem[] = context[0].resources ? context[0].resources.map<QuickPickItem>(label => ({ label: label.name })) : undefined;
     const params: QuickPickItem[] | undefined = context[0].params ? context[0].params.map<QuickPickItem>(label => ({ label: label.name })) : undefined;
+
+    if (!resources) throw Error('No Resources found to start Pipeline');
 
     const title = 'Start Pipeline';
 
