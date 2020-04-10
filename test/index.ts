@@ -36,6 +36,11 @@ if (process.env.BUILD_ID && process.env.BUILD_NUMBER) {
   config.reporter = 'mocha-jenkins-reporter';
 }
 
+let testFinishTimeout = 1000;
+if (process.env.TRAVIS && process.platform === 'darwin') {
+  testFinishTimeout = 7000; // for macOS on travis we need bigger timeout
+}
+
 const mocha = new Mocha(config);
 
 function loadCoverageRunner(testsRoot: string): CoverageRunner | undefined {
@@ -64,14 +69,14 @@ export function run(): Promise<void> {
           if (b === 'extension.test.js') {
             return 1;
           }
-  
+
           return a.localeCompare(b);
         });
-  
+
         files.forEach((f): Mocha => {
           return mocha.addFile(paths.join(testsRoot, f))
         });
-  
+
         try {
           let testFailures;
           mocha.run(failures => {
@@ -79,22 +84,22 @@ export function run(): Promise<void> {
           }).on('end', () => {
             coverageRunner && coverageRunner.reportCoverage();
             // delay reporting that test are finished, to let main process handle all output
-            setTimeout(()=> {
+            setTimeout(() => {
               if (testFailures > 0) {
                 reject(new Error(`${testFailures} tests failed.`));
               } else {
                 resolve();
               }
-            }, 5000);
+            }, testFinishTimeout);
           });
-  
+
         } catch (err) {
           console.error(err);
           reject(err);
         }
-  
+
       }
     });
   });
-  
+
 }
