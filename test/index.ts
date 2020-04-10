@@ -78,6 +78,7 @@ export function run(): Promise<void> {
             testFailures = failures;
           }).on('end', () => {
             coverageRunner && coverageRunner.reportCoverage();
+            // delay reporting that test are finished, to let main process handle all output
             setTimeout(()=> {
               if (testFailures > 0) {
                 reject(new Error(`${testFailures} tests failed.`));
