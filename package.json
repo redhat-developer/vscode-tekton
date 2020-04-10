@@ -717,102 +717,12 @@
         },
         {
 					"command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|triggertemplates|triggerbinding|eventlistener|conditions|task)$/",
 					"group": "inline"
         },
         {
-					"command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelinerun",
-					"group": "inline"
-        },
-        {
-					"command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == clustertask",
-					"group": "inline"
-        },
-        {
-					"command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelineresource",
-					"group": "inline"
-        },
-        {
-					"command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == taskrun",
-					"group": "inline"
-        },
-        {
-					"command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == triggertemplates",
-					"group": "inline"
-        },
-        {
-					"command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == triggerbinding",
-					"group": "inline"
-        },
-        {
-					"command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == eventlistener",
-					"group": "inline"
-        },
-        {
-					"command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == conditions",
-					"group": "inline"
-        },
-        {
-					"command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == task",
-					"group": "inline"
-				},
-        {
           "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
-          "group": "c0@1"
-        },
-        {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelinerun",
-          "group": "c0@1"
-        },
-        {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == clustertask",
-          "group": "c0@1"
-        },
-        {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelineresource",
-          "group": "c0@1"
-        },
-        {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == taskrun",
-          "group": "c0@1"
-        },
-        {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == task",
-          "group": "c0@1"
-        },
-        {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == triggertemplates",
-          "group": "c0@1"
-        },
-        {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == triggerbinding",
-          "group": "c0@1"
-        },
-        {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == eventlistener",
-          "group": "c0@1"
-        },
-        {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == conditions",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|task|triggertemplates|triggerbinding|eventlistener|conditions)$/",
           "group": "c0@1"
         }
       ],
