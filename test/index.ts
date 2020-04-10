@@ -36,6 +36,11 @@ if (process.env.BUILD_ID && process.env.BUILD_NUMBER) {
   config.reporter = 'mocha-jenkins-reporter';
 }
 
+let testFinishTimeout = 1000;
+if (process.env.TRAVIS && process.platform === 'darwin') {
+  testFinishTimeout = 7000; // for macOS on travis we need bigger timeout
+}
+
 const mocha = new Mocha(config);
 
 function loadCoverageRunner(testsRoot: string): CoverageRunner | undefined {
@@ -48,46 +53,53 @@ function loadCoverageRunner(testsRoot: string): CoverageRunner | undefined {
   return coverageRunner;
 }
 
-export function run(testsRoots: string, cb: (error: any, failures?: number) => void): void {
-
-  const testsRoot = paths.resolve(__dirname);
-  const coverageRunner = loadCoverageRunner(testsRoot);
-  glob('**/**.test.js', { cwd: testsRoot }, (error, files): any => {
-    if (error) {
-      cb(error);
-    } else {
-      // always run extension.test.js first
-      files = files.sort((a, b) => {
-        if (a === 'extension.test.js') {
-          return -1;
-        }
-        if (b === 'extension.test.js') {
-          return 1;
-        }
-
-        return a.localeCompare(b);
-      });
-
-      files.forEach((f): Mocha => {
-        return mocha.addFile(paths.join(testsRoot, f))
-      });
-
-      try {
-        mocha.run(failures => {
-          if (failures > 0) {
-            cb(new Error(`${failures} tests failed.`));
-          } else {
-            cb(null, failures);
+export function run(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const testsRoot = paths.resolve(__dirname);
+    const coverageRunner = loadCoverageRunner(testsRoot);
+    glob('**/**.test.js', { cwd: testsRoot }, (error, files): any => {
+      if (error) {
+        reject(error);
+      } else {
+        // always run extension.test.js first
+        files = files.sort((a, b) => {
+          if (a === 'extension.test.js') {
+            return -1;
           }
-        }).on('end', () => {
-          coverageRunner && coverageRunner.reportCoverage();
+          if (b === 'extension.test.js') {
+            return 1;
+          }
+
+          return a.localeCompare(b);
         });
 
-      } catch (err) {
-        console.error(err);
-        cb(err);
-      }
+        files.forEach((f): Mocha => {
+          return mocha.addFile(paths.join(testsRoot, f))
+        });
 
-    }
+        try {
+          let testFailures;
+          mocha.run(failures => {
+            testFailures = failures;
+          }).on('end', () => {
+            coverageRunner && coverageRunner.reportCoverage();
+            // delay reporting that test are finished, to let main process handle all output
+            setTimeout(() => {
+              if (testFailures > 0) {
+                reject(new Error(`${testFailures} tests failed.`));
+              } else {
+                resolve();
+              }
+            }, testFinishTimeout);
+          });
+
+        } catch (err) {
+          console.error(err);
+          reject(err);
+        }
+
+      }
+    });
   });
+
 }

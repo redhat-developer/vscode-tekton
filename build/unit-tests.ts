@@ -20,7 +20,7 @@ async function main(): Promise<void> {
     // Download VS Code, unzip it and run the integration test
     console.log(extensionDevelopmentPath, extensionTestsPath);
     await runTests({
-      extensionDevelopmentPath, extensionTestsPath, version: '1.42.1',
+      extensionDevelopmentPath, extensionTestsPath,
       launchArgs: [
         // This disables all extensions except the one being testing
         // '--disable-extensions',
