@@ -137,6 +137,14 @@
     ],
     "commands": [
       {
+				"command": "tekton.edit",
+				"title": "Open In Editor",
+				"icon": {
+					"light": "images/light/go-to-file.svg",
+					"dark": "images/dark/go-to-file.svg"
+				}
+			},
+      {
         "command": "tekton.pipeline.preview",
         "title": "Open Pipeline preview to the Side",
         "category": "Tekton",
@@ -708,33 +716,13 @@
           "group": "c2"
         },
         {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
-          "group": "c0@1"
+					"command": "tekton.edit",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|triggertemplates|triggerbinding|eventlistener|conditions|task)$/",
+					"group": "inline"
         },
         {
           "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelinerun",
-          "group": "c0@1"
-        },
-        {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == clustertask",
-          "group": "c0@1"
-        },
-        {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelineresource",
-          "group": "c0@1"
-        },
-        {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == taskrun",
-          "group": "c0@1"
-        },
-        {
-          "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == task",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|task|triggertemplates|triggerbinding|eventlistener|conditions)$/",
           "group": "c0@1"
         }
       ],
