@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: ${1:name}
+spec:
+  serviceAccountName: ${2:serviceAccount}
+  triggers:
+    - name: ${3:triggerName}
+      bindings:
+        - name: ${4:bindingName}
+      template:
+        name: ${5:templateName}

@@ -3,8 +3,8 @@ params:
   value: ${2:value}
 resources:
   inputs:
-  - name: ${3:source}
-    resource: ${4:app-source}
+    - name: ${3:source}
+      resource: ${4:app-source}
   outputs:
-  - name: ${5:builtImage}
-    resource: ${6:app-image}
+    - name: ${5:builtImage}
+      resource: ${6:app-image}

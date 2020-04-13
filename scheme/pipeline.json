@@ -12,7 +12,8 @@
         "apiVersion": {
             "type": "string",
             "enum": [
-                "tekton.dev/v1alpha1"
+                "tekton.dev/v1alpha1",
+                "tekton.dev/v1beta1"
             ],
             "default": "tekton.dev/v1alpha1"
         },

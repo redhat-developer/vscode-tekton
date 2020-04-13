@@ -31,6 +31,17 @@ There are only a few guidelines that we need contributors to follow and we are o
 
 4. Once the extension is installed and reloaded, you should see a Tekton Icon on the View Container, as shown in the image below.
 
-![View Tekton Pipelines](https://github.com/redhat-developer/vscode-tekton/blob/master/images/view-container-icon.png)
+![View Tekton Pipelines](https://github.com/redhat-developer/vscode-tekton/blob/master/images/tekton.svg)
 
 > If you have any questions or run into any problems, please post an [issue](issues) - we'll be very happy to help.
+
+## Build the extension snippets
+
+All templates are placed in yaml files in [rawsnippets](./rawsnippets).
+If you want to add/change snippets body, you need to edit proper `yaml` file in [rawsnippets](./rawsnippets).
+Label and description for each snippet are placesd in [build-snippets.ts](build/build-snippets.ts) script.
+To generate new snippet json, run:
+```bash
+$ npm run snippets-build
+```
+npm script from extension root.

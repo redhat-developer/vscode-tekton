@@ -6,6 +6,6 @@ spec:
   pipelineRef:
     name: ${2:foo}
   resources:
-  - name: ${3:source}
-    resourceRef:
-      name: ${4:skaffold-source}
+    - name: ${3:source}
+      resourceRef:
+        name: ${4:skaffold-source}

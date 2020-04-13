@@ -6,17 +6,16 @@ spec:
   inputs:
     $LINE_COMMENT params:
     resources:
-    - name: ${2:workspace}
-      type: ${3:git}
-      targetPath: ${4:target-workspace}
+      - name: ${2:workspace}
+        type: ${3:git}
+        targetPath: ${4:target-workspace}
   outputs:
     resources:
-    - name: ${5}
-      type: ${6}
+      - name: ${5}
+        type: ${6}
   steps:
     - name: ${5:build-sources}
       image: ${6:ubuntu}
       command: 
-      - ${7:/bin/bash}
-      args: 
-      - ${8:['-c', 'echo hello world']}
+        - ${7:/bin/bash}
+      args: ${8:['-c', 'echo hello world']}

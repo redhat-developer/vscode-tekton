@@ -63,8 +63,8 @@ export enum ContextType {
   CLUSTERTASKNODE = 'clustertasknode',
   TKN_DOWN = 'tknDown',
   TRIGGERTEMPLATES = 'triggertemplates',
-  TRIGGERBINDING= 'triggerbinding',
-  EVENTLISTENER= 'eventlistener',
+  TRIGGERBINDING = 'triggerbinding',
+  EVENTLISTENER = 'eventlistener',
   CONDITIONS = 'conditions',
   PIPELINERUNNODE = 'pipelinerunnode',
 }
@@ -272,13 +272,13 @@ export class Command {
     return newTknCommand('apply', '-f', fsPath);
   }
   static listTaskRun(): CliCommand {
-    return newTknCommand('taskrun', 'list' ,'-o', 'json');
+    return newTknCommand('taskrun', 'list', '-o', 'json');
   }
   static listConditions(): CliCommand {
     return newK8sCommand('get', 'conditions', '-o', 'json');
   }
   static listPipelineRun(): CliCommand {
-    return newTknCommand('pipelinerun', 'list' ,'-o', 'json');
+    return newTknCommand('pipelinerun', 'list', '-o', 'json');
   }
 }
 
@@ -482,7 +482,7 @@ export class TaskRun extends TektonNodeImpl {
   }
 
   get label(): string {
-    return this.shortName;
+    return this.shortName ? this.shortName : this.name;
   }
 
   get description(): string {
@@ -671,7 +671,7 @@ export class TknImpl implements Tkn {
     const triggerBindingNode = new TektonNodeImpl(TknImpl.ROOT, 'TriggerBinding', ContextType.TRIGGERBINDING, this, TreeItemCollapsibleState.Collapsed);
     const eventListenerNode = new TektonNodeImpl(TknImpl.ROOT, 'EventListener', ContextType.EVENTLISTENER, this, TreeItemCollapsibleState.Collapsed);
     const conditionsNode = new TektonNodeImpl(TknImpl.ROOT, 'Conditions', ContextType.CONDITIONS, this, TreeItemCollapsibleState.Collapsed);
-    pipelineTree.push(pipelineNode, pipelineRunNode, taskNode, clustertaskNode, taskRunNode,pipelineResourceNode, triggerTemplatesNode, triggerBindingNode, eventListenerNode, conditionsNode);
+    pipelineTree.push(pipelineNode, pipelineRunNode, taskNode, clustertaskNode, taskRunNode, pipelineResourceNode, triggerTemplatesNode, triggerBindingNode, eventListenerNode, conditionsNode);
     this.cache.set(pipelineNode, await this.getPipelines(pipelineNode));
     this.cache.set(pipelineRunNode, await this.getPipelineRunsList(pipelineRunNode));
     this.cache.set(taskNode, await this.getTasks(taskNode));

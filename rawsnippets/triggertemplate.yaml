@@ -1,0 +1,7 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: ${1:name}
+spec:
+  resourcetemplates:
+    - ${0}

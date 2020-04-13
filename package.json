@@ -125,7 +125,7 @@
     "snippets": [
       {
         "language": "yaml",
-        "path": "./snippets/tektoncd.json"
+        "path": "./snippets/tekton.json"
       }
     ],
     "keybindings": [
@@ -764,7 +764,8 @@
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",
     "build-preview": "webpack-cli --mode production",
-    "preview-watch": "webpack-cli -w --mode development"
+    "preview-watch": "webpack-cli -w --mode development",
+    "snippets-build": "node ./out/build/build-snippets.js"
   },
   "devDependencies": {
     "@types/byline": "^4.2.31",
