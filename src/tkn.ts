@@ -668,6 +668,11 @@ export class TknImpl implements Tkn {
       const tknDownMsg = 'Please install the OpenShift Pipelines Operator.';
       return [new TektonNodeImpl(null, tknDownMsg, ContextType.TKN_DOWN, TknImpl.instance, TreeItemCollapsibleState.None)];
     }
+    const serverCheck = RegExp('Unable to connect to the server');
+    if (serverCheck.test(getStderrString(result.error))) {
+      const loginError = 'Unable to connect to OpenShift cluster, is it down?';
+      return [new TektonNodeImpl(null, loginError, ContextType.TKN_DOWN, TknImpl.instance, TreeItemCollapsibleState.None)];
+    }
     if (!this.cache.has(TknImpl.ROOT)) {
       this.cache.set(TknImpl.ROOT, await this._getPipelineNodes());
     }
@@ -713,6 +718,7 @@ export class TknImpl implements Tkn {
       }
     }
   }
+
   async limitView(context: TektonNode, tektonNode: TektonNode[]): Promise<TektonNode[]> {
     const currentRuns = tektonNode.slice(0, Math.min(context.visibleChildren, tektonNode.length))
     if (context.visibleChildren < tektonNode.length) {
