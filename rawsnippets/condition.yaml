@@ -1,8 +1,8 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Condition
 metadata:
   name: ${1:foo}
 spec:
   check:
-      image: ${2:alpine}
-      script: ${3:echo hello}
+    image: ${2:alpine}
+    script: ${3:echo hello}
