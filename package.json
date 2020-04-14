@@ -137,13 +137,23 @@
     ],
     "commands": [
       {
-				"command": "tekton.edit",
-				"title": "Open In Editor",
-				"icon": {
-					"light": "images/light/go-to-file.svg",
-					"dark": "images/dark/go-to-file.svg"
-				}
-			},
+        "command": "k8s.tekton.run.logs",
+        "title": "Show Logs",
+        "category": "Kubernetes"
+      },
+      {
+        "command": "k8s.tekton.run.followLogs",
+        "title": "Follow Logs",
+        "category": "Kubernetes"
+      },
+      {
+        "command": "tekton.edit",
+        "title": "Open In Editor",
+        "icon": {
+          "light": "images/light/go-to-file.svg",
+          "dark": "images/dark/go-to-file.svg"
+        }
+      },
       {
         "command": "tekton.pipeline.preview",
         "title": "Open Pipeline preview to the Side",
@@ -556,6 +566,16 @@
       ],
       "view/item/context": [
         {
+          "command": "k8s.tekton.run.logs",
+          "when": "viewItem =~ /vsKubernetes\\.resource\\.(pipelinerun|taskrun)/i",
+          "group": "c1@1"
+        },
+        {
+          "command": "k8s.tekton.run.followLogs",
+          "when": "viewItem =~ /vsKubernetes\\.resource\\.(pipelinerun|taskrun)/i",
+          "group": "c1@2"
+        },
+        {
           "command": "tekton.pipeline.restart",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
           "group": "c1@1"
@@ -716,9 +736,9 @@
           "group": "c2"
         },
         {
-					"command": "tekton.edit",
+          "command": "tekton.edit",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|triggertemplates|triggerbinding|eventlistener|conditions|task)$/",
-					"group": "inline"
+          "group": "inline"
         },
         {
           "command": "tekton.openInEditor",

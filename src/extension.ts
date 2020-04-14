@@ -25,6 +25,7 @@ import { showPipelinePreview, registerPipelinePreviewContext } from './pipeline/
 import { TriggerTemplate } from './tekton/triggertemplate';
 import { TriggerBinding } from './tekton/triggerbinding';
 import { EventListener } from './tekton/eventlistener';
+import { k8sCommands } from './kubernetes';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -81,6 +82,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.custom.explorer.exitZenMode', exitZenMode),
     vscode.commands.registerCommand('tekton.custom.explorer.refresh', refreshCustomTree),
     vscode.commands.registerCommand('tekton.custom.explorer.removeItem', removeItemFromCustomTree),
+    vscode.commands.registerCommand('k8s.tekton.run.logs', k8sCommands.showLogs),
+    vscode.commands.registerCommand('k8s.tekton.run.followLogs', k8sCommands.followLogs),
     pipelineExplorer,
     // Temporarily loaded resource providers
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME, resourceDocProvider, { /* TODO: case sensitive? */ }),
