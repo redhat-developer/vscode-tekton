@@ -1,12 +1,12 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: ${1:app-deploy}
-  spec:
-    resources:
+spec:
+  resources:
     - name: ${2:pipeline-resource-type}
       type: ${3:pipeline-type}
-    tasks:
+  tasks:
     - name: ${4:taskName}
       taskRef:
         name: ${5:build-app}

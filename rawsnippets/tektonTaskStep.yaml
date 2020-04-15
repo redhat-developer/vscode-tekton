@@ -2,6 +2,6 @@
   image: ${3:fedora,quay.io/buildah/stable}
   workingDir: \"/workspace/source/${4:\\${inputs.params.contextDir}}\"
   command:
-  - ${5:echo2}
+    - ${5:echo}
   args:
-  - 'bye world'
+    - 'bye world'

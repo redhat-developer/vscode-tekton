@@ -1,0 +1,5 @@
+conditions:
+  - conditionRef: ${1:conditionName}
+    params:
+      - name: ${2:path}
+        value: ${3:$(params.path)}

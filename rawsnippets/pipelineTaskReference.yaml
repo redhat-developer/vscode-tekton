@@ -2,6 +2,6 @@
   taskRef:
     name: ${2:build-and-push}
   runAfter:
-  - ${3:another-task-name}
-  $LINE_COMMENT params:
-  $LINE_COMMENT resources:
+    - ${3:another-task-name}
+    $LINE_COMMENT params:
+    $LINE_COMMENT resources:

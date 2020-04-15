@@ -1,16 +1,17 @@
-inputs:
-  resources:
-  - name: ${1:source}
-    type: ${2|git,image,pullRequest,cluster,storage|}
-  params:
-  - name: ${3:foo}
-    description: ${4:Parameter description}
-    default: ${5:default value}
-    type: ${6:string}
-outputs:
-  resources:
-  - name: ${7:builtImage}
-    outputImageDir: ${8:path/to/image}
-    targetPath: ""
-    type: image
+params:
+  - name: ${1:foo}
+    description: ${2:Parameter description}
+    default: ${3:default value}
+    type: ${4:string}
+resources:
+  inputs:
+    resources:
+      - name: ${5:source}
+        type: ${6|git,image,pullRequest,cluster,storage|}
+  outputs:
+    resources:
+      - name: ${7:builtImage}
+        outputImageDir: ${8:path/to/image}
+        targetPath: ""
+        type: image
 $LINE_COMMENT steps:

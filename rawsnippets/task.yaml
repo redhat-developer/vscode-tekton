@@ -1,22 +1,22 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ${1}
 spec:
-  inputs:
-    $LINE_COMMENT params:
-    resources:
-    - name: ${2:workspace}
-      type: ${3:git}
-      targetPath: ${4:target-workspace}
-  outputs:
-    resources:
-    - name: ${5}
-      type: ${6}
+  $LINE_COMMENT params:
+  resources:
+    inputs:
+      resources:
+        - name: ${2:workspace}
+          type: ${3:git}
+          targetPath: ${4:target-workspace}
+    outputs:
+      resources:
+        - name: ${5}
+          type: ${6}
   steps:
     - name: ${5:build-sources}
       image: ${6:ubuntu}
-      command: 
-      - ${7:/bin/bash}
-      args: 
-      - ${8:['-c', 'echo hello world']}
+      command:
+        - ${7:/bin/bash}
+      args: ${8:['-c', 'echo hello world']}

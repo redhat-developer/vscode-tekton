@@ -1,0 +1,8 @@
+apiVersion: tekton.dev/v1beta1
+kind: ClusterTriggerBinding
+metadata:
+  name: ${1:name}
+spec:
+  params:
+    - name: ${2:param_name}
+      value: ${3:value}

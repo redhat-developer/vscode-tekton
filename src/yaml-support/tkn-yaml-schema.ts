@@ -59,6 +59,12 @@ export async function registerYamlSchemaSupport(context: vscode.ExtensionContext
         result.splice(index, 1);
       }
     }
+    if (result.includes('kubernetes://schema/tekton.dev/v1beta1@pipeline')) {
+      const index = result.indexOf('kubernetes://schema/tekton.dev/v1beta1@pipeline');
+      if (index > -1) {
+        result.splice(index, 1);
+      }
+    }
 
     return result;
   }
