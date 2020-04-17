@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TreeDataProvider, TreeView, Event, EventEmitter, TreeItem, ProviderResult, Disposable, window, extensions, commands, Uri, version } from 'vscode';
-import { TektonNode, MoreNode, tknInstance } from '../tkn';
+import { TektonNode, MoreNode, tkn } from '../tkn';
 import { WatchUtil, FileContentChangeNotifier } from '../util/watch';
 import { Platform } from '../util/platform';
 import * as path from 'path';
@@ -34,7 +34,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     if (element) {
       return element.getChildren();
     } else {
-      return tknInstance.getPipelineNodes();
+      return tkn.getPipelineNodes();
     }
 
   }
@@ -44,9 +44,6 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
   }
 
   refresh(target?: TektonNode): void {
-    if (!target) {
-      tknInstance.clearCache();
-    }
     this.onDidChangeTreeDataEmitter.fire(target);
   }
 

@@ -21,7 +21,7 @@ import { Pipeline } from '../src/tekton/pipeline';
 import { Task } from '../src/tekton/task';
 import { ClusterTask } from '../src/tekton/clustertask';
 import packagejson = require('../package.json');
-import { TknImpl, TektonNodeImpl, ContextType } from '../src/tkn';
+import { TknImpl, tkn, TektonNodeImpl, ContextType } from '../src/tkn';
 import { PipelineExplorer } from '../src/pipeline/pipelineExplorer';
 import { TektonItem } from '../src/tekton/tektonitem';
 
@@ -30,14 +30,14 @@ chai.use(sinonChai);
 
 suite('Tekton Pipeline Extension', () => {
   const sandbox = sinon.createSandbox();
-  const pipelineNode = new TektonNodeImpl(TknImpl.ROOT, 'Pipelines', ContextType.PIPELINENODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
-  const taskNode = new TektonNodeImpl(TknImpl.ROOT, 'Tasks', ContextType.TASKNODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
-  const clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, 'Clustertasks', ContextType.CLUSTERTASKNODE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
-  const pipelineItem = new TektonNodeImpl(pipelineNode, 'test-pipeline', ContextType.PIPELINE, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed);
-  const pipelinerunItem = new TektonNodeImpl(pipelineItem, 'test-pipeline-1', ContextType.PIPELINERUN, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed, '2019-07-25T12:00:00Z', 'True');
-  const taskrunItem = new TektonNodeImpl(pipelinerunItem, 'test-taskrun-1', ContextType.TASKRUN, TknImpl.Instance, vscode.TreeItemCollapsibleState.Collapsed, '2019-07-25T12:03:00Z', 'True');
-  const taskItem = new TektonNodeImpl(taskNode, 'test-tasks', ContextType.TASK, TknImpl.Instance, vscode.TreeItemCollapsibleState.None);
-  const clustertaskItem = new TektonNodeImpl(clustertaskNode, 'test-Clustertask', ContextType.CLUSTERTASK, TknImpl.Instance, vscode.TreeItemCollapsibleState.None);
+  const pipelineNode = new TektonNodeImpl(TknImpl.ROOT, 'Pipelines', ContextType.PIPELINENODE, tkn, vscode.TreeItemCollapsibleState.Collapsed);
+  const taskNode = new TektonNodeImpl(TknImpl.ROOT, 'Tasks', ContextType.TASKNODE, tkn, vscode.TreeItemCollapsibleState.Collapsed);
+  const clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, 'Clustertasks', ContextType.CLUSTERTASKNODE, tkn, vscode.TreeItemCollapsibleState.Collapsed);
+  const pipelineItem = new TektonNodeImpl(pipelineNode, 'test-pipeline', ContextType.PIPELINE, tkn, vscode.TreeItemCollapsibleState.Collapsed);
+  const pipelinerunItem = new TektonNodeImpl(pipelineItem, 'test-pipeline-1', ContextType.PIPELINERUN, tkn, vscode.TreeItemCollapsibleState.Collapsed, '2019-07-25T12:00:00Z', 'True');
+  const taskrunItem = new TektonNodeImpl(pipelinerunItem, 'test-taskrun-1', ContextType.TASKRUN, tkn, vscode.TreeItemCollapsibleState.Collapsed, '2019-07-25T12:03:00Z', 'True');
+  const taskItem = new TektonNodeImpl(taskNode, 'test-tasks', ContextType.TASK, tkn, vscode.TreeItemCollapsibleState.None);
+  const clustertaskItem = new TektonNodeImpl(clustertaskNode, 'test-Clustertask', ContextType.CLUSTERTASK, tkn, vscode.TreeItemCollapsibleState.None);
 
   setup(async () => {
 
@@ -54,12 +54,11 @@ suite('Tekton Pipeline Extension', () => {
     sandbox.stub(TknImpl.prototype, '_getTasks').resolves([taskItem]);
     sandbox.stub(TknImpl.prototype, '_getClusterTasks').resolves([clustertaskItem]);
     sandbox.stub(TknImpl.prototype, '_getPipelineRuns').resolves([pipelinerunItem]);
-    sandbox.stub(TknImpl.prototype, '_getTaskRuns').resolves([taskrunItem]);
+    sandbox.stub(TknImpl.prototype, '_getTaskRunsForPipelineRun').resolves([taskrunItem]);
   });
 
   teardown(() => {
     sandbox.restore();
-    TknImpl.Instance.clearCache();
   });
 
   test('Extension should be present', () => {
@@ -96,19 +95,19 @@ suite('Tekton Pipeline Extension', () => {
 
   test('should load pipeline, task, clustertasks and pipelineresources', async () => {
     sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: '', stdout: '' });
-    const pipelinenodes = await TknImpl.Instance.getPipelineNodes();
+    const pipelinenodes = await tkn.getPipelineNodes();
     expect(pipelinenodes.length).equals(10);
   });
 
   test('should load pipelineruns from pipeline folder', async () => {
     sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '' });
-    const pipelinerun = await TknImpl.Instance.getPipelineRuns(pipelineItem);
+    const pipelinerun = await tkn.getPipelineRuns(pipelineItem);
     expect(pipelinerun.length).is.equals(1);
   });
 
   test('should load taskruns from pipelinerun folder', async () => {
     sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '' });
-    const taskrun = await TknImpl.Instance.getTaskRuns(pipelinerunItem);
+    const taskrun = await tkn.getTaskRunsForPipelineRun(pipelinerunItem);
     expect(taskrun.length).is.equals(1);
   });
 

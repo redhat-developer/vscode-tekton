@@ -14,7 +14,7 @@ chai.use(sinonChai);
 suite('Task provider', () => {
   const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
-  const tknCli: tkn.Tkn = tkn.TknImpl.Instance;
+  const tknCli: tkn.Tkn = tkn.tkn;
 
   setup(() => {
     execStub = sandbox.stub(tknCli, 'execute');

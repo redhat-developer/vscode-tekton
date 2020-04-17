@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Tkn, TknImpl, TektonNode } from '../tkn';
+import { Tkn, tkn as tknImpl, TektonNode } from '../tkn';
 import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { workspace, window } from 'vscode';
 import { kubefsUri } from '../util/tektonresources.virtualfs';
@@ -18,7 +18,7 @@ const errorMessage = {
 };
 
 export abstract class TektonItem {
-  protected static readonly tkn: Tkn = TknImpl.Instance;
+  protected static readonly tkn: Tkn = tknImpl;
   protected static readonly explorer: PipelineExplorer = pipelineExplorer;
 
   static validateUniqueName(data: Array<TektonNode>, value: string): string {
@@ -51,7 +51,7 @@ export abstract class TektonItem {
   }
 
   static async getTaskRunNames(taskrun: TektonNode): Promise<TektonNode[]> {
-    const taskrunList: Array<TektonNode> = await TektonItem.tkn.getTaskRuns(taskrun);
+    const taskrunList: Array<TektonNode> = await TektonItem.tkn.getTaskRunsForPipelineRun(taskrun);
     if (taskrunList.length === 0) { throw Error(errorMessage.TaskRun); }
     return taskrunList;
   }

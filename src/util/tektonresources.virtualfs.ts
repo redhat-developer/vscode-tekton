@@ -12,7 +12,7 @@ import * as path from 'path';
 import * as os from 'os'
 import * as querystring from 'querystring';
 import { FileSystemProvider, Uri, EventEmitter, FileChangeEvent, Event, Disposable, FileStat, FileType, window, workspace, commands } from 'vscode';
-import { Cli, CliImpl, CliExitData } from '../cli';
+import { cli, CliExitData } from '../cli';
 import { Command } from '../tkn';
 import * as k8s from 'vscode-kubernetes-tools-api';
 import { TektonItem } from '../tekton/tektonitem';
@@ -31,7 +31,6 @@ export function kubefsUri(value: string, outputFormat: string): Uri {
 export class TektonResourceVirtualFileSystemProvider implements FileSystemProvider {
 
   private readonly onDidChangeFileEmitter: EventEmitter<FileChangeEvent[]> = new EventEmitter<FileChangeEvent[]>();
-  private static cli: Cli = CliImpl.getInstance();
 
   onDidChangeFile: Event<FileChangeEvent[]> = this.onDidChangeFileEmitter.event;
 
@@ -143,7 +142,7 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
     if (kubectl.available) {
       return await kubectl.api.invokeCommand(`apply -f ${fsPath}`);
     }
-    return await TektonResourceVirtualFileSystemProvider.cli.execute(Command.updateYaml(fsPath));
+    return await cli.execute(Command.updateYaml(fsPath));
   }
 
   delete(): void | Thenable<void> {

@@ -8,7 +8,7 @@
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
-import { createCliCommand, cliCommandToString, CliImpl } from '../src/cli';
+import { createCliCommand, cliCommandToString, cli } from '../src/cli';
 import * as childProcess from 'child_process';
 import * as events from 'events';
 import * as stream from 'stream';
@@ -20,7 +20,6 @@ suite('Cli', () => {
   const sandbox = sinon.createSandbox();
   let spawnStub: sinon.SinonStub;
   let procMock: childProcess.ChildProcess;
-  const cli = CliImpl.getInstance();
   const command = createCliCommand('command');
   const options: childProcess.SpawnOptions = { cwd: 'cwd', shell: true, windowsHide: true };
   const stdout = 'Standard output';

@@ -2,6 +2,7 @@
  *  Copyright (c) Red Hat, Inc. All rights reserved.
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
+'use strict';
 
 import * as vscode from 'vscode';
 import { SpawnOptions, spawn } from 'child_process';
@@ -26,7 +27,7 @@ export interface Cli {
 }
 
 export interface TknChannel {
-  print(text: string): void;
+  print(text: string, json?: boolean): void;
   show(): void;
 }
 
@@ -71,16 +72,38 @@ export function cliCommandToString(command: CliCommand): string {
   return `${command.cliCommand} ${command.cliArguments.join(' ')}`;
 }
 
-export class CliImpl implements Cli {
-  private static instance: CliImpl;
-  private tknChannel: TknChannel = new TknChannelImpl();
+class TknChannelImpl implements TknChannel {
+  private readonly channel: vscode.OutputChannel = vscode.window.createOutputChannel('Tekton Pipelines');
 
-  static getInstance(): CliImpl {
-    if (!CliImpl.instance) {
-      CliImpl.instance = new CliImpl();
-    }
-    return CliImpl.instance;
+  show(): void {
+    this.channel.show();
   }
+
+  prettifyJson(str: string): string {
+    let jsonData: string;
+    try {
+      jsonData = JSON.stringify(JSON.parse(str), null, 2);
+    } catch (ignore) {
+      return str;
+    }
+    return jsonData;
+  }
+
+  print(text: string, json = false): void {
+    const textData = json ? this.prettifyJson(text) : text;
+    this.channel.append(textData);
+    if (textData.charAt(textData.length - 1) !== '\n') {
+      this.channel.append('\n');
+    }
+    if (vscode.workspace.getConfiguration('vs-tekton').get<boolean>('showChannelOnOutput')) {
+      this.channel.show();
+    }
+  }
+}
+
+export class CliImpl implements Cli {
+
+  private tknChannel: TknChannel = new TknChannelImpl();
 
   async showOutputChannel(): Promise<void> {
     this.tknChannel.show();
@@ -136,32 +159,5 @@ export class CliImpl implements Cli {
   }
 }
 
+export const cli = new CliImpl();
 
-class TknChannelImpl implements TknChannel {
-  private readonly channel: vscode.OutputChannel = vscode.window.createOutputChannel('Tekton Pipelines');
-
-  show(): void {
-    this.channel.show();
-  }
-
-  prettifyJson(str: string): string {
-    let jsonData: string;
-    try {
-      jsonData = JSON.stringify(JSON.parse(str), null, 2);
-    } catch (ignore) {
-      return str;
-    }
-    return jsonData;
-  }
-
-  print(text: string): void {
-    const textData = this.prettifyJson(text);
-    this.channel.append(textData);
-    if (textData.charAt(textData.length - 1) !== '\n') {
-      this.channel.append('\n');
-    }
-    if (vscode.workspace.getConfiguration('vs-tekton').get<boolean>('showChannelOnOutput')) {
-      this.channel.show();
-    }
-  }
-}

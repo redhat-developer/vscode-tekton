@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { newK8sCommand } from './tkn';
-import { CliImpl, CliCommand } from './cli';
+import { CliCommand, cli} from './cli';
 import { PipelineRunData } from './tekton';
 
 export const KubectlCommands = {
@@ -24,7 +24,7 @@ export interface WatchControl {
 export class Kubectl {
   watchPipelineRun(name: string, callback?: PipelineRunCallback): Promise<void> {
     return new Promise((resolve, reject) => {
-      const watch = CliImpl.getInstance().executeWatchJSON(KubectlCommands.watchPipelineRuns(name));
+      const watch = cli.executeWatchJSON(KubectlCommands.watchPipelineRuns(name));
       watch.on('object', obj => {
         if (callback) {
           callback(obj);
@@ -50,7 +50,7 @@ export class Kubectl {
   }
 
   watchPipelineRunWithControl(name: string, callback?: PipelineRunCallback): WatchControl {
-    const watch = CliImpl.getInstance().executeWatchJSON(KubectlCommands.watchPipelineRuns(name));
+    const watch = cli.executeWatchJSON(KubectlCommands.watchPipelineRuns(name));
     const finish = new Promise<void>((resolve, reject) => {
       watch.on('object', obj => {
         if (callback) {

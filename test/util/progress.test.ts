@@ -10,7 +10,7 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { Progress } from '../../src/util/progress';
 import * as vscode from 'vscode';
-import { TknImpl } from '../../src/tkn';
+import { TknImpl, tkn } from '../../src/tkn';
 import { createCliCommand } from '../../src/cli';
 
 const expect = chai.expect;
@@ -35,7 +35,7 @@ suite('Progress Utility', () => {
 
   test('calls cli commands in sequence', async () => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '', stderr: '' });
-    await Progress.execWithProgress(options, steps, TknImpl.Instance);
+    await Progress.execWithProgress(options, steps, tkn);
 
     // tslint:disable-next-line: no-unused-expression
     expect(execStub).calledTwice;
@@ -46,7 +46,7 @@ suite('Progress Utility', () => {
   test('calls progress with given options', async () => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '', stderr: '' });
     const spy = sandbox.spy(vscode.window, 'withProgress');
-    await Progress.execWithProgress(options, steps, TknImpl.Instance);
+    await Progress.execWithProgress(options, steps, tkn);
 
     expect(spy).calledOnceWith(options, sinon.match.func);
   });
@@ -56,7 +56,7 @@ suite('Progress Utility', () => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').rejects(error);
     let e;
     try {
-      await Progress.execWithProgress(options, steps, TknImpl.Instance);
+      await Progress.execWithProgress(options, steps, tkn);
     } catch (err) {
       e = err;
       expect(err.message).equals(errorMessage);
