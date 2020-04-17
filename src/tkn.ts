@@ -690,7 +690,7 @@ export class TknImpl implements Tkn {
       pipelineExplorer.refresh(pipeline);
     });
 
-    pipelineExplorer.refresh(pipeline.getParent());
+    pipelineExplorer.refresh(); // refresh all tree
   }
 
   async getPipelineStatus(listOfPipelineRuns: TektonNode[]): Promise<void> {
@@ -736,7 +736,7 @@ export class TknImpl implements Tkn {
     } catch (ignore) {
     }
 
-    return data.map((value) => new PipelineRun(pipelineRun, value.metadata.name, this, value, TreeItemCollapsibleState.None));
+    return data.map((value) => new PipelineRun(pipelineRun, value.metadata.name, this, value, TreeItemCollapsibleState.None)).sort(compareTimeNewestFirst);
   }
 
   async getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> {
@@ -813,7 +813,7 @@ export class TknImpl implements Tkn {
     } catch (ignore) {
     }
 
-    return data.map((value) => new TaskRun(taskRun, value.metadata.name, this, value));
+    return data.map((value) => new TaskRun(taskRun, value.metadata.name, this, value)).sort(compareTimeNewestFirst);
   }
 
   async getTaskRunsForPipelineRun(pipelineRun: TektonNode): Promise<TektonNode[]> {
