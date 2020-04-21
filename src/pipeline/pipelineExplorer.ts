@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { TreeDataProvider, TreeView, Event, EventEmitter, TreeItem, ProviderResult, Disposable, window, extensions, commands, Uri, version } from 'vscode';
+import { TreeDataProvider, TreeView, Event, EventEmitter, TreeItem, ProviderResult, Disposable, window, extensions, commands, Uri, version, TreeItemCollapsibleState } from 'vscode';
 import { TektonNode, MoreNode, tkn } from '../tkn';
 import { WatchUtil, FileContentChangeNotifier } from '../util/watch';
 import { Platform } from '../util/platform';
@@ -21,6 +21,13 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     this.fsw = WatchUtil.watchFileForContextChange(kubeConfigFolder, 'config');
     this.fsw.emitter.on('file-changed', this.refresh.bind(this));
     this.treeView = window.createTreeView('tektonPipelineExplorerView', { treeDataProvider: this, canSelectMany: true });
+    this.treeView.onDidExpandElement(e => {
+      e.element.collapsibleState = TreeItemCollapsibleState.Expanded;
+    });
+
+    this.treeView.onDidCollapseElement(e => {
+      e.element.collapsibleState = TreeItemCollapsibleState.Collapsed;
+    });
   }
 
   getTreeItem(element: TektonNode): TreeItem | Thenable<TreeItem> {

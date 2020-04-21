@@ -47,6 +47,7 @@ export interface TektonNode {
   getChildren(): ProviderResult<TektonNode[]>;
   getParent(): TektonNode | undefined;
   getName(): string;
+  collapsibleState?: TreeItemCollapsibleState;
 }
 
 export enum ContextType {
@@ -625,7 +626,7 @@ function getStderrString(data: string | Error): string {
     return data;
   }
 }
-
+const nodeToRefresh = ['TaskRuns', 'ClusterTasks', 'Tasks'];
 export class TknImpl implements Tkn {
 
   public static ROOT: TektonNode = new TektonNodeImpl(undefined, 'root', undefined, undefined);
@@ -667,12 +668,19 @@ export class TknImpl implements Tkn {
     const eventListenerNode = new TektonNodeImpl(TknImpl.ROOT, 'EventListener', ContextType.EVENTLISTENERNODE, this, TreeItemCollapsibleState.Collapsed);
     const conditionsNode = new TektonNodeImpl(TknImpl.ROOT, 'Conditions', ContextType.CONDITIONSNODE, this, TreeItemCollapsibleState.Collapsed);
     pipelineTree.push(pipelineNode, pipelineRunNode, taskNode, clustertaskNode, taskRunNode, pipelineResourceNode, triggerTemplatesNode, triggerBindingNode, eventListenerNode, conditionsNode);
+    TknImpl.ROOT.getChildren = () => pipelineTree; // TODO: fix me
     return pipelineTree;
   }
 
   async refreshPipelineRun(pipeline: TektonNode): Promise<void> {
     await kubectl.watchPipelineRun(pipeline.getName(), () => {
       pipelineExplorer.refresh(pipeline);
+      for (const item of TknImpl.ROOT.getChildren() as TektonNodeImpl[]) {
+        if (nodeToRefresh.includes(item.getName()) && item.collapsibleState === TreeItemCollapsibleState.Expanded) {
+          pipelineExplorer.refresh(item);
+        }
+      }
+
     });
 
     pipelineExplorer.refresh(); // refresh all tree
