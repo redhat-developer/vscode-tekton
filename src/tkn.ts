@@ -464,7 +464,7 @@ type PipelineTaskRunData = {
       'tekton.dev/pipelineRun': string;
     };
   };
-  status: {
+  status?: {
     completionTime: string;
     conditions: [{
       status: string;
@@ -487,18 +487,9 @@ export class TaskRun extends TektonNodeImpl {
     tkn: Tkn,
     item: PipelineTaskRunData) {
     super(parent, name, ContextType.TASKRUN, tkn, TreeItemCollapsibleState.None, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status : '');
-    // destructuring assignment to save only required data from 
-    ({
-      metadata: {
-        creationTimestamp: this.started,
-        labels: {
-          'tekton.dev/pipelineTask': this.shortName
-        }
-      }, status: {
-        completionTime: this.finished
-      }
-    } = item);
-
+    this.started = item.metadata.creationTimestamp;
+    this.shortName = item.metadata.labels['tekton.dev/pipelineTask'];
+    this.finished = item.status?.completionTime;
   }
 
   get label(): string {
@@ -534,15 +525,9 @@ export class PipelineRun extends TektonNodeImpl {
     tkn: Tkn,
     item: PipelineRunData, collapsibleState: TreeItemCollapsibleState) {
     super(parent, name, ContextType.PIPELINERUN, tkn, collapsibleState, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status : '');
-    // destructuring assignment to save only required data from
-    ({
-      metadata: {
-        creationTimestamp: this.started,
-        generateName: this.generateName
-      }, status: {
-        completionTime: this.finished
-      }
-    } = item);
+    this.started = item.metadata.creationTimestamp;
+    this.generateName = item.metadata.generateName;
+    this.finished = item.status?.completionTime;
   }
 
   get label(): string {
