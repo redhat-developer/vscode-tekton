@@ -19,7 +19,7 @@ import { TektonNode } from './tkn';
 import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
 import { setCommandContext, CommandContext, enterZenMode, exitZenMode, refreshCustomTree, removeItemFromCustomTree } from './commands';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
-import { TKN_RESOURCE_SCHEME, resourceDocProvider } from './util/tektonresources.virtualfs';
+import { TKN_RESOURCE_SCHEME, resourceDocProvider, TKN_RESOURCE_SCHEME_READONLY } from './util/tektonresources.virtualfs';
 import { TektonItem } from './tekton/tektonitem';
 import { showPipelinePreview, registerPipelinePreviewContext } from './pipeline/pipeline-preview';
 import { TriggerTemplate } from './tekton/triggertemplate';
@@ -87,7 +87,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     pipelineExplorer,
     // Temporarily loaded resource providers
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME, resourceDocProvider, { /* TODO: case sensitive? */ }),
-
+    vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME_READONLY, resourceDocProvider, { isCaseSensitive: true, isReadonly: true }),
   ];
   disposables.forEach((e) => context.subscriptions.push(e));
 
