@@ -16,7 +16,7 @@ if (!tty.getWindowSize) {
   };
 }
 
-const config: any = {
+const config: {} = {
   ui: 'tdd',
   timeout: 15000,
   color: true,
@@ -25,23 +25,23 @@ const config: any = {
 
 const mocha = new Mocha(config);
 
-export function run(testsRoots: string, cb: (error: any, failures?: number) => void): void {
+export function run(testsRoots: string, cb: (error: {}, failures?: number) => void): void {
 
   const testsRoot = path.resolve(__dirname);
   const testFile = process.env.VSCODE_SINGLE_TEST;
 
-  if(!testFile){
+  if (!testFile) {
     cb('Cannot find tests');
     return;
   }
-  if(path.extname(testFile) !== '.ts') {
+  if (path.extname(testFile) !== '.ts') {
     cb(`Cannot run test from: ${testFile}`);
     return;
   }
 
   const nFileName = path.basename(testFile, path.extname(testFile)) + '.js';
   const pathSegments = testFile.split(path.sep);
-  
+
 
   mocha.addFile(path.join(testsRoot, ...pathSegments.slice(1, -1), nFileName));
 

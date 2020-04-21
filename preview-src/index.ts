@@ -13,8 +13,6 @@ declare let acquireVsCodeApi: any;
 const vscode = acquireVsCodeApi();
 cytoscape.use(dagre); // register extension
 
-
-let images: { [id: string]: string };
 let cy: cytoscape.Core;
 const saveState = debounce(() => {
   vscode.setState(cy.json());
@@ -33,9 +31,8 @@ window.addEventListener('message', event => {
     case 'showData':
       showData(event.data.data);
       break;
-    case 'images':
-      images = event.data.data;
-      break;
+    default:
+      console.error(`Unknown message type: ${event.data.type}`);
   }
 }, false);
 
