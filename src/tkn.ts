@@ -676,7 +676,7 @@ export class TknImpl implements Tkn {
     await kubectl.watchPipelineRun(pipeline.getName(), () => {
       pipelineExplorer.refresh(pipeline);
       for (const item of TknImpl.ROOT.getChildren() as TektonNodeImpl[]) {
-        if (nodeToRefresh.includes(item.getName()) && item.collapsibleState === TreeItemCollapsibleState.Expanded) {
+        if (nodeToRefresh.includes(item.getName())) {
           pipelineExplorer.refresh(item);
         }
       }
