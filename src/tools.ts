@@ -51,7 +51,7 @@ export class ToolsConfig {
 
       const currentVersion = await ToolsConfig.getVersion(toolLocation);
       if (toolLocation) {
-        if(!semver.satisfies(currentVersion, ToolsConfig.tool['tkn'].versionRange)) {
+        if (!semver.satisfies(currentVersion, ToolsConfig.tool['tkn'].versionRange)) {
           response = await vscode.window.showWarningMessage(`Detected unsupported tkn version: ${currentVersion}. Supported tkn version: ${ToolsConfig.tool['tkn'].versionRangeLabel}.`, downloadVersion, 'Cancel');
         }
       }

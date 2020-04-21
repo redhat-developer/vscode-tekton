@@ -769,8 +769,8 @@
     "update-deps": "node_modules/.bin/ncu --upgrade --loglevel verbose --packageFile package.json && npm update",
     "coverage:upload": "codecov -f coverage/coverage-final.json",
     "build": "npm run clean && npm run lint && npm run compile",
-    "lint": "eslint . --ext .js,.ts",
-    "lint:fix": "eslint . --ext .js,.ts --fix",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
     "build-preview": "webpack-cli --mode production",
     "preview-watch": "webpack-cli -w --mode development",
     "snippets-build": "node ./out/build/build-snippets.js"
