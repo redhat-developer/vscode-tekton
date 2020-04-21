@@ -104,6 +104,12 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
     // create subdirectories.
     // TODO: not loving prompting as part of the write when it should really be part of a separate
     // 'save' workflow - but needs must, I think
+
+    const query = querystring.parse(uri.query);
+    const outputFormat = TektonItem.getOutputFormat();
+    const value = query.value as string;
+    const readonlyRegex = /(taskrun\/|pipelinerun\/)/ as RegExp;
+    if (readonlyRegex.test(value)) return null;
     const tempPath = os.tmpdir();
     if (!tempPath) {
       return;
@@ -114,9 +120,6 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
     if (result['stderr']) throw Error(result['stderr']);
     if (result['error']) throw Error(result['error']);
     await fsx.unlink(fsPath);
-    const query = querystring.parse(uri.query);
-    const outputFormat = TektonItem.getOutputFormat();
-    const value = query.value as string;
     const newUri = kubefsUri(value, outputFormat);
     const editor = window.activeTextEditor;
     // the Position object gives you the line and character where the cursor is
