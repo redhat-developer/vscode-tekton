@@ -19,12 +19,15 @@ import { TektonItem } from '../tekton/tektonitem';
 import { VirtualDocument } from '../yaml-support/yaml-locator';
 
 export const TKN_RESOURCE_SCHEME = 'tekton';
+export const TKN_RESOURCE_SCHEME_READONLY = 'tektonreadonly';
 export const TEKTON_RESOURCE_AUTHORITY = 'loadtektonresource';
 
 export function kubefsUri(value: string, outputFormat: string): Uri {
   const docname = `${value.replace('/', '-')}.${outputFormat}`;
   const nonce = new Date().getTime();
-  const uri = `${TKN_RESOURCE_SCHEME}://${TEKTON_RESOURCE_AUTHORITY}/${docname}?value=${value}&_=${nonce}`;
+  const readonlyRegex = /(taskrun\/|pipelinerun\/)/ as RegExp;
+  const scheme = readonlyRegex.test(value) ? TKN_RESOURCE_SCHEME_READONLY : TKN_RESOURCE_SCHEME;
+  const uri = `${scheme}://${TEKTON_RESOURCE_AUTHORITY}/${docname}?value=${value}&_=${nonce}`;
   return Uri.parse(uri);
 }
 
@@ -104,6 +107,7 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
     // create subdirectories.
     // TODO: not loving prompting as part of the write when it should really be part of a separate
     // 'save' workflow - but needs must, I think
+
     const tempPath = os.tmpdir();
     if (!tempPath) {
       return;
