@@ -1,5 +1,26 @@
 # Change Log
 
+## 0.0.8 (April 22, 2020)
+
+This release brings to you:
+
+* [#181](https://github.com/redhat-developer/vscode-tekton/issues/181)Show conditional tasks in the pipeline and pipelinerun diagrams
+* [#197](https://github.com/redhat-developer/vscode-tekton/issues/197)Add PipelineRun in the tree as a root node
+* [#198](https://github.com/redhat-developer/vscode-tekton/issues/198)Add TaskRuns in the tree as a root node
+* [#241](https://github.com/redhat-developer/vscode-tekton/pull/241)Single click on icon will open yaml in editor
+* [#183](https://github.com/redhat-developer/vscode-tekton/issues/183)Add support for v1beta1 API
+* [#176](https://github.com/redhat-developer/vscode-tekton/issues/176)Update snippet apiversions
+* [#240](https://github.com/redhat-developer/vscode-tekton/issues/240)Revisit pipeline tree load
+* [#239](https://github.com/redhat-developer/vscode-tekton/issues/239)Improve tekton tree refresh
+* [#251](https://github.com/redhat-developer/vscode-tekton/issues/251)Open PipelineRun and TaskRun as readonly
+* Bugfixes or minor issues:
+  * [#217](https://github.com/redhat-developer/vscode-tekton/issues/217)Error when starting pipeline with no spec/resource section
+  * [#2](https://github.com/redhat-developer/vscode-tekton/issues/2)Display build logs from cluster view
+  * [#184](https://github.com/redhat-developer/vscode-tekton/issues/184)Add snippets for trigger types
+  * [#185](https://github.com/redhat-developer/vscode-tekton/issues/185)Add snippets for conditions
+  * [#225](https://github.com/redhat-developer/vscode-tekton/issues/225)Snippets ClusterTask wrong
+  * [#246](https://github.com/redhat-developer/vscode-tekton/pull/246)Warning message if cluster is down
+
 ## 0.0.7 (April 03, 2020)
 
 This release brings to you:
