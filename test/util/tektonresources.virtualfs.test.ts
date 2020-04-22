@@ -24,6 +24,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
   let osStub: sinon.SinonStub;
   let unlinkStub: sinon.SinonStub;
   let openTextStub: sinon.SinonStub;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let showTextStub: sinon.SinonStub;
   let executeCommandStub: sinon.SinonStub;
   let workspaceFoldersStub: sinon.SinonStub;

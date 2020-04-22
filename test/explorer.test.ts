@@ -5,7 +5,7 @@
 
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
-import { PipelineExplorer  } from '../src/pipeline/pipelineExplorer';
+import { PipelineExplorer } from '../src/pipeline/pipelineExplorer';
 import { TknImpl, ContextType } from '../src/tkn';
 import { TestItem } from './tekton/testTektonitem';
 import sinon = require('sinon');

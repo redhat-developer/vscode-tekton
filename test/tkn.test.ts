@@ -130,7 +130,7 @@ suite('tkn', () => {
     const triggerTemplatesItem = new TestItem(tkn.TknImpl.ROOT, 'triggertemplates', tkn.ContextType.TRIGGERTEMPLATES);
     const triggerBindingItem = new TestItem(tkn.TknImpl.ROOT, 'triggerbinding', tkn.ContextType.TRIGGERBINDING);
     const eventListenerItem = new TestItem(tkn.TknImpl.ROOT, 'eventlistener', tkn.ContextType.EVENTLISTENER);
-    const conditionItem = new TestItem(tkn.TknImpl.ROOT, 'condition', tkn.ContextType.CONDITIONS  );
+    const conditionItem = new TestItem(tkn.TknImpl.ROOT, 'condition', tkn.ContextType.CONDITIONS );
     const pipelineRunNodeItem = new TestItem(tkn.TknImpl.ROOT, 'PipelineRun', tkn.ContextType.PIPELINERUNNODE);
     const taskRunNodeItem = new TestItem(tkn.TknImpl.ROOT, 'TaskRun', tkn.ContextType.TASKRUNNODE);
 
