@@ -52,7 +52,7 @@ export class Progress {
         location: vscode.ProgressLocation.Notification,
         title
       }, async () => {
-        const result = await tknctl.getInstance().execute(cmd, process.cwd(), false);
+        const result = await tknctl.tkn.execute(cmd, process.cwd(), false);
         result.error ? reject(result.error) : resolve();
       });
     });

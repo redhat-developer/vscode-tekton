@@ -29,7 +29,7 @@ suite('Tekton/TaskRun', () => {
 
   setup(() => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
-    sandbox.stub(TknImpl.prototype, 'getTaskRuns').resolves([taskrunItem]);
+    sandbox.stub(TknImpl.prototype, 'getTaskRunsForPipelineRun').resolves([taskrunItem]);
     getPipelineRunNamesStub = sandbox.stub(TektonItem, 'getPipelinerunNames').resolves([pipelinerunItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();
   });
@@ -99,7 +99,7 @@ suite('Tekton/TaskRun', () => {
 
         test('calls the appropriate error message when no project found', async () => {
           getTaskRunsStub.restore();
-          sandbox.stub(TknImpl.prototype, 'getTaskRunsforTasks').resolves([]);
+          sandbox.stub(TknImpl.prototype, 'getTaskRunsForTasks').resolves([]);
           try {
             await TaskRun.listFromTask(null);
           } catch (err) {

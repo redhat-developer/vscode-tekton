@@ -9,7 +9,7 @@ import { MultiStepInput, InputStep } from '../util/MultiStepInput';
 import { Progress } from '../util/progress';
 import { QuickPickItem, window } from 'vscode';
 import * as cliInstance from '../cli';
-import { CliImpl } from '../cli';
+import { cli } from '../cli';
 import * as k8s from 'vscode-kubernetes-tools-api';
 import { TknPipelineResource, TknPipelineTrigger } from '../tekton';
 
@@ -263,7 +263,7 @@ export class Pipeline extends TektonItem {
   }
 
   static async showTektonOutput(): Promise<void> {
-    CliImpl.getInstance().showOutputChannel();
+    cli.showOutputChannel();
   }
 
   static async describe(pipeline: TektonNode): Promise<void> {

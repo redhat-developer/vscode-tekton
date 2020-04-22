@@ -17,7 +17,7 @@ suite('Kubernetos', () => {
   suite('K8s commands', () => {
     let executeInTerminalStub: sinon.SinonStub;
     setup(() => {
-      executeInTerminalStub = sandbox.stub(tkn.tknInstance, 'executeInTerminal');
+      executeInTerminalStub = sandbox.stub(tkn.tkn, 'executeInTerminal');
     });
 
     teardown(() => {

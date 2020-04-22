@@ -849,6 +849,6 @@
     "targz": "^1.0.1",
     "unzip-stream": "^0.3.0",
     "validator": "^11.0.0",
-    "vscode-kubernetes-tools-api": "1.0.0"
+    "vscode-kubernetes-tools-api": "1.1.0"
   }
 }

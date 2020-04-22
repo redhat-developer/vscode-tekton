@@ -2,7 +2,7 @@
  *  Copyright (c) Red Hat, Inc. All rights reserved.
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
-import { TknImpl } from '../tkn';
+import { tkn } from '../tkn';
 import { TknTask } from '../tekton';
 
 export interface Snippet {
@@ -57,7 +57,6 @@ interface Param {
 }
 
 export async function getTknTasksSnippets(): Promise<Snippet[]> {
-  const tkn = TknImpl.Instance;
   const [rawClusterTasks, rawTasks] = await Promise.all([tkn.getRawClusterTasks(), tkn.getRawTasks()]);
 
   const allRawTasks = rawClusterTasks.concat(rawTasks);
