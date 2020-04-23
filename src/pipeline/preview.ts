@@ -11,6 +11,7 @@ import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
 import { kubectl } from '../kubectl';
 import { PipelineRunData } from '../tekton';
+import { NodeData } from '../../preview-src/model';
 
 export interface PipelinePreviewInput {
   readonly document: vscode.TextDocument;
@@ -66,6 +67,20 @@ export class PipelinePreview extends Disposable {
       }
     }));
 
+    this.register(this.editor.webview.onDidReceiveMessage(e => {
+      switch (e.type) {
+        case 'onDidClick':
+          this.onDidClick(e.body);
+          break;
+      }
+    }));
+
+    this.register(vscode.window.onDidChangeTextEditorSelection(e => {
+      if (e.textEditor.document.fileName === this.document.fileName) {
+        this.highlightNode(e.textEditor.document, e.selections);
+      }
+    }));
+
     if (input.pipelineRunName && (input.pipelineRunStatus === 'Started' || input.pipelineRunStatus === 'Unknown')) {
       const watchControl = kubectl.watchPipelineRunWithControl(input.pipelineRunName, run => {
         this.updatePipelineRun(run);
@@ -101,6 +116,39 @@ export class PipelinePreview extends Disposable {
     if (this.document.fileName === document.fileName) {
       this.updateFunc();
     }
+  }
+
+  private async highlightNode(document: vscode.TextDocument, selections: ReadonlyArray<vscode.Selection>): Promise<void> {
+    if (this.graphProvider.getElementBySelection && selections.length > 0) {
+      const nodeId = this.graphProvider.getElementBySelection(document, selections[0]);
+      if (nodeId) {
+        this.postMessage({ type: 'highlightNode', data: nodeId });
+      } else {
+        this.postMessage({ type: 'removeHighlight' });
+      }
+    }
+  }
+
+  private async onDidClick(node: NodeData): Promise<void> {
+    const position = this.document.positionAt(node.yamlPosition);
+    for (const visibleEditor of vscode.window.visibleTextEditors) {
+      if (this.isPreviewOf(visibleEditor.document.uri)) {
+        const editor = await vscode.window.showTextDocument(visibleEditor.document, visibleEditor.viewColumn);
+        editor.selection = new vscode.Selection(position, position);
+        editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+        return;
+      }
+    }
+
+    vscode.workspace.openTextDocument(this.document.uri)
+      .then(vscode.window.showTextDocument)
+      .then(undefined, () => {
+        vscode.window.showErrorMessage(`Could not open ${this.document.uri.toString()}`);
+      });
+  }
+
+  private isPreviewOf(resource: vscode.Uri): boolean {
+    return this.document.uri.fsPath === resource.fsPath;
   }
 
   private async doUpdate(): Promise<void> {

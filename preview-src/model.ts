@@ -12,6 +12,7 @@ export interface NodeData extends BaseData {
   type?: string;
   id: string;
   state?: 'Cancelled'| 'Finished' | 'Started' | 'Failed' | 'Unknown';
+  yamlPosition?: number;
 }
 
 export interface EdgeData extends BaseData {

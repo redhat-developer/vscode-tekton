@@ -5,6 +5,7 @@
 import * as vscode from 'vscode';
 import { yamlLocator, YamlMap, YamlSequence, YamlNode, YamlDocument, VirtualDocument } from './yaml-locator';
 import * as _ from 'lodash';
+import { NodeData } from '../../preview-src/model';
 
 const TEKTON_API = 'tekton.dev/';
 
@@ -26,6 +27,7 @@ export interface DeclaredTask {
   taskRef: string;
   runAfter: string[];
   kind: 'Task' | 'ClusterTask' | 'Condition' | string;
+  position?: number;
 }
 
 export type RunState = 'Cancelled' | 'Finished' | 'Started' | 'Failed' | 'Unknown';
@@ -89,6 +91,7 @@ export class TektonYaml {
 export const tektonYaml = new TektonYaml();
 
 export class PipelineYaml {
+
   getPipelineTasksRefName(vsDocument: vscode.TextDocument): string[] {
     const result: string[] = [];
     if (tektonYaml.isTektonYaml(vsDocument) === TektonYamlType.Pipeline) {
@@ -163,6 +166,25 @@ export class PipelineYaml {
 
     return result;
   }
+
+  findTask(document: vscode.TextDocument, position: vscode.Position): string | undefined {
+    const element = yamlLocator.getMatchedElement(document, position);
+    if (element) {
+      const parent = element.matchedNode.parent?.parent?.parent;
+      if (parent?.kind === 'MAPPING') {
+        const tasks = getTasksSeq(parent as YamlMap);
+        if (tasks) {
+          for (const item of tasks.items) {
+            if (item === element.matchedNode.parent) {
+              return element.matchedNode.raw;
+            }
+          }
+        }
+      }
+    }
+
+    return;
+  }
 }
 
 
@@ -230,6 +252,7 @@ function collectTasks(specMap: YamlMap): DeclaredTask[] {
           const nameValue = findNodeByKey<YamlNode>('name', taskNode as YamlMap);
           if (nameValue) {
             decTask.name = nameValue.raw;
+            decTask.position = nameValue.startPosition;
           }
 
           const taskRef = findNodeByKey<YamlMap>('taskRef', taskNode as YamlMap);
@@ -260,9 +283,9 @@ function collectConditions(taskNode: YamlMap, tasks: DeclaredTask[]): void {
   const conditions = findNodeByKey<YamlSequence>('conditions', taskNode);
   if (conditions) {
     for (const condition of conditions.items) {
-      const ref = getYamlMappingValue(condition as YamlMap, 'conditionRef');
+      const ref = findNodeByKey<YamlNode>('conditionRef', condition as YamlMap);
       if (ref) {
-        const conditionDec = { name: _.trim(ref, '"'), kind: 'Condition' } as DeclaredTask;
+        const conditionDec = { name: _.trim(ref.raw, '"'), kind: 'Condition', position: ref.startPosition } as DeclaredTask;
 
         const runAfter = [];
         const conditions = findNodeByKey<YamlSequence>('conditions', taskNode);

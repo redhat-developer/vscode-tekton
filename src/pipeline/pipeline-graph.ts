@@ -13,7 +13,10 @@ import { PipelineRunData, TaskRuns, TaskRun, TaskRunStatus, PipelineRunCondition
 
 const pipelineRunTaskCache = new Map<string, DeclaredTask[]>();
 
-export type GraphProvider = (document: vscode.TextDocument, pipelineRun?: PipelineRunData) => Promise<NodeOrEdge[]>;
+export interface GraphProvider {
+  (document: vscode.TextDocument, pipelineRun?: PipelineRunData): Promise<NodeOrEdge[]>;
+  getElementBySelection?(document: vscode.TextDocument, selection: vscode.Selection): string | undefined;
+}
 
 export async function calculatePipelineGraph(document: vscode.TextDocument): Promise<NodeOrEdge[]> {
 
@@ -25,6 +28,11 @@ export async function calculatePipelineGraph(document: vscode.TextDocument): Pro
   const tasks = pipelineYaml.getPipelineTasks(doc);
 
   return convertTasksToNode(tasks);
+}
+
+calculatePipelineGraph.getElementBySelection = function (document: vscode.TextDocument, selection: vscode.Selection): string | undefined {
+  
+  return pipelineYaml.findTask(document, selection.start);
 }
 
 export async function calculatePipelineRunGraph(document: vscode.TextDocument, pipelineRun?: PipelineRunData): Promise<NodeOrEdge[]> {
@@ -63,7 +71,7 @@ export async function calculatePipelineRunGraph(document: vscode.TextDocument, p
     const json = JSON.parse(pipelineDoc.getText());
     runTasks = updatePipelineRunTasks(json, tasks);
   }
-  return convertTasksToNode(runTasks);
+  return convertTasksToNode(runTasks, false);
 
 }
 
@@ -92,13 +100,13 @@ export async function askToSelectPipeline(pipeDocs: YamlDocument[], type: Tekton
   return map.get(name);
 }
 
-function convertTasksToNode(tasks: PipelineRunTask[]): NodeOrEdge[] {
+function convertTasksToNode(tasks: PipelineRunTask[], includePositions = true): NodeOrEdge[] {
   const result: NodeOrEdge[] = [];
   const tasksMap = new Map<string, PipelineRunTask>();
   tasks.forEach((task: DeclaredTask) => tasksMap.set(task.name, task));
 
   for (const task of tasks) {
-    result.push({ data: { id: task.name, label: getLabel(task), type: task.kind, taskRef: task.taskRef, state: task.state } as NodeData });
+    result.push({ data: { id: task.name, label: getLabel(task), type: task.kind, taskRef: task.taskRef, state: task.state, yamlPosition: includePositions ? task.position : undefined } as NodeData });
     for (const after of task.runAfter) {
       if (tasksMap.has(after)) {
         result.push({ data: { source: after, target: task.name, id: `${after}-${task.name}`, state: tasksMap.get(after).state } as EdgeData });
