@@ -90,7 +90,7 @@ suite('Tekton/TaskRun', () => {
 
         test('executes the listFromTasks tkn command in terminal', async () => {
           await TaskRun.listFromTask(taskItem);
-          expect(termStub).calledOnceWith(Command.listTaskRunsforTasksinTerminal(taskItem.getName()));
+          expect(termStub).calledOnceWith(Command.listTaskRunsForTasksInTerminal(taskItem.getName()));
         });
 
       });
