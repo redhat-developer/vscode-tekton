@@ -106,6 +106,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       tektonExplorer.nodeSources.resourceFolder('Pipelines', 'Pipelines', 'Pipeline', 'pipelines').if(isTekton),
       tektonExplorer.nodeSources.resourceFolder('PipelineRuns', 'PipelineRuns', 'PipelineRun', 'pipelineruns').if(isTekton),
       tektonExplorer.nodeSources.resourceFolder('Pipeline Resources', 'PipelineResources', 'PipelineResources', 'pipelineresources').if(isTekton),
+      tektonExplorer.nodeSources.resourceFolder('TriggerTemplates', 'TriggerTemplates', 'TriggerTemplates', 'triggerTemplates').if(isTekton),
+      tektonExplorer.nodeSources.resourceFolder('TriggerBinding', 'TriggerBinding', 'TriggerBinding', 'triggerBinding').if(isTekton),
+      tektonExplorer.nodeSources.resourceFolder('EventListener', 'EventListener', 'EventListener', 'eventListener').if(isTekton),
+      tektonExplorer.nodeSources.resourceFolder('Conditions', 'Conditions', 'Conditions', 'conditions').if(isTekton),
     ).at(undefined);
     tektonExplorer.registerNodeContributor(nodeContributor);
   } else {
