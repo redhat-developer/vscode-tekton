@@ -50,10 +50,10 @@ export abstract class TektonItem {
     return taskList;
   }
 
-  static async getTaskRunNames(taskrun: TektonNode): Promise<TektonNode[]> {
-    const taskrunList: Array<TektonNode> = await TektonItem.tkn.getTaskRunsForPipelineRun(taskrun);
-    if (taskrunList.length === 0) { throw Error(errorMessage.TaskRun); }
-    return taskrunList;
+  static async getTaskRunNames(taskRun: TektonNode): Promise<TektonNode[]> {
+    const taskRunList: Array<TektonNode> = await TektonItem.tkn.getTaskRunsForPipelineRun(taskRun);
+    if (taskRunList.length === 0) { throw Error(errorMessage.TaskRun); }
+    return taskRunList;
   }
 
   static async getPipelineResourceNames(pipelineResource: TektonNode): Promise<TektonNode[]> {
