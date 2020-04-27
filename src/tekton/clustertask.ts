@@ -15,18 +15,19 @@ export class ClusterTask extends TektonItem {
     throw new Error('Method not implemented.');
   }
 
-  static async list(clustertasks: TektonNode): Promise<void> {
-    if (clustertasks) { ClusterTask.tkn.executeInTerminal(Command.listClusterTasksinTerminal()); }
+  static async list(clusterTasks: TektonNode): Promise<void> {
+    if (clusterTasks) { ClusterTask.tkn.executeInTerminal(Command.listClusterTasksInTerminal()); }
   }
 
-  static async delete(clustertask: TektonNode): Promise<string> {
-    const value = await window.showWarningMessage(`Do you want to delete the ClusterTask '${clustertask.getName()}'?`, 'Yes', 'Cancel');
+  static async delete(clusterTask: TektonNode): Promise<string> {
+    if (!clusterTask) return null;
+    const value = await window.showWarningMessage(`Do you want to delete the ClusterTask '${clusterTask.getName()}'?`, 'Yes', 'Cancel');
     if (value === 'Yes') {
-      return Progress.execFunctionWithProgress(`Deleting the ClusterTask '${clustertask.getName()}'.`, () =>
-        ClusterTask.tkn.execute(Command.deleteClusterTask(clustertask.getName())))
-        .then(() => ClusterTask.explorer.refresh(clustertask ? clustertask.getParent() : undefined))
-        .then(() => `The ClusterTask '${clustertask.getName()}' successfully deleted.`)
-        .catch((err) => Promise.reject(`Failed to delete the ClusterTask '${clustertask.getName()}': '${err}'.`));
+      return Progress.execFunctionWithProgress(`Deleting the ClusterTask '${clusterTask.getName()}'.`, () =>
+        ClusterTask.tkn.execute(Command.deleteClusterTask(clusterTask.getName())))
+        .then(() => ClusterTask.explorer.refresh(clusterTask ? clusterTask.getParent() : undefined))
+        .then(() => `The ClusterTask '${clusterTask.getName()}' successfully deleted.`)
+        .catch((err) => Promise.reject(`Failed to delete the ClusterTask '${clusterTask.getName()}': '${err}'.`));
     }
     return null;
   }

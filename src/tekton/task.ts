@@ -16,12 +16,13 @@ export class Task extends TektonItem {
   }
 
   static async list(task: TektonNode): Promise<void> {
-    /*         const task = await Task.getTektonCmdData(treeItem,
-            "Which task do you want to list"); */
-    if (task) { Task.tkn.executeInTerminal(Command.listTasksinTerminal()); }
+    /*  const task = await Task.getTektonCmdData(treeItem,
+        "Which task do you want to list"); */
+    if (task) { Task.tkn.executeInTerminal(Command.listTasksInTerminal()); }
   }
 
   static async delete(task: TektonNode): Promise<string> {
+    if (!task) return null;
     const value = await window.showWarningMessage(`Do you want to delete the Task '${task.getName()}'?`, 'Yes', 'Cancel');
     if (value === 'Yes') {
       return Progress.execFunctionWithProgress(`Deleting the Task '${task.getName()}'.`, () =>

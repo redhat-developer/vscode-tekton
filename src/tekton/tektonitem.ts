@@ -33,9 +33,9 @@ export abstract class TektonItem {
   }
 
   static async getPipelinerunNames(pipeline: TektonNode): Promise<TektonNode[]> {
-    const pipelinerunList: Array<TektonNode> = await TektonItem.tkn.getPipelineRuns(pipeline);
-    if (pipelinerunList.length === 0) { throw Error(errorMessage.PipelineRun); }
-    return pipelinerunList;
+    const pipelineRunList: Array<TektonNode> = await TektonItem.tkn.getPipelineRuns(pipeline);
+    if (pipelineRunList.length === 0) { throw Error(errorMessage.PipelineRun); }
+    return pipelineRunList;
   }
 
   static async getTaskNames(task: TektonNode): Promise<TektonNode[]> {
@@ -44,8 +44,8 @@ export abstract class TektonItem {
     return taskList;
   }
 
-  static async getClusterTaskNames(clustertask: TektonNode): Promise<TektonNode[]> {
-    const taskList: Array<TektonNode> = await TektonItem.tkn.getClusterTasks(clustertask);
+  static async getClusterTaskNames(clusterTask: TektonNode): Promise<TektonNode[]> {
+    const taskList: Array<TektonNode> = await TektonItem.tkn.getClusterTasks(clusterTask);
     if (taskList.length === 0) { throw Error(errorMessage.ClusterTask); }
     return taskList;
   }
@@ -56,10 +56,10 @@ export abstract class TektonItem {
     return taskrunList;
   }
 
-  static async getPipelineResourceNames(pipelineresource: TektonNode): Promise<TektonNode[]> {
-    const pipelineresourceList: Array<TektonNode> = await TektonItem.tkn.getPipelineResources(pipelineresource);
-    if (pipelineresourceList.length === 0) { throw Error(errorMessage.PipelineResource); }
-    return pipelineresourceList;
+  static async getPipelineResourceNames(pipelineResource: TektonNode): Promise<TektonNode[]> {
+    const pipelineResourceList: Array<TektonNode> = await TektonItem.tkn.getPipelineResources(pipelineResource);
+    if (pipelineResourceList.length === 0) { throw Error(errorMessage.PipelineResource); }
+    return pipelineResourceList;
   }
 
   static openInEditor(context: TektonNode): void {
@@ -80,14 +80,3 @@ export abstract class TektonItem {
     return workspace.getConfiguration('vs-tekton')['vs-tekton.outputFormat'];
   }
 }
-
-/*     static async getTektonCmdData(treeItem: TektonNode, pipelinePlaceholder?: string, taskPlaceholder?: string, clustertaskPlaceholder?: string) {
-        let context: TektonNode | QuickPickCommand = treeItem;
-        if (!context) { context = await window.showQuickPick(TektonItem.getPipelineResources(), {placeHolder: pipelinePlaceholder}); }
-        if (context && context.contextValue === ContextType.PIPELINEpipelinePlaceholder) { context = await window.showQuickPick(TektonItem.getPipelinerunNames(context), {placeHolder: pipelinePlaceholder}); }
-            if (context && taskPlaceholder) { context = await window.showQuickPick(TektonItem.getTaskNames(treeItem), {placeHolder: taskPlaceholder}); }
-            if (context && clustertaskPlaceholder) { context = await window.showQuickPick(TektonItem.getClusterTaskNames(treeItem), {placeHolder: clustertaskPlaceholder}); }
-        }
-return c
-    }
-} */

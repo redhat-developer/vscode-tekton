@@ -11,6 +11,7 @@ import { window } from 'vscode';
 export class EventListener extends TektonItem {
 
   static async delete(eventListener: TektonNode): Promise<string> {
+    if (!eventListener) return null;
     const value = await window.showWarningMessage(`Do you want to delete the EventListener '${eventListener.getName()}'?`, 'Yes', 'Cancel');
     if (value === 'Yes') {
       return Progress.execFunctionWithProgress(`Deleting the EventListener '${eventListener.getName()}'.`, () =>
