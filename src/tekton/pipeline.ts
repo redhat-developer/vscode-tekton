@@ -275,6 +275,7 @@ export class Pipeline extends TektonItem {
   }
 
   static async delete(pipeline: TektonNode): Promise<string> {
+    if (!pipeline) return null;
     const value = await window.showWarningMessage(`Do you want to delete the Pipeline '${pipeline.getName()}'?`, 'Yes', 'Cancel');
     if (value === 'Yes') {
       return Progress.execFunctionWithProgress(`Deleting the Pipeline '${pipeline.getName()}'.`, () =>

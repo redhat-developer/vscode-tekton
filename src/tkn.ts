@@ -112,7 +112,7 @@ export class Command {
   }
 
   @verbose
-  static listTaskRunsforTasksinTerminal(task: string): CliCommand {
+  static listTaskRunsForTasksInTerminal(task: string): CliCommand {
     return newTknCommand('taskrun', 'list', task);
   }
 
@@ -223,7 +223,7 @@ export class Command {
     return newK8sCommand('get', 'task', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
   }
   @verbose
-  static listTasksinTerminal(namespace?: string): CliCommand {
+  static listTasksInTerminal(namespace?: string): CliCommand {
     return newTknCommand('task', 'list', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
   }
   @verbose
@@ -247,7 +247,7 @@ export class Command {
   static listClusterTasks(namespace?: string): CliCommand {
     return newK8sCommand('get', 'clustertask', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
   }
-  static listClusterTasksinTerminal(namespace?: string): CliCommand {
+  static listClusterTasksInTerminal(namespace?: string): CliCommand {
     return newTknCommand('clustertask', 'list', ...(namespace ? ['-n', namespace] : ''));
   }
   @verbose

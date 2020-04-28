@@ -12,6 +12,7 @@ import { Progress } from '../util/progress';
 export class TriggerTemplate extends TektonItem {
 
   static async delete(triggerTemplate: TektonNode): Promise<string> {
+    if (!triggerTemplate) return null;
     const value = await window.showWarningMessage(`Do you want to delete the TriggerTemplate '${triggerTemplate.getName()}'?`, 'Yes', 'Cancel');
     if (value === 'Yes') {
       return Progress.execFunctionWithProgress(`Deleting the TriggerTemplate '${triggerTemplate.getName()}'.`, () =>

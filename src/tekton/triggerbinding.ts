@@ -12,6 +12,7 @@ import { Progress } from '../util/progress';
 export class TriggerBinding extends TektonItem {
 
   static async delete(triggerBinding: TektonNode): Promise<string> {
+    if (!triggerBinding) return null;
     const value = await window.showWarningMessage(`Do you want to delete the TriggerBinding '${triggerBinding.getName()}'?`, 'Yes', 'Cancel');
     if (value === 'Yes') {
       return Progress.execFunctionWithProgress(`Deleting the TriggerBinding '${triggerBinding.getName()}'.`, () =>
@@ -22,5 +23,4 @@ export class TriggerBinding extends TektonItem {
     }
     return null;
   }
-
 }

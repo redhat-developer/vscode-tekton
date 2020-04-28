@@ -45,22 +45,23 @@ export class PipelineResource extends TektonItem {
 
   }
 
-  static async describe(pipelineresource: TektonNode): Promise<void> {
-    if (pipelineresource) { PipelineResource.tkn.executeInTerminal(Command.describePipelineResource(pipelineresource.getName())); }
+  static async describe(pipelineResource: TektonNode): Promise<void> {
+    if (pipelineResource) { PipelineResource.tkn.executeInTerminal(Command.describePipelineResource(pipelineResource.getName())); }
   }
 
-  static async list(pipelineresource: TektonNode): Promise<void> {
-    if (pipelineresource) { PipelineResource.tkn.executeInTerminal(Command.listPipelineResourcesInTerminal(pipelineresource.getName())); }
+  static async list(pipelineResource: TektonNode): Promise<void> {
+    if (pipelineResource) { PipelineResource.tkn.executeInTerminal(Command.listPipelineResourcesInTerminal(pipelineResource.getName())); }
   }
 
-  static async delete(pipelineresource: TektonNode): Promise<string> {
-    const value = await window.showWarningMessage(`Do you want to delete the Resource '${pipelineresource.getName()}'?`, 'Yes', 'Cancel');
+  static async delete(pipelineResource: TektonNode): Promise<string> {
+    if (!pipelineResource) return null;
+    const value = await window.showWarningMessage(`Do you want to delete the Resource '${pipelineResource.getName()}'?`, 'Yes', 'Cancel');
     if (value === 'Yes') {
-      return Progress.execFunctionWithProgress(`Deleting the Resource '${pipelineresource.getName()}'.`, () =>
-        PipelineResource.tkn.execute(Command.deletePipelineResource(pipelineresource.getName())))
-        .then(() => PipelineResource.explorer.refresh(pipelineresource ? pipelineresource.getParent() : undefined))
-        .then(() => `The Resource '${pipelineresource.getName()}' successfully deleted.`)
-        .catch((err) => Promise.reject(`Failed to delete the Resource '${pipelineresource.getName()}': '${err}'.`));
+      return Progress.execFunctionWithProgress(`Deleting the Resource '${pipelineResource.getName()}'.`, () =>
+        PipelineResource.tkn.execute(Command.deletePipelineResource(pipelineResource.getName())))
+        .then(() => PipelineResource.explorer.refresh(pipelineResource ? pipelineResource.getParent() : undefined))
+        .then(() => `The Resource '${pipelineResource.getName()}' successfully deleted.`)
+        .catch((err) => Promise.reject(`Failed to delete the Resource '${pipelineResource.getName()}': '${err}'.`));
     }
     return null;
   }
