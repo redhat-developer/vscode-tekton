@@ -9,6 +9,8 @@
 import * as vscode from 'vscode';
 
 import { parse, findNodeAtPosition } from 'node-yaml-parser';
+import { TknDocument, isYamlDocumentSupported } from '../model/document';
+import { TknElement, insideElement } from '../model/common';
 
 export function isMapping(node: YamlNode): node is YamlMap {
   return node.kind === 'MAPPING';
@@ -30,6 +32,11 @@ export interface YamlNode {
   readonly parent?: YamlNode;
 }
 
+export interface YamlScalar extends YamlNode {
+  readonly doubleQuoted?: boolean;
+  readonly singleQuoted?: boolean;
+}
+
 export interface YamlMappingItem extends YamlNode {
   readonly key: YamlNode;
   readonly value: YamlNode;
@@ -43,7 +50,7 @@ export interface YamlSequence extends YamlNode {
   readonly items: YamlNode[];
 }
 
-export interface YamlDocument {
+export interface YamlDocument extends YamlNode {
   readonly nodes: YamlNode[];
   readonly errors: string[];
 }
@@ -58,6 +65,8 @@ export interface YamlCachedDocuments {
 
   // the version of the document to avoid duplicate work on the same text
   version: number;
+
+  tknDocuments: TknDocument[];
 }
 
 export interface YamlMatchedElement {
@@ -111,6 +120,36 @@ export class YamlLocator {
     return this.cache[key].yamlDocs;
   }
 
+  public getTknDocuments(textDocument: VirtualDocument): TknDocument[] {
+    const key: string = textDocument.uri.toString();
+    this.ensureCache(key, textDocument);
+    return this.cache[key].tknDocuments;
+  }
+
+  getMatchedTknElement(textDocument: VirtualDocument, pos: vscode.Position): TknElement | undefined {
+    const key: string = textDocument.uri.toString();
+    this.ensureCache(key, textDocument);
+    const cacheEntry = this.cache[key];
+    const offset = this.convertPosition(cacheEntry.lineLengths, pos.line, pos.character);
+    const doc = this.getDocumentAtPosition(cacheEntry.tknDocuments, offset);
+    if (!doc) {
+      return undefined;
+    }
+    return doc.findElement(offset);
+  }
+
+  private convertPosition(lineLens: number[], lineNumber: number, columnNumber: number): number {
+    let pos = 0;
+    for (let i = 0; i < lineNumber; i++) {
+      pos += lineLens[i] + 1;
+    }
+    return pos + columnNumber;
+  }
+
+  private getDocumentAtPosition(documents: TknDocument[], pos: number): TknDocument {
+    return documents.find(doc => insideElement(doc, pos));
+  }
+
   private ensureCache(key: string, textDocument: VirtualDocument): void {
     if (!this.cache[key]) {
       this.cache[key] = { version: -1 } as YamlCachedDocuments;
@@ -123,6 +162,7 @@ export class YamlLocator {
       this.cache[key].yamlDocs = documents;
       this.cache[key].lineLengths = lineLengths;
       this.cache[key].version = textDocument.version;
+      this.cache[key].tknDocuments = documents.filter(d => isYamlDocumentSupported(d)).map(d => new TknDocument(d, lineLengths));
     }
   }
 }
