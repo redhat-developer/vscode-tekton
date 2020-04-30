@@ -9,11 +9,11 @@ import { WindowUtil } from './util/windowUtils';
 import * as path from 'path';
 import { ToolsConfig } from './tools';
 import format = require('string-format');
-import { StartPipelineObject } from './tekton/pipeline';
 import humanize = require('humanize-duration');
 import { TknPipelineResource, TknTask, PipelineRunData } from './tekton';
 import { kubectl } from './kubectl';
 import { pipelineExplorer } from './pipeline/pipelineExplorer';
+import { StartObject } from './tekton/tektonitem';
 
 export const humanizer = humanize.humanizer(createConfig());
 
@@ -117,7 +117,7 @@ export class Command {
   }
 
   @verbose
-  static startPipeline(pipelineData: StartPipelineObject): CliCommand {
+  static startPipeline(pipelineData: StartObject): CliCommand {
     const resources: string[] = [];
     const svcAcct: string[] = pipelineData.serviceAccount ? ['-s ', pipelineData.serviceAccount] : ['-s', 'pipeline'];
     pipelineData.resources.forEach(element => {
@@ -135,6 +135,32 @@ export class Command {
         params.push(element.name + '=' + element.default);
       });
       return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...params, ...svcAcct);
+    }
+  }
+  @verbose
+  static startTask(taskData: StartObject): CliCommand {
+    const resources: string[] = [];
+    const svcAcct: string[] = taskData.serviceAccount ? ['-s ', taskData.serviceAccount] : ['-s', 'pipeline'];
+    taskData.resources.forEach(element => {
+      if (element.resourceType === 'inputs') {
+        resources.push('-i');
+        resources.push(element.name + '=' + element.resourceRef);
+      } else if (element.resourceType === 'outputs') {
+        resources.push('-o');
+        resources.push(element.name + '=' + element.resourceRef);
+      }
+    });
+
+    if (taskData.params.length === 0) {
+      return newTknCommand('task', 'start', taskData.name, ...resources, ...svcAcct);
+    }
+    else {
+      const params: string[] = [];
+      taskData.params.forEach(element => {
+        params.push('--param');
+        params.push(element.name + '=' + element.default);
+      });
+      return newTknCommand('task', 'start', taskData.name, ...resources, ...params, ...svcAcct);
     }
   }
   @verbose
@@ -584,7 +610,8 @@ export class MoreNode extends TreeItem implements TektonNode {
 
 export interface Tkn {
   getPipelineNodes(): Promise<TektonNode[]>;
-  startPipeline(pipeline: StartPipelineObject): Promise<TektonNode[]>;
+  startPipeline(pipeline: StartObject): Promise<TektonNode[]>;
+  startTask(task: StartObject): Promise<TektonNode[]>;
   restartPipeline(pipeline: TektonNode): Promise<void>;
   getPipelines(pipeline: TektonNode): Promise<TektonNode[]>;
   getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]>;
@@ -998,7 +1025,7 @@ export class TknImpl implements Tkn {
     return data;
   }
 
-  async startPipeline(pipeline: StartPipelineObject): Promise<TektonNode[]> {
+  async startPipeline(pipeline: StartObject): Promise<TektonNode[]> {
     const result = await this.execute(Command.startPipeline(pipeline));
     let data: TknTask[] = [];
     try {
@@ -1011,6 +1038,19 @@ export class TknImpl implements Tkn {
     pipelines = [...new Set(pipelines)];
     const treeState = pipelines.length > 0 ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
     return pipelines.map<TektonNode>((value) => new TektonNodeImpl(undefined, value, ContextType.PIPELINE, this, treeState)).sort(compareNodes);
+  }
+
+  async startTask(task: StartObject): Promise<TektonNode[]> {
+    const result = await this.execute(Command.startTask(task));
+    let data: TknTask[] = [];
+    try {
+      data = JSON.parse(result.stdout).items;
+      // eslint-disable-next-line no-empty
+    } catch (ignore) {
+    }
+    let tasks: string[] = data.map((value) => value.metadata.name);
+    tasks = [...new Set(tasks)];
+    return tasks.map<TektonNode>((value) => new TektonNodeImpl(undefined, value, ContextType.PIPELINE, this, TreeItemCollapsibleState.None)).sort(compareNodes);
   }
 
   async restartPipeline(pipeline: TektonNode): Promise<void> {
