@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as cytoscape from 'cytoscape';
-import { NodeOrEdge, CyTheme } from './model';
+import { NodeOrEdge, CyTheme, NodeData } from './model';
 import * as dagre from 'cytoscape-dagre';
 import { debounce } from 'debounce';
 
@@ -31,8 +31,12 @@ window.addEventListener('message', event => {
     case 'showData':
       showData(event.data.data);
       break;
-    default:
-      console.error(`Unknown message type: ${event.data.type}`);
+    case 'highlightNode':
+      highlightNode(event.data.data);
+      break;
+    case 'removeHighlight':
+      removeHighlight();
+      break;
   }
 }, false);
 
@@ -51,8 +55,30 @@ function showData(data: NodeOrEdge[]): void {
   render(data);
 }
 
+let previousHighlightNode: cytoscape.CollectionReturnValue;
+function removeHighlight(): void {
+  if (previousHighlightNode) {
+    previousHighlightNode.data('editing', 'false');
+    previousHighlightNode = undefined;
+  }
+}
+function highlightNode(nodeId: string): void {
+  removeHighlight();
+  previousHighlightNode = cy.$(`#${nodeId}`);
+  previousHighlightNode.data('editing', 'true');
+}
+
 function startUpdatingState(): void {
   cy.on('render', () => saveState());
+  cy.on('tap', 'node', function (evt) {
+    const node: NodeData = evt.target.data();
+    if (node.yamlPosition) {
+      vscode.postMessage({
+        type: 'onDidClick',
+        body: node
+      });
+    }
+  });
 }
 
 function restore(state: object): void {
@@ -109,7 +135,6 @@ function getStyle(style: CyTheme): cytoscape.Stylesheet[] {
       style: {
         'width': 3,
         'line-color': style.arrowColor,
-        'label': 'data(label)',
         'color': style.labelColor,
         'font-family': style.fontFamily,
         'font-size': style.fontSize,
@@ -196,6 +221,13 @@ function getStyle(style: CyTheme): cytoscape.Stylesheet[] {
       selector: 'node[state = "Unknown"]',
       style: {
         'background-color': 'grey',
+      }
+    },
+    {
+      selector: 'node[editing = "true"]',
+      style: {
+        'border-color': 'green',//style.arrowColor,
+        'border-width': 2
       }
     },
   ];

@@ -253,7 +253,33 @@ suite('Tekton yaml', () => {
       expect(pipelineResources).is.not.empty;
       expect(pipelineResources).to.eql([{ name: 'api-repo', type: 'git' }, { name: 'api-image', type: 'image' }]);
     });
+
+    test('"findTask" should return undefined if no task defined', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/pipeline-ordering.yaml'));
+      const result = pipelineYaml.findTask({ getText: () => yaml.toString(), version: 1, uri: vscode.Uri.parse('file:///ordering/findTask.yaml') } as vscode.TextDocument, new vscode.Position(11, 19));
+      expect(result).is.undefined;
+    });
+
+    test('"findTask" should return taskId when position in task name', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/pipeline-ordering.yaml'));
+      const result = pipelineYaml.findTask({ getText: () => yaml.toString(), version: 1, uri: vscode.Uri.parse('file:///ordering/findTask.yaml') } as vscode.TextDocument, new vscode.Position(20, 10));
+      expect(result).equal('build-skaffold-web');
+    });
+
+    test('"findTask" should return taskId when position in task body', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/pipeline-ordering.yaml'));
+      const result = pipelineYaml.findTask({ getText: () => yaml.toString(), version: 1, uri: vscode.Uri.parse('file:///ordering/findTask.yaml') } as vscode.TextDocument, new vscode.Position(17, 10));
+      expect(result).equal('skaffold-unit-tests');
+    });
+
+    test('"findTask" should return condition when position in condition body', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/conditional-pipeline.yaml'));
+      const result = pipelineYaml.findTask({ getText: () => yaml.toString(), version: 1, uri: vscode.Uri.parse('file:///ordering/conditional-findTask.yaml') } as vscode.TextDocument, new vscode.Position(24, 25));
+      expect(result).equal('file-exists');
+    });
+
   });
+
   suite('PipelineRun', () => {
 
 
