@@ -140,7 +140,7 @@ export class Command {
   @verbose
   static startTask(taskData: StartObject): CliCommand {
     const resources: string[] = [];
-    const svcAcct: string[] = taskData.serviceAccount ? ['-s ', taskData.serviceAccount] : ['-s', 'pipeline'];
+    const svcAcct: string[] = taskData.serviceAccount ? ['-s ', taskData.serviceAccount] : [];
     taskData.resources.forEach(element => {
       if (element.resourceType === 'inputs') {
         resources.push('-i');
@@ -315,6 +315,9 @@ export class Command {
   }
   static listPipelineRun(): CliCommand {
     return newK8sCommand('get', 'pipelinerun', '-o', 'json');
+  }
+  static watchPipelineRuns(name: string): CliCommand {
+    return newK8sCommand('get', 'pipelinerun', name, '-w', '-o', 'json');
   }
 }
 
@@ -791,7 +794,11 @@ export class TknImpl implements Tkn {
   }
 
   async getTaskRunsForTasks(task: TektonNode): Promise<TektonNode[]> {
-    return this._getTaskRunsForTasks(task);
+    if (!task.visibleChildren) {
+      task.visibleChildren = this.defaultPageSize;
+    }
+    const taskRun = await this._getTaskRunsForTasks(task);
+    return this.limitView(task, taskRun);
   }
 
   async _getTaskRunsForTasks(task: TektonNode): Promise<TektonNode[]> {

@@ -185,11 +185,11 @@ export abstract class TektonItem {
     }
 
     async function inputParamValue(input: MultiStepInput, selectedParam: Params): Promise<InputStep> {
-      const paramVals = await getParamValues(selectedParam.name);
+      const paramVal = await getParamValues(selectedParam.name);
       const pick = await input.showQuickPick({
         title,
         placeholder: `Input ${message} Parameter defaults`,
-        items: paramVals,
+        items: paramVal,
       });
       if (pick.label === selectedParam.name) {
         const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: selectedParam.default };
