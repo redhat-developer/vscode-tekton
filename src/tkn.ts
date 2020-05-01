@@ -316,8 +316,8 @@ export class Command {
   static listPipelineRun(): CliCommand {
     return newK8sCommand('get', 'pipelinerun', '-o', 'json');
   }
-  static watchPipelineRuns(name: string): CliCommand {
-    return newK8sCommand('get', 'pipelinerun', name, '-w', '-o', 'json');
+  static watchResources(resourceName: string, name: string): CliCommand {
+    return newK8sCommand('get', resourceName, name, '-w', '-o', 'json');
   }
 }
 
@@ -486,7 +486,7 @@ export class TektonNodeImpl implements TektonNode {
 }
 
 type PipelineTaskRunData = {
-  metadata: {
+  metadata?: {
     creationTimestamp: string;
     name: string;
     labels: {
@@ -702,24 +702,24 @@ export class TknImpl implements Tkn {
     return pipelineTree;
   }
 
-  async refreshPipelineRun(pipeline: TektonNode): Promise<void> {
-    await kubectl.watchPipelineRun(pipeline.getName(), () => {
-      pipelineExplorer.refresh(pipeline);
-      for (const item of TknImpl.ROOT.getChildren() as TektonNodeImpl[]) {
-        if (nodeToRefresh.includes(item.getName())) {
-          pipelineExplorer.refresh(item);
+  async refreshPipelineRun(tknResource: TektonNode, resourceName: string): Promise<void> {
+    await kubectl.watchRunCommand(Command.watchResources(resourceName, tknResource.getName()), () => {
+      if (tknResource.contextValue === 'pipelinerun') {
+        pipelineExplorer.refresh(tknResource);
+        for (const item of TknImpl.ROOT.getChildren() as TektonNodeImpl[]) {
+          if (nodeToRefresh.includes(item.getName())) {
+            pipelineExplorer.refresh(item);
+          }
         }
       }
-
     });
-
-    pipelineExplorer.refresh(); // refresh all tree
+    (tknResource.contextValue === 'taskrun') ? pipelineExplorer.refresh(tknResource.getParent()) : pipelineExplorer.refresh(); // refresh all tree
   }
 
-  async getPipelineStatus(listOfPipelineRuns: TektonNode[]): Promise<void> {
-    for (const pipelineRun of listOfPipelineRuns) {
-      if (pipelineRun.state === 'Unknown') {
-        this.refreshPipelineRun(pipelineRun);
+  async getPipelineStatus(listOfResources: TektonNode[]): Promise<void> {
+    for (const tknResource of listOfResources) {
+      if (tknResource.state === 'Unknown') {
+        this.refreshPipelineRun(tknResource, tknResource.contextValue);
       }
     }
   }
@@ -798,6 +798,7 @@ export class TknImpl implements Tkn {
       task.visibleChildren = this.defaultPageSize;
     }
     const taskRun = await this._getTaskRunsForTasks(task);
+    this.getPipelineStatus(taskRun);
     return this.limitView(task, taskRun);
   }
 

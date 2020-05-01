@@ -12,17 +12,17 @@ import { TknPipelineTrigger } from '../tekton';
 
 export class Task extends TektonItem {
 
-  static async start(pipeline: TektonNode): Promise<string> {
-    if (pipeline) {
+  static async start(task: TektonNode): Promise<string> {
+    if (task) {
       const result: cliInstance.CliExitData = await Task.tkn.execute(Command.listTasks(), process.cwd(), false);
       let data: TknPipelineTrigger[] = [];
       if (result.error) {
-        console.log(result + ' Std.err when processing pipelines');
+        console.log(result + ' Std.err when processing task');
       }
       try {
         data = JSON.parse(result.stdout).items;
       } catch (ignore) {
-        //show no pipelines if output is not correct json
+        // ignore
       }
 
       const taskTrigger = data.map<Trigger>(value => ({
@@ -31,7 +31,7 @@ export class Task extends TektonItem {
         params: value.spec.params ? value.spec.params : undefined,
         serviceAcct: value.spec.serviceAccount ? value.spec.serviceAccount : undefined
       })).filter(function (obj) {
-        return obj.name === pipeline.getName();
+        return obj.name === task.getName();
       });
       if (taskTrigger[0].resources) {
         const resource = [];
@@ -45,7 +45,7 @@ export class Task extends TektonItem {
       }
       const inputStartTask = await Task.startObject(taskTrigger, 'Task');
 
-      return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartTask.name}'.`, () =>
+      return Progress.execFunctionWithProgress(`Starting Task '${inputStartTask.name}'.`, () =>
         Task.tkn.startTask(inputStartTask)
           .then(() => Task.explorer.refresh())
           .then(() => `Task '${inputStartTask.name}' successfully started`)
