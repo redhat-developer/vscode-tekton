@@ -118,7 +118,7 @@ export abstract class TektonItem {
     const resources: QuickPickItem[] = context[0].resources ? context[0].resources.map<QuickPickItem>(label => ({ label: label.name, resourceType: label['resourceType'] ? label['resourceType'] : undefined })) : undefined;
     const params: QuickPickItem[] | undefined = context[0].params ? context[0].params.map<QuickPickItem>(label => ({ label: label.name })) : undefined;
 
-    if (!resources) throw Error(`No Resources found to start ${message}`);
+    if (!resources && message !== 'Task') throw Error(`No Resources found to start ${message}`);
 
     const title = `Start ${message}`;
 
@@ -139,21 +139,23 @@ export abstract class TektonItem {
     }
 
     async function pickResourceGroup(input: MultiStepInput): Promise<InputStep> {
-      const pick = await input.showQuickPick({
-        title,
-        placeholder: `Input ${message} resources`,
-        items: resources,
-      });
-      const Ref = await PipelineResourceReturn(pick.label);
-      resources.splice(resources.indexOf(pick), 1);
-      const selectedResource: Resources = {
-        name: pick.label,
-        resourceType: pick['resourceType'],
-        resourceRef: await inputResources(input, Ref),
-      };
-      inputStart.resources.push(selectedResource);
-      if (resources.length > 0) {
-        return pickResourceGroup(input);
+      if (resources) {
+        const pick = await input.showQuickPick({
+          title,
+          placeholder: `Input ${message} resources`,
+          items: resources,
+        });
+        const Ref = await PipelineResourceReturn(pick.label);
+        resources.splice(resources.indexOf(pick), 1);
+        const selectedResource: Resources = {
+          name: pick.label,
+          resourceType: pick['resourceType'],
+          resourceRef: await inputResources(input, Ref),
+        };
+        inputStart.resources.push(selectedResource);
+        if (resources.length > 0) {
+          return pickResourceGroup(input);
+        }
       }
       if (params) {
         return (input: MultiStepInput): Promise<InputStep> => inputParameters(input);
