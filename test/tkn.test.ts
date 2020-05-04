@@ -13,12 +13,12 @@ import * as sinonChai from 'sinon-chai';
 import * as assert from 'assert';
 import { ToolsConfig } from '../src/tools';
 import { WindowUtil } from '../src/util/windowUtils';
-import { StartPipelineObject, PipeResources, PipeParams } from '../src/tekton/pipeline';
-import { Terminal, TerminalOptions, ExtensionTerminalOptions } from 'vscode';
+import { Terminal } from 'vscode';
 import { TestItem } from './tekton/testTektonitem';
 import { ExecException } from 'child_process';
 import * as path from 'path';
 import { TektonNode } from '../src/tkn';
+import { StartObject, Resources, Params } from '../src/tekton/tektonitem';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -26,7 +26,7 @@ chai.use(sinonChai);
 // This needs to be edited to actually make sense wrt Tasks/TaskRuns in particular and nesting of resources
 suite('tkn', () => {
   const tknCli: tkn.Tkn = tkn.tkn;
-  let startPipelineObj: StartPipelineObject;
+  let startPipelineObj: StartObject;
   const sandbox = sinon.createSandbox();
   const errorMessage = 'Error';
 
@@ -140,7 +140,7 @@ suite('tkn', () => {
 
     test('startPipeline returns items from tkn pipeline start command', async () => {
 
-      const testResources: PipeResources[] = [
+      const testResources: Resources[] = [
         {
           name: 'test-resource1',
           resourceRef: 'resource1'
@@ -150,7 +150,7 @@ suite('tkn', () => {
           resourceRef: 'resource1'
         }
       ];
-      const testParams: PipeParams[] = [
+      const testParams: Params[] = [
         {
           default: 'package',
           description: 'Param test description',

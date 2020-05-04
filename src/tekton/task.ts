@@ -3,21 +3,59 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { TektonItem } from './tektonitem';
+import { TektonItem, Trigger } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
 import { window } from 'vscode';
 import { Progress } from '../util/progress';
+import * as cliInstance from '../cli';
+import { TknPipelineTrigger } from '../tekton';
 
 export class Task extends TektonItem {
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  static start(start: any, context: any): any {
-    throw new Error('Method not implemented.');
+  static async start(task: TektonNode): Promise<string> {
+    if (task) {
+      const result: cliInstance.CliExitData = await Task.tkn.execute(Command.listTasks(), process.cwd(), false);
+      let data: TknPipelineTrigger[] = [];
+      if (result.error) {
+        console.log(result + ' Std.err when processing task');
+      }
+      try {
+        data = JSON.parse(result.stdout).items;
+      } catch (ignore) {
+        // ignore
+      }
+
+      const taskTrigger = data.map<Trigger>(value => ({
+        name: value.metadata.name,
+        resources: value.spec.resources,
+        params: value.spec.params ? value.spec.params : undefined,
+        serviceAcct: value.spec.serviceAccount ? value.spec.serviceAccount : undefined
+      })).filter(function (obj) {
+        return obj.name === task.getName();
+      });
+      if (taskTrigger[0].resources) {
+        const resource = [];
+        Object.keys(taskTrigger[0].resources).map(label => {
+          taskTrigger[0].resources[label].map((value) => {
+            value.resourceType = label;
+            resource.push(value);
+          });
+        });
+        taskTrigger[0].resources = resource;
+      }
+      const inputStartTask = await Task.startObject(taskTrigger, 'Task');
+
+      return Progress.execFunctionWithProgress(`Starting Task '${inputStartTask.name}'.`, () =>
+        Task.tkn.startTask(inputStartTask)
+          .then(() => Task.explorer.refresh())
+          .then(() => `Task '${inputStartTask.name}' successfully started`)
+          .catch((error) => Promise.reject(`Failed to start Task with error '${error}'`))
+      );
+    }
+    return null;
   }
 
   static async list(task: TektonNode): Promise<void> {
-    /*  const task = await Task.getTektonCmdData(treeItem,
-        "Which task do you want to list"); */
     if (task) { Task.tkn.executeInTerminal(Command.listTasksInTerminal()); }
   }
 
