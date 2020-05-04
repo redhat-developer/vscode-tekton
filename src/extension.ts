@@ -28,7 +28,7 @@ import { EventListener } from './tekton/eventlistener';
 import { k8sCommands } from './kubernetes';
 
 export let contextGlobalState: vscode.ExtensionContext;
-let tektonExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
+let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 
@@ -94,26 +94,24 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   setCommandContext(CommandContext.TreeZenMode, false);
   setCommandContext(CommandContext.PipelinePreview, false);
 
-  const tektonExplorerAPI = await k8s.extension.clusterExplorer.v1;
-  if (tektonExplorerAPI.available) {
-    tektonExplorer = tektonExplorerAPI.api;
-    const nodeContributor = tektonExplorer.nodeSources.groupingFolder(
+  const k8sExplorerApi = await k8s.extension.clusterExplorer.v1;
+  if (k8sExplorerApi.available) {
+    k8sExplorer = k8sExplorerApi.api;
+    const nodeContributor = k8sExplorer.nodeSources.groupingFolder(
       'Tekton Pipelines',
       'context',
-      tektonExplorer.nodeSources.resourceFolder('ClusterTasks', 'ClusterTasks', 'ClusterTask', 'clustertask').if(isTekton),
-      tektonExplorer.nodeSources.resourceFolder('Tasks', 'Tasks', 'Task', 'task').if(isTekton),
-      tektonExplorer.nodeSources.resourceFolder('TaskRuns', 'TaskRuns', 'TaskRun', 'taskruns').if(isTekton),
-      tektonExplorer.nodeSources.resourceFolder('Pipelines', 'Pipelines', 'Pipeline', 'pipelines').if(isTekton),
-      tektonExplorer.nodeSources.resourceFolder('PipelineRuns', 'PipelineRuns', 'PipelineRun', 'pipelineruns').if(isTekton),
-      tektonExplorer.nodeSources.resourceFolder('Pipeline Resources', 'PipelineResources', 'PipelineResources', 'pipelineresources').if(isTekton),
-      tektonExplorer.nodeSources.resourceFolder('TriggerTemplates', 'TriggerTemplates', 'TriggerTemplates', 'triggerTemplates').if(isTekton),
-      tektonExplorer.nodeSources.resourceFolder('TriggerBinding', 'TriggerBinding', 'TriggerBinding', 'triggerBinding').if(isTekton),
-      tektonExplorer.nodeSources.resourceFolder('EventListener', 'EventListener', 'EventListener', 'eventListener').if(isTekton),
-      tektonExplorer.nodeSources.resourceFolder('Conditions', 'Conditions', 'Conditions', 'conditions').if(isTekton),
+      k8sExplorer.nodeSources.resourceFolder('ClusterTasks', 'ClusterTasks', 'ClusterTask', 'clustertask').if(isTekton),
+      k8sExplorer.nodeSources.resourceFolder('Tasks', 'Tasks', 'Task', 'task').if(isTekton),
+      k8sExplorer.nodeSources.resourceFolder('TaskRuns', 'TaskRuns', 'TaskRun', 'taskruns').if(isTekton),
+      k8sExplorer.nodeSources.resourceFolder('Pipelines', 'Pipelines', 'Pipeline', 'pipelines').if(isTekton),
+      k8sExplorer.nodeSources.resourceFolder('PipelineRuns', 'PipelineRuns', 'PipelineRun', 'pipelineruns').if(isTekton),
+      k8sExplorer.nodeSources.resourceFolder('Pipeline Resources', 'PipelineResources', 'PipelineResources', 'pipelineresources').if(isTekton),
+      k8sExplorer.nodeSources.resourceFolder('TriggerTemplates', 'TriggerTemplates', 'TriggerTemplates', 'triggerTemplates').if(isTekton),
+      k8sExplorer.nodeSources.resourceFolder('TriggerBinding', 'TriggerBinding', 'TriggerBinding', 'triggerBinding').if(isTekton),
+      k8sExplorer.nodeSources.resourceFolder('EventListener', 'EventListener', 'EventListener', 'eventListener').if(isTekton),
+      k8sExplorer.nodeSources.resourceFolder('Conditions', 'Conditions', 'Conditions', 'conditions').if(isTekton),
     ).at(undefined);
-    tektonExplorer.registerNodeContributor(nodeContributor);
-  } else {
-    vscode.window.showErrorMessage('Command not available: ${tektonExplorer.reason}');
+    k8sExplorer.registerNodeContributor(nodeContributor);
   }
 
   registerYamlSchemaSupport(context);

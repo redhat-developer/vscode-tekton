@@ -4,13 +4,12 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command } from '../tkn';
+import { TektonNode, Command, tkn } from '../tkn';
 import { MultiStepInput, InputStep } from '../util/MultiStepInput';
 import { Progress } from '../util/progress';
 import { QuickPickItem, window } from 'vscode';
 import * as cliInstance from '../cli';
 import { cli } from '../cli';
-import * as k8s from 'vscode-kubernetes-tools-api';
 import { TknPipelineResource, TknPipelineTrigger } from '../tekton';
 
 export interface NameType {
@@ -202,15 +201,15 @@ export class Pipeline extends TektonItem {
     async function PipelineResourceReturn(name: string): Promise<PipelineRef[]> {
       let pipeR: TknPipelineResource[] = [];
       const element = context[0].resources.find(e => e.name === name);
-      const kubectl = await k8s.extension.kubectl.v1;
-      if (kubectl.available) {
-        const k8output = await kubectl.api.invokeCommand('get pipelineresources -o json');
-        try {
-          pipeR = JSON.parse(k8output.stdout).items;
-        } catch (ignore) {
-          // eslint-disable-next-line no-empty
-        }
+
+
+      const k8output = await tkn.execute(Command.listPipelineResources());
+      try {
+        pipeR = JSON.parse(k8output.stdout).items;
+      } catch (ignore) {
+        // eslint-disable-next-line no-empty
       }
+
       const pipeResources = pipeR.map<PipelineRef>(value => ({
         name: value.metadata.name,
         type: value.spec.type,
