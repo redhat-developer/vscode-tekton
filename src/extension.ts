@@ -15,7 +15,7 @@ import fsx = require('fs-extra');
 import * as k8s from 'vscode-kubernetes-tools-api';
 import { ClusterTask } from './tekton/clustertask';
 import { PipelineResource } from './tekton/pipelineresource';
-import { TektonNode } from './tkn';
+import { TektonNode, Command } from './tkn';
 import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
 import { setCommandContext, CommandContext, enterZenMode, exitZenMode, refreshCustomTree, removeItemFromCustomTree } from './commands';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
@@ -116,6 +116,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     ).at(undefined);
     k8sExplorer.registerNodeContributor(nodeContributor);
   }
+
+  vscode.workspace.onDidSaveTextDocument(async (document: vscode.TextDocument) => {
+    const verifyTknYaml = tektonYaml.isTektonYaml(document);
+    if (verifyTknYaml && document.uri.authority !== 'loadtektonresource') {
+      tknImpl.execute(Command.create(document.uri.fsPath))
+        .then(() => pipelineExplorer.refresh())
+        .then(() => `The ${verifyTknYaml} successfully deleted.`)
+        .catch((err) => Promise.reject(`Failed to create the ${verifyTknYaml}: '${err}'.`));
+    }
+  });
 
   registerYamlSchemaSupport(context);
   registerPipelinePreviewContext();

@@ -9,12 +9,18 @@ import { TknElementType } from '../model/common';
 import { PipelineTask, PipelineTaskCondition } from '../model/pipeline/pipeline-model';
 
 const TEKTON_API = 'tekton.dev/';
+const TRIGGER_API = 'triggers.tekton.dev';
 
 export enum TektonYamlType {
   Task = 'Task',
   TaskRun = 'TaskRun',
   Pipeline = 'Pipeline',
+  Condition = 'Condition',
+  ClusterTask = 'ClusterTask',
   PipelineRun = 'PipelineRun',
+  EventListener = 'EventListener',
+  TriggerBinding = 'TriggerBinding',
+  TriggerTemplate = 'TriggerTemplate',
   PipelineResource = 'PipelineResource'
 }
 
@@ -93,7 +99,7 @@ export class TektonYaml {
     if (rootMap) {
       const apiVersion = getYamlMappingValue(rootMap, 'apiVersion');
       const kind = getYamlMappingValue(rootMap, 'kind');
-      if (apiVersion && apiVersion.startsWith(TEKTON_API)) {
+      if (apiVersion && apiVersion.startsWith(TEKTON_API) || apiVersion.startsWith(TRIGGER_API)) {
         return TektonYamlType[kind];
       }
     }
