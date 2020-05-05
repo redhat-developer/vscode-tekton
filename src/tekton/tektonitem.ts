@@ -118,8 +118,6 @@ export abstract class TektonItem {
     const resources: QuickPickItem[] = context[0].resources ? context[0].resources.map<QuickPickItem>(label => ({ label: label.name, resourceType: label['resourceType'] ? label['resourceType'] : undefined })) : undefined;
     const params: QuickPickItem[] | undefined = context[0].params ? context[0].params.map<QuickPickItem>(label => ({ label: label.name })) : undefined;
 
-    if (!resources && message !== 'Task') throw Error(`No Resources found to start ${message}`);
-
     const title = `Start ${message}`;
 
     interface Ref {
