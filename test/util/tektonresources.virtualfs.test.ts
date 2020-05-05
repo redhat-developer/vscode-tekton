@@ -13,14 +13,13 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { TektonResourceVirtualFileSystemProvider, kubefsUri } from '../../src/util/tektonresources.virtualfs';
 import { Uri, workspace, window, commands, TextDocument, EndOfLine } from 'vscode';
-import * as k8s from 'vscode-kubernetes-tools-api';
+import { cli, CliCommand } from '../../src/cli';
 
 const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('TektonResourceVirtualFileSystemProvider', () => {
   const sandbox = sinon.createSandbox();
-  let v1Stub: sinon.SinonStub;
   let osStub: sinon.SinonStub;
   let unlinkStub: sinon.SinonStub;
   let openTextStub: sinon.SinonStub;
@@ -31,6 +30,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
   let writeFileStub: sinon.SinonStub;
   let trvfsp: TektonResourceVirtualFileSystemProvider;
   let nonce: sinon.SinonFakeTimers;
+  let cliExecuteStub: sinon.SinonStub;
   const tknUri = 'tknsss://loadtektonresourceload/pipeline-petclinic-deploy-pipeline.yaml?value%3Dpipeline%2Fpetclinic-deploy-pipeline%26_%3D1581402784093';
   const getYaml = `apiVersion: tekton.dev/v1alpha1
     kind: Pipeline
@@ -102,11 +102,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
     workspaceFoldersStub = sandbox.stub(workspace, 'workspaceFolders').value([wsFolder1]);
     writeFileStub = sandbox.stub(fs, 'writeFile');
     sandbox.stub(window, 'showErrorMessage').resolves();
-    const api: k8s.API<k8s.KubectlV1> = {
-      available: false,
-      reason: 'extension-not-available'
-    };
-    v1Stub = sandbox.stub(k8s.extension.kubectl, 'v1').value(api);
+    cliExecuteStub = sandbox.stub(cli,'execute');
     osStub = sandbox.stub(os, 'tmpdir');
     unlinkStub = sandbox.stub(fs, 'unlink');
     openTextStub = sandbox.stub(workspace, 'openTextDocument').resolves(textDocument);
@@ -140,24 +136,9 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
   });
 
   test('should able to get yaml data from kubectl', async () => {
-    const api: k8s.API<k8s.KubectlV1> = {
-      available: true,
-      api: {
-        invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0 }),
-        portForward: sandbox.stub()
-      }
-    };
-    v1Stub.onFirstCall().value(api);
+    cliExecuteStub.resolves({ stdout: getYaml, stderr: '', code: 0 })
     const result = await trvfsp.readFile(Uri.parse(tknUri));
     expect(result.toString()).deep.equals(getYaml);
-  });
-
-  test('throw error if command fails', async () => {
-    try {
-      await trvfsp.readFile(Uri.parse(tknUri));
-    } catch (err) {
-      expect(err.message).equals('kubectl is not available, check k8\'s documentation to install "kubectl"');
-    }
   });
 
   test('should able to apply and save yaml data', async () => {
@@ -166,14 +147,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
     } else {
       osStub.onFirstCall().returns('/temp');
     }
-    const api: k8s.API<k8s.KubectlV1> = {
-      available: true,
-      api: {
-        invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0 }),
-        portForward: sandbox.stub()
-      }
-    };
-    v1Stub.value(api);
+    cliExecuteStub.resolves({ stdout: getYaml, stderr: '', code: 0 })
     const content = await trvfsp.readFile(Uri.parse(tknUri));
     await trvfsp.writeFile(Uri.parse(tknUri), content);
     writeFileStub.calledOnce;
@@ -183,14 +157,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
   });
 
   test('return undefined if temp folder is not found', async () => {
-    const api: k8s.API<k8s.KubectlV1> = {
-      available: true,
-      api: {
-        invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0 }),
-        portForward: sandbox.stub()
-      }
-    };
-    v1Stub.value(api);
+    cliExecuteStub.resolves({ stdout: getYaml, stderr: '', code: 0 })
     const content = await trvfsp.readFile(Uri.parse(tknUri));
     if (process.platform === 'win32') {
       osStub.onFirstCall().returns(undefined);
@@ -203,14 +170,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
 
   test('throw error if command fails to update yaml file', async () => {
     try {
-      const api: k8s.API<k8s.KubectlV1> = {
-        available: true,
-        api: {
-          invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0 }),
-          portForward: sandbox.stub()
-        }
-      };
-      v1Stub.value(api);
+      cliExecuteStub.resolves({ stdout: getYaml, stderr: '', code: 0 })
       const content = await trvfsp.readFile(Uri.parse(tknUri));
       if (process.platform === 'win32') {
         osStub.onFirstCall().returns('c:\\temp');
@@ -225,14 +185,7 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
 
   test('throw error if kubectl command fails to update yaml file', async () => {
     try {
-      const api: k8s.API<k8s.KubectlV1> = {
-        available: true,
-        api: {
-          invokeCommand: sandbox.stub().resolves({ stdout: '', stderr: 'error', code: 0 }),
-          portForward: sandbox.stub()
-        }
-      };
-      v1Stub.onSecondCall().value(api);
+      cliExecuteStub.resolves({ stdout: '', stderr: 'error', code: 0 })
       const content = await trvfsp.readFile(Uri.parse(tknUri));
       if (process.platform === 'win32') {
         osStub.onFirstCall().returns('c:\\temp');
@@ -252,16 +205,10 @@ suite('TektonResourceVirtualFileSystemProvider', () => {
   });
 
   test('loadTektonDocument() should request same output type as file extension', async () => {
-    const api: k8s.API<k8s.KubectlV1> = {
-      available: true,
-      api: {
-        invokeCommand: sandbox.stub().resolves({ stdout: getYaml, stderr: '', code: 0 }),
-        portForward: sandbox.stub()
-      }
-    };
-    v1Stub.value(api);
+
+    cliExecuteStub.resolves({ stdout: getYaml, stderr: '', code: 0 })
     const content = kubefsUri('pipeline/petclinic-deploy-pipeline', 'json');
     await trvfsp.loadTektonDocument(content);
-    expect(api.api.invokeCommand).calledOnceWith('-o json get pipeline/petclinic-deploy-pipeline');
+    expect(cliExecuteStub).calledOnceWith({cliCommand:'kubectl', cliArguments:['-o json get pipeline/petclinic-deploy-pipeline']} as CliCommand);
   });
 });

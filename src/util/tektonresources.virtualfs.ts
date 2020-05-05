@@ -13,8 +13,7 @@ import * as os from 'os'
 import * as querystring from 'querystring';
 import { FileSystemProvider, Uri, EventEmitter, FileChangeEvent, Event, Disposable, FileStat, FileType, window, workspace, commands } from 'vscode';
 import { cli, CliExitData } from '../cli';
-import { Command } from '../tkn';
-import * as k8s from 'vscode-kubernetes-tools-api';
+import { newK8sCommand } from '../tkn';
 import { TektonItem } from '../tekton/tektonitem';
 import { VirtualDocument } from '../yaml-support/yaml-locator';
 
@@ -90,12 +89,8 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
     return sr.stdout;
   }
 
-  async execLoadResource(value: string, outputFormat: string): Promise<CliExitData | k8s.KubectlV1.ShellResult> {
-    const kubectl = await k8s.extension.kubectl.v1;
-    if (kubectl.available) {
-      return await kubectl.api.invokeCommand(`-o ${outputFormat} get ${value}`);
-    }
-    return { error: new Error('kubectl is not available, check k8\'s documentation to install "kubectl"'), stdout: 'kubectl is not available' };
+  async execLoadResource(value: string, outputFormat: string): Promise<CliExitData> {
+    return await cli.execute(newK8sCommand(`-o ${outputFormat} get ${value}`));
   }
 
   writeFile(uri: Uri, content: Uint8Array): void | Thenable<void> {
@@ -116,7 +111,6 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
     await fsx.writeFile(fsPath, content);
     const result = await TektonResourceVirtualFileSystemProvider.updateYamlFile(fsPath);
     if (result['stderr']) throw Error(result['stderr']);
-    if (result['error']) throw Error(result['error']);
     await fsx.unlink(fsPath);
     const query = querystring.parse(uri.query);
     const outputFormat = TektonItem.getOutputFormat();
@@ -141,12 +135,8 @@ export class TektonResourceVirtualFileSystemProvider implements FileSystemProvid
     }, (err) => window.showErrorMessage(`Error loading document: ${err}`));
   }
 
-  static async updateYamlFile(fsPath: string): Promise<CliExitData | k8s.KubectlV1.ShellResult> {
-    const kubectl = await k8s.extension.kubectl.v1;
-    if (kubectl.available) {
-      return await kubectl.api.invokeCommand(`apply -f ${fsPath}`);
-    }
-    return await cli.execute(Command.updateYaml(fsPath));
+  static async updateYamlFile(fsPath: string): Promise<CliExitData> {
+    return await cli.execute(newK8sCommand(`apply -f ${fsPath}`));
   }
 
   delete(): void | Thenable<void> {

@@ -13,6 +13,6 @@ downloadAndUnzipVSCode().then((executable: string) => {
   } else {
     executable = path.join(path.dirname(executable), 'bin', 'code');
   }
-  const installLog = cp.execSync(`${executable} --install-extension ms-kubernetes-tools.vscode-kubernetes-tools`);
+  const installLog = cp.execSync(`${executable} --install-extension redhat.vscode-yaml`);
   console.log(installLog.toString());
 });
