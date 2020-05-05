@@ -23,7 +23,6 @@ export async function save(document: vscode.TextDocument): Promise<void> {
     if (verifyTknYaml && (/Save/.test(value) || contextGlobalState.workspaceState.get(document.uri.fsPath))) {
       const result = await cli.execute(Command.create(document.uri.fsPath))
       if (result.error) {
-        pipelineExplorer.refresh();
         vscode.window.showErrorMessage(getStderrString(result.error));
       } else {
         pipelineExplorer.refresh();
