@@ -67,7 +67,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.triggertemplate.delete', (context) => execute(TriggerTemplate.delete, context)),
     vscode.commands.registerCommand('tekton.triggerbinding.delete', (context) => execute(TriggerBinding.delete, context)),
     vscode.commands.registerCommand('tekton.eventlistener.delete', (context) => execute(EventListener.delete, context)),
-    vscode.commands.registerCommand('tekton.clustertask.start', (context) => execute(ClusterTask.start, context)),
     vscode.commands.registerCommand('tekton.clustertask.list', (context) => execute(ClusterTask.list, context)),
     vscode.commands.registerCommand('tekton.clustertask.delete', (context) => execute(ClusterTask.delete, context)),
     vscode.commands.registerCommand('tekton.taskrun.list', (context) => execute(TaskRun.list, context)),

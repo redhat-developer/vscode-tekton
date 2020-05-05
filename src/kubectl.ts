@@ -22,9 +22,9 @@ export interface WatchControl {
 }
 
 export class Kubectl {
-  watchPipelineRun(name: string, callback?: PipelineRunCallback): Promise<void> {
+  watchRunCommand(command: CliCommand, callback?: PipelineRunCallback): Promise<void> {
     return new Promise((resolve, reject) => {
-      const watch = cli.executeWatchJSON(KubectlCommands.watchPipelineRuns(name));
+      const watch = cli.executeWatchJSON(command);
       watch.on('object', obj => {
         if (callback) {
           callback(obj);

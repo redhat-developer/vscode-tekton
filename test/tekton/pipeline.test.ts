@@ -9,9 +9,9 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { TknImpl, Command, ContextType } from '../../src/tkn';
-import { Pipeline, StartPipelineObject, PipeResources, PipeParams, PipelineTrigger, NameType } from '../../src/tekton/pipeline';
+import { Pipeline } from '../../src/tekton/pipeline';
 import { PipelineExplorer, pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
-import { TektonItem } from '../../src/tekton/tektonitem';
+import { TektonItem, Trigger, StartObject, NameType, Resources, Params } from '../../src/tekton/tektonitem';
 import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
 import { cliCommandToString } from '../../src/cli';
@@ -24,8 +24,8 @@ suite('Tekton/Pipeline', () => {
   let execStub: sinon.SinonStub;
   let getPipelineStub: sinon.SinonStub;
   let termStub: sinon.SinonStub;
-  let pipeTrigger: PipelineTrigger[];
-  let startPipelineObj: StartPipelineObject;
+  let pipeTrigger: Trigger[];
+  let startPipelineObj: StartObject;
   const pipelineNode = new TestItem(TknImpl.ROOT, 'test-pipeline', ContextType.PIPELINENODE, null);
   const pipelineItem = new TestItem(pipelineNode, 'pipeline', ContextType.PIPELINE, null);
 
@@ -175,7 +175,7 @@ suite('Tekton/Pipeline', () => {
         type: 'test-type'
       }];
 
-      const testResources: PipeResources[] = [
+      const testResources: Resources[] = [
         {
           name: 'test-resource1',
           resourceRef: 'resource1'
@@ -185,7 +185,7 @@ suite('Tekton/Pipeline', () => {
           resourceRef: 'resource1'
         }
       ];
-      const testParams: PipeParams[] = [
+      const testParams: Params[] = [
         {
           default: 'package',
           description: 'Param test description',
@@ -214,7 +214,7 @@ suite('Tekton/Pipeline', () => {
     });
 
     test('starts a pipeline with appropriate resources', async () => {
-      sandbox.stub(Pipeline, 'startPipelineObject').withArgs(pipeTrigger).resolves(startPipelineObj);
+      sandbox.stub(Pipeline, 'startObject').withArgs(pipeTrigger, 'Pipeline').resolves(startPipelineObj);
       sandbox.stub(Pipeline, 'start').withArgs(pipelineItem).resolves('Pipeline \'pipeline\' successfully created');
       const result = await Pipeline.start(pipelineItem);
       expect(result).equals(`Pipeline '${startPipelineObj.name}' successfully created`);

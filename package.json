@@ -46,7 +46,6 @@
     "onCommand:tekton.triggertemplate.delete",
     "onCommand:tekton.triggerbinding.delete",
     "onCommand:tekton.eventlistener.delete",
-    "onCommand:tekton.clustertask.start",
     "onCommand:tekton.clustertask.list",
     "onCommand:tekton.clustertask.delete",
     "onCommand:tekton.taskrun.list",
@@ -290,11 +289,6 @@
         "category": "Tekton"
       },
       {
-        "command": "tekton.clustertask.start",
-        "title": "Start",
-        "category": "Tekton"
-      },
-      {
         "command": "tekton.clustertask.list",
         "title": "List ClusterTasks",
         "category": "Tekton"
@@ -500,10 +494,6 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
-          "command": "tekton.clustertask.start",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
-        },
-        {
           "command": "tekton.clustertask.list",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -693,11 +683,6 @@
         {
           "command": "tekton.eventlistener.delete",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == eventlistener",
-          "group": "c1"
-        },
-        {
-          "command": "tekton.clustertask.start",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == clustertask",
           "group": "c1"
         },
         {
