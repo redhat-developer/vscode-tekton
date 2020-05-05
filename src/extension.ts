@@ -15,7 +15,7 @@ import fsx = require('fs-extra');
 import * as k8s from 'vscode-kubernetes-tools-api';
 import { ClusterTask } from './tekton/clustertask';
 import { PipelineResource } from './tekton/pipelineresource';
-import { TektonNode, Command, getStderrString } from './tkn';
+import { TektonNode } from './tkn';
 import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
 import { setCommandContext, CommandContext, enterZenMode, exitZenMode, refreshCustomTree, removeItemFromCustomTree } from './commands';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
@@ -116,29 +116,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     ).at(undefined);
     k8sExplorer.registerNodeContributor(nodeContributor);
   }
-
   vscode.workspace.onDidSaveTextDocument(async (document: vscode.TextDocument) => {
-    let value: string;
-    if (document.uri.authority !== 'loadtektonresource') {
-      const verifyTknYaml = tektonYaml.isTektonYaml(document);
-      if (!context.globalState.get(document.uri.fsPath)) {
-        value = await vscode.window.showWarningMessage('Detected Tekton yaml resource file. Do you want to deploy to cluster?', 'Save', 'Save Once', 'Cancel');
-      }
-      if (value === 'Save') {
-        context.globalState.update(document.uri.fsPath, true);
-      }
-      if (verifyTknYaml && (/Save/.test(value) || context.globalState.get(document.uri.fsPath))) {
-        const result = await cli.execute(Command.create(document.uri.fsPath))
-        if (result.error) {
-          vscode.window.showErrorMessage(getStderrString(result.error));
-        } else {
-          pipelineExplorer.refresh();
-          vscode.window.showInformationMessage('Resources were successfully created.');
-        }
-      }
-    }
-  })
-
+    await save(document);
+  });
   registerYamlSchemaSupport(context);
   registerPipelinePreviewContext();
   initializeTknEditing(context);
