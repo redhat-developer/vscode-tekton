@@ -75,8 +75,7 @@ suite('Tekton Editing support', () => {
     });
 
     test('go to task name from runAfter', async () => {
-      let yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', 'yaml-support', 'pipeline-ordering.yaml'), 'utf8');
-      yaml = yaml.replace(/\r\n/gm, '\n');
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', 'yaml-support', 'pipeline-ordering.yaml'), 'utf8');
       const doc = new TestTextDocument(vscode.Uri.parse('file:///editing/pipeline/pipeline.yaml'), yaml);
       isTektonYamlStub.returns(TektonYamlType.Pipeline);
 

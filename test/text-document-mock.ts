@@ -14,9 +14,11 @@ export class TestTextDocument implements vscode.TextDocument {
   version = 1;
   isDirty: boolean;
   isClosed: boolean;
+  
+  private text;
 
-  constructor(public uri: vscode.Uri, private text: string) {
-
+  constructor(public uri: vscode.Uri, text: string) {
+    this.text = text.replace(/\r\n/gm, '\n'); // normalize end of line
   }
 
   save(): Thenable<boolean> {
