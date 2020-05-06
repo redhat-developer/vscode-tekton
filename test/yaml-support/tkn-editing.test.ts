@@ -133,8 +133,8 @@ suite('Tekton Editing support', () => {
     });
 
     test('go to task name from conditionRef should return k8s uri to conditions resource', async () => {
-      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', 'yaml-support', 'conditional-pipeline.yaml'));
-      const doc = new TestTextDocument(vscode.Uri.parse('file:///editing/pipeline/conditional-pipeline.yaml'), yaml.toString());
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', 'yaml-support', 'conditional-pipeline.yaml'), 'utf8');
+      const doc = new TestTextDocument(vscode.Uri.parse('file:///editing/pipeline/conditional-pipeline.yaml'), yaml);
       isTektonYamlStub.returns(TektonYamlType.Pipeline);
 
       const location = defProvider.provideDefinition(doc, new vscode.Position(21, 30), {} as vscode.CancellationToken) as vscode.Location;
