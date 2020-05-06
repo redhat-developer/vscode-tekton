@@ -8,6 +8,7 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import * as fs from 'fs-extra';
+import * as nodeFs from 'fs';
 import * as path from 'path';
 import { initializeTknEditing, TknDefinitionProvider } from '../../src/yaml-support/tkn-editing';
 import { tektonYaml, TektonYamlType } from '../../src/yaml-support/tkn-yaml';
@@ -133,9 +134,8 @@ suite('Tekton Editing support', () => {
     });
 
     test('go to task name from conditionRef should return k8s uri to conditions resource', async () => {
-      let yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', 'yaml-support', 'conditional-pipeline.yaml'), 'utf8');
+      const yaml = nodeFs.readFileSync(path.join(__dirname, '..', '..', '..', 'test', 'yaml-support', 'conditional-pipeline.yaml'), { encoding: 'utf8'});
       console.error(yaml);
-      yaml = yaml.replace(/^\uFEFF/, '');
       const doc = new TestTextDocument(vscode.Uri.parse('file:///editing/pipeline/conditional-pipeline.yaml'), yaml);
       isTektonYamlStub.returns(TektonYamlType.Pipeline);
 
