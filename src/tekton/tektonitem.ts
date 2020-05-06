@@ -212,13 +212,13 @@ export abstract class TektonItem {
           if (workspaceType.label === 'ConfigMap') {
             key = await input.showInputBox({
               title,
-              prompt: 'Provide key name',
+              prompt: 'Provide item key name',
               validate: validateInput,
             });
             value = await input.showInputBox({
               title,
-              prompt: 'Provide value name',
-              validate: validateInput,
+              prompt: 'Provide item value name',
+              validate: validateTextAndFileName,
             });
           }
           if (workspaceType.label === 'PersistentVolumeClaim') {
@@ -353,6 +353,11 @@ export abstract class TektonItem {
     async function validateInput(name: string): Promise<undefined | 'invalid'> {
       const alphaNumHyph = new RegExp(/^[a-zA-Z0-9-_]+$/);
       return name.match(alphaNumHyph) ? undefined : 'invalid';
+    }
+
+    async function validateTextAndFileName(name: string): Promise<undefined | 'invalid'> {
+      const value = new RegExp(/(^[a-zA-Z0-9-_]+.[a-zA-Z0-9-_]+$)/);
+      return name.match(value) ? undefined : 'invalid';
     }
 
     async function getParamValues(paramName: string): Promise<QuickPickItem[]> | null {

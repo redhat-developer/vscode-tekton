@@ -97,6 +97,23 @@ function verbose(_target: any, key: string, descriptor: any): void {
   };
 }
 
+function tknWorkspace(pipelineData: StartObject): string[] {
+  const workspace: string[] = [];
+  pipelineData.workspaces.forEach(element => {
+    workspace.push('-w');
+    if (element.workspaceType === 'PersistentVolumeClaim') {
+      workspace.push(`name=${element.name},claimName=${element.workspaceName},subPath=${element.subPath}`);
+    } else if (element.workspaceType === 'ConfigMap') {
+      workspace.push(`name=${element.name},config=${element.workspaceName},item=${element.key}=${element.value}`);
+    } else if (element.workspaceType === 'Secret') {
+      workspace.push(`name=${element.name},secret=${element.workspaceName}`);
+    } else if (element.workspaceType === 'EmptyDir') {
+      workspace.push(`name=${element.name},emptyDir=${element.emptyDir}`);
+    }
+  });
+  return workspace;
+}
+
 function newTknCommand(...tknArguments: string[]): CliCommand {
   return createCliCommand('tkn', ...tknArguments);
 }
@@ -126,15 +143,24 @@ export class Command {
     });
 
     if (pipelineData.params.length === 0) {
-      return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...svcAcct);
-    }
-    else {
+      if (pipelineData.workspaces.length === 0) {
+        return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...svcAcct);
+      } else {
+        const workspace = tknWorkspace(pipelineData);
+        return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...workspace, ...svcAcct);
+      }
+    } else {
       const params: string[] = [];
       pipelineData.params.forEach(element => {
         params.push('--param');
         params.push(element.name + '=' + element.default);
       });
-      return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...params, ...svcAcct);
+      if (pipelineData.workspaces.length === 0) {
+        return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...params, ...svcAcct);
+      } else {
+        const workspace = tknWorkspace(pipelineData);
+        return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...params, ...workspace,...svcAcct);
+      }
     }
   }
   @verbose
