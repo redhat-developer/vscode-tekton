@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-
+import { EOL } from 'os';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 export class TestTextDocument implements vscode.TextDocument {
@@ -33,13 +33,13 @@ export class TestTextDocument implements vscode.TextDocument {
     throw new Error('Method not implemented.');
   }
   positionAt(offset: number): vscode.Position {
-    const lines = this.text.split('\n');
+    const lines = this.text.split(EOL);
     let sum = 0;
     for (let i = 0; i < lines.length; i++) {
       const str = lines[i];
-      sum += str.length + 1;
+      sum += str.length + EOL.length;
       if (offset <= sum) {
-        return new vscode.Position(i, str.length - (sum - offset) + 1);
+        return new vscode.Position(i, str.length - (sum - offset) + EOL.length);
       }
     }
 
