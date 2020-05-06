@@ -26,6 +26,7 @@ import { TriggerTemplate } from './tekton/triggertemplate';
 import { TriggerBinding } from './tekton/triggerbinding';
 import { EventListener } from './tekton/eventlistener';
 import { k8sCommands } from './kubernetes';
+import { initializeTknEditing } from './yaml-support/tkn-editing';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -115,6 +116,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   registerYamlSchemaSupport(context);
   registerPipelinePreviewContext();
+  initializeTknEditing(context);
 }
 
 async function isTekton(): Promise<boolean> {

@@ -4,12 +4,12 @@
  *-----------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 
-export abstract class Disposable {
+export class Disposable {
   protected disposed = false;
 
   protected disposables: vscode.Disposable[] = [];
 
-  public dispose(): void {
+  dispose(): void {
     if (this.disposed) {
       return;
     }
@@ -17,7 +17,7 @@ export abstract class Disposable {
     disposeAll(this.disposables);
   }
 
-  protected register<T extends vscode.Disposable>(value: T): T {
+  register<T extends vscode.Disposable>(value: T): T {
     if (this.disposed) {
       value.dispose();
     } else {

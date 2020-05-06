@@ -47,11 +47,13 @@ export function run(testsRoots: string, cb: (error: {}, failures?: number) => vo
 
   try {
     mocha.run(failures => {
-      if (failures > 0) {
-        cb(new Error(`${failures} tests failed.`));
-      } else {
-        cb(null, failures);
-      }
+      setTimeout(() => {
+        if (failures > 0) {
+          cb(new Error(`${failures} tests failed.`));
+        } else {
+          cb(null, failures);
+        }
+      }, 100);
     });
 
   } catch (err) {
