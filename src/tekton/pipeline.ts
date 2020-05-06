@@ -30,6 +30,7 @@ export class Pipeline extends TektonItem {
         name: value.metadata.name,
         resources: value.spec.resources,
         params: value.spec.params ? value.spec.params : undefined,
+        workspaces: value.spec['workspaces'] ? value.spec['workspaces'] : undefined,
         serviceAcct: value.spec.serviceAccount ? value.spec.serviceAccount : undefined
       })).filter(function (obj) {
         return obj.name === pipeline.getName();

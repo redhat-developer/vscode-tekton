@@ -319,6 +319,10 @@ export class Command {
   static watchResources(resourceName: string, name: string): CliCommand {
     return newK8sCommand('get', resourceName, name, '-w', '-o', 'json');
   }
+  static workspace(name: string): CliCommand {
+    return newK8sCommand('get', name, '-o', 'json');
+  }
+
 }
 
 export class TektonNodeImpl implements TektonNode {

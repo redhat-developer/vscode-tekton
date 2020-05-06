@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Tkn, tkn as tknImpl, TektonNode } from '../tkn';
+import { Tkn, tkn as tknImpl, TektonNode, Command } from '../tkn';
 import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { workspace, window, QuickPickItem } from 'vscode';
 import { kubefsUri } from '../util/tektonresources.virtualfs';
@@ -25,6 +25,16 @@ export interface NameType {
   type: string;
 }
 
+export interface Workspaces {
+  name: string;
+  workspaceName?: string;
+  workspaceType?: string;
+  key?: string;
+  value?: string;
+  subPath?: string;
+  emptyDir?: string;
+}
+
 export interface Resources {
   name: string;
   resourceRef: string;
@@ -41,6 +51,7 @@ export interface StartObject {
   name: string;
   resources: Resources[];
   params: Params[];
+  workspaces: Workspaces[];
   serviceAccount: string | undefined;
 }
 
@@ -48,6 +59,7 @@ export interface Trigger {
   name: string;
   resources: NameType[];
   params?: Params[];
+  workspaces?: Workspaces[];
   serviceAcct: string | undefined;
 }
 
@@ -115,8 +127,9 @@ export abstract class TektonItem {
   }
 
   static async startObject(context: Trigger[], message: string): Promise<StartObject> {
-    const resources: QuickPickItem[] = context[0].resources ? context[0].resources.map<QuickPickItem>(label => ({ label: label.name, resourceType: label['resourceType'] ? label['resourceType'] : undefined })) : undefined;
+    const resources: QuickPickItem[] | undefined = context[0].resources ? context[0].resources.map<QuickPickItem>(label => ({ label: label.name, resourceType: label['resourceType'] ? label['resourceType'] : undefined })) : undefined;
     const params: QuickPickItem[] | undefined = context[0].params ? context[0].params.map<QuickPickItem>(label => ({ label: label.name })) : undefined;
+    const workspaces: QuickPickItem[] | undefined = context[0].workspaces ? context[0].workspaces.map<QuickPickItem>(label => ({ label: label.name })) : undefined;
 
     const title = `Start ${message}`;
 
@@ -128,6 +141,7 @@ export abstract class TektonItem {
     const inputStart = {
       resources: [],
       params: [],
+      workspaces: []
     } as StartObject;
     inputStart.name = context[0].name;
     inputStart.serviceAccount = context[0].serviceAcct;
@@ -136,7 +150,7 @@ export abstract class TektonItem {
       await MultiStepInput.run(input => pickResourceGroup(input));
     }
 
-    async function pickResourceGroup(input: MultiStepInput): Promise<InputStep> {
+    async function pickResourceGroup(input: MultiStepInput, count = 1): Promise<InputStep> {
       if (resources) {
         const pick = await input.showQuickPick({
           title,
@@ -157,6 +171,71 @@ export abstract class TektonItem {
       }
       if (params) {
         return (input: MultiStepInput): Promise<InputStep> => inputParameters(input);
+      }
+      if (workspaces) {
+        let key: string, value: string, subPath: string, workspaceName: QuickPickItem, emptyDir: string;
+        const pick = await input.showQuickPick({
+          title,
+          placeholder: `Select Workspace ${count}`,
+          items: workspaces,
+        });
+        workspaces.splice(workspaces.indexOf(pick), 1);
+        const workspaceList = ['PersistentVolumeClaim', 'EmptyDir', 'ConfigMap', 'Secret'];
+        const workspaceType = await window.showQuickPick(workspaceList, {
+          placeHolder: 'Select workspace type',
+          ignoreFocusOut: true,
+        });
+        if (workspaceType !== 'EmptyDir') {
+          const result = await tknImpl.execute(Command.workspace(workspaceType));
+          let data: object[];
+          try {
+            const r = JSON.parse(result.stdout);
+            data = r.items ? r.items : data;
+            // eslint-disable-next-line no-empty
+          } catch (ignore) {
+          }
+          const workspacesName: QuickPickItem[] | undefined = data ? data.map<QuickPickItem>(label => ({ label: label['metadata'].name })) : undefined;
+          workspaceName = await window.showQuickPick(workspacesName, {
+            placeHolder: 'Select workspace type',
+            ignoreFocusOut: true,
+          });
+          if (workspaceType === 'ConfigMap') {
+            key = await window.showInputBox({
+              prompt: 'Provide key name',
+              ignoreFocusOut: true,
+            })
+            value = await window.showInputBox({
+              prompt: 'Provide value name',
+              ignoreFocusOut: true,
+            })
+          }
+          if (workspaceType === 'PersistentVolumeClaim') {
+            subPath = await window.showInputBox({
+              prompt: 'Provide subPath',
+              ignoreFocusOut: true,
+            })
+          }
+        }
+        if (workspaceType === 'EmptyDir') {
+          emptyDir = await window.showInputBox({
+            prompt: 'Provide EmptyDir name',
+            ignoreFocusOut: true,
+          })
+        }
+        const selectedWorkspace: Workspaces = {
+          name: pick.label,
+          workspaceName: workspaceName.label,
+          workspaceType: workspaceType,
+          key: key ? key : undefined,
+          value: value ? value : undefined,
+          subPath: subPath ? subPath : undefined,
+          emptyDir: emptyDir ? emptyDir : undefined
+        };
+        inputStart.workspaces.push(selectedWorkspace);
+        if (workspaces.length > 0) {
+          count++;
+          return pickResourceGroup(input, count);
+        }
       }
       if (inputStart.serviceAccount) {
         return (input: MultiStepInput): Promise<InputStep> => pickServiceAcct(input);
