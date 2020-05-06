@@ -173,20 +173,21 @@ export abstract class TektonItem {
         return (input: MultiStepInput): Promise<InputStep> => inputParameters(input);
       }
       if (workspaces) {
-        let key: string, value: string, subPath: string, workspaceName: QuickPickItem, emptyDir: string;
+        let key: string, value: string, subPath: string, workspaceName: QuickPickItem | string, emptyDir: string;
         const pick = await input.showQuickPick({
           title,
           placeholder: `Select Workspace ${count}`,
           items: workspaces,
         });
         workspaces.splice(workspaces.indexOf(pick), 1);
-        const workspaceList = ['PersistentVolumeClaim', 'EmptyDir', 'ConfigMap', 'Secret'];
-        const workspaceType = await window.showQuickPick(workspaceList, {
-          placeHolder: 'Select workspace type',
-          ignoreFocusOut: true,
+        const workspaceList = [{label: 'PersistentVolumeClaim'}, {label: 'EmptyDir'}, {label: 'ConfigMap'}, {label: 'Secret'}];
+        const workspaceType = await input.showQuickPick({
+          title,
+          placeholder: 'Select workspace type',
+          items: workspaceList,
         });
-        if (workspaceType !== 'EmptyDir') {
-          const result = await tknImpl.execute(Command.workspace(workspaceType));
+        if (workspaceType.label !== 'EmptyDir') {
+          const result = await tknImpl.execute(Command.workspace(workspaceType.label));
           let data: object[];
           try {
             const r = JSON.parse(result.stdout);
@@ -195,37 +196,50 @@ export abstract class TektonItem {
           } catch (ignore) {
           }
           const workspacesName: QuickPickItem[] | undefined = data ? data.map<QuickPickItem>(label => ({ label: label['metadata'].name })) : undefined;
-          workspaceName = await window.showQuickPick(workspacesName, {
-            placeHolder: 'Select workspace type',
-            ignoreFocusOut: true,
+          if (workspacesName) workspacesName.unshift({label: '$(plus) Add new workspace name.'})
+          workspaceName = await input.showQuickPick({
+            title,
+            placeholder: 'Select workspace',
+            items: workspacesName,
           });
-          if (workspaceType === 'ConfigMap') {
-            key = await window.showInputBox({
-              prompt: 'Provide key name',
-              ignoreFocusOut: true,
-            })
-            value = await window.showInputBox({
-              prompt: 'Provide value name',
-              ignoreFocusOut: true,
-            })
+          if (workspaceName.label === '$(plus) Add new workspace name.') {
+            workspaceName = await input.showInputBox({
+              title,
+              prompt: 'Provide new workspace name',
+              validate: validateInput,
+            });
           }
-          if (workspaceType === 'PersistentVolumeClaim') {
-            subPath = await window.showInputBox({
+          if (workspaceType.label === 'ConfigMap') {
+            key = await input.showInputBox({
+              title,
+              prompt: 'Provide key name',
+              validate: validateInput,
+            });
+            value = await input.showInputBox({
+              title,
+              prompt: 'Provide value name',
+              validate: validateInput,
+            });
+          }
+          if (workspaceType.label === 'PersistentVolumeClaim') {
+            subPath = await input.showInputBox({
+              title,
               prompt: 'Provide subPath',
-              ignoreFocusOut: true,
-            })
+              validate: validateInput,
+            });
           }
         }
-        if (workspaceType === 'EmptyDir') {
-          emptyDir = await window.showInputBox({
+        if (workspaceType.label === 'EmptyDir') {
+          emptyDir = await input.showInputBox({
+            title,
             prompt: 'Provide EmptyDir name',
-            ignoreFocusOut: true,
-          })
+            validate: validateInput,
+          });
         }
         const selectedWorkspace: Workspaces = {
           name: pick.label,
-          workspaceName: workspaceName.label,
-          workspaceType: workspaceType,
+          workspaceName: workspaceName['label'] ? workspaceName['label'] : workspaceName,
+          workspaceType: workspaceType.label,
           key: key ? key : undefined,
           value: value ? value : undefined,
           subPath: subPath ? subPath : undefined,
