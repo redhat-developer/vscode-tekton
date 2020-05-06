@@ -76,7 +76,7 @@ suite('Tekton Editing support', () => {
     });
 
     test('go to task name from runAfter', async () => {
-      let yaml = (await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', 'yaml-support', 'pipeline-ordering.yaml'))).toString();
+      let yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', 'yaml-support', 'pipeline-ordering.yaml'), 'utf8');
       console.error(yaml);
       yaml = yaml.replace(/\r\n/gm, '\n');
       console.error(yaml);
