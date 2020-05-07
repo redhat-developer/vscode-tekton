@@ -199,13 +199,13 @@ export abstract class TektonItem {
           if (workspacesName) workspacesName.unshift({label: '$(plus) Add new workspace name.'})
           workspaceName = await input.showQuickPick({
             title,
-            placeholder: 'Select workspace',
+            placeholder: `Select ${workspaceType.label}`,
             items: workspacesName,
           });
           if (workspaceName.label === '$(plus) Add new workspace name.') {
             workspaceName = await input.showInputBox({
               title,
-              prompt: 'Provide new workspace name',
+              prompt: `Provide new ${workspaceType.label} name`,
               validate: validateInput,
             });
           }
