@@ -138,6 +138,14 @@ export class YamlLocator {
     return doc.findElement(offset);
   }
 
+  findTknDocument(textDocument: VirtualDocument, pos: vscode.Position): TknDocument | undefined {
+    const key: string = textDocument.uri.toString();
+    this.ensureCache(key, textDocument);
+    const cacheEntry = this.cache[key];
+    const offset = this.convertPosition(cacheEntry.lineLengths, pos.line, pos.character);
+    return this.getDocumentAtPosition(cacheEntry.tknDocuments, offset);
+  }
+
   private convertPosition(lineLens: number[], lineNumber: number, columnNumber: number): number {
     let pos = 0;
     for (let i = 0; i < lineNumber; i++) {
