@@ -167,6 +167,7 @@ suite('tkn', () => {
         name: 'pipeline',
         resources: testResources,
         params: testParams,
+        workspaces: [],
         serviceAccount: undefined
       };
       execStub.resolves({

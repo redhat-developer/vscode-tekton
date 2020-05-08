@@ -209,6 +209,7 @@ suite('Tekton/Pipeline', () => {
         name: 'pipeline',
         resources: testResources,
         params: testParams,
+        workspaces: [],
         serviceAccount: undefined
       };
     });
