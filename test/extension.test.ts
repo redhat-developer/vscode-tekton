@@ -41,7 +41,7 @@ suite('Tekton Pipeline Extension', () => {
   const clustertaskItem = new TektonNodeImpl(clustertaskNode, 'test-Clustertask', ContextType.CLUSTERTASK, tkn, vscode.TreeItemCollapsibleState.None);
 
   setup(async () => {
-
+    sandbox.stub(ToolsConfig, 'detectOrDownload').resolves('foo');
     //Activate extension
     const stub = sandbox.stub(Pipeline, 'about');
     try {
@@ -56,7 +56,6 @@ suite('Tekton Pipeline Extension', () => {
     sandbox.stub(TknImpl.prototype, '_getClusterTasks').resolves([clustertaskItem]);
     sandbox.stub(TknImpl.prototype, '_getPipelineRuns').resolves([pipelinerunItem]);
     sandbox.stub(TknImpl.prototype, '_getTaskRunsForPipelineRun').resolves([taskrunItem]);
-    sandbox.stub(ToolsConfig, 'detectOrDownload').resolves('foo');
   });
 
   teardown(() => {
