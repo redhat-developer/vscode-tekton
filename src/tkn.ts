@@ -159,7 +159,7 @@ export class Command {
         return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...params, ...svcAcct);
       } else {
         const workspace = tknWorkspace(pipelineData);
-        return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...params, ...workspace,...svcAcct);
+        return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...params, ...workspace, ...svcAcct);
       }
     }
   }
@@ -702,7 +702,11 @@ export class TknImpl implements Tkn {
       const tknDownMsg = 'The current user doesn\'t have the privileges to interact with tekton resources.';
       return [new TektonNodeImpl(null, tknDownMsg, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
     }
-    if (result.error && getStderrString(result.error).indexOf('the server doesn\'t have a resource type "pipeline"') > -1) {
+    if (result.error && getStderrString(result.error).indexOf('You must be logged in to the server (Unauthorized)') > -1) {
+      const tknMessage = 'Please login to the server.';
+      return [ new TektonNodeImpl(null, tknMessage, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)]
+    }
+    if (result.error && getStderrString(result.error).indexOf('the server doesn\'t have a resource type \'pipeline\'') > -1) {
       const tknDownMsg = 'Please install the OpenShift Pipelines Operator.';
       return [new TektonNodeImpl(null, tknDownMsg, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
     }
@@ -1107,7 +1111,7 @@ export class TknImpl implements Tkn {
 
   async execute(command: CliCommand, cwd?: string, fail = true): Promise<CliExitData> {
     if (command.cliCommand.indexOf('tkn') >= 0) {
-      const toolLocation = await ToolsConfig.detectOrDownload();
+      const toolLocation = ToolsConfig.getTknLocation();
       if (toolLocation) {
         // eslint-disable-next-line require-atomic-updates
         command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);

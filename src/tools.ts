@@ -37,6 +37,10 @@ export class ToolsConfig {
     ToolsConfig.tool = ToolsConfig.loadMetadata(configData, Platform.OS);
   }
 
+  static getTknLocation(): string {
+    return ToolsConfig.tool['tkn'].location;
+  }
+
   public static async detectOrDownload(): Promise<string> {
 
     let toolLocation: string = ToolsConfig.tool['tkn'].location;

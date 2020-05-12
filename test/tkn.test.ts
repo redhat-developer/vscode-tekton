@@ -1342,7 +1342,7 @@ suite('tkn', () => {
     });
 
     test('show warning message if OpenShift pipelines operator is not installed', async () => {
-      execStub.onFirstCall().resolves({ error: 'error: the server doesn\'t have a resource type "pipeline"', stdout: '' });
+      execStub.onFirstCall().resolves({ error: 'error: the server doesn\'t have a resource type \'pipeline\'', stdout: '' });
       const result = await tknCli.getPipelineNodes();
       assert.equal(result[0].getName(), 'Please install the OpenShift Pipelines Operator.');
     });

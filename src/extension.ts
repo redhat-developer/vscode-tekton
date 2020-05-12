@@ -27,12 +27,15 @@ import { TriggerBinding } from './tekton/triggerbinding';
 import { EventListener } from './tekton/eventlistener';
 import { k8sCommands } from './kubernetes';
 import { initializeTknEditing } from './yaml-support/tkn-editing';
+import { ToolsConfig } from './tools';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 
+  // start detecting 'tkn' on extension start
+  await ToolsConfig.detectOrDownload();
 
   contextGlobalState = context;
   migrateFromTkn018();
@@ -126,7 +129,7 @@ async function isTekton(): Promise<boolean> {
     if (!sr || sr.code !== 0) {
       return false;
     }
-    return sr.stdout.includes('tekton.dev/v1alpha1');  // Naive check to keep example simple!
+    return sr.stdout.includes('tekton.dev/');  // Naive check to keep example simple!
   }
 }
 

@@ -24,6 +24,7 @@ import packagejson = require('../package.json');
 import { TknImpl, tkn, TektonNodeImpl, ContextType } from '../src/tkn';
 import { PipelineExplorer } from '../src/pipeline/pipelineExplorer';
 import { TektonItem } from '../src/tekton/tektonitem';
+import { ToolsConfig } from '../src/tools';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -40,7 +41,7 @@ suite('Tekton Pipeline Extension', () => {
   const clustertaskItem = new TektonNodeImpl(clustertaskNode, 'test-Clustertask', ContextType.CLUSTERTASK, tkn, vscode.TreeItemCollapsibleState.None);
 
   setup(async () => {
-
+    sandbox.stub(ToolsConfig, 'detectOrDownload').resolves('foo');
     //Activate extension
     const stub = sandbox.stub(Pipeline, 'about');
     try {
