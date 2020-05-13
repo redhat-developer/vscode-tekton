@@ -1,5 +1,22 @@
 # Change Log
 
+## 0.1.0 (May 13, 2020)
+
+This release brings to you:
+
+* [#260](https://github.com/redhat-developer/vscode-tekton/pull/260)Added missing node in kubernetes tree
+* [#195](https://github.com/redhat-developer/vscode-tekton/issues/195)Sync pipeline preview with text editor
+* [#266](https://github.com/redhat-developer/vscode-tekton/issues/266)Update Tkn cli version(`0.9.0`)
+* [#189](https://github.com/redhat-developer/vscode-tekton/issues/189)start task command is not working
+* [#249](https://github.com/redhat-developer/vscode-tekton/issues/249)Code assist for pipelines
+* [#223](https://github.com/redhat-developer/vscode-tekton/issues/223)Add support for workspaces on start flow
+* Bugfixes or minor issues:
+  * [#261](https://github.com/redhat-developer/vscode-tekton/issues/261)While refreshing deleting a resource throw error.
+  * [#253](https://github.com/redhat-developer/vscode-tekton/issues/253)Remove direct dependency on K8's extension
+  * [#271](https://github.com/redhat-developer/vscode-tekton/issues/271)Can't start a pipeline without resource
+  * [#254](https://github.com/redhat-developer/vscode-tekton/issues/254)Check 'tkn' presents and version on extension sturtup
+  * [#263](https://github.com/redhat-developer/vscode-tekton/issues/263)Undefined in error if not logged in
+
 ## 0.0.8 (April 22, 2020)
 
 This release brings to you:
