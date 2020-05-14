@@ -260,7 +260,7 @@ export abstract class TektonItem {
         let key: string, value: string, subPath: string, workspaceName: QuickPickItem | string, emptyDir: string;
         const workspaceList = [{label: 'PersistentVolumeClaim'}, {label: 'EmptyDir'}, {label: 'ConfigMap'}, {label: 'Secret'}];
         const workspaceType = await input.showQuickPick({
-          title: `workspace ${count}: ${item['label']}`,
+          title: `Workspace ${count}: ${item['label']}`,
           placeholder: 'Select workspace type',
           items: workspaceList,
         });
@@ -276,20 +276,20 @@ export abstract class TektonItem {
           const workspacesName: QuickPickItem[] | undefined = data ? data.map<QuickPickItem>(label => ({ label: label['metadata'].name })) : undefined;
           if (workspacesName) workspacesName.unshift({label: '$(plus) Add new workspace name.'})
           workspaceName = await input.showQuickPick({
-            title: `workspace ${count}: ${item['label']}`,
+            title: `Workspace ${count}: ${item['label']}`,
             placeholder: `Select ${workspaceType.label}`,
             items: workspacesName,
           });
           if (workspaceName.label === '$(plus) Add new workspace name.') {
             workspaceName = await input.showInputBox({
-              title: `workspace ${count}: ${item['label']}`,
+              title: `Workspace ${count}: ${item['label']}`,
               prompt: `Provide new ${workspaceType.label} name`,
               validate: TektonItem.validateInput,
             });
           }
           if (workspaceType.label === 'ConfigMap') {
             key = await input.showInputBox({
-              title: `workspace ${count}: ${item['label']}`,
+              title: `Workspace ${count}: ${item['label']}`,
               prompt: 'Provide item key name',
               validate: TektonItem.validateInput,
             });
@@ -301,7 +301,7 @@ export abstract class TektonItem {
           }
           if (workspaceType.label === 'PersistentVolumeClaim') {
             subPath = await input.showInputBox({
-              title: `workspace ${count}: ${item['label']}`,
+              title: `Workspace ${count}: ${item['label']}`,
               prompt: 'Provide subPath',
               validate: TektonItem.validateInput,
             });
@@ -309,7 +309,7 @@ export abstract class TektonItem {
         }
         if (workspaceType.label === 'EmptyDir') {
           emptyDir = await input.showInputBox({
-            title: `workspace ${count}: ${item['label']}`,
+            title: `Workspace ${count}: ${item['label']}`,
             prompt: 'Provide EmptyDir name',
             validate: TektonItem.validateInput,
           });
@@ -379,4 +379,5 @@ export abstract class TektonItem {
     await collectInputs();
     return inputStart;
   }
+
 }
