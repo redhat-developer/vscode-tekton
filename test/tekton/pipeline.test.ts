@@ -215,7 +215,7 @@ suite('Tekton/Pipeline', () => {
     });
 
     test('starts a pipeline with appropriate resources', async () => {
-      sandbox.stub(Pipeline, 'Resource').withArgs(pipeTrigger, 'Pipeline').resolves(startPipelineObj);
+      sandbox.stub(Pipeline, 'startObject').withArgs(pipeTrigger, 'Pipeline').resolves(startPipelineObj);
       sandbox.stub(Pipeline, 'start').withArgs(pipelineItem).resolves('Pipeline \'pipeline\' successfully created');
       const result = await Pipeline.start(pipelineItem);
       expect(result).equals(`Pipeline '${startPipelineObj.name}' successfully created`);
