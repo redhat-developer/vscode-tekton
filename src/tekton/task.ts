@@ -43,7 +43,7 @@ export class Task extends TektonItem {
         });
         taskTrigger[0].resources = resource;
       }
-      const inputStartTask = await Task.startObject(taskTrigger, 'Task');
+      const inputStartTask = await Task.Resource(taskTrigger, 'Task');
 
       return Progress.execFunctionWithProgress(`Starting Task '${inputStartTask.name}'.`, () =>
         Task.tkn.startTask(inputStartTask)

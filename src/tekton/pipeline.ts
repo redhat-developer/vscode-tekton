@@ -35,7 +35,7 @@ export class Pipeline extends TektonItem {
       })).filter(function (obj) {
         return obj.name === pipeline.getName();
       });
-      const inputStartPipeline = await Pipeline.startObject(pipelineTrigger, 'Pipeline');
+      const inputStartPipeline = await Pipeline.Resource(pipelineTrigger, 'Pipeline');
 
       return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
         Pipeline.tkn.startPipeline(inputStartPipeline)

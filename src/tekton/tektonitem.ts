@@ -20,6 +20,11 @@ const errorMessage = {
   ClusterTask: 'You need at least one ClusterTask available. Please create new Tekton ClusterTask and try again.',
 };
 
+export interface Ref {
+  name: string;
+  type: string;
+}
+
 export interface NameType {
   name: string;
   type: string;
@@ -50,7 +55,7 @@ export interface Params {
 export interface StartObject {
   name: string;
   resources: Resources[];
-  params: Params[];
+  params: Params[] | undefined;
   workspaces: Workspaces[];
   serviceAccount: string | undefined;
 }
@@ -126,63 +131,136 @@ export abstract class TektonItem {
     return workspace.getConfiguration('vs-tekton')['vs-tekton.outputFormat'];
   }
 
-  static async startObject(context: Trigger[], message: string): Promise<StartObject> {
-    const resources: QuickPickItem[] | undefined = context[0].resources ? context[0].resources.map<QuickPickItem>(label => ({ label: label.name, resourceType: label['resourceType'] ? label['resourceType'] : undefined })) : undefined;
-    const params: QuickPickItem[] | undefined = context[0].params ? context[0].params.map<QuickPickItem>(label => ({ label: label.name })) : undefined;
-    const workspaces: QuickPickItem[] | undefined = context[0].workspaces ? context[0].workspaces.map<QuickPickItem>(label => ({ label: label.name })) : undefined;
-
-    const title = `Start ${message}`;
-
-    interface Ref {
-      name: string;
-      type: string;
+  static async PipelineResourceReturn(name: string, context: Trigger[]): Promise<Ref[]> {
+    let pipeR: TknPipelineResource[] = [];
+    const element = context[0].resources.find(e => e.name === name);
+    const kubectl = await k8s.extension.kubectl.v1;
+    if (kubectl.available) {
+      const k8output = await kubectl.api.invokeCommand('get pipelineresources -o json');
+      try {
+        pipeR = JSON.parse(k8output.stdout).items;
+      } catch (ignore) {
+        // eslint-disable-next-line no-empty
+      }
     }
+    const pipeResources = pipeR.map<Ref>(value => ({
+      name: value.metadata.name,
+      type: value.spec.type,
+    })).filter(function (obj) {
+      return obj.type === element.type;
+    });
 
-    const inputStart = {
-      resources: [],
-      params: [],
-      workspaces: []
-    } as StartObject;
-    inputStart.name = context[0].name;
-    inputStart.serviceAccount = context[0].serviceAcct;
+    return pipeResources;
+  }
 
+  static async inputResources(input: MultiStepInput, Ref: Ref[], message: string, title: string): Promise<string> {
+    const RefName: QuickPickItem[] = Ref.map<QuickPickItem>(label => ({ label: label.name }));
+    const pick = await input.showQuickPick({
+      title,
+      placeholder: `Input ${message} Resources`,
+      items: RefName,
+    });
+    return pick.label;
+  }
+
+  static async inputParameters(context: Trigger[], params: QuickPickItem[], message: string): Promise<any> {
+    const paramData = [];
     async function collectInputs(): Promise<void> {
-      await MultiStepInput.run(input => pickResourceGroup(input));
+      await MultiStepInput.run(input => pickParamGroup(input));
     }
-
-    async function pickResourceGroup(input: MultiStepInput, count = 1): Promise<InputStep> {
-      if (resources) {
+    async function pickParamGroup(input: MultiStepInput): Promise<void> {
+      for (const item of params) {
+        const selectedParam = context[0].params.find(x => x.name === item.label);
+        // return (input: MultiStepInput): Promise<InputStep> => TektonItem.inputParamValue(input, paramVal, message, item['label']);
+        const title = item['label'];
+        const paramVal = await TektonItem.getParamValues(selectedParam.name);
         const pick = await input.showQuickPick({
           title,
-          placeholder: `Input ${message} resources`,
-          items: resources,
+          placeholder: `Input ${message} Parameter defaults`,
+          items: paramVal,
         });
-        const Ref = await PipelineResourceReturn(pick.label);
-        resources.splice(resources.indexOf(pick), 1);
-        const selectedResource: Resources = {
-          name: pick.label,
-          resourceType: pick['resourceType'],
-          resourceRef: await inputResources(input, Ref),
-        };
-        inputStart.resources.push(selectedResource);
-        if (resources.length > 0) {
-          return pickResourceGroup(input);
+        if (pick.label === selectedParam.name) {
+          const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: selectedParam.default };
+          paramData.push(parameter);
+        }
+        else {
+          const inputVal = await input.showInputBox({
+            title,
+            prompt: `Input ${message} default Value`,
+            validate: TektonItem.validateInput,
+          });
+          const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: inputVal };
+          paramData.push(parameter);
         }
       }
-      if (params) {
-        return (input: MultiStepInput): Promise<InputStep> => inputParameters(input);
+    }
+    await collectInputs();
+    return paramData;
+  }
+
+  static async getParamValues(paramName: string): Promise<QuickPickItem[]> | null {
+    return [paramName, 'Input New Param Value']
+      .map(label => ({ label }));
+  }
+
+  static async validateInput(name: string): Promise<undefined | 'invalid'> {
+    const alphaNumHyph = new RegExp(/^[a-zA-Z0-9-_]+$/);
+    return name.match(alphaNumHyph) ? undefined : 'invalid';
+  }
+
+  static async getServiceAcct(inputStart: StartObject): Promise<QuickPickItem[]> | null {
+    return [inputStart.serviceAccount, 'None', 'Input New Service Account']
+      .map(label => ({ label }));
+  }
+
+  static async pickServiceAcct(inputStart: StartObject): Promise<void> {
+    async function collectInputs(): Promise<void> {
+      await MultiStepInput.run(input => pickServiceGroup(input));
+    }
+    async function pickServiceGroup(input: MultiStepInput): Promise<void> {
+      const svcAcct = await TektonItem.getServiceAcct(inputStart);
+      const pick = await input.showQuickPick({
+        title: 'Select Service',
+        placeholder: 'Input Service Account',
+        items: svcAcct,
+      });
+      // eslint-disable-next-line require-atomic-updates
+      inputStart.serviceAccount = pick.label;
+      if (pick.label === (inputStart.serviceAccount || 'None')) {
+        return;
       }
-      if (workspaces) {
-        let key: string, value: string, subPath: string, workspaceName: QuickPickItem | string, emptyDir: string;
-        const pick = await input.showQuickPick({
-          title,
-          placeholder: `Select Workspace ${count}`,
-          items: workspaces,
+      else if (pick.label === 'Input New Service Account') {
+        const inputSvcAcct = await input.showInputBox({
+          title: 'Provide Service Account Name',
+          prompt: 'Input Service Account',
+          validate: TektonItem.validateInput,
         });
-        workspaces.splice(workspaces.indexOf(pick), 1);
+        // eslint-disable-next-line require-atomic-updates
+        inputStart.serviceAccount = inputSvcAcct;
+      }
+    }
+    await collectInputs();
+  }
+
+  static async validateTextAndFileName(name: string): Promise<undefined | 'invalid'> {
+    const value = new RegExp(/(^[a-zA-Z0-9-_]+.[a-zA-Z0-9-_]+$)/);
+    return name.match(value) ? undefined : 'invalid';
+  }
+
+  static async pickWorkspace(workspacesList: QuickPickItem[]): Promise<Workspaces[]> {
+
+    const workspaceData = [];
+
+    async function collectInputs(): Promise<void> {
+      await MultiStepInput.run(input => pickWorkspaceGroup(input));
+    }
+
+    async function pickWorkspaceGroup(input: MultiStepInput, count = 1): Promise<void> {
+      for (const item of workspacesList) {
+        let key: string, value: string, subPath: string, workspaceName: QuickPickItem | string, emptyDir: string;
         const workspaceList = [{label: 'PersistentVolumeClaim'}, {label: 'EmptyDir'}, {label: 'ConfigMap'}, {label: 'Secret'}];
         const workspaceType = await input.showQuickPick({
-          title,
+          title: `workspace ${count}: ${item['label']}`,
           placeholder: 'Select workspace type',
           items: workspaceList,
         });
@@ -198,46 +276,46 @@ export abstract class TektonItem {
           const workspacesName: QuickPickItem[] | undefined = data ? data.map<QuickPickItem>(label => ({ label: label['metadata'].name })) : undefined;
           if (workspacesName) workspacesName.unshift({label: '$(plus) Add new workspace name.'})
           workspaceName = await input.showQuickPick({
-            title,
+            title: `workspace ${count}: ${item['label']}`,
             placeholder: `Select ${workspaceType.label}`,
             items: workspacesName,
           });
           if (workspaceName.label === '$(plus) Add new workspace name.') {
             workspaceName = await input.showInputBox({
-              title,
+              title: `workspace ${count}: ${item['label']}`,
               prompt: `Provide new ${workspaceType.label} name`,
-              validate: validateInput,
+              validate: TektonItem.validateInput,
             });
           }
           if (workspaceType.label === 'ConfigMap') {
             key = await input.showInputBox({
-              title,
+              title: `workspace ${count}: ${item['label']}`,
               prompt: 'Provide item key name',
-              validate: validateInput,
+              validate: TektonItem.validateInput,
             });
             value = await input.showInputBox({
-              title,
+              title: `workspace ${count}: ${item['label']}`,
               prompt: 'Provide item value name',
-              validate: validateTextAndFileName,
+              validate: TektonItem.validateTextAndFileName,
             });
           }
           if (workspaceType.label === 'PersistentVolumeClaim') {
             subPath = await input.showInputBox({
-              title,
+              title: `workspace ${count}: ${item['label']}`,
               prompt: 'Provide subPath',
-              validate: validateInput,
+              validate: TektonItem.validateInput,
             });
           }
         }
         if (workspaceType.label === 'EmptyDir') {
           emptyDir = await input.showInputBox({
-            title,
+            title: `workspace ${count}: ${item['label']}`,
             prompt: 'Provide EmptyDir name',
-            validate: validateInput,
+            validate: TektonItem.validateInput,
           });
         }
         const selectedWorkspace: Workspaces = {
-          name: pick.label,
+          name: item['label'],
           workspaceName: workspaceName['label'] ? workspaceName['label'] : workspaceName,
           workspaceType: workspaceType.label,
           key: key ? key : undefined,
@@ -245,129 +323,57 @@ export abstract class TektonItem {
           subPath: subPath ? subPath : undefined,
           emptyDir: emptyDir ? emptyDir : undefined
         };
-        inputStart.workspaces.push(selectedWorkspace);
-        if (workspaces.length > 0) {
-          count++;
-          return pickResourceGroup(input, count);
+        workspaceData.push(selectedWorkspace);
+        count++;
+      }
+    }
+    await collectInputs();
+    return workspaceData;
+  }
+
+  static async Resource(context: Trigger[], message: string): Promise<StartObject> {
+    const resources: QuickPickItem[] | undefined = context[0].resources ? context[0].resources.map<QuickPickItem>(label => ({ label: label.name, resourceType: label['resourceType'] ? label['resourceType'] : undefined })) : undefined;
+    const params: QuickPickItem[] | undefined = context[0].params ? context[0].params.map<QuickPickItem>(label => ({ label: label.name })) : undefined;
+    const workspaces: QuickPickItem[] | undefined = context[0].workspaces ? context[0].workspaces.map<QuickPickItem>(label => ({ label: label.name })) : undefined;
+
+    const inputStart = {
+      resources: [],
+      params: [],
+      workspaces: []
+    } as StartObject;
+    inputStart.name = context[0].name;
+    inputStart.serviceAccount = context[0].serviceAcct;
+    
+    async function collectInputs(): Promise<void> {
+      await MultiStepInput.run(input => pickResourceGroup(input));
+    }
+
+    async function pickResourceGroup(input: MultiStepInput): Promise<void> {
+      if (resources) {
+        for (const item of resources) {
+          const Ref = await TektonItem.PipelineResourceReturn(item['label'], context);
+          const selectedResource: Resources = {
+            name: item['label'],
+            resourceType: item['resourceType'],
+            resourceRef: await TektonItem.inputResources(input, Ref, message, item['label']),
+          };
+          inputStart.resources.push(selectedResource);
         }
       }
-      if (inputStart.serviceAccount) {
-        return (input: MultiStepInput): Promise<InputStep> => pickServiceAcct(input);
-      }
-    }
-
-    async function inputResources(input: MultiStepInput, Ref: Ref[]): Promise<string> {
-      const RefName: QuickPickItem[] = Ref.map<QuickPickItem>(label => ({ label: label.name }));
-      const pick = await input.showQuickPick({
-        title,
-        placeholder: `Input ${message} Resources`,
-        items: RefName,
-      });
-      return pick.label;
-    }
-
-    async function inputParameters(input: MultiStepInput): Promise<InputStep> {
-      const pick = await input.showQuickPick({
-        title,
-        placeholder: `Select ${message} Parameter Name`,
-        items: params,
-      });
-      params.splice(params.indexOf(pick), 1);
-      const paramVal = context[0].params.find(x => x.name === pick.label);
-      return (input: MultiStepInput): Promise<InputStep> => inputParamValue(input, paramVal);
-    }
-
-    async function inputParamValue(input: MultiStepInput, selectedParam: Params): Promise<InputStep> {
-      const paramVal = await getParamValues(selectedParam.name);
-      const pick = await input.showQuickPick({
-        title,
-        placeholder: `Input ${message} Parameter defaults`,
-        items: paramVal,
-      });
-      if (pick.label === selectedParam.name) {
-        const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: selectedParam.default };
-        inputStart.params.push(parameter);
-      }
-      else {
-        const inputVal = await input.showInputBox({
-          title,
-          prompt: `Input ${message} default Value`,
-          validate: validateInput,
-        });
-        const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: inputVal };
-        inputStart.params.push(parameter);
-      }
-      if (params.length > 0) {
-        return inputParameters(input);
+      if (params) {
+        const paramData = await TektonItem.inputParameters(context, params, message);
+        paramData.map((value: Params) => {
+          inputStart.params.push(value);
+        })
       }
       if (inputStart.serviceAccount) {
-        return (input: MultiStepInput): Promise<InputStep> => pickServiceAcct(input);
+        await TektonItem.pickServiceAcct(inputStart);
       }
-      return;
-    }
-
-    async function pickServiceAcct(input: MultiStepInput): Promise<InputStep> {
-      const svcAcct = await getServiceAcct();
-      const pick = await input.showQuickPick({
-        title,
-        placeholder: 'Input Service Account',
-        items: svcAcct,
-      });
-      inputStart.serviceAccount = pick.label;
-      if (pick.label === (inputStart.serviceAccount || 'None')) {
-        return;
+      if (workspaces) {
+        const sudhir = await TektonItem.pickWorkspace(workspaces);
+        console.log(sudhir);
+        
       }
-      else if (pick.label === 'Input New Service Account') {
-        const inputSvcAcct = await input.showInputBox({
-          title,
-          prompt: 'Input Service Account',
-          validate: validateInput,
-        });
-        // eslint-disable-next-line require-atomic-updates
-        inputStart.serviceAccount = inputSvcAcct;
-      }
-    }
-
-    async function PipelineResourceReturn(name: string): Promise<Ref[]> {
-      let pipeR: TknPipelineResource[] = [];
-      const element = context[0].resources.find(e => e.name === name);
-      const kubectl = await k8s.extension.kubectl.v1;
-      if (kubectl.available) {
-        const k8output = await kubectl.api.invokeCommand('get pipelineresources -o json');
-        try {
-          pipeR = JSON.parse(k8output.stdout).items;
-        } catch (ignore) {
-          // eslint-disable-next-line no-empty
-        }
-      }
-      const pipeResources = pipeR.map<Ref>(value => ({
-        name: value.metadata.name,
-        type: value.spec.type,
-      })).filter(function (obj) {
-        return obj.type === element.type;
-      });
-
-      return pipeResources;
-    }
-
-    async function validateInput(name: string): Promise<undefined | 'invalid'> {
-      const alphaNumHyph = new RegExp(/^[a-zA-Z0-9-_]+$/);
-      return name.match(alphaNumHyph) ? undefined : 'invalid';
-    }
-
-    async function validateTextAndFileName(name: string): Promise<undefined | 'invalid'> {
-      const value = new RegExp(/(^[a-zA-Z0-9-_]+.[a-zA-Z0-9-_]+$)/);
-      return name.match(value) ? undefined : 'invalid';
-    }
-
-    async function getParamValues(paramName: string): Promise<QuickPickItem[]> | null {
-      return [paramName, 'Input New Param Value']
-        .map(label => ({ label }));
-    }
-
-    async function getServiceAcct(): Promise<QuickPickItem[]> | null {
-      return [inputStart.serviceAccount, 'None', 'Input New Service Account']
-        .map(label => ({ label }));
     }
 
     await collectInputs();
