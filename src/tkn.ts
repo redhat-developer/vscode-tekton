@@ -278,19 +278,15 @@ export class Command {
   static listTasksInTerminal(namespace?: string): CliCommand {
     return newTknCommand('task', 'list', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
   }
-  @verbose
-  static listTaskRuns(namespace?: string): CliCommand {
-    return newTknCommand('taskrun', 'list', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
-  }
 
   static listTaskRunsForPipelineRun(pipelineRunName: string): CliCommand {
     return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/pipelineRun=${pipelineRunName}`, '-o', 'json');
   }
 
-  @verbose
-  static listTaskRunsInTerminal(namespace?: string): CliCommand {
-    return newTknCommand('taskrun', 'list', ...(namespace ? ['-n', namespace] : ''));
+  static listTaskRunsForPipelineRunInTerminal(pipelineRunName: string): CliCommand {
+    return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/pipelineRun=${pipelineRunName}`);
   }
+
   @verbose
   static deleteTask(name: string): CliCommand {
     return newTknCommand('task', 'delete', name, '-f');

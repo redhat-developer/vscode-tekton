@@ -10,8 +10,10 @@ import { Progress } from '../util/progress';
 
 export class TaskRun extends TektonItem {
 
-  static async list(taskRun: TektonNode): Promise<void> {
-    if (taskRun) { TaskRun.tkn.executeInTerminal(Command.listTaskRunsInTerminal()); }
+  static async listFromPipelineRun(pipelineRun: TektonNode): Promise<void> {
+    if (pipelineRun) { 
+      TaskRun.tkn.executeInTerminal(Command.listTaskRunsForPipelineRunInTerminal(pipelineRun.getName())); 
+    }
   }
 
   static async listFromTask(taskRun: TektonNode): Promise<void> {

@@ -48,8 +48,8 @@ suite('Tekton/TaskRun', () => {
     suite('called from \'Tekton Pipelines Explorer\'', () => {
 
       test('executes the list tkn command in terminal', async () => {
-        await TaskRun.list(taskrunItem);
-        expect(termStub).calledOnceWith(Command.listTaskRunsInTerminal());
+        await TaskRun.listFromPipelineRun(taskrunItem);
+        expect(termStub).calledOnceWith(Command.listTaskRunsForPipelineRunInTerminal(taskrunItem.getName()));
       });
 
     });
@@ -59,7 +59,7 @@ suite('Tekton/TaskRun', () => {
       test('calls the appropriate error message when no project found', async () => {
         getPipelineRunNamesStub.restore();
         try {
-          await TaskRun.list(null);
+          await TaskRun.listFromPipelineRun(null);
         } catch (err) {
           expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
           return;
@@ -70,7 +70,7 @@ suite('Tekton/TaskRun', () => {
     suite('called from command bar', () => {
 
       test('skips tkn command execution if canceled by user', async () => {
-        await TaskRun.list(null);
+        await TaskRun.listFromPipelineRun(null);
         // tslint:disable-next-line: no-unused-expression
         expect(termStub).not.called;
       });
