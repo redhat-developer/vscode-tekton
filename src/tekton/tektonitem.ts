@@ -6,10 +6,10 @@
 import { Tkn, tkn as tknImpl, TektonNode, Command } from '../tkn';
 import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { workspace, window, QuickPickItem } from 'vscode';
-import { kubefsUri } from '../util/tektonresources.virtualfs';
 import { TknPipelineResource } from '../tekton';
 import * as k8s from 'vscode-kubernetes-tools-api';
 import { MultiStepInput, InputStep } from '../util/MultiStepInput';
+import { tektonFSUri } from '../util/tekton-vfs';
 
 const errorMessage = {
   Pipeline: 'You need at least one Pipeline available. Please create new Tekton Pipeline and try again.',
@@ -109,12 +109,12 @@ export abstract class TektonItem {
   }
 
   static openInEditor(context: TektonNode): void {
-    TektonItem.loadTektonResource(`${context.contextValue}/${context.getName()}`);
+    TektonItem.loadTektonResource(context.contextValue, context.getName());
   }
 
-  static loadTektonResource(value: string): void {
+  static loadTektonResource(type: string, name: string): void {
     const outputFormat = TektonItem.getOutputFormat();
-    const uri = kubefsUri(value, outputFormat);
+    const uri = tektonFSUri(type, name, outputFormat);
     workspace.openTextDocument(uri).then((doc) => {
       if (doc) {
         window.showTextDocument(doc, { preserveFocus: true, preview: true });
@@ -180,7 +180,7 @@ export abstract class TektonItem {
           items: workspaces,
         });
         workspaces.splice(workspaces.indexOf(pick), 1);
-        const workspaceList = [{label: 'PersistentVolumeClaim'}, {label: 'EmptyDir'}, {label: 'ConfigMap'}, {label: 'Secret'}];
+        const workspaceList = [{ label: 'PersistentVolumeClaim' }, { label: 'EmptyDir' }, { label: 'ConfigMap' }, { label: 'Secret' }];
         const workspaceType = await input.showQuickPick({
           title,
           placeholder: 'Select workspace type',
@@ -196,7 +196,7 @@ export abstract class TektonItem {
           } catch (ignore) {
           }
           const workspacesName: QuickPickItem[] | undefined = data ? data.map<QuickPickItem>(label => ({ label: label['metadata'].name })) : undefined;
-          if (workspacesName) workspacesName.unshift({label: '$(plus) Add new workspace name.'})
+          if (workspacesName) workspacesName.unshift({ label: '$(plus) Add new workspace name.' })
           workspaceName = await input.showQuickPick({
             title,
             placeholder: `Select ${workspaceType.label}`,

@@ -8,9 +8,9 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import { tektonYaml, pipelineYaml, DeclaredTask, pipelineRunYaml } from '../../src/yaml-support/tkn-yaml';
 import * as graph from '../../src/pipeline/pipeline-graph';
-import { resourceDocProvider, kubefsUri } from '../../src/util/tektonresources.virtualfs';
 import { VirtualDocument } from '../../src/yaml-support/yaml-locator';
 import { PipelineRunData } from '../../src/tekton';
+import { tektonFSUri, tektonVfsProvider } from '../../src/util/tekton-vfs';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -68,7 +68,7 @@ suite('Tekton graph', () => {
 
     setup(() => {
       getTektonPipelineRefOrSpec = sandbox.stub(pipelineRunYaml, 'getTektonPipelineRefOrSpec');
-      loadTektonDocument = sandbox.stub(resourceDocProvider, 'loadTektonDocument');
+      loadTektonDocument = sandbox.stub(tektonVfsProvider, 'loadTektonDocument');
       sandbox.useFakeTimers({
         now: new Date(),
         shouldAdvanceTime: true,
@@ -117,7 +117,7 @@ suite('Tekton graph', () => {
       } as vscode.TextDocument
       await graph.calculatePipelineRunGraph(document);
 
-      expect(loadTektonDocument).calledWith(kubefsUri('pipeline/FooPipeline', 'yaml'));
+      expect(loadTektonDocument).calledWith(tektonFSUri('pipeline', 'FooPipeline', 'yaml'));
     });
 
     test('uses provided pipeline run', async () => {

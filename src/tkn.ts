@@ -675,7 +675,7 @@ function compareTimeNewestFirst(a: TektonNode, b: TektonNode): number {
   return aTime < bTime ? 1 : -1;
 }
 
-function getStderrString(data: string | Error): string {
+export function getStderrString(data: string | Error): string {
   if (data instanceof Error) {
     return data.message;
   } else if ((typeof data === 'string')) {

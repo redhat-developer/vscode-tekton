@@ -7,9 +7,10 @@ import * as vscode from 'vscode';
 import { tektonYaml, pipelineYaml, pipelineRunYaml, TektonYamlType, DeclaredTask, PipelineRunTask, RunState } from '../yaml-support/tkn-yaml';
 import { YamlDocument, VirtualDocument } from '../yaml-support/yaml-locator';
 import { ContextType, humanizer } from '../tkn';
-import { kubefsUri, resourceDocProvider } from '../util/tektonresources.virtualfs';
+
 import { NodeOrEdge, NodeData, EdgeData } from '../../preview-src/model';
 import { PipelineRunData, TaskRuns, TaskRun, TaskRunStatus, PipelineRunConditionCheckStatus } from '../tekton';
+import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
 
 const pipelineRunTaskCache = new Map<string, DeclaredTask[]>();
 
@@ -31,7 +32,7 @@ export async function calculatePipelineGraph(document: vscode.TextDocument): Pro
 }
 
 calculatePipelineGraph.getElementBySelection = function (document: vscode.TextDocument, selection: vscode.Selection): string | undefined {
-  
+
   return pipelineYaml.findTask(document, selection.start);
 }
 
@@ -48,8 +49,8 @@ export async function calculatePipelineRunGraph(document: vscode.TextDocument, p
     const refOrSpec = pipelineRunYaml.getTektonPipelineRefOrSpec(doc);
     if (typeof refOrSpec === 'string') {
       // get ref pipeline definition
-      const uri = kubefsUri(`${ContextType.PIPELINE}/${refOrSpec}`, 'yaml');
-      const pipelineDoc = await resourceDocProvider.loadTektonDocument(uri);
+      const uri = tektonFSUri(ContextType.PIPELINE, refOrSpec, 'yaml');
+      const pipelineDoc = await tektonVfsProvider.loadTektonDocument(uri);
       const pipeDoc = await getPipelineDocument(pipelineDoc, TektonYamlType.Pipeline);
       tasks = pipelineYaml.getPipelineTasks(pipeDoc);
 
@@ -66,8 +67,8 @@ export async function calculatePipelineRunGraph(document: vscode.TextDocument, p
     runTasks = updatePipelineRunTasks(pipelineRun, tasks);
   } else {
     const pipelineRunName = tektonYaml.getMetadataName(doc);
-    const uri = kubefsUri(`${ContextType.PIPELINERUN}/${pipelineRunName}`, 'json');
-    const pipelineDoc = await resourceDocProvider.loadTektonDocument(uri);
+    const uri = tektonFSUri(ContextType.PIPELINERUN, pipelineRunName, 'json');
+    const pipelineDoc = await tektonVfsProvider.loadTektonDocument(uri);
     const json = JSON.parse(pipelineDoc.getText());
     runTasks = updatePipelineRunTasks(json, tasks);
   }

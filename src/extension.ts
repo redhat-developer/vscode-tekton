@@ -19,7 +19,6 @@ import { TektonNode } from './tkn';
 import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
 import { setCommandContext, CommandContext, enterZenMode, exitZenMode, refreshCustomTree, removeItemFromCustomTree } from './commands';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
-import { TKN_RESOURCE_SCHEME, resourceDocProvider, TKN_RESOURCE_SCHEME_READONLY } from './util/tektonresources.virtualfs';
 import { TektonItem } from './tekton/tektonitem';
 import { showPipelinePreview, registerPipelinePreviewContext } from './pipeline/pipeline-preview';
 import { TriggerTemplate } from './tekton/triggertemplate';
@@ -28,6 +27,7 @@ import { EventListener } from './tekton/eventlistener';
 import { k8sCommands } from './kubernetes';
 import { initializeTknEditing } from './yaml-support/tkn-editing';
 import { ToolsConfig } from './tools';
+import { TKN_RESOURCE_SCHEME, TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider } from './util/tekton-vfs';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -89,8 +89,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('k8s.tekton.run.followLogs', k8sCommands.followLogs),
     pipelineExplorer,
     // Temporarily loaded resource providers
-    vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME, resourceDocProvider, { /* TODO: case sensitive? */ }),
-    vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME_READONLY, resourceDocProvider, { isCaseSensitive: true, isReadonly: true }),
+    vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME, tektonVfsProvider, { isCaseSensitive: true, }),
+    vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider, { isCaseSensitive: true, isReadonly: true }),
   ];
   disposables.forEach((e) => context.subscriptions.push(e));
 
