@@ -722,12 +722,12 @@
         },
         {
           "command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|triggertemplates|triggerbinding|eventlistener|conditions|task)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|triggertemplates|triggerbinding|eventlistener|conditions|task|clustertriggerbinding)$/",
           "group": "inline"
         },
         {
           "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|task|triggertemplates|triggerbinding|eventlistener|conditions)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|task|triggertemplates|triggerbinding|eventlistener|conditions|clustertriggerbinding)$/",
           "group": "c0@1"
         }
       ],
