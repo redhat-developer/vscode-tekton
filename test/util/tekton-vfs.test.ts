@@ -9,6 +9,7 @@ import { tektonFSUri, tektonVfsProvider } from '../../src/util/tekton-vfs';
 import * as vscode from 'vscode';
 import * as os from 'os'
 import * as fsx from 'fs-extra';
+import * as path from 'path';
 import { cli } from '../../src/cli';
 import { teardown } from 'mocha';
 import { newK8sCommand } from '../../src/tkn';
@@ -113,40 +114,42 @@ suite('Tekton VFS Provider', () => {
       const uri = vscode.Uri.parse('tekton://kubernetos/pipeline/foo.yaml');
       const content = Buffer.from('Foo write content', 'utf8');
 
-      tmpdirStub.returns('/tmp/bar');
+      tmpdirStub.returns(path.join('tmp', 'bar'));
       ensureFileStub.resolves();
       writeFileStub.resolves();
       cliExecuteStub.resolves({ stdout: '' });
       statStub.resolves({ size: 1 });
       unlinkStub.resolves();
+      const tmpPath = path.join('tmp', 'bar', 'pipeline', 'foo.yaml');
 
       await tektonVfsProvider.writeFile(uri, content);
 
       expect(tmpdirStub).calledOnce;
-      expect(ensureFileStub).calledOnceWith('/tmp/bar/pipeline/foo.yaml');
+      expect(ensureFileStub).calledOnceWith(tmpPath);
       expect(writeFileStub).calledOnce;
-      expect(cliExecuteStub).calledOnceWith(newK8sCommand('apply -f /tmp/bar/pipeline/foo.yaml'));
-      expect(unlinkStub).calledOnceWith('/tmp/bar/pipeline/foo.yaml');
+      expect(cliExecuteStub).calledOnceWith(newK8sCommand(`apply -f ${tmpPath}`));
+      expect(unlinkStub).calledOnceWith(tmpPath);
     });
 
     test('"writeFile" should throw error if cannot update file', async () => {
       const uri = vscode.Uri.parse('tekton://kubernetos/pipeline/foo.yaml');
       const content = Buffer.from('Foo write content', 'utf8');
 
-      tmpdirStub.returns('/tmp/bar');
+      tmpdirStub.returns(path.join('tmp', 'bar'));
       ensureFileStub.resolves();
       writeFileStub.resolves();
       cliExecuteStub.resolves({ error: 'Cannot update file' });
       statStub.resolves({ size: 1 });
       unlinkStub.resolves();
+      const tmpPath = path.join('tmp', 'bar', 'pipeline', 'foo.yaml');
       let error = undefined;
       try {
         await tektonVfsProvider.writeFile(uri, content);
       } catch (err) {
         error = err;
       } finally {
-        expect(cliExecuteStub).calledOnceWith(newK8sCommand('apply -f /tmp/bar/pipeline/foo.yaml'));
-        expect(unlinkStub).calledOnceWith('/tmp/bar/pipeline/foo.yaml');
+        expect(cliExecuteStub).calledOnceWith(newK8sCommand(`apply -f ${tmpPath}`));
+        expect(unlinkStub).calledOnceWith(tmpPath);
         expect(error).is.not.undefined;
         expect(error.toString()).equal('Error: Cannot update file');
       }
