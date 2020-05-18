@@ -47,7 +47,7 @@ export interface Resources {
 }
 
 export interface Params {
-  default: string;
+  default?: string;
   description: string;
   name: string;
 }
@@ -134,14 +134,11 @@ export abstract class TektonItem {
   static async PipelineResourceReturn(name: string, context: Trigger[]): Promise<Ref[]> {
     let pipeR: TknPipelineResource[] = [];
     const element = context[0].resources.find(e => e.name === name);
-    const kubectl = await k8s.extension.kubectl.v1;
-    if (kubectl.available) {
-      const k8output = await kubectl.api.invokeCommand('get pipelineresources -o json');
-      try {
-        pipeR = JSON.parse(k8output.stdout).items;
-      } catch (ignore) {
-        // eslint-disable-next-line no-empty
-      }
+    const k8output = await TektonItem.tkn.execute(Command.getPipelineResource());
+    try {
+      pipeR = JSON.parse(k8output.stdout).items;
+    } catch (ignore) {
+      // eslint-disable-next-line no-empty
     }
     const pipeResources = pipeR.map<Ref>(value => ({
       name: value.metadata.name,
