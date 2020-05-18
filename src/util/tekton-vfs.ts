@@ -111,7 +111,7 @@ export class TektonVFSProvider implements FileSystemProvider {
   extractResourceAndFormat(uri: Uri): [string, string] {
     const resPath = path.parse(uri.path);
     let ext = resPath.ext;
-    let resource = path.format(resPath).substring(1);
+    let resource = path.posix.format(resPath).substring(1);
     if (ext) {
       resource = resource.slice(0, -ext.length);
     } else {
