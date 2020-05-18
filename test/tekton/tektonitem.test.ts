@@ -215,9 +215,9 @@ suite('TektonItem', () => {
   });
 
   suite('start pipeline object', () => {
-    let execStub: sinon.SinonStub<any[], any>;
-    let showQuickPickStub;
-    let showShowInputBox;
+    let execStub: sinon.SinonStub<unknown[], unknown>;
+    let showQuickPickStub: sinon.SinonStub<unknown[], unknown>;
+    let showShowInputBox: sinon.SinonStub<unknown[], unknown>;
     const pipelineTrigger: Trigger[] = [{
       name: 'build-and-deploy',
       params: [{
@@ -233,6 +233,14 @@ suite('TektonItem', () => {
         type: 'image'
       }],
       serviceAcct: undefined,
+      workspaces: undefined
+    }];
+
+    const serviceTrigger: Trigger[] = [{
+      name: 'build-and-deploy',
+      params: undefined,
+      resources: undefined,
+      serviceAcct: 'service',
       workspaces: undefined
     }];
 
@@ -420,8 +428,6 @@ suite('TektonItem', () => {
       showQuickPickStub.onCall(5).resolves({label: '$(plus) Add new workspace name.'});
       showShowInputBox.onThirdCall().resolves({label: 'shared-task-storage'});
       showShowInputBox.onCall(3).resolves({label: 'path'});
-      // showQuickPickStub.onCall(9).resolves({label: 'ConfigMap'});
-      // showQuickPickStub.onCall(10).resolves({label: 'ConfigMap'});
       const result = await TektonItem.startObject(workspace, 'pipeline');
       expect(result).deep.equals({
         name: 'fetch-and-print-recipe',
@@ -459,6 +465,31 @@ suite('TektonItem', () => {
             workspaceType: 'PersistentVolumeClaim'
           }
         ]
+      });
+    });
+
+    test('returns service to start pipeline', async () => {
+      showQuickPickStub.onFirstCall().resolves({label: 'service'});
+      const result = await TektonItem.startObject(serviceTrigger, 'pipeline');
+      expect(result).deep.equals({
+        name: 'build-and-deploy',
+        params: [],
+        resources: [],
+        serviceAccount: 'service',
+        workspaces: []
+      });
+    });
+
+    test('provide a step to enter new service name', async () => {
+      showQuickPickStub.onFirstCall().resolves({label: '$(plus) Add New Service Account'});
+      showShowInputBox.onFirstCall().resolves({label: 'service'});
+      const result = await TektonItem.startObject(serviceTrigger, 'pipeline');
+      expect(result).deep.equals({
+        name: 'build-and-deploy',
+        params: [],
+        resources: [],
+        serviceAccount: 'service',
+        workspaces: []
       });
     });
   });

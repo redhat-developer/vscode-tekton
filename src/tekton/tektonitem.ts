@@ -206,7 +206,7 @@ export abstract class TektonItem {
   }
 
   static async getServiceAcct(inputStart: StartObject): Promise<QuickPickItem[]> | null {
-    return [inputStart.serviceAccount, 'None', 'Input New Service Account']
+    return ['$(plus) Add New Service Account', 'None', inputStart.serviceAccount]
       .map(label => ({ label }));
   }
 
@@ -223,17 +223,16 @@ export abstract class TektonItem {
       });
       // eslint-disable-next-line require-atomic-updates
       inputStart.serviceAccount = pick.label;
-      if (pick.label === (inputStart.serviceAccount || 'None')) {
+      if (pick.label === (inputStart.serviceAccount || 'None') && pick.label !== '$(plus) Add New Service Account') {
         return;
-      }
-      else if (pick.label === 'Input New Service Account') {
+      } else if (pick.label === '$(plus) Add New Service Account') {
         const inputSvcAcct = await input.showInputBox({
           title: 'Provide Service Account Name',
           prompt: 'Input Service Account',
           validate: TektonItem.validateInput,
         });
         // eslint-disable-next-line require-atomic-updates
-        inputStart.serviceAccount = inputSvcAcct;
+        inputStart.serviceAccount = inputSvcAcct['label'];
       }
     }
     await collectInputs();
