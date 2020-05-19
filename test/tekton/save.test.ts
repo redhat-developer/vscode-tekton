@@ -14,7 +14,7 @@ import { contextGlobalState } from '../../src/extension';
 import { cli } from '../../src/cli';
 import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { tektonYaml } from '../../src/yaml-support/tkn-yaml';
-import { Command } from '../../src/tkn';
+import { Command, newK8sCommand } from '../../src/tkn';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -118,15 +118,38 @@ suite('Save File', () => {
       workspaceStateGetStub.calledOnce;
     });
 
-    test('Throw error when command fails', async () => {
-      execStub.resolves({
+    test('Update the yaml if fail to create resources', async () => {
+      execStub.onFirstCall().resolves({
+        error: 'error',
+        stderr: 'error',
+        stdout: ''
+      });
+      execStub.onSecondCall().resolves({
+        error: '',
+        stderr: '',
+        stdout: 'successfully updated/created'
+      });
+      workspaceStateGetStub.onFirstCall().returns('path');
+      await save(textDocument);
+      showErrorMessageStub.calledOnce;
+      workspaceStateGetStub.calledOnce;
+      showInformationMessageStub.calledOnce;
+    });
+
+    test('Throw error when apply command fails', async () => {
+      execStub.onFirstCall().resolves({
+        error: 'error',
+        stderr: 'error',
+        stdout: ''
+      });
+      execStub.onSecondCall().resolves({
         error: 'error',
         stderr: 'error',
         stdout: ''
       });
       workspaceStateGetStub.onFirstCall().returns('path');
       await save(textDocument);
-      showErrorMessageStub.calledOnce;
+      showErrorMessageStub.calledTwice;
       workspaceStateGetStub.calledOnce;
     });
     

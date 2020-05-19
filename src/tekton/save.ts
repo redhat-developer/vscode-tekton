@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import { pipelineExplorer } from '../pipeline/pipelineExplorer';
-import { getStderrString, Command } from '../tkn';
+import { getStderrString, Command, newK8sCommand } from '../tkn';
 import { cli } from '../cli';
 import { tektonYaml } from '../yaml-support/tkn-yaml';
 import { contextGlobalState } from '../extension';
@@ -21,9 +21,15 @@ export async function save(document: vscode.TextDocument): Promise<void> {
       contextGlobalState.workspaceState.update(document.uri.fsPath, true);
     }
     if (verifyTknYaml && (/Save/.test(value) || contextGlobalState.workspaceState.get(document.uri.fsPath))) {
-      const result = await cli.execute(Command.create(document.uri.fsPath))
+      const result = await cli.execute(Command.create(document.uri.fsPath));
       if (result.error) {
-        vscode.window.showErrorMessage(getStderrString(result.error));
+        const apply = await cli.execute(newK8sCommand(`apply -f ${document.uri.fsPath}`));
+        if (apply.error) {
+          vscode.window.showErrorMessage(getStderrString(apply.error));
+        } else {
+          pipelineExplorer.refresh();
+          vscode.window.showInformationMessage('Resources were successfully updated/created.');
+        }
       } else {
         pipelineExplorer.refresh();
         vscode.window.showInformationMessage('Resources were successfully created.');
