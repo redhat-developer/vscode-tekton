@@ -21,8 +21,6 @@ class InputFlowAction {
   static cancel = new InputFlowAction();
 }
 
-export type InputStep = (input: MultiStepInput) => Thenable<InputStep | void>;
-
 interface QuickPickParameters<T extends QuickPickItem> {
   title: string;
   items: T[];
@@ -37,39 +35,7 @@ interface InputBoxParameters {
 
 export class MultiStepInput {
 
-  static async run<T>(start: InputStep) {
-    const input = new MultiStepInput();
-    return input.stepThrough(start);
-  }
-
   private current?: QuickInput;
-  private steps: InputStep[] = [];
-
-  private async stepThrough<T>(start: InputStep) {
-    let step: InputStep | void = start;
-    while (step) {
-      this.steps.push(step);
-      if (this.current) {
-        this.current.enabled = false;
-        this.current.busy = true;
-      }
-      try {
-        step = await step(this);
-      } catch (err) {
-        if (err === InputFlowAction.back) {
-          this.steps.pop();
-          step = this.steps.pop();
-        } else if (err === InputFlowAction.cancel) {
-          step = undefined;
-        } else {
-          throw err;
-        }
-      }
-    }
-    if (this.current) {
-      this.current.dispose();
-    }
-  }
 
   async showQuickPick<T extends QuickPickItem, P extends QuickPickParameters<T>>({ title, items, placeholder }: P) {
     const disposables: Disposable[] = [];
@@ -97,7 +63,8 @@ export class MultiStepInput {
         this.current.show();
       });
     } finally {
-      disposables.forEach(d => d.dispose());
+      disposables.forEach(d => { d.dispose() });
+      if (this.current) this.current.dispose();
     }
   }
 
@@ -145,6 +112,9 @@ export class MultiStepInput {
       });
     } finally {
       disposables.forEach(d => d.dispose());
+      if (this.current) this.current.dispose();
     }
   }
 }
+
+export const multiStepInput = new MultiStepInput();

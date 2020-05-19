@@ -13,7 +13,7 @@ import humanize = require('humanize-duration');
 import { TknPipelineResource, TknTask, PipelineRunData } from './tekton';
 import { kubectl } from './kubectl';
 import { pipelineExplorer } from './pipeline/pipelineExplorer';
-import { StartObject } from './tekton/tektonitem';
+import { StartObject } from './tekton/pipelinecontent';
 
 export const humanizer = humanize.humanizer(createConfig());
 

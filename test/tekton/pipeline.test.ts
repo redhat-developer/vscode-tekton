@@ -11,10 +11,11 @@ import * as sinon from 'sinon';
 import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { Pipeline } from '../../src/tekton/pipeline';
 import { PipelineExplorer, pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
-import { TektonItem, Trigger, StartObject, NameType, Resources, Params } from '../../src/tekton/tektonitem';
+import { TektonItem } from '../../src/tekton/tektonitem';
 import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
 import { cliCommandToString } from '../../src/cli';
+import { Trigger, StartObject, NameType, Resources, Params, PipelineContent } from '../../src/tekton/pipelinecontent';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -215,7 +216,7 @@ suite('Tekton/Pipeline', () => {
     });
 
     test('starts a pipeline with appropriate resources', async () => {
-      sandbox.stub(Pipeline, 'startObject').withArgs(pipeTrigger, 'Pipeline').resolves(startPipelineObj);
+      sandbox.stub(PipelineContent, 'startObject').withArgs(pipeTrigger, 'Pipeline').resolves(startPipelineObj);
       sandbox.stub(Pipeline, 'start').withArgs(pipelineItem).resolves('Pipeline \'pipeline\' successfully created');
       const result = await Pipeline.start(pipelineItem);
       expect(result).equals(`Pipeline '${startPipelineObj.name}' successfully created`);
