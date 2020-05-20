@@ -212,4 +212,5 @@ suite('TektonItem', () => {
       fail('should throw error in case pipelineresource array is empty');
     });
   });
+
 });

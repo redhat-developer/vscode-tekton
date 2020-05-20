@@ -18,7 +18,7 @@ import { TestItem } from './tekton/testTektonitem';
 import { ExecException } from 'child_process';
 import * as path from 'path';
 import { TektonNode } from '../src/tkn';
-import { StartObject, Resources, Params } from '../src/tekton/tektonitem';
+import { StartObject, Resources, Params } from '../src/tekton/pipelinecontent';
 
 const expect = chai.expect;
 chai.use(sinonChai);

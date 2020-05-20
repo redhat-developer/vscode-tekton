@@ -13,7 +13,7 @@ import humanize = require('humanize-duration');
 import { TknPipelineResource, TknTask, PipelineRunData } from './tekton';
 import { kubectl } from './kubectl';
 import { pipelineExplorer } from './pipeline/pipelineExplorer';
-import { StartObject } from './tekton/tektonitem';
+import { StartObject } from './tekton/pipelinecontent';
 
 export const humanizer = humanize.humanizer(createConfig());
 
@@ -349,7 +349,9 @@ export class Command {
   static workspace(name: string): CliCommand {
     return newK8sCommand('get', name, '-o', 'json');
   }
-
+  static getPipelineResource(): CliCommand {
+    return newK8sCommand('get', 'pipelineresources', '-o', 'json');
+  }
 }
 
 export class TektonNodeImpl implements TektonNode {
