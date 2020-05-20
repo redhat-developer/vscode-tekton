@@ -13,12 +13,13 @@ import * as sinonChai from 'sinon-chai';
 import * as assert from 'assert';
 import { ToolsConfig } from '../src/tools';
 import { WindowUtil } from '../src/util/windowUtils';
-import { Terminal } from 'vscode';
+import { Terminal, TreeItemCollapsibleState } from 'vscode';
 import { TestItem } from './tekton/testTektonitem';
 import { ExecException } from 'child_process';
 import * as path from 'path';
 import { TektonNode } from '../src/tkn';
 import { StartObject, Resources, Params } from '../src/tekton/pipelinecontent';
+import { PipelineRunData } from '../src/tekton';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -106,7 +107,6 @@ suite('tkn', () => {
       toolsStub = sandbox.stub(ToolsConfig, 'detectOrDownload').resolves(path.join('segment1', 'segment2'));
       const ctStub = sandbox.stub(WindowUtil, 'createTerminal').returns(termFake);
       await tknCli.executeInTerminal(createCliCommand('tkn'));
-      // tslint:disable-next-line: no-unused-expression
       expect(termFake.show).calledOnce;
       expect(ctStub).calledWith('Tekton', process.cwd(), 'segment1');
     });
@@ -130,7 +130,7 @@ suite('tkn', () => {
     const triggerTemplatesItem = new TestItem(tkn.TknImpl.ROOT, 'triggertemplates', tkn.ContextType.TRIGGERTEMPLATES);
     const triggerBindingItem = new TestItem(tkn.TknImpl.ROOT, 'triggerbinding', tkn.ContextType.TRIGGERBINDING);
     const eventListenerItem = new TestItem(tkn.TknImpl.ROOT, 'eventlistener', tkn.ContextType.EVENTLISTENER);
-    const conditionItem = new TestItem(tkn.TknImpl.ROOT, 'condition', tkn.ContextType.CONDITIONS );
+    const conditionItem = new TestItem(tkn.TknImpl.ROOT, 'condition', tkn.ContextType.CONDITIONS);
     const pipelineRunNodeItem = new TestItem(tkn.TknImpl.ROOT, 'PipelineRun', tkn.ContextType.PIPELINERUNNODE);
     const taskRunNodeItem = new TestItem(tkn.TknImpl.ROOT, 'TaskRun', tkn.ContextType.TASKRUNNODE);
 
@@ -858,136 +858,6 @@ suite('tkn', () => {
       expect(result).empty;
     });
 
-    test('getTaskRun returns taskrun list for a pipelinerun', async () => {
-      execStub.resolves({
-        error: null, stdout: JSON.stringify({
-          'items': [
-            {
-              'kind': 'TaskRun',
-              'apiVersion': 'tekton.dev/v1alpha1',
-              'metadata': {
-                'creationTimestamp': '2019-07-25T12:03:01Z',
-                'name': 'taskrun1',
-                'ownerReferences': [{
-                  'kind': 'PipelineRun',
-                  'name': 'pipelinerun1'
-                }],
-                'labels': {
-                  'tekton.dev/pipelineRun': 'pipelinerun1'
-                }
-
-              },
-              'status': {
-                'conditions': [
-                  {
-                    'status': 'True',
-                  }
-                ],
-                'startTime': '2019-07-25T12:03:01Z',
-              }
-            },
-            {
-              'kind': 'TaskRun',
-              'apiVersion': 'tekton.dev/v1alpha1',
-              'metadata': {
-                'creationTimestamp': '2019-07-25T12:03:00Z',
-                'name': 'taskrun2',
-                'ownerReferences': [{
-                  'kind': 'PipelineRun',
-                  'name': 'pipelinerun1'
-                }],
-                'labels': {
-                  'tekton.dev/pipelineRun': 'pipelinerun1'
-                }
-              },
-              'status': {
-                'conditions': [
-                  {
-                    'status': 'True',
-                  }
-                ],
-                'startTime': '2019-07-25T12:03:00Z',
-              }
-            }]
-        })
-      });
-      const result = await tknCli.getTaskRunsForPipelineRun(pipelinerunItem);
-
-      expect(result.length).equals(2);
-      expect(result[0].getName()).equals('taskrun1');
-    });
-
-    test('getTaskruns returns taskruns for a pipelinerun', async () => {
-      const tknTaskRuns = ['taskrun1', 'taskrun2'];
-      execStub.resolves({
-        error: null, stdout: JSON.stringify({
-          'items': [
-            {
-              'kind': 'TaskRun',
-              'apiVersion': 'tekton.dev/v1alpha1',
-              'metadata': {
-                'creationTimestamp': '2019-07-25T12:03:01Z',
-                'name': 'taskrun1',
-                'ownerReferences': [{
-                  'kind': 'PipelineRun',
-                  'name': 'pipelinerun1'
-                }],
-                'labels': {
-                  'tekton.dev/pipelineRun': 'pipelinerun1'
-                }
-              },
-              'status': {
-                'conditions': [
-                  {
-                    'status': 'True',
-                  }
-                ],
-                'startTime': '2019-07-25T12:03:01Z',
-              }
-            },
-            {
-              'kind': 'TaskRun',
-              'apiVersion': 'tekton.dev/v1alpha1',
-              'metadata': {
-                'creationTimestamp': '2019-07-25T12:03:00Z',
-                'name': 'taskrun2',
-                'ownerReferences': [{
-                  'kind': 'PipelineRun',
-                  'name': 'pipelinerun1'
-                }],
-                'labels': {
-                  'tekton.dev/pipelineRun': 'pipelinerun1'
-                }
-              },
-              'status': {
-                'conditions': [
-                  {
-                    'status': 'True',
-                  }
-                ],
-                'startTime': '2019-07-25T12:03:00Z',
-              }
-            }]
-        })
-      });
-      const result = await tknCli.getTaskRunsForPipelineRun(pipelinerunItem);
-      expect(execStub).calledWith(tkn.Command.listTaskRunsForPipelineRun(pipelinerunItem.getName()));
-      expect(result.length).equals(2);
-      for (let i = 0; i < result.length; i++) {
-        expect(result[i].getName()).equals(tknTaskRuns[i]);
-      }
-    });
-
-    test('getTaskRunsForPipelineRun returns an empty list if an error occurs', async () => {
-      sandbox.stub(tkn.TknImpl.prototype, 'getTaskRunsForPipelineRun').resolves([]);
-      execStub.onFirstCall().resolves({ error: undefined, stdout: '' });
-      execStub.onSecondCall().rejects(errorMessage);
-      const result = await tknCli.getTaskRunsForPipelineRun(pipelinerunItem);
-
-      // tslint:disable-next-line: no-unused-expression
-      expect(result).empty;
-    });
-
     test('getTaskRunFromTasks returns taskrun list for a task', async () => {
       execStub.resolves({
         error: null, stdout: JSON.stringify({
@@ -1244,31 +1114,6 @@ suite('tkn', () => {
       }
     });
 
-    test('getPipelineRunChildren returns taskruns for an pipelinerun', async () => {
-      sandbox.stub(tkn.TknImpl.prototype, 'getTaskRunsForPipelineRun').resolves([taskrunItem]);
-      execStub.onFirstCall().resolves({
-        error: undefined, stdout: JSON.stringify({
-          items: [
-            {
-              metadata: {
-                name: 'taskrun1',
-              },
-              spec: {
-                pipelineRef: {
-                  name: 'pipeline1',
-                }
-              }
-
-            }
-          ]
-        })
-      });
-      execStub.onSecondCall().resolves({ error: undefined, stdout: 'serv' });
-      //TODO: Probably need a get children here
-      const result = await tknCli.getTaskRunsForPipelineRun(pipelinerunItem);
-
-      expect(result[0].getName()).deep.equals('taskrun1');
-    });
 
     test('getRawClusterTasks returns items from tkn task list command', async () => {
       const tknTasks = ['clustertask1', 'clustertask2'];
@@ -1348,7 +1193,7 @@ suite('tkn', () => {
     });
   });
 
-  suite('mode node', () => {
+  suite('more node', () => {
     const pipelineNodeItem = new TestItem(tkn.TknImpl.ROOT, 'pipelinenode', tkn.ContextType.PIPELINENODE);
     const pipelineItem = new TestItem(pipelineNodeItem, 'pipeline1', tkn.ContextType.PIPELINE);
 
@@ -1372,6 +1217,38 @@ suite('tkn', () => {
     test('more node has description', () => {
       const more = new tkn.MoreNode(4, 10, pipelineItem);
       assert.equal(more.description, '4 from 10');
+    });
+  });
+
+  suite('PipelineRun node', () => {
+    const pipelineItem = new TestItem(null, 'pipeline', tkn.ContextType.PIPELINE);
+
+    test('PipelineRun should use pipelinerun JSON to create TaskRun nodes', () => {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const json = require(path.join('..', '..', 'test', 'pipelinerun.json')) as PipelineRunData;
+      const pipelineRun = new tkn.PipelineRun(pipelineItem, json.metadata.name, undefined, json, TreeItemCollapsibleState.Expanded);
+
+      expect(pipelineRun.label).equal('condtional-pr');
+      const children = pipelineRun.getChildren();
+      expect(children).to.have.lengthOf(2);
+      expect(children[0].name).eq('then-check');
+      expect(children[1].name).eq('first-create-file');
+    });
+
+    test('TaskRun should contains condition run node', () => {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const json = require(path.join('..', '..', 'test', 'pipelinerun.json')) as PipelineRunData;
+      const pipelineRun = new tkn.PipelineRun(pipelineItem, json.metadata.name, undefined, json, TreeItemCollapsibleState.Expanded);
+
+      expect(pipelineRun.label).equal('condtional-pr');
+      const children = pipelineRun.getChildren() as tkn.TektonNodeImpl[];
+      expect(children).to.have.lengthOf(2);
+      expect(children[0].name).eq('then-check');
+
+      const conditionRun = children[0].getChildren() as tkn.TektonNodeImpl[];
+      expect(conditionRun).not.undefined;
+      expect(conditionRun).to.have.lengthOf(1);
+      expect(conditionRun[0].name).eq('file-exists');
     });
   });
 });
