@@ -3,13 +3,14 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { TektonItem, Trigger } from './tektonitem';
+import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
 import { Progress } from '../util/progress';
 import { window } from 'vscode';
 import * as cliInstance from '../cli';
 import { cli } from '../cli';
 import { TknPipelineTrigger } from '../tekton';
+import { Trigger, PipelineContent } from './pipelinecontent';
 
 export class Pipeline extends TektonItem {
 
@@ -35,7 +36,7 @@ export class Pipeline extends TektonItem {
       })).filter(function (obj) {
         return obj.name === pipeline.getName();
       });
-      const inputStartPipeline = await Pipeline.startObject(pipelineTrigger, 'Pipeline');
+      const inputStartPipeline = await PipelineContent.startObject(pipelineTrigger, 'Pipeline');
 
       return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
         Pipeline.tkn.startPipeline(inputStartPipeline)
