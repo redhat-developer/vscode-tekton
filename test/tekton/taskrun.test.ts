@@ -21,6 +21,7 @@ chai.use(sinonChai);
 suite('Tekton/TaskRun', () => {
   const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
+  let getTaskRunsStub: sinon.SinonStub;
   let getPipelineRunNamesStub: sinon.SinonStub;
   const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
   const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
@@ -28,6 +29,7 @@ suite('Tekton/TaskRun', () => {
 
   setup(() => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
+    sandbox.stub(TknImpl.prototype, 'getTaskRunsForPipelineRun').resolves([taskrunItem]);
     getPipelineRunNamesStub = sandbox.stub(TektonItem, 'getPipelinerunNames').resolves([pipelinerunItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();
   });
@@ -80,6 +82,10 @@ suite('Tekton/TaskRun', () => {
     suite('listFromTasks command', () => {
       const taskItem = new TestItem(null, 'task', ContextType.TASK);
 
+      setup(() => {
+        getTaskRunsStub = sandbox.stub(TektonItem, 'getTaskRunNames').resolves([taskrunItem]);
+      });
+
       suite('called from \'Tekton Pipelines Explorer\'', () => {
 
         test('executes the listFromTasks tkn command in terminal', async () => {
@@ -92,6 +98,7 @@ suite('Tekton/TaskRun', () => {
       suite('called from command palette', () => {
 
         test('calls the appropriate error message when no project found', async () => {
+          getTaskRunsStub.restore();
           sandbox.stub(TknImpl.prototype, 'getTaskRunsForTasks').resolves([]);
           try {
             await TaskRun.listFromTask(null);

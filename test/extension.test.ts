@@ -55,6 +55,7 @@ suite('Tekton Pipeline Extension', () => {
     sandbox.stub(TknImpl.prototype, '_getTasks').resolves([taskItem]);
     sandbox.stub(TknImpl.prototype, '_getClusterTasks').resolves([clustertaskItem]);
     sandbox.stub(TknImpl.prototype, '_getPipelineRuns').resolves([pipelinerunItem]);
+    sandbox.stub(TknImpl.prototype, '_getTaskRunsForPipelineRun').resolves([taskrunItem]);
   });
 
   teardown(() => {
@@ -103,6 +104,12 @@ suite('Tekton Pipeline Extension', () => {
     sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '' });
     const pipelinerun = await tkn.getPipelineRuns(pipelineItem);
     expect(pipelinerun.length).is.equals(1);
+  });
+
+  test('should load taskruns from pipelinerun folder', async () => {
+    sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '' });
+    const taskrun = await tkn.getTaskRunsForPipelineRun(pipelinerunItem);
+    expect(taskrun.length).is.equals(1);
   });
 
   test('should register all extension commands declared commands in package descriptor', async () => {
