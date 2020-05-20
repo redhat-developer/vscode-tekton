@@ -28,6 +28,7 @@ import { k8sCommands } from './kubernetes';
 import { initializeTknEditing } from './yaml-support/tkn-editing';
 import { ToolsConfig } from './tools';
 import { TKN_RESOURCE_SCHEME, TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider } from './util/tekton-vfs';
+import { save } from './tekton/save';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;

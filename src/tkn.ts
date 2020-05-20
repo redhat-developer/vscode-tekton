@@ -352,7 +352,9 @@ export class Command {
   static getPipelineResource(): CliCommand {
     return newK8sCommand('get', 'pipelineresources', '-o', 'json');
   }
-
+  static create(file: string): CliCommand {
+    return newK8sCommand('create', '--save-config','-f', file);
+  }
 }
 
 export class TektonNodeImpl implements TektonNode {
