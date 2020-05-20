@@ -110,6 +110,7 @@ export interface ConditionCheckStatus {
   startTime?: string;
   completionTime?: string;
   check?: ContainerState;
+  conditions?: PipelineRunConditions[];
 }
 
 export interface PipelineRunConditionCheckStatus {

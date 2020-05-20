@@ -149,27 +149,6 @@ suite('TektonItem', () => {
     });
   });
 
-  suite('getTaskrunNames', () => {
-
-    test('returns an array of taskrun names for the pipelinerun if there is at least one task', async () => {
-      sandbox.stub(TknImpl.prototype, 'getTaskRunsForPipelineRun').resolves([taskrunItem]);
-      const taskrunNames = await TektonItem.getTaskRunNames(pipelinerunItem);
-      expect(taskrunNames[0].getName()).equals('taskrun');
-
-    });
-
-    test('throws error if there are no taskruns available', async () => {
-      sandbox.stub(TknImpl.prototype, 'getTaskRunsForPipelineRun').resolves([]);
-      try {
-        await TektonItem.getTaskRunNames(pipelinerunItem);
-      } catch (err) {
-        expect(err.message).equals('You need at least one TaskRun available. Please create new Tekton TaskRun and try again.');
-        return;
-      }
-      fail('should throw error in case tasks array is empty');
-    });
-  });
-
   suite('getClustertaskNames', () => {
 
     test('returns an array of clustertask names for the task if there is at least one task', async () => {

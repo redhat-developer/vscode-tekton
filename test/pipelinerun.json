@@ -1,0 +1,172 @@
+{
+  "apiVersion": "tekton.dev/v1beta1",
+  "kind": "PipelineRun",
+  "metadata": {
+      "creationTimestamp": "2020-05-07T14:39:15Z",
+      "generation": 1,
+      "labels": {
+          "tekton.dev/pipeline": "conditional-pipeline"
+      },
+      "name": "condtional-pr",
+      "namespace": "default",
+      "resourceVersion": "393173",
+      "selfLink": "/apis/tekton.dev/v1beta1/namespaces/default/pipelineruns/condtional-pr",
+      "uid": "92c53583-bbd9-4cc0-a191-04530ae21648"
+  },
+  "spec": {
+      "pipelineRef": {
+          "name": "conditional-pipeline"
+      },
+      "resources": [
+          {
+              "name": "source-repo",
+              "resourceRef": {
+                  "name": "pipeline-git"
+              }
+          }
+      ],
+      "serviceAccountName": "default",
+      "timeout": "1h0m0s"
+  },
+  "status": {
+      "completionTime": "2020-05-07T14:43:15Z",
+      "conditions": [
+          {
+              "lastTransitionTime": "2020-05-07T14:43:15Z",
+              "message": "Tasks Completed: 2, Skipped: 0",
+              "reason": "Succeeded",
+              "status": "True",
+              "type": "Succeeded"
+          }
+      ],
+      "startTime": "2020-05-07T14:39:15Z",
+      "taskRuns": {
+          "condtional-pr-first-create-file-x2cvl": {
+              "pipelineTaskName": "first-create-file",
+              "status": {
+                  "completionTime": "2020-05-07T14:41:04Z",
+                  "conditions": [
+                      {
+                          "lastTransitionTime": "2020-05-07T14:41:04Z",
+                          "message": "All Steps have completed executing",
+                          "reason": "Succeeded",
+                          "status": "True",
+                          "type": "Succeeded"
+                      }
+                  ],
+                  "podName": "condtional-pr-first-create-file-x2cvl-pod-2b7qt",
+                  "startTime": "2020-05-07T14:39:15Z",
+                  "steps": [
+                      {
+                          "container": "step-write-new-stuff",
+                          "imageID": "docker.io/library/ubuntu@sha256:5747316366b8cc9e3021cd7286f42b2d6d81e3d743e2ab571f55bcd5df788cc8",
+                          "name": "write-new-stuff",
+                          "terminated": {
+                              "containerID": "cri-o://5dfd667521d20c91150a82e0971c9cbfd5c35a721e2b94bc8ea27cd91a421ada",
+                              "exitCode": 0,
+                              "finishedAt": "2020-05-07T14:41:03Z",
+                              "reason": "Completed",
+                              "startedAt": "2020-05-07T14:41:03Z"
+                          }
+                      },
+                      {
+                          "container": "step-source-copy-pipeline-git-7szw9",
+                          "imageID": "registry.access.redhat.com/ubi8/ubi-minimal@sha256:326c94ab44d1472a30d47c49c2f896df687184830fc66a66de00c416885125b0",
+                          "name": "source-copy-pipeline-git-7szw9",
+                          "terminated": {
+                              "containerID": "cri-o://825bbdedd15e596b109843deb3e104eb29f446be02c0ab79b7bc48d3215b6ad1",
+                              "exitCode": 0,
+                              "finishedAt": "2020-05-07T14:41:04Z",
+                              "reason": "Completed",
+                              "startedAt": "2020-05-07T14:41:04Z"
+                          }
+                      },
+                      {
+                          "container": "step-source-mkdir-pipeline-git-pvtn7",
+                          "imageID": "registry.access.redhat.com/ubi8/ubi-minimal@sha256:326c94ab44d1472a30d47c49c2f896df687184830fc66a66de00c416885125b0",
+                          "name": "source-mkdir-pipeline-git-pvtn7",
+                          "terminated": {
+                              "containerID": "cri-o://321366c33b0d38bfe52016cd6700457acda2469f3f0f88ccc7c1c09ffc3bafcf",
+                              "exitCode": 0,
+                              "finishedAt": "2020-05-07T14:41:03Z",
+                              "reason": "Completed",
+                              "startedAt": "2020-05-07T14:41:03Z"
+                          }
+                      },
+                      {
+                          "container": "step-create-dir-workspace-m9tcg",
+                          "imageID": "registry.access.redhat.com/ubi8/ubi-minimal@sha256:326c94ab44d1472a30d47c49c2f896df687184830fc66a66de00c416885125b0",
+                          "name": "create-dir-workspace-m9tcg",
+                          "terminated": {
+                              "containerID": "cri-o://8f92eb5eb14742dddd80731c792214954698ff6390364162409a3077b26a3a18",
+                              "exitCode": 0,
+                              "finishedAt": "2020-05-07T14:41:02Z",
+                              "reason": "Completed",
+                              "startedAt": "2020-05-07T14:41:02Z"
+                          }
+                      }
+                  ]
+              }
+          },
+          "condtional-pr-then-check-mr5dp": {
+              "conditionChecks": {
+                  "condtional-pr-then-check-mr5dp-file-exists-bhxgl": {
+                      "conditionName": "file-exists",
+                      "status": {
+                          "check": {
+                              "terminated": {
+                                  "containerID": "cri-o://24de1fa5e10ed936e478d0b415016c63d8cd7eef4b50bf1c9d46a8abc951cb8f",
+                                  "exitCode": 0,
+                                  "finishedAt": "2020-05-07T14:42:53Z",
+                                  "reason": "Completed",
+                                  "startedAt": "2020-05-07T14:42:53Z"
+                              }
+                          },
+                          "completionTime": "2020-05-07T14:42:54Z",
+                          "conditions": [
+                              {
+                                  "lastTransitionTime": "2020-05-07T14:42:54Z",
+                                  "message": "All Steps have completed executing",
+                                  "reason": "Succeeded",
+                                  "status": "True",
+                                  "type": "Succeeded"
+                              }
+                          ],
+                          "podName": "condtional-pr-then-check-mr5dp-file-exists-bhxgl-pod-75n9f",
+                          "startTime": "2020-05-07T14:41:04Z"
+                      }
+                  }
+              },
+              "pipelineTaskName": "then-check",
+              "status": {
+                  "completionTime": "2020-05-07T14:43:15Z",
+                  "conditions": [
+                      {
+                          "lastTransitionTime": "2020-05-07T14:43:15Z",
+                          "message": "All Steps have completed executing",
+                          "reason": "Succeeded",
+                          "status": "True",
+                          "type": "Succeeded"
+                      }
+                  ],
+                  "podName": "condtional-pr-then-check-mr5dp-pod-7nj9v",
+                  "startTime": "2020-05-07T14:42:54Z",
+                  "steps": [
+                      {
+                          "container": "step-echo",
+                          "imageID": "docker.io/library/ubuntu@sha256:5747316366b8cc9e3021cd7286f42b2d6d81e3d743e2ab571f55bcd5df788cc8",
+                          "name": "echo",
+                          "terminated": {
+                              "containerID": "cri-o://133f1e5a347e7012c49cd78c25918545da3e9797310aaf043b245c877220bee5",
+                              "exitCode": 0,
+                              "finishedAt": "2020-05-07T14:43:14Z",
+                              "reason": "Completed",
+                              "startedAt": "2020-05-07T14:43:14Z"
+                          }
+                      }
+                  ]
+              }
+          }
+      }
+  }
+}
