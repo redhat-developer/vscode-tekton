@@ -57,7 +57,9 @@
     "onCommand:tekton.about",
     "onCommand:tekton.output",
     "onCommand:tekton.explorer.reportIssue",
-    "onLanguage:yaml"
+    "onLanguage:yaml",
+    "onFileSystem:tekton",
+    "onFileSystem:tekton-ro"
   ],
   "main": "./out/src/extension",
   "contributes": {

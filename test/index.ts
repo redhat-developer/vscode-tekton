@@ -82,7 +82,11 @@ export function run(): Promise<void> {
           mocha.run(failures => {
             testFailures = failures;
           }).on('end', () => {
-            coverageRunner && coverageRunner.reportCoverage();
+            try {
+              coverageRunner && coverageRunner.reportCoverage();
+            } catch (err) {
+              console.error(err);
+            }
             // delay reporting that test are finished, to let main process handle all output
             setTimeout(() => {
               if (testFailures > 0) {

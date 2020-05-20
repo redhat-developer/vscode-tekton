@@ -12,7 +12,7 @@ import * as path from 'path';
 import { initializeTknEditing, TknDefinitionProvider } from '../../src/yaml-support/tkn-editing';
 import { tektonYaml, TektonYamlType } from '../../src/yaml-support/tkn-yaml';
 import { TestTextDocument } from '../text-document-mock';
-import { kubefsUri } from '../../src/util/tektonresources.virtualfs';
+import { tektonFSUri } from '../../src/util/tekton-vfs';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -118,7 +118,7 @@ suite('Tekton Editing support', () => {
       const location = defProvider.provideDefinition(doc, new vscode.Position(15, 15), {} as vscode.CancellationToken) as vscode.Location;
 
       expect(location).not.undefined;
-      expect(location.uri.toString()).eqls(kubefsUri('task/unit-tests', 'yaml').toString());
+      expect(location.uri.toString()).eqls(tektonFSUri('task', 'unit-tests', 'yaml').toString());
     });
 
     test('go to task name from taskRef should return k8s uri to task resource', async () => {
@@ -129,18 +129,18 @@ suite('Tekton Editing support', () => {
       const location = defProvider.provideDefinition(doc, new vscode.Position(15, 15), {} as vscode.CancellationToken) as vscode.Location;
 
       expect(location).not.undefined;
-      expect(location.uri.toString()).eqls(kubefsUri('task/unit-tests', 'yaml').toString());
+      expect(location.uri.toString()).eqls(tektonFSUri('task', 'unit-tests', 'yaml').toString());
     });
 
     test('go to task name from conditionRef should return k8s uri to conditions resource', async () => {
-      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', 'yaml-support', 'conditional-pipeline.yaml'),'utf8');
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', 'yaml-support', 'conditional-pipeline.yaml'), 'utf8');
       const doc = new TestTextDocument(vscode.Uri.parse('file:///editing/pipeline/conditional-pipeline.yaml'), yaml);
       isTektonYamlStub.returns(TektonYamlType.Pipeline);
 
       const location = defProvider.provideDefinition(doc, new vscode.Position(21, 30), {} as vscode.CancellationToken) as vscode.Location;
 
       expect(location).not.undefined;
-      expect(location.uri.toString()).eqls(kubefsUri('conditions/file-exists', 'yaml').toString());
+      expect(location.uri.toString()).eqls(tektonFSUri('conditions', 'file-exists', 'yaml').toString());
     });
 
   });

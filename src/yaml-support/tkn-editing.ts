@@ -9,8 +9,8 @@ import { yamlLocator } from './yaml-locator';
 import { TknElementType, TknStringElement, TknElement } from '../model/common';
 import { TknDocument } from '../model/document';
 import { Pipeline, PipelineTaskRef, PipelineTaskKind, PipelineTaskCondition } from '../model/pipeline/pipeline-model';
-import { kubefsUri } from '../util/tektonresources.virtualfs';
 import { Disposable } from '../util/disposable';
+import { tektonFSUri } from '../util/tekton-vfs';
 
 const providersMap = new Map<TektonYamlType, TknTypeDefinitionProvider>();
 
@@ -104,7 +104,7 @@ export class PipelineDefinitionProvider implements TknTypeDefinitionProvider {
 }
 
 function generateLinkForTektonResource(resourceType: string, name: string): vscode.Location {
-  const uri = kubefsUri(`${resourceType}/${name}`, 'yaml');
+  const uri = tektonFSUri(resourceType, name, 'yaml');
   return new vscode.Location(uri, new vscode.Position(1, 6)); // just guessing name position
 }
 
