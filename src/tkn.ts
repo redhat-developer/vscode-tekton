@@ -10,7 +10,7 @@ import * as path from 'path';
 import { ToolsConfig } from './tools';
 import format = require('string-format');
 import humanize = require('humanize-duration');
-import { TknPipelineResource, TknTask, PipelineRunData, TaskRun as RawTaskRun, PipelineRunConditionCheckStatus } from './tekton';
+import { TknPipelineResource, TknTask, PipelineRunData } from './tekton';
 import { kubectl } from './kubectl';
 import { pipelineExplorer } from './pipeline/pipelineExplorer';
 import { StartObject } from './tekton/pipelinecontent';
@@ -74,7 +74,6 @@ export enum ContextType {
   CONDITIONSNODE = 'conditionsnode',
   CONDITIONS = 'conditions',
   PIPELINERUNNODE = 'pipelinerunnode',
-  CONDITIONRUN = 'conditionrunnode',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -395,7 +394,7 @@ export class TektonNodeImpl implements TektonNode {
     pipelinerun: {
       icon: 'running.gif',
       tooltip: 'PipelineRun: {label}',
-      getChildren: () => []
+      getChildren: () => this.tkn.getTaskRunsForPipelineRun(this)
     },
     task: {
       icon: 'T.svg',
@@ -405,11 +404,6 @@ export class TektonNodeImpl implements TektonNode {
     taskrun: {
       icon: 'running.gif',
       tooltip: 'TaskRun: {label}',
-      getChildren: () => []
-    },
-    conditionrunnode: {
-      icon: 'running.gif',
-      tooltip: 'ConditionRun: {label}',
       getChildren: () => []
     },
     clustertask: {
@@ -482,7 +476,7 @@ export class TektonNodeImpl implements TektonNode {
   constructor(private parent: TektonNode,
     public readonly name: string,
     public readonly contextValue: ContextType,
-    protected readonly tkn: Tkn,
+    private readonly tkn: Tkn,
     public readonly collapsibleState: TreeItemCollapsibleState = TreeItemCollapsibleState.Collapsed,
     public readonly creationTime?: string,
     public readonly state?: string) {
@@ -594,86 +588,19 @@ export class TaskRun extends TektonNodeImpl {
   }
 }
 
-export abstract class BaseTaskRun extends TektonNodeImpl {
-  constructor(parent: TektonNode,
-    name: string,
-    contextType: ContextType,
-    tkn: Tkn,
-    collapsibleState: TreeItemCollapsibleState,
-    creationTime: string,
-    protected finished: string | undefined,
-    state: string) {
-    super(parent, name, contextType, tkn, collapsibleState, creationTime, state);
-  }
-
-  get description(): string {
-    let r = '';
-    if (this.getParent().contextValue === ContextType.TASK) {
-      if (this.creationTime) {
-        r = 'started ' + humanizer(Date.now() - Date.parse(this.creationTime)) + ' ago, finished in ' + humanizer(Date.parse(this.finished) - Date.parse(this.creationTime));
-      } else {
-        r = 'started ' + humanizer(Date.now() - Date.parse(this.creationTime)) + ' ago, running for ' + humanizer(Date.now() - Date.parse(this.creationTime));
-      }
-    } else {
-      if (this.finished) {
-        r = 'finished in ' + humanizer(Date.parse(this.finished) - Date.parse(this.creationTime));
-      } else {
-        r = 'running for ' + humanizer(Date.now() - Date.parse(this.creationTime));
-      }
-    }
-    return r;
-  }
-}
-
-export class ConditionRun extends BaseTaskRun {
-  constructor(parent: TektonNode, name: string, tkn: Tkn, item: PipelineRunConditionCheckStatus) {
-    super(parent, name, ContextType.CONDITIONRUN, tkn, TreeItemCollapsibleState.None, item.status?.startTime, item.status?.completionTime, item.status?.conditions[0]?.status)
-  }
-}
-
-export class TaskRunFromPipeline extends BaseTaskRun {
-  constructor(parent: TektonNode, name: string, tkn: Tkn, private rawTaskRun: RawTaskRun) {
-    super(parent,
-      name,
-      ContextType.TASKRUN,
-      tkn,
-      rawTaskRun.conditionChecks ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.None,
-      rawTaskRun.status.startTime,
-      rawTaskRun.status?.completionTime,
-      rawTaskRun.status ? rawTaskRun.status.conditions[0].status : '');
-  }
-
-  get label(): string {
-    return this.name;
-  }
-
-  getChildren(): ProviderResult<TektonNode[]> {
-    if (this.rawTaskRun.conditionChecks) {
-      const result = []
-      for (const conditionName in this.rawTaskRun.conditionChecks) {
-        const rawCondition = this.rawTaskRun.conditionChecks[conditionName];
-        result.push(new ConditionRun(this, rawCondition.conditionName, this.tkn, rawCondition));
-
-      }
-      return result.sort(compareTimeNewestFirst);
-    } else {
-      return super.getChildren();
-    }
-  }
-}
 
 export class PipelineRun extends TektonNodeImpl {
   private started: string;
   private finished: string;
-  private item: PipelineRunData;
+  private generateName: string;
   constructor(parent: TektonNode,
     name: string,
     tkn: Tkn,
     item: PipelineRunData, collapsibleState: TreeItemCollapsibleState) {
     super(parent, name, ContextType.PIPELINERUN, tkn, collapsibleState, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status : '');
     this.started = item.metadata.creationTimestamp;
+    this.generateName = item.metadata.generateName;
     this.finished = item.status?.completionTime;
-    this.item = item;
   }
 
   get label(): string {
@@ -688,20 +615,6 @@ export class PipelineRun extends TektonNodeImpl {
       r = 'running for ' + humanizer(Date.now() - Date.parse(this.started));
     }
     return r;
-  }
-
-  getChildren(): ProviderResult<TektonNode[]> {
-    const result = [];
-    const tasks = this.item.status?.taskRuns;
-    if (!tasks) {
-      return result;
-    }
-    for (const task in tasks) {
-      const taskRun = tasks[task];
-      result.push(new TaskRunFromPipeline(this, taskRun.pipelineTaskName, this.tkn, taskRun));
-    }
-
-    return result.sort(compareTimeNewestFirst);
   }
 }
 
@@ -751,6 +664,7 @@ export interface Tkn {
   getPipelineResources(pipelineResources: TektonNode): Promise<TektonNode[]>;
   getTasks(task: TektonNode): Promise<TektonNode[]>;
   getRawTasks(): Promise<TknTask[]>;
+  getTaskRunsForPipelineRun(taskRun: TektonNode): Promise<TektonNode[]>;
   getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]>;
   getRawClusterTasks(): Promise<TknTask[]>;
   execute(command: CliCommand, cwd?: string, fail?: boolean): Promise<CliExitData>;
@@ -804,7 +718,7 @@ export class TknImpl implements Tkn {
     }
     if (result.error && getStderrString(result.error).indexOf('You must be logged in to the server (Unauthorized)') > -1) {
       const tknMessage = 'Please login to the server.';
-      return [new TektonNodeImpl(null, tknMessage, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)]
+      return [ new TektonNodeImpl(null, tknMessage, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)]
     }
     if (result.error && getStderrString(result.error).indexOf('the server doesn\'t have a resource type \'pipeline\'') > -1) {
       const tknDownMsg = 'Please install the OpenShift Pipelines Operator.';
@@ -979,6 +893,33 @@ export class TknImpl implements Tkn {
     return data.map((value) => new TaskRun(taskRun, value.metadata.name, this, value)).sort(compareTimeNewestFirst);
   }
 
+  async getTaskRunsForPipelineRun(pipelineRun: TektonNode): Promise<TektonNode[]> {
+    if (!pipelineRun.visibleChildren) {
+      pipelineRun.visibleChildren = this.defaultPageSize;
+    }
+
+    const taskRuns = await this._getTaskRunsForPipelineRun(pipelineRun);
+
+    return this.limitView(pipelineRun, taskRuns);
+  }
+
+  async _getTaskRunsForPipelineRun(pipelinerun: TektonNode): Promise<TektonNode[]> {
+    const result = await this.execute(Command.listTaskRunsForPipelineRun(pipelinerun.getName()));
+    if (result.error) {
+      console.log(result + ' Std.err when processing pipelines');
+      return [new TektonNodeImpl(pipelinerun, getStderrString(result.error), ContextType.TASKRUN, this, TreeItemCollapsibleState.Expanded)];
+    }
+    let data: PipelineTaskRunData[] = [];
+    try {
+      data = JSON.parse(result.stdout).items;
+      // eslint-disable-next-line no-empty
+    } catch (ignore) {
+    }
+
+    return data
+      .map((value) => new TaskRun(pipelinerun, value.metadata.name, this, value))
+      .sort(compareTimeNewestFirst);
+  }
 
   async getPipelines(pipeline: TektonNode): Promise<TektonNode[]> {
     return this._getPipelines(pipeline);
