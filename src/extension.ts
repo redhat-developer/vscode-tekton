@@ -28,7 +28,7 @@ import { k8sCommands } from './kubernetes';
 import { initializeTknEditing } from './yaml-support/tkn-editing';
 import { ToolsConfig } from './tools';
 import { TKN_RESOURCE_SCHEME, TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider } from './util/tekton-vfs';
-import { save } from './tekton/save';
+import { updateTektonResource } from './tekton/deploy';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -118,7 +118,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     k8sExplorer.registerNodeContributor(nodeContributor);
   }
   vscode.workspace.onDidSaveTextDocument(async (document: vscode.TextDocument) => {
-    await save(document);
+    await updateTektonResource(document);
   });
   registerYamlSchemaSupport(context);
   registerPipelinePreviewContext();

@@ -121,8 +121,8 @@
             "description": "Tree pagination limit for some tekton related nodes(pipeline runs/task runs)"
           }
         },
-        "vs-tekton.save": {
-          "Title": "Save command",
+        "vs-tekton.deploy": {
+          "Title": "Deploy command",
           "type": "boolean",
           "default": false,
           "description": "Enable/disable to Deploy the yaml resources on cluster"

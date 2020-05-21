@@ -13,7 +13,7 @@ import * as vscode from 'vscode';
 import { cli } from '../../src/cli';
 import * as sinonChai from 'sinon-chai';
 import { Command } from '../../src/tkn';
-import { save } from '../../src/tekton/save';
+import { updateTektonResource } from '../../src/tekton/deploy';
 import { contextGlobalState } from '../../src/extension';
 import { tektonYaml } from '../../src/yaml-support/tkn-yaml';
 import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
@@ -21,7 +21,7 @@ import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 const expect = chai.expect;
 chai.use(sinonChai);
 
-suite('Save File', () => {
+suite('Deploy File', () => {
   const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
   let osStub: sinon.SinonStub;
@@ -63,7 +63,7 @@ suite('Save File', () => {
     isClosed: false,
     isDirty: false,
     isUntitled: false,
-    languageId: '',
+    languageId: 'yaml',
     version: 1,
     eol: vscode.EndOfLine.CRLF,
     save: undefined,
@@ -94,7 +94,7 @@ suite('Save File', () => {
       has(): boolean {
         return true;
       },
-      save: true
+      deploy: true
     });
     osStub = sandbox.stub(os, 'tmpdir').resolves();
     unlinkStub = sandbox.stub(fs, 'unlink').resolves();
@@ -129,7 +129,7 @@ suite('Save File', () => {
     sandbox.restore();
   });
 
-  suite('Save command', () => {
+  suite('Deploy command', () => {
 
     test('calls the appropriate kubectl command to deploy on cluster', async () => {
       execStub.resolves({
@@ -138,8 +138,8 @@ suite('Save File', () => {
         stdout: 'successfully created'
       });
       workspaceStateGetStub.onFirstCall().returns(undefined);
-      showWarningMessageStub.onFirstCall().resolves('Save Once');
-      await save(textDocument);
+      showWarningMessageStub.onFirstCall().resolves('Deploy Once');
+      await updateTektonResource(textDocument);
       expect(execStub).calledOnceWith(Command.create('workspace.yaml'));
       unlinkStub.calledOnce;
       osStub.calledOnce;
@@ -150,14 +150,14 @@ suite('Save File', () => {
       workspaceStateGetStub.calledOnce;
     });
 
-    test('get save data from workspaceState', async () => {
+    test('get deploy data from workspaceState', async () => {
       execStub.resolves({
         error: undefined,
         stderr: '',
         stdout: 'successfully created'
       });
       workspaceStateGetStub.onFirstCall().returns('path');
-      await save(textDocument);
+      await updateTektonResource(textDocument);
       expect(execStub).calledOnceWith(Command.create('workspace.yaml'));
       showInformationMessageStub.calledOnce;
       showWarningMessageStub.calledOnce;
@@ -177,7 +177,7 @@ suite('Save File', () => {
       });
       osStub.returns('path');
       workspaceStateGetStub.onFirstCall().returns('path');
-      await save(textDocument);
+      await updateTektonResource(textDocument);
       showErrorMessageStub.calledOnce;
       workspaceStateGetStub.calledOnce;
       showInformationMessageStub.calledOnce;
@@ -196,7 +196,7 @@ suite('Save File', () => {
       });
       osStub.returns('path');
       workspaceStateGetStub.onFirstCall().returns('path');
-      await save(textDocument);
+      await updateTektonResource(textDocument);
       showErrorMessageStub.calledTwice;
       workspaceStateGetStub.calledOnce;
     });
@@ -208,9 +208,9 @@ suite('Save File', () => {
         stdout: 'successfully created'
       });
       workspaceStateGetStub.onFirstCall().returns(undefined);
-      showWarningMessageStub.onFirstCall().resolves('Save');
+      showWarningMessageStub.onFirstCall().resolves('Deploy');
       workspaceStateUpdateStub.onFirstCall().resolves('path');
-      await save(textDocument);
+      await updateTektonResource(textDocument);
       expect(execStub).calledOnceWith(Command.create('workspace.yaml'));
       showInformationMessageStub.calledOnce;
       showWarningMessageStub.calledOnce;

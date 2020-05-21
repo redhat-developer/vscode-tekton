@@ -99,7 +99,7 @@ export class TektonYaml {
     if (rootMap) {
       const apiVersion = getYamlMappingValue(rootMap, 'apiVersion');
       const kind = getYamlMappingValue(rootMap, 'kind');
-      if (apiVersion && apiVersion.startsWith(TEKTON_API) || apiVersion.startsWith(TRIGGER_API)) {
+      if (apiVersion?.startsWith(TEKTON_API) || apiVersion?.startsWith(TRIGGER_API)) {
         return TektonYamlType[kind];
       }
     }

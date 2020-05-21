@@ -15,16 +15,17 @@ import { pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { getStderrString, Command, newK8sCommand } from '../tkn';
 
 
-function checkSave(): boolean {
+function checkDeploy(): boolean {
   return vscode.workspace
     .getConfiguration('vs-tekton')
-    .get<boolean>('save');
+    .get<boolean>('deploy');
 }
 
-export async function save(document: vscode.TextDocument): Promise<void> {
+export async function updateTektonResource(document: vscode.TextDocument): Promise<void> {
   let value: string;
-  if (!checkSave()) return;
+  if (!checkDeploy()) return;
   if (document.uri.authority !== 'loadtektonresource') {
+    if (document.languageId !== 'yaml') return;
     const verifyTknYaml = tektonYaml.isTektonYaml(document);
     if (!contextGlobalState.workspaceState.get(document.uri.fsPath) && verifyTknYaml) {
       value = await vscode.window.showWarningMessage('Detected Tekton resources. Do you want to deploy to cluster?', 'Deploy', 'Deploy Once', 'Cancel');
@@ -45,6 +46,7 @@ export async function save(document: vscode.TextDocument): Promise<void> {
           const resourceCheckRegex = /^(Task|PipelineResource|Pipeline|Condition|ClusterTask|EventListener|TriggerBinding)$/ as RegExp;
           const fileContents = await fs.readFile(document.uri.fsPath, 'utf8');
           const data: object[] = yaml.safeLoadAll(fileContents).filter((obj: {kind: string}) => resourceCheckRegex.test(obj.kind));
+          if (data.length === 0) return;
           data.map(value => {
             const yamlStr = yaml.safeDump(value);
             yamlData += yamlStr + '---\n';
