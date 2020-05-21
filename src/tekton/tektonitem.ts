@@ -67,7 +67,13 @@ export abstract class TektonItem {
       if (doc) {
         window.showTextDocument(doc, { preserveFocus: true, preview: true });
       }
-    }, (err) => window.showErrorMessage(`Error loading document: ${err}`));
+    }, (err) => {
+      if (type === 'taskrun') {
+        window.showErrorMessage('TaskRun may not have started yet, try again when it starts running');
+      } else {
+        window.showErrorMessage(`Error loading document: ${err}`)
+      }
+    });
   }
 
   static getOutputFormat(): string {
