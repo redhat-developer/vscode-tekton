@@ -821,6 +821,7 @@
     "git-transport-protocol": "^0.1.0",
     "hasha": "5.0.0",
     "humanize-duration": "^3.21.0",
+    "js-yaml": "^3.13.1",
     "jstream": "^1.1.1",
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
