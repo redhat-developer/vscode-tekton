@@ -120,6 +120,12 @@
             "default": 5,
             "description": "Tree pagination limit for some tekton related nodes(pipeline runs/task runs)"
           }
+        },
+        "vs-tekton.deploy": {
+          "Title": "Deploy command",
+          "type": "boolean",
+          "default": false,
+          "description": "Enable/disable to Deploy the yaml resources on cluster"
         }
       }
     },
@@ -794,7 +800,7 @@
     "glob": "^7.1.3",
     "istanbul": "^0.4.5",
     "mocha": "^6.2.2",
-    "mocha-jenkins-reporter": "^0.4.1",
+    "mocha-jenkins-reporter": "^0.4.3",
     "proxyquire": "^2.1.0",
     "remap-istanbul": "^0.13.0",
     "rimraf": "^3.0.2",
@@ -821,6 +827,7 @@
     "git-transport-protocol": "^0.1.0",
     "hasha": "5.0.0",
     "humanize-duration": "^3.21.0",
+    "js-yaml": "^3.13.1",
     "jstream": "^1.1.1",
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",

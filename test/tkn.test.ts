@@ -97,6 +97,8 @@ suite('tkn', () => {
     test('executeInTerminal send command to terminal and shows it', async () => {
       const termFake: Terminal = {
         name: 'name',
+        creationOptions: {},
+        exitStatus: undefined,
         processId: Promise.resolve(1),
         sendText: sinon.stub(),
         show: sinon.stub(),
