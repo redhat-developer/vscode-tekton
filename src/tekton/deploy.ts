@@ -24,8 +24,8 @@ function checkDeploy(): boolean {
 export async function updateTektonResource(document: vscode.TextDocument): Promise<void> {
   let value: string;
   if (!checkDeploy()) return;
-  if (document.uri.authority !== 'loadtektonresource') {
-    if (document.languageId !== 'yaml') return;
+  if (document.languageId !== 'yaml') return;
+  if (!(document.uri.scheme.startsWith('tekton'))) {
     const verifyTknYaml = tektonYaml.isTektonYaml(document);
     if (!contextGlobalState.workspaceState.get(document.uri.fsPath) && verifyTknYaml) {
       value = await vscode.window.showWarningMessage('Detected Tekton resources. Do you want to deploy to cluster?', 'Deploy', 'Deploy Once', 'Cancel');
