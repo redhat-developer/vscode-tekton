@@ -14,11 +14,19 @@ import { tektonYaml } from '../yaml-support/tkn-yaml';
 import { pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { getStderrString, Command, newK8sCommand } from '../tkn';
 
+
+function checkSave(): boolean {
+  return vscode.workspace
+    .getConfiguration('vs-tekton')
+    .get<boolean>('save');
+}
+
 export async function save(document: vscode.TextDocument): Promise<void> {
   let value: string;
+  if (!checkSave()) return;
   if (document.uri.authority !== 'loadtektonresource') {
     const verifyTknYaml = tektonYaml.isTektonYaml(document);
-    if (!contextGlobalState.workspaceState.get(document.uri.fsPath)) {
+    if (!contextGlobalState.workspaceState.get(document.uri.fsPath) && verifyTknYaml) {
       value = await vscode.window.showWarningMessage('Detected Tekton resources. Do you want to deploy to cluster?', 'Deploy', 'Deploy Once', 'Cancel');
     }
     if (value === 'Deploy') {
@@ -33,9 +41,9 @@ export async function save(document: vscode.TextDocument): Promise<void> {
         }
         const fsPath = path.join(tempPath, path.basename(document.uri.fsPath));
         try {
-          let yamlData = ''
+          let yamlData = '';
           const resourceCheckRegex = /^(Task|PipelineResource|Pipeline|Condition|ClusterTask|EventListener|TriggerBinding)$/ as RegExp;
-          const fileContents = fs.readFileSync(document.uri.fsPath, 'utf8');
+          const fileContents = await fs.readFile(document.uri.fsPath, 'utf8');
           const data: object[] = yaml.safeLoadAll(fileContents).filter((obj: {kind: string}) => resourceCheckRegex.test(obj.kind));
           data.map(value => {
             const yamlStr = yaml.safeDump(value);
@@ -55,7 +63,7 @@ export async function save(document: vscode.TextDocument): Promise<void> {
         }
       } else {
         pipelineExplorer.refresh();
-        vscode.window.showInformationMessage('Resources were successfully Deploy.');
+        vscode.window.showInformationMessage('Resources were successfully Created.');
       }
     }
   }

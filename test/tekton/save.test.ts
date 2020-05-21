@@ -5,16 +5,18 @@
 
 'use strict';
 
+import * as os from 'os';
 import * as chai from 'chai';
-import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
+import * as fs from 'fs-extra';
 import * as vscode from 'vscode';
+import { cli } from '../../src/cli';
+import * as sinonChai from 'sinon-chai';
+import { Command } from '../../src/tkn';
 import { save } from '../../src/tekton/save';
 import { contextGlobalState } from '../../src/extension';
-import { cli } from '../../src/cli';
-import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { tektonYaml } from '../../src/yaml-support/tkn-yaml';
-import { Command, newK8sCommand } from '../../src/tkn';
+import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -22,6 +24,10 @@ chai.use(sinonChai);
 suite('Save File', () => {
   const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
+  let osStub: sinon.SinonStub;
+  let unlinkStub: sinon.SinonStub;
+  let writeFileStub: sinon.SinonStub;
+  let readFileStub: sinon.SinonStub;
   let showWarningMessageStub: sinon.SinonStub;
   let showErrorMessageStub: sinon.SinonStub;
   let workspaceStateGetStub: sinon.SinonStub;
@@ -46,14 +52,14 @@ suite('Save File', () => {
     uri: {
       authority: '',
       fragment: '',
-      fsPath: 'path',
+      fsPath: 'workspace.yaml',
       scheme: '',
       path: '',
       query: '',
       with: sandbox.stub(),
       toJSON: sandbox.stub()
     },
-    fileName: 'pipeline.yaml',
+    fileName: 'workspace.yaml',
     isClosed: false,
     isDirty: false,
     isUntitled: false,
@@ -73,6 +79,42 @@ suite('Save File', () => {
 
 
   setup(() => {
+    sandbox.stub(vscode.workspace, 'getConfiguration').returns({
+      get<T>(): Promise<T|undefined> {
+        return Promise.resolve(undefined);
+      },
+      update(): Promise<void> {
+        return Promise.resolve();
+      },
+      inspect(): {
+          key: string;
+          } {
+        return undefined;
+      },
+      has(): boolean {
+        return true;
+      },
+      save: true
+    });
+    osStub = sandbox.stub(os, 'tmpdir').resolves();
+    unlinkStub = sandbox.stub(fs, 'unlink').resolves();
+    writeFileStub = sandbox.stub(fs, 'writeFile').resolves();
+    readFileStub = sandbox.stub(fs, 'readFile').resolves(`
+    apiVersion: tekton.dev/v1beta1
+    kind: Task
+    metadata:
+      name: print-data
+    spec:
+      workspaces:
+      - name: storage
+        readOnly: true
+      params:
+      - name: filename
+      steps:
+      - name: print-secrets
+        image: ubuntu
+        script: cat $(workspaces.storage.path)/$(params.filename)
+    `);
     showWarningMessageStub = sandbox.stub(vscode.window, 'showWarningMessage').resolves();
     showErrorMessageStub = sandbox.stub(vscode.window, 'showErrorMessage').resolves();
     showInformationMessageStub = sandbox.stub(vscode.window, 'showInformationMessage').resolves();
@@ -98,7 +140,11 @@ suite('Save File', () => {
       workspaceStateGetStub.onFirstCall().returns(undefined);
       showWarningMessageStub.onFirstCall().resolves('Save Once');
       await save(textDocument);
-      expect(execStub).calledOnceWith(Command.create('path'));
+      expect(execStub).calledOnceWith(Command.create('workspace.yaml'));
+      unlinkStub.calledOnce;
+      osStub.calledOnce;
+      readFileStub.calledOnce;
+      writeFileStub.calledOnce;
       showInformationMessageStub.calledOnce;
       showWarningMessageStub.calledOnce;
       workspaceStateGetStub.calledOnce;
@@ -112,7 +158,7 @@ suite('Save File', () => {
       });
       workspaceStateGetStub.onFirstCall().returns('path');
       await save(textDocument);
-      expect(execStub).calledOnceWith(Command.create('path'));
+      expect(execStub).calledOnceWith(Command.create('workspace.yaml'));
       showInformationMessageStub.calledOnce;
       showWarningMessageStub.calledOnce;
       workspaceStateGetStub.calledOnce;
@@ -127,8 +173,9 @@ suite('Save File', () => {
       execStub.onSecondCall().resolves({
         error: '',
         stderr: '',
-        stdout: 'successfully updated/created'
+        stdout: 'successfully Deploy'
       });
+      osStub.returns('path');
       workspaceStateGetStub.onFirstCall().returns('path');
       await save(textDocument);
       showErrorMessageStub.calledOnce;
@@ -147,6 +194,7 @@ suite('Save File', () => {
         stderr: 'error',
         stdout: ''
       });
+      osStub.returns('path');
       workspaceStateGetStub.onFirstCall().returns('path');
       await save(textDocument);
       showErrorMessageStub.calledTwice;
@@ -163,7 +211,7 @@ suite('Save File', () => {
       showWarningMessageStub.onFirstCall().resolves('Save');
       workspaceStateUpdateStub.onFirstCall().resolves('path');
       await save(textDocument);
-      expect(execStub).calledOnceWith(Command.create('path'));
+      expect(execStub).calledOnceWith(Command.create('workspace.yaml'));
       showInformationMessageStub.calledOnce;
       showWarningMessageStub.calledOnce;
       workspaceStateGetStub.calledOnce;
