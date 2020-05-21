@@ -24,7 +24,6 @@ suite('TektonItem', () => {
   const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
   const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
   const pipelineResourceItem = new TestItem(null, 'pipelineresource', ContextType.PIPELINERESOURCE);
-  const taskrunItem = new TestItem(pipelinerunItem, 'taskrun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
   const taskItem = new TestItem(null, 'task', ContextType.TASK);
   const clustertaskItem = new TestItem(null, 'clustertask', ContextType.CLUSTERTASK);
 
