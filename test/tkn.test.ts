@@ -1231,8 +1231,8 @@ suite('tkn', () => {
       expect(pipelineRun.label).equal('condtional-pr');
       const children = pipelineRun.getChildren();
       expect(children).to.have.lengthOf(2);
-      expect(children[0].name).eq('then-check');
-      expect(children[1].name).eq('first-create-file');
+      expect(children[0].label).eq('then-check');
+      expect(children[1].label).eq('first-create-file');
     });
 
     test('TaskRun should contains condition run node', () => {
@@ -1243,7 +1243,7 @@ suite('tkn', () => {
       expect(pipelineRun.label).equal('condtional-pr');
       const children = pipelineRun.getChildren() as tkn.TektonNodeImpl[];
       expect(children).to.have.lengthOf(2);
-      expect(children[0].name).eq('then-check');
+      expect(children[0].label).eq('then-check');
 
       const conditionRun = children[0].getChildren() as tkn.TektonNodeImpl[];
       expect(conditionRun).not.undefined;

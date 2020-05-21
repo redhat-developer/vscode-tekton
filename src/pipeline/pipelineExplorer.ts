@@ -43,7 +43,10 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     return element.getParent();
   }
 
-  refresh(target?: TektonNode): void {
+  async refresh(target?: TektonNode): Promise<void> {
+    if (target) {
+      await target.refresh();
+    }
     this.onDidChangeTreeDataEmitter.fire(target);
   }
 

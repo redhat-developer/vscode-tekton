@@ -10,12 +10,12 @@ export class TestItem implements TektonNode {
 
 
   constructor(
-        private parent: TektonNode,
-        private name: string,
-        public readonly contextValue: ContextType,
-        private children = [],
-        public creationtime?: string,
-        public state?: string) {
+    private parent: TektonNode,
+    private name: string,
+    public readonly contextValue: ContextType,
+    private children = [],
+    public creationtime?: string,
+    public state?: string) {
   }
 
   getName(): string {
@@ -36,5 +36,9 @@ export class TestItem implements TektonNode {
 
   get label(): string {
     return this.name;
+  }
+
+  refresh(): Promise<void> {
+    return Promise.resolve();
   }
 }
