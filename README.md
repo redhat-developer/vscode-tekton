@@ -36,7 +36,7 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_preview_0.0.6.gif" width="710" height="499" /></div>
 
 ### New icons and Tekton resources
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/new_items_and_icons.png" width="710" height="499" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/new_items_and_icons.png" width="271" height="327" /></div>
 
 ### Provides editing support for Pipeline yaml
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/editing-demo.gif" width="710" height="499" /></div>
@@ -92,8 +92,12 @@ Development of the Tekton Pipelines Extension is largely following development o
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/CT.png" width="15" height="15" /><span style="margin: 20px">ClusterTask Node</span></div>
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/PLR.png" width="15" height="15" /><span style="margin: 20px">PipelineResource Node</span></div>
 <div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/running.gif" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Running</span></div>
-<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/success.png" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Successful Run</span></div>
-<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/failed.png" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Failed Run</span></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/tree/error/PLR.png" width="15" height="15" /><span style="margin: 20px">PipelineRun Failed</span></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/tree/error/TR.png" width="15" height="15" /><span style="margin: 20px">TaskRun Failed</span></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/tree/error/C.png" width="15" height="15" /><span style="margin: 20px">Condition Failed</span></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/tree/pending/PLR.png" width="15" height="15" /><span style="margin: 20px">PipelineRun Pending</span></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/tree/pending/TR.png" width="15" height="15" /><span style="margin: 20px">TaskRun Pending</span></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/tree/pending/C.png" width="15" height="15" /><span style="margin: 20px">Condition Pending</span></div>
 
 
 ### Extension Configuration Settings

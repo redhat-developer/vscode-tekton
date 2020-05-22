@@ -45,3 +45,13 @@ To generate new snippet json, run:
 $ npm run snippets-build
 ```
 npm script from extension root.
+
+## Generate new icons
+
+If you want to change icons for PipelieRun, TaskRun or Condition, you may want to generate new state icons for failed and pending state.
+To do that run:
+```bash
+$ npm run icon-build
+```
+npm script from extension root.
+New icons will be placed in [images/generated](./images/generated).

@@ -365,8 +365,12 @@ export class Command {
   }
 }
 
+const IMAGES = '../../images';
+const ERROR_PATH = '../../images/generated/error';
+const PENDING_PATH = '../../images/generated/pending';
+
 export class TektonNodeImpl implements TektonNode {
-  private readonly CONTEXT_DATA = {
+  protected readonly CONTEXT_DATA = {
     pipelinenode: {
       icon: 'PL.svg',
       tooltip: 'Pipelines: {label}',
@@ -403,7 +407,7 @@ export class TektonNodeImpl implements TektonNode {
       getChildren: () => this.tkn.getPipelineRuns(this)
     },
     pipelinerun: {
-      icon: 'running.gif',
+      icon: 'PLR.svg',
       tooltip: 'PipelineRun: {label}',
       getChildren: () => []
     },
@@ -413,12 +417,12 @@ export class TektonNodeImpl implements TektonNode {
       getChildren: () => this.tkn.getTaskRunsForTasks(this)
     },
     taskrun: {
-      icon: 'running.gif',
+      icon: 'TR.svg',
       tooltip: 'TaskRun: {label}',
       getChildren: () => []
     },
     conditionrunnode: {
-      icon: 'running.gif',
+      icon: 'C.svg',
       tooltip: 'ConditionRun: {label}',
       getChildren: () => []
     },
@@ -501,23 +505,23 @@ export class TektonNodeImpl implements TektonNode {
 
   get iconPath(): Uri {
     if (this.state) {
-      let fileName = 'running.gif';
+      let filePath = IMAGES;
       switch (this.state) {
         case 'False': {
-          fileName = 'failed.png';
+          filePath = ERROR_PATH;
           break;
         }
         case 'True': {
-          fileName = 'success.png';
+          filePath = IMAGES;
           break;
         }
         default: {
-          break;
+          return Uri.file(path.join(__dirname, IMAGES, 'running.gif'));
         }
       }
-      return Uri.file(path.join(__dirname, '../../images', fileName));
+      return Uri.file(path.join(__dirname, filePath, this.CONTEXT_DATA[this.contextValue].icon));
     }
-    return Uri.file(path.join(__dirname, '../../images', this.CONTEXT_DATA[this.contextValue].icon));
+    return Uri.file(path.join(__dirname, IMAGES, this.CONTEXT_DATA[this.contextValue].icon));
   }
 
   get tooltip(): string {
@@ -671,31 +675,31 @@ export abstract class BaseTaskRun extends TektonNodeImpl {
 
   get iconPath(): Uri {
     if (this.state) {
-      let fileName = 'pending.svg';
+      let filePath = IMAGES;
       if (this.state) {
         switch (this.state) {
           case 'Failed': {
-            fileName = 'failed.png';
+            filePath = ERROR_PATH;
             break;
           }
           case 'Finished': {
-            fileName = 'success.png';
+            filePath = IMAGES;
             break;
           }
           case 'Cancelled':
-            fileName = 'cancelled.png';
+            filePath = ERROR_PATH;
             break;
 
           case 'Started':
-            fileName = 'running.gif';
-            break;
+            return Uri.file(path.join(__dirname, IMAGES, 'running.gif'));
+
           case 'Unknown':
           default:
-            fileName = 'pending.svg';
+            filePath = PENDING_PATH;
             break;
         }
       }
-      return Uri.file(path.join(__dirname, '../../images', fileName));
+      return Uri.file(path.join(__dirname, filePath, this.CONTEXT_DATA[this.contextValue].icon));
     }
     return super.iconPath;
   }
