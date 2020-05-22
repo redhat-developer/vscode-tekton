@@ -17,6 +17,7 @@ import { updateTektonResource } from '../../src/tekton/deploy';
 import { contextGlobalState } from '../../src/extension';
 import { tektonYaml } from '../../src/yaml-support/tkn-yaml';
 import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
+import { Platform } from '../../src/util/platform';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -24,6 +25,7 @@ chai.use(sinonChai);
 suite('Deploy File', () => {
   const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
+  let quote: string;
   let osStub: sinon.SinonStub;
   let unlinkStub: sinon.SinonStub;
   let writeFileStub: sinon.SinonStub;
@@ -123,6 +125,8 @@ suite('Deploy File', () => {
     execStub = sandbox.stub(cli, 'execute').resolves();
     sandbox.stub(pipelineExplorer, 'refresh').resolves();
     sandbox.stub(tektonYaml, 'isTektonYaml').resolves('ClusterTask');
+    quote = Platform.OS === 'win32' ? '"' : '\'';
+
   });
 
   teardown(() => {
@@ -140,7 +144,7 @@ suite('Deploy File', () => {
       workspaceStateGetStub.onFirstCall().returns(undefined);
       showWarningMessageStub.onFirstCall().resolves('Deploy Once');
       await updateTektonResource(textDocument);
-      expect(execStub).calledOnceWith(Command.create('workspace.yaml'));
+      expect(execStub).calledOnceWith(Command.create(`${quote}workspace.yaml${quote}`));
       unlinkStub.calledOnce;
       osStub.calledOnce;
       readFileStub.calledOnce;
@@ -158,7 +162,7 @@ suite('Deploy File', () => {
       });
       workspaceStateGetStub.onFirstCall().returns('path');
       await updateTektonResource(textDocument);
-      expect(execStub).calledOnceWith(Command.create('workspace.yaml'));
+      expect(execStub).calledOnceWith(Command.create(`${quote}workspace.yaml${quote}`));
       showInformationMessageStub.calledOnce;
       showWarningMessageStub.calledOnce;
       workspaceStateGetStub.calledOnce;
@@ -211,7 +215,7 @@ suite('Deploy File', () => {
       showWarningMessageStub.onFirstCall().resolves('Deploy');
       workspaceStateUpdateStub.onFirstCall().resolves('path');
       await updateTektonResource(textDocument);
-      expect(execStub).calledOnceWith(Command.create('workspace.yaml'));
+      expect(execStub).calledOnceWith(Command.create(`${quote}workspace.yaml${quote}`));
       showInformationMessageStub.calledOnce;
       showWarningMessageStub.calledOnce;
       workspaceStateGetStub.calledOnce;
