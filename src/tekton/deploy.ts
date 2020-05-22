@@ -55,7 +55,7 @@ export async function updateTektonResource(document: vscode.TextDocument): Promi
         } catch (err) {
           // ignore
         }
-        const apply = await cli.execute(newK8sCommand(`apply -f ${fsPath}`));
+        const apply = await cli.execute(newK8sCommand(`apply -f '${fsPath}'`));
         await fs.unlink(fsPath);
         if (apply.error) {
           vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(apply.error)}`);
