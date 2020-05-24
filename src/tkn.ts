@@ -764,9 +764,9 @@ export class PipelineRun extends TektonNodeImpl {
   get description(): string {
     let r = '';
     if (this.finished) {
-      r = 'started ' + humanizer(Date.now() - Date.parse(this.started)) + ' ago, finished in ' + humanizer(Date.parse(this.finished) - Date.parse(this.started));
+      r = `${this.reason} started ${humanizer(Date.now() - Date.parse(this.started))} ago, finished in ${humanizer(Date.parse(this.finished) - Date.parse(this.started))}`;
     } else {
-      r = 'running for ' + humanizer(Date.now() - Date.parse(this.started));
+      r = `${this.reason} running for ${humanizer(Date.now() - Date.parse(this.started))}`;
     }
     return r;
   }
