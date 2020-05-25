@@ -355,6 +355,9 @@ export class Command {
   static create(file: string): CliCommand {
     return newK8sCommand('create', '--save-config','-f', file);
   }
+  static apply(file: string): CliCommand {
+    return newK8sCommand('apply','-f', file);
+  }
 }
 
 export class TektonNodeImpl implements TektonNode {

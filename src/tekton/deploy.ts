@@ -12,8 +12,8 @@ import * as vscode from 'vscode';
 import { contextGlobalState } from '../extension';
 import { tektonYaml } from '../yaml-support/tkn-yaml';
 import { pipelineExplorer } from '../pipeline/pipelineExplorer';
-import { getStderrString, Command, newK8sCommand } from '../tkn';
-
+import { getStderrString, Command } from '../tkn';
+import { Platform } from '../util/platform';
 
 function checkDeploy(): boolean {
   return vscode.workspace
@@ -34,7 +34,8 @@ export async function updateTektonResource(document: vscode.TextDocument): Promi
       contextGlobalState.workspaceState.update(document.uri.fsPath, true);
     }
     if (verifyTknYaml && (/Deploy/.test(value) || contextGlobalState.workspaceState.get(document.uri.fsPath))) {
-      const result = await cli.execute(Command.create(document.uri.fsPath));
+      const quote = Platform.OS === 'win32' ? '"' : '\'';
+      const result = await cli.execute(Command.create(`${quote}${document.uri.fsPath}${quote}`));
       if (result.error) {
         const tempPath = os.tmpdir();
         if (!tempPath) {
@@ -45,7 +46,11 @@ export async function updateTektonResource(document: vscode.TextDocument): Promi
           let yamlData = '';
           const resourceCheckRegex = /^(Task|PipelineResource|Pipeline|Condition|ClusterTask|EventListener|TriggerBinding)$/ as RegExp;
           const fileContents = await fs.readFile(document.uri.fsPath, 'utf8');
-          const data: object[] = yaml.safeLoadAll(fileContents).filter((obj: {kind: string}) => resourceCheckRegex.test(obj.kind));
+          const data: object[] = yaml.safeLoadAll(fileContents).filter((obj: {kind: string}) => {
+            if (obj) {
+              return resourceCheckRegex.test(obj.kind)
+            }
+          });
           if (data.length === 0) return;
           data.map(value => {
             const yamlStr = yaml.safeDump(value);
@@ -55,7 +60,7 @@ export async function updateTektonResource(document: vscode.TextDocument): Promi
         } catch (err) {
           // ignore
         }
-        const apply = await cli.execute(newK8sCommand(`apply -f ${fsPath}`));
+        const apply = await cli.execute(Command.apply(`${quote}${fsPath}${quote}`));
         await fs.unlink(fsPath);
         if (apply.error) {
           vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(apply.error)}`);
