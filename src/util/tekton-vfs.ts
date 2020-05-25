@@ -48,7 +48,10 @@ export class TektonVFSProvider implements FileSystemProvider {
       this.fileStats.set(uri.toString(), new VFSFileStat());
     }
 
-    return this.fileStats.get(uri.toString());
+    const stat = this.fileStats.get(uri.toString());
+    stat.changeStat(stat.size + 1);
+
+    return stat;
   }
 
   async readFile(uri: Uri): Promise<Uint8Array> {

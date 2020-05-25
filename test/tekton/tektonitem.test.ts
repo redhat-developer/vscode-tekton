@@ -24,7 +24,6 @@ suite('TektonItem', () => {
   const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
   const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
   const pipelineResourceItem = new TestItem(null, 'pipelineresource', ContextType.PIPELINERESOURCE);
-  const taskrunItem = new TestItem(pipelinerunItem, 'taskrun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
   const taskItem = new TestItem(null, 'task', ContextType.TASK);
   const clustertaskItem = new TestItem(null, 'clustertask', ContextType.CLUSTERTASK);
 
@@ -146,27 +145,6 @@ suite('TektonItem', () => {
     test('open yaml file in editor', async () => {
       TektonItem.openInEditor(pipelineResourceItem);
       expect(openTextStub).calledOnce;
-    });
-  });
-
-  suite('getTaskrunNames', () => {
-
-    test('returns an array of taskrun names for the pipelinerun if there is at least one task', async () => {
-      sandbox.stub(TknImpl.prototype, 'getTaskRunsForPipelineRun').resolves([taskrunItem]);
-      const taskrunNames = await TektonItem.getTaskRunNames(pipelinerunItem);
-      expect(taskrunNames[0].getName()).equals('taskrun');
-
-    });
-
-    test('throws error if there are no taskruns available', async () => {
-      sandbox.stub(TknImpl.prototype, 'getTaskRunsForPipelineRun').resolves([]);
-      try {
-        await TektonItem.getTaskRunNames(pipelinerunItem);
-      } catch (err) {
-        expect(err.message).equals('You need at least one TaskRun available. Please create new Tekton TaskRun and try again.');
-        return;
-      }
-      fail('should throw error in case tasks array is empty');
     });
   });
 

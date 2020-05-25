@@ -36,7 +36,6 @@ suite('Tekton Pipeline Extension', () => {
   const clustertaskNode = new TektonNodeImpl(TknImpl.ROOT, 'Clustertasks', ContextType.CLUSTERTASKNODE, tkn, vscode.TreeItemCollapsibleState.Collapsed);
   const pipelineItem = new TektonNodeImpl(pipelineNode, 'test-pipeline', ContextType.PIPELINE, tkn, vscode.TreeItemCollapsibleState.Collapsed);
   const pipelinerunItem = new TektonNodeImpl(pipelineItem, 'test-pipeline-1', ContextType.PIPELINERUN, tkn, vscode.TreeItemCollapsibleState.Collapsed, '2019-07-25T12:00:00Z', 'True');
-  const taskrunItem = new TektonNodeImpl(pipelinerunItem, 'test-taskrun-1', ContextType.TASKRUN, tkn, vscode.TreeItemCollapsibleState.Collapsed, '2019-07-25T12:03:00Z', 'True');
   const taskItem = new TektonNodeImpl(taskNode, 'test-tasks', ContextType.TASK, tkn, vscode.TreeItemCollapsibleState.None);
   const clustertaskItem = new TektonNodeImpl(clustertaskNode, 'test-Clustertask', ContextType.CLUSTERTASK, tkn, vscode.TreeItemCollapsibleState.None);
 
@@ -55,7 +54,6 @@ suite('Tekton Pipeline Extension', () => {
     sandbox.stub(TknImpl.prototype, '_getTasks').resolves([taskItem]);
     sandbox.stub(TknImpl.prototype, '_getClusterTasks').resolves([clustertaskItem]);
     sandbox.stub(TknImpl.prototype, '_getPipelineRuns').resolves([pipelinerunItem]);
-    sandbox.stub(TknImpl.prototype, '_getTaskRunsForPipelineRun').resolves([taskrunItem]);
   });
 
   teardown(() => {
@@ -104,12 +102,6 @@ suite('Tekton Pipeline Extension', () => {
     sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '' });
     const pipelinerun = await tkn.getPipelineRuns(pipelineItem);
     expect(pipelinerun.length).is.equals(1);
-  });
-
-  test('should load taskruns from pipelinerun folder', async () => {
-    sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '' });
-    const taskrun = await tkn.getTaskRunsForPipelineRun(pipelinerunItem);
-    expect(taskrun.length).is.equals(1);
   });
 
   test('should register all extension commands declared commands in package descriptor', async () => {

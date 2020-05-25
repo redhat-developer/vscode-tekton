@@ -765,7 +765,8 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "build-preview": "webpack-cli --mode production",
     "preview-watch": "webpack-cli -w --mode development",
-    "snippets-build": "node ./out/build/build-snippets.js"
+    "snippets-build": "node ./out/build/build-snippets.js",
+    "icons-build": "node ./out/build/build-svg-icons.js"
   },
   "devDependencies": {
     "@types/byline": "^4.2.31",
@@ -804,6 +805,7 @@
     "proxyquire": "^2.1.0",
     "remap-istanbul": "^0.13.0",
     "rimraf": "^3.0.2",
+    "simple-svg-tools": "^1.1.12",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "source-map-support": "^0.5.16",

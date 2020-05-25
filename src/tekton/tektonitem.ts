@@ -50,12 +50,6 @@ export abstract class TektonItem {
     return taskList;
   }
 
-  static async getTaskRunNames(taskRun: TektonNode): Promise<TektonNode[]> {
-    const taskRunList: Array<TektonNode> = await TektonItem.tkn.getTaskRunsForPipelineRun(taskRun);
-    if (taskRunList.length === 0) { throw Error(errorMessage.TaskRun); }
-    return taskRunList;
-  }
-
   static async getPipelineResourceNames(pipelineResource: TektonNode): Promise<TektonNode[]> {
     const pipelineResourceList: Array<TektonNode> = await TektonItem.tkn.getPipelineResources(pipelineResource);
     if (pipelineResourceList.length === 0) { throw Error(errorMessage.PipelineResource); }
@@ -73,7 +67,13 @@ export abstract class TektonItem {
       if (doc) {
         window.showTextDocument(doc, { preserveFocus: true, preview: true });
       }
-    }, (err) => window.showErrorMessage(`Error loading document: ${err}`));
+    }, (err) => {
+      if (type === 'taskrun') {
+        window.showErrorMessage('TaskRun may not have started yet, try again when it starts running');
+      } else {
+        window.showErrorMessage(`Error loading document: ${err}`)
+      }
+    });
   }
 
   static getOutputFormat(): string {

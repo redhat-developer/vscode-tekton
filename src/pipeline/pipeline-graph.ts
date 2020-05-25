@@ -4,12 +4,12 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { tektonYaml, pipelineYaml, pipelineRunYaml, TektonYamlType, DeclaredTask, PipelineRunTask, RunState } from '../yaml-support/tkn-yaml';
+import { tektonYaml, pipelineYaml, pipelineRunYaml, TektonYamlType, DeclaredTask, PipelineRunTask } from '../yaml-support/tkn-yaml';
 import { YamlDocument, VirtualDocument } from '../yaml-support/yaml-locator';
-import { ContextType, humanizer } from '../tkn';
+import { ContextType, humanizer, getPipelineRunTaskState } from '../tkn';
 
 import { NodeOrEdge, NodeData, EdgeData } from '../../preview-src/model';
-import { PipelineRunData, TaskRuns, TaskRun, TaskRunStatus, PipelineRunConditionCheckStatus } from '../tekton';
+import { PipelineRunData, TaskRuns, TaskRun, PipelineRunConditionCheckStatus } from '../tekton';
 import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
 
 const pipelineRunTaskCache = new Map<string, DeclaredTask[]>();
@@ -142,7 +142,7 @@ function updatePipelineRunTasks(pipelineRun: PipelineRunData, tasks: DeclaredTas
   for (const task of tasks) {
     const runTask = task as PipelineRunTask;
 
-    let taskRun;
+    let taskRun: TaskRun | PipelineRunConditionCheckStatus;
     if (task.kind === 'Condition') {
       taskRun = findConditionInTaskRun(task.name, taskRuns);
     } else {
@@ -152,7 +152,7 @@ function updatePipelineRunTasks(pipelineRun: PipelineRunData, tasks: DeclaredTas
       runTask.completionTime = taskRun.status?.completionTime;
       runTask.startTime = taskRun.status?.startTime;
       runTask.state = getPipelineRunTaskState(taskRun.status);
-      const steps = taskRun.status?.steps;
+      const steps = (taskRun as TaskRun).status?.steps;
       if (steps) {
         runTask.stepsCount = steps.length;
         let finishedSteps = 0;
@@ -194,32 +194,4 @@ function findConditionInTaskRun(name: string, taskRuns: TaskRuns): PipelineRunCo
       }
     }
   }
-}
-
-function getPipelineRunTaskState(status: TaskRunStatus): RunState {
-  let result: RunState = 'Unknown';
-  if (!status) {
-    return result; // default state
-  }
-  const startTime = status.startTime;
-  if (startTime) {
-    result = 'Started';
-  }
-  const conditionStatus = status.conditions;
-  if (conditionStatus) {
-    const status = conditionStatus[0]?.status;
-    if (status) {
-      if (status === 'True') {
-        result = 'Finished';
-      } else if (status === 'False') {
-        const reason = conditionStatus[0]?.reason;
-        if (reason === 'TaskRunCancelled') {
-          result = 'Cancelled';
-        } else {
-          result = 'Failed';
-        }
-      }
-    }
-  }
-  return result;
 }
