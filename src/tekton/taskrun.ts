@@ -44,11 +44,11 @@ export class TaskRun extends TektonItem {
   static async openDefinition(taskRun: TektonNode): Promise<void> {
     const taskName = await TaskRun.getTaskNameByTaskRun(taskRun.getName());
     if (taskName) {
-      TektonItem.loadTektonResource('task', taskName);
+      TektonItem.loadTektonResource(taskName[0], taskName[1]);
     }
   }
 
-  private static async getTaskNameByTaskRun(taskRunName: string): Promise<string | undefined> {
+  private static async getTaskNameByTaskRun(taskRunName: string): Promise<[string, string] | undefined> {
     const result = await TaskRun.tkn.execute(Command.getTaskRun(taskRunName), undefined, false);
     if (result.error) {
       window.showErrorMessage(`TaskRun may not have started yet, try again when it starts running. "${result.error}"`)
@@ -61,6 +61,11 @@ export class TaskRun extends TektonItem {
     } catch (ignore) {
     }
 
-    return data.metadata.labels['tekton.dev/task'];
+    if (data.metadata.labels['tekton.dev/conditionCheck']) {
+      window.showErrorMessage(`Cannot find Condition definition for: ${taskRunName}. Please look in Pipeline definition`);
+      return;
+    }
+
+    return [data.spec.taskRef?.kind ?? 'task', data.metadata.labels['tekton.dev/task']];
   }
 }

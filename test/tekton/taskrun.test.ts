@@ -191,13 +191,13 @@ suite('Tekton/TaskRun', () => {
     });
 
     test('openDefinition should ask taskrun definition', async () => {
-      execStub.resolves({ stdout: '{"metadata":{"labels": {"tekton.dev/task": "FooTaskName"}}}' } as CliExitData);
+      execStub.resolves({ stdout: '{"metadata":{"labels": {"tekton.dev/task": "FooTaskName"}}, "spec":{"taskRef":{"kind": "FooKind"}}}' } as CliExitData);
       loadTektonResourceStub.returns(undefined);
 
       await TaskRun.openDefinition(taskrunItem);
 
       expect(execStub).calledOnceWith(Command.getTaskRun(taskrunItem.getName()));
-      expect(loadTektonResourceStub).calledOnceWith('task', 'FooTaskName');
+      expect(loadTektonResourceStub).calledOnceWith('FooKind', 'FooTaskName');
     });
 
     test('openDefinition should check errors on fetching taskrun definition', async () => {
@@ -209,6 +209,17 @@ suite('Tekton/TaskRun', () => {
       expect(execStub).calledOnceWith(Command.getTaskRun(taskrunItem.getName()));
       expect(loadTektonResourceStub).not.called;
       expect(showErrorStub).calledOnceWith('TaskRun may not have started yet, try again when it starts running. "Foo error"');
+    });
+
+    test('openDefinition should show error if trying to open condition taskrun', async () => {
+      execStub.resolves({ stdout: '{"metadata":{"labels": {"tekton.dev/task": "FooTaskName","tekton.dev/conditionCheck": "bar-condition-run"}}, "spec":{"taskRef":{"kind": "FooKind"}}}' } as CliExitData);
+      loadTektonResourceStub.returns(undefined);
+
+      await TaskRun.openDefinition(taskrunItem);
+
+      expect(execStub).calledOnceWith(Command.getTaskRun(taskrunItem.getName()));
+      expect(loadTektonResourceStub).not.called;
+      expect(showErrorStub).calledOnceWith('Cannot find Condition definition for: taskrun. Please look in Pipeline definition');
     });
   });
 });

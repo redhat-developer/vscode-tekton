@@ -565,6 +565,7 @@ export type PipelineTaskRunData = {
       'tekton.dev/pipelineTask': string;
       'tekton.dev/pipelineRun': string;
       'tekton.dev/task': string;
+      'tekton.dev/conditionCheck'?: string;
     };
   };
   status?: {
@@ -576,6 +577,7 @@ export type PipelineTaskRunData = {
   spec: {
     taskRef: {
       name: string;
+      kind: string;
     };
   };
 };
