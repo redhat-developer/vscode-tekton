@@ -76,7 +76,7 @@ export enum ContextType {
   CONDITIONSNODE = 'conditionsnode',
   CONDITIONS = 'conditions',
   PIPELINERUNNODE = 'pipelinerunnode',
-  CONDITIONRUN = 'conditionrunnode',
+  CONDITIONRUN = 'conditions',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -422,11 +422,6 @@ export class TektonNodeImpl implements TektonNode {
     taskrun: {
       icon: 'TR.svg',
       tooltip: 'TaskRun: {label}',
-      getChildren: () => []
-    },
-    conditionrunnode: {
-      icon: 'C.svg',
-      tooltip: 'ConditionRun: {label}',
       getChildren: () => []
     },
     clustertask: {
