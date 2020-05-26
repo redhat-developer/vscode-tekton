@@ -162,6 +162,14 @@
         }
       },
       {
+        "command": "tekton.open.task",
+        "title": "Open Task Definition",
+        "icon": {
+          "light": "images/light/go-to-task.svg",
+          "dark": "images/dark/go-to-task.svg"
+        }
+      },
+      {
         "command": "tekton.pipeline.preview",
         "title": "Open Pipeline preview to the Side",
         "category": "Tekton",
@@ -729,9 +737,19 @@
           "group": "c2"
         },
         {
+          "command": "tekton.open.task",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == taskrun",
+          "group": "inline@1"
+        },
+        {
           "command": "tekton.edit",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|triggertemplates|triggerbinding|eventlistener|conditions|task|clustertriggerbinding)$/",
-          "group": "inline"
+          "group": "inline@2"
+        },
+        {
+          "command": "tekton.open.task",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == taskrun",
+          "group": "c0@2"
         },
         {
           "command": "tekton.openInEditor",

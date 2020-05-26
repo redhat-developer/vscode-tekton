@@ -4,15 +4,15 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command } from '../tkn';
+import { TektonNode, Command, PipelineTaskRunData } from '../tkn';
 import { window } from 'vscode';
 import { Progress } from '../util/progress';
 
 export class TaskRun extends TektonItem {
 
   static async listFromPipelineRun(pipelineRun: TektonNode): Promise<void> {
-    if (pipelineRun) { 
-      TaskRun.tkn.executeInTerminal(Command.listTaskRunsForPipelineRunInTerminal(pipelineRun.getName())); 
+    if (pipelineRun) {
+      TaskRun.tkn.executeInTerminal(Command.listTaskRunsForPipelineRunInTerminal(pipelineRun.getName()));
     }
   }
 
@@ -39,5 +39,28 @@ export class TaskRun extends TektonItem {
         .catch((err) => Promise.reject(`Failed to delete the TaskRun '${taskRun.getName()}': '${err}'.`));
     }
     return null;
+  }
+
+  static async openDefinition(taskRun: TektonNode): Promise<void> {
+    const taskName = await TaskRun.getTaskNameByTaskRun(taskRun.getName());
+    if (taskName) {
+      TektonItem.loadTektonResource('task', taskName);
+    }
+  }
+
+  private static async getTaskNameByTaskRun(taskRunName: string): Promise<string | undefined> {
+    const result = await TaskRun.tkn.execute(Command.getTaskRun(taskRunName), undefined, false);
+    if (result.error) {
+      window.showErrorMessage(`TaskRun may not have started yet, try again when it starts running. "${result.error}"`)
+      return;
+    }
+    let data: PipelineTaskRunData;
+    try {
+      data = JSON.parse(result.stdout);
+      // eslint-disable-next-line no-empty
+    } catch (ignore) {
+    }
+
+    return data.metadata.labels['tekton.dev/task'];
   }
 }
