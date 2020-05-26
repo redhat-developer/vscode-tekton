@@ -164,7 +164,6 @@ function getStyle(style: CyTheme): cytoscape.Stylesheet[] {
         'text-valign': 'center',
         'text-halign': 'center',
         'color': '#d4d4d4',
-        'font-family': style.fontFamily,
         'width': 150,
         'height': 30
       }
