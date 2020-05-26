@@ -42,6 +42,9 @@ export class TaskRun extends TektonItem {
   }
 
   static async openDefinition(taskRun: TektonNode): Promise<void> {
+    if (!taskRun) {
+      return;
+    }
     const taskName = await TaskRun.getTaskNameByTaskRun(taskRun.getName());
     if (taskName) {
       TektonItem.loadTektonResource(taskName[0], taskName[1]);
