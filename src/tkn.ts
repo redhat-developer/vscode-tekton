@@ -133,6 +133,10 @@ export class Command {
     return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/task=${task}`, '-o', 'json');
   }
 
+  static getTaskRun(taskRunName: string): CliCommand {
+    return newK8sCommand('get', 'taskrun', taskRunName, '-o', 'json');
+  }
+
   @verbose
   static listTaskRunsForTasksInTerminal(task: string): CliCommand {
     return newTknCommand('taskrun', 'list', task);
@@ -364,7 +368,7 @@ export class Command {
     return newK8sCommand('create', '--save-config', '-f', file);
   }
   static apply(file: string): CliCommand {
-    return newK8sCommand('apply','-f', file);
+    return newK8sCommand('apply', '-f', file);
   }
 }
 
@@ -553,13 +557,15 @@ export class TektonNodeImpl implements TektonNode {
 
 }
 
-type PipelineTaskRunData = {
+export type PipelineTaskRunData = {
   metadata?: {
     creationTimestamp: string;
     name: string;
     labels: {
       'tekton.dev/pipelineTask': string;
       'tekton.dev/pipelineRun': string;
+      'tekton.dev/task': string;
+      'tekton.dev/conditionCheck'?: string;
     };
   };
   status?: {
@@ -571,6 +577,7 @@ type PipelineTaskRunData = {
   spec: {
     taskRef: {
       name: string;
+      kind: string;
     };
   };
 };
