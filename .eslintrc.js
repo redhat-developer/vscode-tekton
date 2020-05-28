@@ -27,6 +27,7 @@ module.exports = {
         'space-infix-ops': ['error', { 'int32Hint': false }],
         'no-multi-spaces': ['error', { "ignoreEOLComments": true }],
         'keyword-spacing': ['error'],
+        "@typescript-eslint/no-namespace": "off"
     },
 
 };

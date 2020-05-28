@@ -889,10 +889,11 @@
     "icons-build": "node ./out/build/build-svg-icons.js",
     "build:webview": "webpack-cli --mode production",
     "watch:webview": "webpack-cli -w --mode development",
-    "generate:hub-client": "openapi-generator-cli generate -i https://raw.githubusercontent.com/tektoncd/hub/master/api/gen/http/openapi3.json -g typescript-axios -o src/tekton-hub-client --additional-properties=supportsES6=true"
+    "generate:hub-client": "openapi-generator-cli generate -i https://raw.githubusercontent.com/tektoncd/hub/master/api/gen/http/openapi3.json -g typescript-axios -o src/tekton-hub-client --additional-properties=supportsES6=true",
+    "ui-test": "extest setup-and-run ./out/ui-test/all.js"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.1.18",
+    "@openapitools/openapi-generator-cli": "^2.3.5",
     "@popperjs/core": "^2.9.2",
     "@types/byline": "^4.2.31",
     "@types/chai": "^4.1.7",
@@ -947,6 +948,8 @@
     "ts-loader": "^8.0.7",
     "typescript": "^3.5.2",
     "vscode-codicons": "0.0.4",
+    "vscode-extension-tester": "^4.1.1",
+    "vscode-extension-tester-native": "^3.0.2",
     "vscode-test": "^1.3.0",
     "walker": "^1.0.7",
     "webpack": "^5.3.2",
@@ -986,4 +989,3 @@
     "vscode-kubernetes-tools-api": "1.3.0"
   }
 }
-
