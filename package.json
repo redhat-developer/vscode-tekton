@@ -67,41 +67,13 @@
       "type": "object",
       "title": "Tekton Configuration",
       "properties": {
-        "vs-tekton": {
-          "type": "object",
-          "description": "Tekton Configuration",
-          "properties": {
-
-            "vs-tekton.tkn-path.windows": {
-              "type": "string",
-              "description": "File path to a tkn binary."
-            },
-            "vs-tekton.tkn-path.mac": {
-              "type": "string",
-              "description": "File path to a tkn binary."
-            },
-            "vs-tekton.tkn-path.linux": {
-              "type": "string",
-              "description": "File path to a tkn binary."
-            }
-          },
-          "default": {
-            "vs-tekton.namespace": "tekton-pipelines",
-            "vs-tekton.tkn-path": "",
-            "vs-tekton.tknVersioning": "user-provided",
-            "vs-tekton.outputFormat": "yaml"
-          }
-        },
-        "vs-tekton.namespace": {
-          "type": "string",
-          "description": "The namespace to use for all commands"
-        },
         "vs-tekton.outputFormat": {
           "enum": [
             "json",
             "yaml"
           ],
           "type": "string",
+          "default": "yaml",
           "description": "Output format for Tekton specs. One of 'json' or 'yaml' (default)."
         },
         "vs-tekton.showChannelOutput": {

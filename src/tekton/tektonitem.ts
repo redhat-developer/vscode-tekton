@@ -77,6 +77,6 @@ export abstract class TektonItem {
   }
 
   static getOutputFormat(): string {
-    return workspace.getConfiguration('vs-tekton')['vs-tekton.outputFormat'];
+    return workspace.getConfiguration('vs-tekton')['outputFormat'];
   }
 }
