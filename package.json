@@ -65,11 +65,11 @@
   "contributes": {
     "configuration": {
       "type": "object",
-      "title": "Tekton Configuration",
+      "title": "Tekton",
       "properties": {
         "vs-tekton": {
           "type": "object",
-          "description": "Tekton Configuration",
+          "description": "Tekton",
           "properties": {
             "vs-tekton.namespace": {
               "type": "string",

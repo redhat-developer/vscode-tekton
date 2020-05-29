@@ -133,4 +133,3 @@ function getDocument(tektonUri: string): vscode.TextDocument | undefined {
     }
   }
 }
-
