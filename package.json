@@ -65,7 +65,7 @@
   "contributes": {
     "configuration": {
       "type": "object",
-      "title": "Tekton Configuration",
+      "title": "Tekton",
       "properties": {
         "vs-tekton.outputFormat": {
           "enum": [
