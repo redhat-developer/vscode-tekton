@@ -71,18 +71,7 @@
           "type": "object",
           "description": "Tekton Configuration",
           "properties": {
-            "vs-tekton.namespace": {
-              "type": "string",
-              "description": "The namespace to use for all commands"
-            },
-            "vs-tekton.outputFormat": {
-              "enum": [
-                "json",
-                "yaml"
-              ],
-              "type": "string",
-              "description": "Output format for Tekton specs. One of 'json' or 'yaml' (default)."
-            },
+
             "vs-tekton.tkn-path.windows": {
               "type": "string",
               "description": "File path to a tkn binary."
@@ -101,25 +90,37 @@
             "vs-tekton.tkn-path": "",
             "vs-tekton.tknVersioning": "user-provided",
             "vs-tekton.outputFormat": "yaml"
-          },
-          "vs-tekton.showChannelOutput": {
-            "title": "Show channel on output",
-            "type": "boolean",
-            "default": "false",
-            "description": "Show Tekton Pipeline output channel when new text added to output stream"
-          },
-          "vs-tekton.outputVerbosityLevel": {
-            "title": "Output Verbosity Level",
-            "type": "number",
-            "default": 0,
-            "description": "Output verbosity level (value between 0 and 9) for Tekton Pipeline Start, Push and Watch commands in output channel and integrated terminal."
-          },
-          "vs-tekton.treePaginationLimit": {
-            "title": "Tree items pagination limit",
-            "type": "number",
-            "default": 5,
-            "description": "Tree pagination limit for some tekton related nodes(pipeline runs/task runs)"
           }
+        },
+        "vs-tekton.namespace": {
+          "type": "string",
+          "description": "The namespace to use for all commands"
+        },
+        "vs-tekton.outputFormat": {
+          "enum": [
+            "json",
+            "yaml"
+          ],
+          "type": "string",
+          "description": "Output format for Tekton specs. One of 'json' or 'yaml' (default)."
+        },
+        "vs-tekton.showChannelOutput": {
+          "title": "Show channel on output",
+          "type": "boolean",
+          "default": false,
+          "description": "Show Tekton Pipeline output channel when new text added to output stream"
+        },
+        "vs-tekton.outputVerbosityLevel": {
+          "title": "Output Verbosity Level",
+          "type": "number",
+          "default": 0,
+          "description": "Output verbosity level (value between 0 and 9) for Tekton Pipeline Start, Push and Watch commands in output channel and integrated terminal."
+        },
+        "vs-tekton.treePaginationLimit": {
+          "title": "Tree items pagination limit",
+          "type": "number",
+          "default": 5,
+          "description": "Tree pagination limit for some tekton related nodes(pipeline runs/task runs)"
         },
         "vs-tekton.deploy": {
           "Title": "Deploy command",
