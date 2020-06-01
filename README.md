@@ -8,38 +8,38 @@
 ## Overview
 
 A Visual Studio Code extension for interacting with Tekton Pipelines.
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/demo_0.0.6.gif" width="710" height="499" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/demo_0.0.6.gif" width="800" height="500" /></div>
 
 ## New and Noteworthy
 
 ### 'Go to Definition' for Tekton Pipeline yaml
 
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/go_to_definition_0.1.0.gif" width="710" height="499" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/go_to_definition_0.1.0.gif" width="800" height="651" /></div>
 
 ### Workspaces support
 
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_start_with_ws_0.1.0.gif" width="710" height="499" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_start_with_ws_0.1.0.gif" width="800" height="450" /></div>
 
 ### Editor and Pipeline preview sync
 
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/editor_and_preview_sync_0.1.0.gif" width="710" height="499" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/editor_and_preview_sync_0.1.0.gif" width="800" height="650" /></div>
 
 
 ### Tekton tree auto refresh and open resource from inline command
 
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/tree_refresh_0.0.8.gif" width="710" height="499" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/tree_refresh_0.0.8.gif" width="800" height="450" /></div>
 
 ### PipelineRun preview
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_run_preview_0.0.7.gif" width="710" height="499" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_run_preview_0.0.7.gif" width="800" height="450" /></div>
 
 ### Pipeline preview
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_preview_0.0.6.gif" width="710" height="499" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_preview_0.0.6.gif" width="600" height="493" /></div>
 
 ### New icons and Tekton resources
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/new_items_and_icons.png" width="271" height="327" /></div>
 
 ### Provides editing support for Pipeline yaml
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/editing-demo.gif" width="710" height="499" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/editing-demo.gif" width="800" height="450" /></div>
 
 
 ### Setup kubernetes cluster to use with extension
