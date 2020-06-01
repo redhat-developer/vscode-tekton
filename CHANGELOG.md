@@ -1,5 +1,26 @@
 # Change Log
 
+## 0.2.0 (June 1, 2020)
+
+This release brings to you:
+
+* [#91](https://github.com/redhat-developer/vscode-tekton/issues/91) "List Taskrun" menu on a pipeline should only list the pipeline's taskrun
+* [#228](https://github.com/redhat-developer/vscode-tekton/issues/228) Add support for ClusterTriggerBinding resource.
+* [#275](https://github.com/redhat-developer/vscode-tekton/issues/275) Simplify start pipeline wizard
+* [#285](https://github.com/redhat-developer/vscode-tekton/pull/285) New implementation of FileSystemProvider for tekton resources
+* [#250](https://github.com/redhat-developer/vscode-tekton/issues/250) Deploy Tekton resources on save
+* [#292](https://github.com/redhat-developer/vscode-tekton/pull/292) Show condition run as child for taskrun
+* [#252](https://github.com/redhat-developer/vscode-tekton/issues/252) Action to open Task from a TaskRun in the tree
+* [#306](https://github.com/redhat-developer/vscode-tekton/issues/306) show open in editor option in condition.
+* [#305](https://github.com/redhat-developer/vscode-tekton/issues/305) Rename Tekton Configuration tab to just tekton
+* Bugfixes or minor issues:
+  * [#295](https://github.com/redhat-developer/vscode-tekton/issues/295) startsWith throw an error of undefined
+  * [#299](https://github.com/redhat-developer/vscode-tekton/pull/299) Fix issue for file name with space.
+  * [#193](https://github.com/redhat-developer/vscode-tekton/issues/193) Failing PipelineRun with CouldnGetTask error are not shown
+  * [#265](https://github.com/redhat-developer/vscode-tekton/issues/265) Label for pipeline preview doesn't show the full text.
+  * [#308](https://github.com/redhat-developer/vscode-tekton/pull/308) Fix coverage banner link
+  * [#304](https://github.com/redhat-developer/vscode-tekton/issues/304) Tekton Configuration is by settings.json
+
 ## 0.1.0 (May 13, 2020)
 
 This release brings to you:

@@ -7,10 +7,23 @@
 
 ## Overview
 
+### Tekton version
+
+This extension designed to work with Tekton Pipelines 0.11+
+
+### Tekton API version
+
+We support `v1beta1` API. Previous version `v1alpha1` may work, but we not guarantee that all features will work properly. If you have `v1alpha1` pipelines/tasks please use [migrating document](https://github.com/tektoncd/pipeline/blob/master/docs/migrating-v1alpha1-to-v1beta1.md) to migrate to `v1beta1`.
+
 A Visual Studio Code extension for interacting with Tekton Pipelines.
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/demo_0.0.6.gif" width="800" height="500" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/demo_0.2.0.gif" width="800" height="500" /></div>
 
 ## New and Noteworthy
+
+### Deploy resource on save
+>Note: This is experimental feature, you need to enable it in preferences
+
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/deploy_on_save_0.2.0.gif" width="800" height="500" /></div>
 
 ### 'Go to Definition' for Tekton Pipeline yaml
 
@@ -36,7 +49,7 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_preview_0.0.6.gif" width="600" height="493" /></div>
 
 ### New icons and Tekton resources
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/new_items_and_icons.png" width="271" height="327" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/new_items_and_icons_0.2.0.png" width="720" height="968" /></div>
 
 ### Provides editing support for Pipeline yaml
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/editing-demo.gif" width="800" height="450" /></div>
