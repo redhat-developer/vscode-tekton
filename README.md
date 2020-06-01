@@ -7,9 +7,13 @@
 
 ## Overview
 
+### Tekton version
+
+This extension designed to work with Tekton Pipelines 0.11+
+
 ### Tekton API version
 
-This extension designed to work with `v1beta1` API. Previous version `v1alpha1` may work, but we not guarantee that all features will work properly. If you have `v1alpha1` pipelines/tasks please use [migrating document](https://github.com/tektoncd/pipeline/blob/master/docs/migrating-v1alpha1-to-v1beta1.md) to migrate to `v1beta1`.
+We support `v1beta1` API. Previous version `v1alpha1` may work, but we not guarantee that all features will work properly. If you have `v1alpha1` pipelines/tasks please use [migrating document](https://github.com/tektoncd/pipeline/blob/master/docs/migrating-v1alpha1-to-v1beta1.md) to migrate to `v1beta1`.
 
 A Visual Studio Code extension for interacting with Tekton Pipelines.
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/demo_0.2.0.gif" width="800" height="500" /></div>
