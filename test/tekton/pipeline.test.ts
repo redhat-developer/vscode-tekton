@@ -27,12 +27,14 @@ suite('Tekton/Pipeline', () => {
   let termStub: sinon.SinonStub;
   let pipeTrigger: Trigger[];
   let startPipelineObj: StartObject;
+  let showQuickPickStub: sinon.SinonStub<unknown[], unknown>;
   const pipelineNode = new TestItem(TknImpl.ROOT, 'test-pipeline', ContextType.PIPELINENODE, null);
   const pipelineItem = new TestItem(pipelineNode, 'pipeline', ContextType.PIPELINE, null);
 
 
   setup(() => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
+    showQuickPickStub = sandbox.stub(vscode.window, 'showQuickPick').resolves(undefined);
     sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
     getPipelineStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();
@@ -65,14 +67,17 @@ suite('Tekton/Pipeline', () => {
       }
     });
   });
+
   suite('start', () => {
 
     test('start returns null when no pipeline', async () => {
+      showQuickPickStub.onFirstCall().resolves(undefined);
       const result = await Pipeline.start(null);
       expect(result).null;
     });
 
   });
+
   suite('restart', () => {
 
     test('restart returns expected error string with pipeline restart', async () => {
@@ -85,6 +90,7 @@ suite('Tekton/Pipeline', () => {
         return;
       }
     });
+
     test('restart returns expected string with pipeline restart', async () => {
       sandbox.stub(pipelineExplorer, 'refresh').resolves();
       getPipelineStub.restore();

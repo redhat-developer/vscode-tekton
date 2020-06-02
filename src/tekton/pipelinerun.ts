@@ -12,7 +12,7 @@ export class PipelineRun extends TektonItem {
 
   static async describe(pipelineRun: TektonNode): Promise<void> {
     if (!pipelineRun) {
-      pipelineRun = await window.showQuickPick(PipelineRun.getPipelineRunNames(), {placeHolder: 'Select Pipeline Run to describe', ignoreFocusOut: true});
+      pipelineRun = await window.showQuickPick(await PipelineRun.getPipelineRunNames(), {placeHolder: 'Select Pipeline Run to describe', ignoreFocusOut: true});
     }
     if (!pipelineRun) return null;
     PipelineRun.tkn.executeInTerminal(Command.describePipelineRuns(pipelineRun.getName()));
@@ -20,7 +20,7 @@ export class PipelineRun extends TektonItem {
 
   static async list(pipelineRun: TektonNode): Promise<void> {
     if (!pipelineRun) {
-      pipelineRun = await window.showQuickPick(PipelineRun.getPipelineRunNames(), {placeHolder: 'Select Pipeline Run to list', ignoreFocusOut: true});
+      pipelineRun = await window.showQuickPick(await PipelineRun.getPipelineRunNames(), {placeHolder: 'Select Pipeline Run to list', ignoreFocusOut: true});
     }
     if (!pipelineRun) return null;
     PipelineRun.tkn.executeInTerminal(Command.listPipelineRunsInTerminal(pipelineRun.getName()));
@@ -28,7 +28,7 @@ export class PipelineRun extends TektonItem {
 
   static async logs(pipelineRun: TektonNode): Promise<void> {
     if (!pipelineRun) {
-      pipelineRun = await window.showQuickPick(PipelineRun.getPipelineRunNames(), {placeHolder: 'Select Pipeline Run to see logs', ignoreFocusOut: true});
+      pipelineRun = await window.showQuickPick(await PipelineRun.getPipelineRunNames(), {placeHolder: 'Select Pipeline Run to see logs', ignoreFocusOut: true});
     }
     if (!pipelineRun) return null;
     PipelineRun.tkn.executeInTerminal(Command.showPipelineRunLogs(pipelineRun.getName()));
@@ -36,7 +36,7 @@ export class PipelineRun extends TektonItem {
 
   static async followLogs(pipelineRun: TektonNode): Promise<void> {
     if (!pipelineRun) {
-      pipelineRun = await window.showQuickPick(PipelineRun.getPipelineRunNames(), {placeHolder: 'Select Pipeline Run to see logs', ignoreFocusOut: true});
+      pipelineRun = await window.showQuickPick(await PipelineRun.getPipelineRunNames(), {placeHolder: 'Select Pipeline Run to see logs', ignoreFocusOut: true});
     }
     if (!pipelineRun) return null;
     PipelineRun.tkn.executeInTerminal(Command.showPipelineRunFollowLogs(pipelineRun.getName()));
@@ -44,7 +44,7 @@ export class PipelineRun extends TektonItem {
 
   static async cancel(pipelineRun: TektonNode): Promise<void> {
     if (!pipelineRun) {
-      pipelineRun = await window.showQuickPick(PipelineRun.getPipelineRunNames(), {placeHolder: 'Select Pipeline Run to cancel', ignoreFocusOut: true});
+      pipelineRun = await window.showQuickPick(await PipelineRun.getPipelineRunNames(), {placeHolder: 'Select Pipeline Run to cancel', ignoreFocusOut: true});
     }
     if (!pipelineRun) return null;
     PipelineRun.tkn.executeInTerminal(Command.cancelPipelineRun(pipelineRun.getName()));
@@ -52,7 +52,7 @@ export class PipelineRun extends TektonItem {
 
   static async delete(pipelineRun: TektonNode): Promise<string> {
     if (!pipelineRun) {
-      pipelineRun = await window.showQuickPick(PipelineRun.getPipelineRunNames(), {placeHolder: 'Select Pipeline Run to delete', ignoreFocusOut: true});
+      pipelineRun = await window.showQuickPick(await PipelineRun.getPipelineRunNames(), {placeHolder: 'Select Pipeline Run to delete', ignoreFocusOut: true});
     }
     if (!pipelineRun) return null;
     const value = await window.showWarningMessage(`Do you want to delete the PipelineRun '${pipelineRun.getName()}'?`, 'Yes', 'Cancel');

@@ -16,7 +16,7 @@ export class Pipeline extends TektonItem {
 
   static async start(pipeline: TektonNode): Promise<string> {
     if (!pipeline) {
-      pipeline = await window.showQuickPick(Pipeline.getPipelineNames(), {placeHolder: 'Select Pipeline to start', ignoreFocusOut: true});
+      pipeline = await window.showQuickPick(await Pipeline.getPipelineNames(), {placeHolder: 'Select Pipeline to start', ignoreFocusOut: true});
     }
     if (!pipeline) return null;
     const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.listPipelines(), process.cwd(), false);
@@ -51,7 +51,7 @@ export class Pipeline extends TektonItem {
 
   static async restart(pipeline: TektonNode): Promise<string> {
     if (!pipeline) {
-      pipeline = await window.showQuickPick(Pipeline.getPipelineNames(), {placeHolder: 'Select Pipeline to restart', ignoreFocusOut: true});
+      pipeline = await window.showQuickPick(await Pipeline.getPipelineNames(), {placeHolder: 'Select Pipeline to restart', ignoreFocusOut: true});
     }
     if (!pipeline) return null;
     return Progress.execFunctionWithProgress(`Creating the Pipeline '${pipeline.getName()}'.`, () =>
@@ -77,7 +77,7 @@ export class Pipeline extends TektonItem {
 
   static async describe(pipeline: TektonNode): Promise<void> {
     if (!pipeline) {
-      pipeline = await window.showQuickPick(Pipeline.getPipelineNames(), {placeHolder: 'Select Pipeline to describe', ignoreFocusOut: true});
+      pipeline = await window.showQuickPick(await Pipeline.getPipelineNames(), {placeHolder: 'Select Pipeline to describe', ignoreFocusOut: true});
     }
     if (!pipeline) return null;
     Pipeline.tkn.executeInTerminal(Command.describePipelines(pipeline.getName()));
@@ -93,7 +93,7 @@ export class Pipeline extends TektonItem {
 
   static async delete(pipeline: TektonNode): Promise<string> {
     if (!pipeline) {
-      pipeline = await window.showQuickPick(Pipeline.getPipelineNames(), {placeHolder: 'Select Pipeline to delete', ignoreFocusOut: true});
+      pipeline = await window.showQuickPick(await Pipeline.getPipelineNames(), {placeHolder: 'Select Pipeline to delete', ignoreFocusOut: true});
     }
     if (!pipeline) return null;
     const value = await window.showWarningMessage(`Do you want to delete the Pipeline '${pipeline.getName()}'?`, 'Yes', 'Cancel');

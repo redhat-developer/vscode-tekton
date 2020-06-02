@@ -12,7 +12,7 @@ export class TaskRun extends TektonItem {
 
   static async listFromPipelineRun(pipelineRun: TektonNode): Promise<void> {
     if (!pipelineRun) {
-      pipelineRun = await window.showQuickPick(TaskRun.getPipelineRunNames(), {placeHolder: 'Select PipelineRun to list TaskRun', ignoreFocusOut: true});
+      pipelineRun = await window.showQuickPick(await TaskRun.getPipelineRunNames(), {placeHolder: 'Select PipelineRun to list TaskRun', ignoreFocusOut: true});
     }
     if (!pipelineRun) return null;
     TaskRun.tkn.executeInTerminal(Command.listTaskRunsForPipelineRunInTerminal(pipelineRun.getName()));
@@ -20,7 +20,7 @@ export class TaskRun extends TektonItem {
 
   static async listFromTask(taskRun: TektonNode): Promise<void> {
     if (!taskRun) {
-      taskRun = await window.showQuickPick(TaskRun.getTaskNames(), {placeHolder: 'Select Task to list TaskRun', ignoreFocusOut: true});
+      taskRun = await window.showQuickPick(await TaskRun.getTaskNames(), {placeHolder: 'Select Task to list TaskRun', ignoreFocusOut: true});
     }
     if (!taskRun) return null;
     TaskRun.tkn.executeInTerminal(Command.listTaskRunsForTasksInTerminal(taskRun.getName()));
@@ -28,7 +28,7 @@ export class TaskRun extends TektonItem {
 
   static async logs(taskRun: TektonNode): Promise<void> {
     if (!taskRun) {
-      taskRun = await window.showQuickPick(TaskRun.getTaskRunNames(), {placeHolder: 'Select Task Run to see logs', ignoreFocusOut: true});
+      taskRun = await window.showQuickPick(await TaskRun.getTaskRunNames(), {placeHolder: 'Select Task Run to see logs', ignoreFocusOut: true});
     }
     if (!taskRun) return null;
     TaskRun.tkn.executeInTerminal(Command.showTaskRunLogs(taskRun.getName()));
@@ -36,7 +36,7 @@ export class TaskRun extends TektonItem {
 
   static async followLogs(taskRun: TektonNode): Promise<void> {
     if (!taskRun) {
-      taskRun = await window.showQuickPick(TaskRun.getTaskRunNames(), {placeHolder: 'Select Task Run to see follow logs', ignoreFocusOut: true});
+      taskRun = await window.showQuickPick(await TaskRun.getTaskRunNames(), {placeHolder: 'Select Task Run to see follow logs', ignoreFocusOut: true});
     }
     if (!taskRun) return null;
     TaskRun.tkn.executeInTerminal(Command.showTaskRunFollowLogs(taskRun.getName()));
@@ -44,7 +44,7 @@ export class TaskRun extends TektonItem {
 
   static async delete(taskRun: TektonNode): Promise<string> {
     if (!taskRun) {
-      taskRun = await window.showQuickPick(TaskRun.getTaskRunNames(), {placeHolder: 'Select Task Run to delete', ignoreFocusOut: true});
+      taskRun = await window.showQuickPick(await TaskRun.getTaskRunNames(), {placeHolder: 'Select Task Run to delete', ignoreFocusOut: true});
     }
     if (!taskRun) return null;
     const value = await window.showWarningMessage(`Do you want to delete the TaskRun '${taskRun.getName()}'?`, 'Yes', 'Cancel');
@@ -60,7 +60,7 @@ export class TaskRun extends TektonItem {
 
   static async openDefinition(taskRun: TektonNode): Promise<void> {
     if (!taskRun) {
-      taskRun = await window.showQuickPick(TaskRun.getTaskRunNames(), {placeHolder: 'Select Task Run to Open Task Definition', ignoreFocusOut: true});
+      taskRun = await window.showQuickPick(await TaskRun.getTaskRunNames(), {placeHolder: 'Select Task Run to Open Task Definition', ignoreFocusOut: true});
     }
     if (!taskRun) return null;
     const taskName = await TaskRun.getTaskNameByTaskRun(taskRun.getName());

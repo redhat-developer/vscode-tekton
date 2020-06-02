@@ -16,7 +16,7 @@ export class ClusterTask extends TektonItem {
 
   static async delete(clusterTask: TektonNode): Promise<string> {
     if (!clusterTask) {
-      clusterTask = await window.showQuickPick(ClusterTask.getClusterTaskNames(), {placeHolder: 'Select ClusterTask to delete', ignoreFocusOut: true});
+      clusterTask = await window.showQuickPick(await ClusterTask.getClusterTaskNames(), {placeHolder: 'Select ClusterTask to delete', ignoreFocusOut: true});
     }
     if (!clusterTask) return null;
     const value = await window.showWarningMessage(`Do you want to delete the ClusterTask '${clusterTask.getName()}'?`, 'Yes', 'Cancel');

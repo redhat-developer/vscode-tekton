@@ -46,7 +46,7 @@ export class PipelineResource extends TektonItem {
 
   static async describe(pipelineResource: TektonNode): Promise<void> {
     if (!pipelineResource) {
-      pipelineResource = await window.showQuickPick(PipelineResource.getPipelineResourceNames(), {placeHolder: 'Select Pipeline Resource to describe', ignoreFocusOut: true});
+      pipelineResource = await window.showQuickPick(await PipelineResource.getPipelineResourceNames(), {placeHolder: 'Select Pipeline Resource to describe', ignoreFocusOut: true});
     }
     if (!pipelineResource) return null;
     PipelineResource.tkn.executeInTerminal(Command.describePipelineResource(pipelineResource.getName()));
@@ -54,7 +54,7 @@ export class PipelineResource extends TektonItem {
 
   static async list(pipelineResource: TektonNode): Promise<void> {
     if (!pipelineResource) {
-      pipelineResource = await window.showQuickPick(PipelineResource.getPipelineResourceNames(), {placeHolder: 'Select Pipeline Resource to list', ignoreFocusOut: true});
+      pipelineResource = await window.showQuickPick(await PipelineResource.getPipelineResourceNames(), {placeHolder: 'Select Pipeline Resource to list', ignoreFocusOut: true});
     }
     if (!pipelineResource) return null;
     PipelineResource.tkn.executeInTerminal(Command.listPipelineResourcesInTerminal(pipelineResource.getName()));
@@ -62,7 +62,7 @@ export class PipelineResource extends TektonItem {
 
   static async delete(pipelineResource: TektonNode): Promise<string> {
     if (!pipelineResource) {
-      pipelineResource = await window.showQuickPick(PipelineResource.getPipelineResourceNames(), {placeHolder: 'Select Pipeline Resource to delete', ignoreFocusOut: true});
+      pipelineResource = await window.showQuickPick(await PipelineResource.getPipelineResourceNames(), {placeHolder: 'Select Pipeline Resource to delete', ignoreFocusOut: true});
     }
     if (!pipelineResource) return null;
     const value = await window.showWarningMessage(`Do you want to delete the Resource '${pipelineResource.getName()}'?`, 'Yes', 'Cancel');

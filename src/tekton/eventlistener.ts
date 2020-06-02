@@ -12,7 +12,7 @@ export class EventListener extends TektonItem {
 
   static async delete(eventListener: TektonNode): Promise<string> {
     if (!eventListener) {
-      eventListener = await window.showQuickPick(EventListener.getEventListenerNames(), {placeHolder: 'Select EventListener to delete', ignoreFocusOut: true});
+      eventListener = await window.showQuickPick(await EventListener.getEventListenerNames(), {placeHolder: 'Select EventListener to delete', ignoreFocusOut: true});
     }
     if (!eventListener) return null;
     const value = await window.showWarningMessage(`Do you want to delete the EventListener '${eventListener.getName()}'?`, 'Yes', 'Cancel');

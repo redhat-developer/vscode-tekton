@@ -23,8 +23,10 @@ suite('Tekton/PipelineResource', () => {
   let execStub: sinon.SinonStub;
   let warnStub: sinon.SinonStub<[string, MessageOptions, ...MessageItem[]], Thenable<MessageItem>>;
   let getPipelineNamesStub: sinon.SinonStub;
+  let getPipelineResourcesStub: sinon.SinonStub;
+  let showQuickPickStub: sinon.SinonStub<unknown[], unknown>;
   const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
-  const pipelineresourceItem = new TestItem(pipelineItem, 'pipelineresource', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
+  const pipelineResourceItem = new TestItem(pipelineItem, 'pipelineresource', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
 
   const sampleYaml = `
     # manifests.yaml
@@ -48,8 +50,9 @@ suite('Tekton/PipelineResource', () => {
 
   setup(() => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '' });
-    sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([pipelineresourceItem]);
+    getPipelineResourcesStub = sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([pipelineResourceItem]);
     getPipelineNamesStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
+    showQuickPickStub = sandbox.stub(window, 'showQuickPick');
   });
 
   teardown(() => {
@@ -64,7 +67,7 @@ suite('Tekton/PipelineResource', () => {
 
 
     test('show warning message if file is not yaml', async () => {
-      await PipelineResource.create(pipelineresourceItem);
+      await PipelineResource.create(pipelineResourceItem);
       expect(warnStub).is.calledOnce;
     });
 
@@ -81,7 +84,7 @@ suite('Tekton/PipelineResource', () => {
           save: sinon.stub().returns(true)
         },
       });
-      const result = await PipelineResource.create(pipelineresourceItem);
+      const result = await PipelineResource.create(pipelineResourceItem);
       expect(result).equals('PipelineResources were successfully created.');
     });
 
@@ -93,7 +96,7 @@ suite('Tekton/PipelineResource', () => {
           isDirty: true,
         },
       });
-      await PipelineResource.create(pipelineresourceItem);
+      await PipelineResource.create(pipelineResourceItem);
       expect(warnStub).is.calledOnce;
       expect(infoMsg).is.calledOnce;
     });
@@ -104,7 +107,7 @@ suite('Tekton/PipelineResource', () => {
         stdout: 'text'
       });
       sandbox.stub(window, 'activeTextEditor').value(TextEditorMock);
-      const result = await PipelineResource.create(pipelineresourceItem);
+      const result = await PipelineResource.create(pipelineResourceItem);
       expect(result).equals('PipelineResources were successfully created.');
     });
 
@@ -113,7 +116,7 @@ suite('Tekton/PipelineResource', () => {
       execStub.rejects(errorMessage);
       sandbox.stub(window, 'activeTextEditor').value(TextEditorMock);
       try {
-        await PipelineResource.create(pipelineresourceItem);
+        await PipelineResource.create(pipelineResourceItem);
       } catch (err) {
         savedErr = err;
       }
@@ -131,35 +134,38 @@ suite('Tekton/PipelineResource', () => {
     suite('called from \'Tekton Pipelines Explorer\'', () => {
 
       test('executes the list tkn command in terminal', async () => {
-        await PipelineResource.list(pipelineresourceItem);
-        expect(termStub).calledOnceWith(Command.listPipelineResourcesInTerminal(pipelineresourceItem.getName()));
+        await PipelineResource.list(pipelineResourceItem);
+        expect(termStub).calledOnceWith(Command.listPipelineResourcesInTerminal(pipelineResourceItem.getName()));
       });
 
     });
 
     suite('called from command palette', () => {
 
-      test('calls the appropriate error message when no pipelineresource found', async () => {
+      test('calls the appropriate error message when no pipeline Resource found', async () => {
         getPipelineNamesStub.restore();
-        sandbox.stub(TknImpl.prototype, 'getPipelineRuns').resolves([]);
+        getPipelineResourcesStub.onFirstCall().returns([]);
         try {
           await PipelineResource.list(null);
         } catch (err) {
-          expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
+          expect(err.message).equals('You need at least one PipelineResource available. Please create new Tekton PipelineResource and try again.');
           return;
         }
+        expect.fail();
       });
     });
 
     suite('called from command bar', () => {
 
       test('returns null when clustertask is not defined properly', async () => {
+        showQuickPickStub.onFirstCall().resolves(undefined);
         const result = await PipelineResource.list(null);
         // tslint:disable-next-line: no-unused-expression
-        expect(result).undefined;
+        expect(result).null;
       });
 
       test('skips tkn command execution if canceled by user', async () => {
+        showQuickPickStub.onFirstCall().resolves(undefined);
         await PipelineResource.describe(null);
         // tslint:disable-next-line: no-unused-expression
         expect(termStub).not.called;
@@ -169,14 +175,15 @@ suite('Tekton/PipelineResource', () => {
     suite('describe', () => {
 
       test('returns null when cancelled', async () => {
+        showQuickPickStub.onFirstCall().resolves(undefined);
         const result = await PipelineResource.describe(null);
 
-        expect(result).undefined;
+        expect(result).null;
       });
 
       test('describe calls the correct tkn command in terminal', async () => {
-        await PipelineResource.describe(pipelineresourceItem);
-        expect(termStub).calledOnceWith(Command.describePipelineResource(pipelineresourceItem.getName()));
+        await PipelineResource.describe(pipelineResourceItem);
+        expect(termStub).calledOnceWith(Command.describePipelineResource(pipelineResourceItem.getName()));
       });
 
     });
@@ -191,23 +198,23 @@ suite('Tekton/PipelineResource', () => {
       test('calls the appropriate tkn command if confirmed', async () => {
         warnStub.resolves('Yes');
 
-        await PipelineResource.delete(pipelineresourceItem);
+        await PipelineResource.delete(pipelineResourceItem);
 
-        expect(execStub).calledOnceWith(Command.deletePipelineResource(pipelineresourceItem.getName()));
+        expect(execStub).calledOnceWith(Command.deletePipelineResource(pipelineResourceItem.getName()));
       });
 
       test('returns a confirmation message text when successful', async () => {
         warnStub.resolves('Yes');
 
-        const result = await PipelineResource.delete(pipelineresourceItem);
+        const result = await PipelineResource.delete(pipelineResourceItem);
 
-        expect(result).equals(`The Resource '${pipelineresourceItem.getName()}' successfully deleted.`);
+        expect(result).equals(`The Resource '${pipelineResourceItem.getName()}' successfully deleted.`);
       });
 
       test('returns null when cancelled', async () => {
         warnStub.resolves('Cancel');
 
-        const result = await PipelineResource.delete(pipelineresourceItem);
+        const result = await PipelineResource.delete(pipelineResourceItem);
 
         expect(result).null;
       });
@@ -217,11 +224,11 @@ suite('Tekton/PipelineResource', () => {
         execStub.rejects('ERROR');
         let expectedError: Error;
         try {
-          await PipelineResource.delete(pipelineresourceItem);
+          await PipelineResource.delete(pipelineResourceItem);
         } catch (err) {
           expectedError = err;
         }
-        expect(expectedError).equals(`Failed to delete the Resource '${pipelineresourceItem.getName()}': 'ERROR'.`);
+        expect(expectedError).equals(`Failed to delete the Resource '${pipelineResourceItem.getName()}': 'ERROR'.`);
       });
     });
 
