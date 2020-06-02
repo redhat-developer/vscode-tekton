@@ -29,7 +29,7 @@ suite('Tekton/TaskRun', () => {
 
   setup(() => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
-    getPipelineRunNamesStub = sandbox.stub(TektonItem, 'getPipelinerunNames').resolves([pipelinerunItem]);
+    getPipelineRunNamesStub = sandbox.stub(TektonItem, 'getPipelineRunNames').resolves([pipelinerunItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();
   });
 

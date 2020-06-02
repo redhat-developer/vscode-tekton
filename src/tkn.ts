@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { CliCommand, CliExitData, cli, createCliCommand, cliCommandToString } from './cli';
-import { ProviderResult, TreeItemCollapsibleState, Terminal, Uri, workspace, TreeItem } from 'vscode';
+import { ProviderResult, TreeItemCollapsibleState, Terminal, Uri, workspace, TreeItem, QuickPickItem } from 'vscode';
 import { WindowUtil } from './util/windowUtils';
 import * as path from 'path';
 import { ToolsConfig } from './tools';
@@ -40,16 +40,16 @@ function createConfig(): humanize.HumanizerOptions {
 }
 
 
-export interface TektonNode {
-  contextValue: string;
-  creationTime?: string;
-  state?: string;
-  visibleChildren?: number;
+export interface TektonNode extends QuickPickItem {
   getChildren(): ProviderResult<TektonNode[]>;
   getParent(): TektonNode | undefined;
   getName(): string;
-  collapsibleState?: TreeItemCollapsibleState;
   refresh(): Promise<void>;
+  contextValue?: string;
+  creationTime?: string;
+  state?: string;
+  visibleChildren?: number;
+  collapsibleState?: TreeItemCollapsibleState;
 }
 
 export enum ContextType {
@@ -598,7 +598,7 @@ export class TaskRun extends TektonNodeImpl {
 
   get description(): string {
     let r = '';
-    if (this.getParent().contextValue === ContextType.TASK) {
+    if (this.getParent() && this.getParent().contextValue === ContextType.TASK) {
       if (this.finished) {
         r = 'started ' + humanizer(Date.now() - Date.parse(this.started)) + ' ago, finished in ' + humanizer(Date.parse(this.finished) - Date.parse(this.started));
       } else {
@@ -845,23 +845,23 @@ export interface Tkn {
   startPipeline(pipeline: StartObject): Promise<TektonNode[]>;
   startTask(task: StartObject): Promise<TektonNode[]>;
   restartPipeline(pipeline: TektonNode): Promise<void>;
-  getPipelines(pipeline: TektonNode): Promise<TektonNode[]>;
-  getPipelineRuns(pipelineRun: TektonNode): Promise<TektonNode[]>;
-  getPipelineResources(pipelineResources: TektonNode): Promise<TektonNode[]>;
-  getTasks(task: TektonNode): Promise<TektonNode[]>;
+  getPipelines(pipeline?: TektonNode): Promise<TektonNode[]>;
+  getPipelineRuns(pipelineRun?: TektonNode): Promise<TektonNode[]>;
+  getPipelineResources(pipelineResources?: TektonNode): Promise<TektonNode[]>;
+  getTasks(task?: TektonNode): Promise<TektonNode[]>;
   getRawTasks(): Promise<TknTask[]>;
-  getClusterTasks(clustertask: TektonNode): Promise<TektonNode[]>;
+  getClusterTasks(clustertask?: TektonNode): Promise<TektonNode[]>;
   getRawClusterTasks(): Promise<TknTask[]>;
   execute(command: CliCommand, cwd?: string, fail?: boolean): Promise<CliExitData>;
   executeInTerminal(command: CliCommand, cwd?: string): void;
   getTaskRunsForTasks(task: TektonNode): Promise<TektonNode[]>;
-  getTriggerTemplates(triggerTemplates: TektonNode): Promise<TektonNode[]>;
-  getTriggerBinding(triggerBinding: TektonNode): Promise<TektonNode[]>;
+  getTriggerTemplates(triggerTemplates?: TektonNode): Promise<TektonNode[]>;
+  getTriggerBinding(triggerBinding?: TektonNode): Promise<TektonNode[]>;
   getClusterTriggerBinding(clusterTriggerBinding: TektonNode): Promise<TektonNode[]>;
-  getEventListener(EventListener: TektonNode): Promise<TektonNode[]>;
+  getEventListener(EventListener?: TektonNode): Promise<TektonNode[]>;
   getConditions(conditions: TektonNode): Promise<TektonNode[]>;
-  getPipelineRunsList(pipelineRun: TektonNode): Promise<TektonNode[]>;
-  getTaskRunList(taskRun: TektonNode): Promise<TektonNode[]>;
+  getPipelineRunsList(pipelineRun?: TektonNode): Promise<TektonNode[]>;
+  getTaskRunList(taskRun?: TektonNode): Promise<TektonNode[]>;
   getRawPipelineRun(name: string): Promise<PipelineRunData | undefined>;
   clearCache?(): void;
 }
@@ -960,6 +960,7 @@ export class TknImpl implements Tkn {
   }
 
   async limitView(context: TektonNode, tektonNode: TektonNode[]): Promise<TektonNode[]> {
+    if (!context) return tektonNode;
     const currentRuns = tektonNode.slice(0, Math.min(context.visibleChildren, tektonNode.length))
     if (context.visibleChildren < tektonNode.length) {
       let nextPage = this.defaultPageSize;
@@ -972,7 +973,7 @@ export class TknImpl implements Tkn {
   }
 
   async getPipelineRunsList(pipelineRun: TektonNode): Promise<TektonNode[]> {
-    if (!pipelineRun.visibleChildren) {
+    if (pipelineRun && !pipelineRun.visibleChildren) {
       pipelineRun.visibleChildren = this.defaultPageSize;
     }
     const pipelineRunList = await this._getPipelineRunsList(pipelineRun);
@@ -1055,7 +1056,7 @@ export class TknImpl implements Tkn {
   }
 
   async getTaskRunList(taskRun: TektonNode): Promise<TektonNode[]> {
-    if (!taskRun.visibleChildren) {
+    if (taskRun && !taskRun.visibleChildren) {
       taskRun.visibleChildren = this.defaultPageSize;
     }
     const taskRunList = await this._getTaskRunList(taskRun);

@@ -143,6 +143,11 @@
         }
       },
       {
+        "command": "tekton.open.task.palette",
+        "title": "Open Task Definition",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.pipeline.preview",
         "title": "Open Pipeline preview to the Side",
         "category": "Tekton",
@@ -168,6 +173,11 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.pipeline.start.palette",
+        "title": "Start Pipeline",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.openInEditor",
         "title": "Open In Editor",
         "category": "Tekton"
@@ -188,8 +198,18 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.pipeline.describe.palette",
+        "title": "Describe Pipeline",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.pipeline.delete",
         "title": "Delete",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipeline.delete.palette",
+        "title": "Delete Pipeline",
         "category": "Tekton"
       },
       {
@@ -213,8 +233,18 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.pipelineresource.describe.palette",
+        "title": "Describe Pipeline Resource",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.pipelineresource.delete",
         "title": "Delete",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipelineresource.delete.palette",
+        "title": "Delete Pipeline Resource",
         "category": "Tekton"
       },
       {
@@ -228,8 +258,18 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.pipelinerun.describe.palette",
+        "title": "Describe Pipeline Run",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.pipelinerun.logs",
         "title": "Show Logs",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipelinerun.logs.palette",
+        "title": "Show Pipeline Run Logs",
         "category": "Tekton"
       },
       {
@@ -238,8 +278,18 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.pipelinerun.followLogs.palette",
+        "title": "Follow Pipeline Run Logs",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.pipelinerun.cancel",
         "title": "Cancel",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipelinerun.cancel.palette",
+        "title": "Cancel Pipeline Run",
         "category": "Tekton"
       },
       {
@@ -248,8 +298,18 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.pipelinerun.delete.palette",
+        "title": "Delete Pipeline Run",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.task.start",
         "title": "Start",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.task.start.palette",
+        "title": "Start Task",
         "category": "Tekton"
       },
       {
@@ -263,8 +323,18 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.task.delete.palette",
+        "title": "Delete Task",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.triggertemplate.delete",
         "title": "Delete",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.triggertemplate.delete.palette",
+        "title": "Delete TriggerTemplate",
         "category": "Tekton"
       },
       {
@@ -273,8 +343,18 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.triggerbinding.delete.palette",
+        "title": "Delete TriggerBinding",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.eventlistener.delete",
         "title": "Delete",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.eventlistener.delete.palette",
+        "title": "Delete EventListener",
         "category": "Tekton"
       },
       {
@@ -288,8 +368,18 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.clustertask.delete.palette",
+        "title": "Delete ClusterTask",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.taskrun.list",
         "title": "List TaskRuns",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.taskrun.list.palette",
+        "title": "List TaskRuns from Pipeline Run",
         "category": "Tekton"
       },
       {
@@ -298,8 +388,18 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.taskrun.listFromTask.palette",
+        "title": "List TaskRuns from Task",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.taskrun.logs",
         "title": "Show Logs",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.taskrun.logs.palette",
+        "title": "Show Task Run Logs",
         "category": "Tekton"
       },
       {
@@ -308,8 +408,18 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.taskrun.followLogs.palette",
+        "title": "Follow Task Run Logs",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.taskrun.delete",
         "title": "Delete",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.taskrun.delete.palette",
+        "title": "Delete Task Run",
         "category": "Tekton"
       },
       {
@@ -403,15 +513,7 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
-          "command": "tekton.pipeline.restart",
-          "when": "view === tektonPipelineExplorerView"
-        },
-        {
           "command": "tekton.pipeline.describe",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
-        },
-        {
-          "command": "tekton.pipeline.list",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
@@ -432,10 +534,6 @@
         },
         {
           "command": "tekton.pipelineresource.delete",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
-        },
-        {
-          "command": "tekton.pipelinerun.list",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
@@ -463,10 +561,6 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
-          "command": "tekton.task.list",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
-        },
-        {
           "command": "tekton.task.delete",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -480,10 +574,6 @@
         },
         {
           "command": "tekton.eventlistener.delete",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
-        },
-        {
-          "command": "tekton.clustertask.list",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {

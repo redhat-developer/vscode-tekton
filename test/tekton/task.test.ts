@@ -45,7 +45,7 @@ suite('Tekton/Task', () => {
   suite('called from \'Tekton Pipelines Explorer\'', () => {
 
     test('executes the list tkn command in terminal', async () => {
-      await Task.list(taskItem);
+      await Task.list();
       expect(termStub).calledOnceWith(Command.listTasksInTerminal());
     });
 
@@ -57,7 +57,7 @@ suite('Tekton/Task', () => {
       getTaskStub.restore();
       sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([]);
       try {
-        await Task.list(null);
+        await Task.list();
       } catch (err) {
         expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
         return;
