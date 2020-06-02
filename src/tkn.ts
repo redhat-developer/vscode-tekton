@@ -123,7 +123,7 @@ function newTknCommand(...tknArguments: string[]): CliCommand {
   return createCliCommand('tkn', ...tknArguments);
 }
 
-export function newK8sCommand(...k8sArguments): CliCommand {
+export function newK8sCommand(...k8sArguments: string[]): CliCommand {
   return createCliCommand('kubectl', ...k8sArguments);
 }
 
@@ -373,6 +373,12 @@ export class Command {
   static apply(file: string): CliCommand {
     return newK8sCommand('apply', '-f', file);
   }
+  static getConfigView(): CliCommand {
+    return newK8sCommand('config', 'view', '-o', 'json');
+  }
+  static getCurrentContext(): CliCommand {
+    return newK8sCommand('config', 'current-context' );
+  }
 }
 
 const IMAGES = '../../images';
@@ -381,6 +387,11 @@ const PENDING_PATH = '../../images/generated/pending';
 
 export class TektonNodeImpl implements TektonNode {
   protected readonly CONTEXT_DATA = {
+    namespacenode: {
+      icon: '',
+      tooltip: 'NameSpace(Project): {label}',
+      getChildren: () => []
+    },
     pipelinenode: {
       icon: 'PL.svg',
       tooltip: 'Pipelines: {label}',
@@ -926,8 +937,10 @@ export class TknImpl implements Tkn {
     return this._getPipelineNodes();
   }
 
-  public _getPipelineNodes(): TektonNode[] {
+  public async _getPipelineNodes(): Promise<TektonNode[]> {
     const pipelineTree: TektonNode[] = [];
+    const currentNameSpace = await this.getCurrentNameSpace();
+    const namespaceNode = new TektonNodeImpl(TknImpl.ROOT, currentNameSpace, ContextType.NAMESPACE, this, TreeItemCollapsibleState.None);
     const pipelineNode = new TektonNodeImpl(TknImpl.ROOT, 'Pipelines', ContextType.PIPELINENODE, this, TreeItemCollapsibleState.Collapsed);
     const pipelineRunNode = new TektonNodeImpl(TknImpl.ROOT, 'PipelineRuns', ContextType.PIPELINERUNNODE, this, TreeItemCollapsibleState.Collapsed);
     const taskNode = new TektonNodeImpl(TknImpl.ROOT, 'Tasks', ContextType.TASKNODE, this, TreeItemCollapsibleState.Collapsed);
@@ -939,9 +952,29 @@ export class TknImpl implements Tkn {
     const eventListenerNode = new TektonNodeImpl(TknImpl.ROOT, 'EventListener', ContextType.EVENTLISTENERNODE, this, TreeItemCollapsibleState.Collapsed);
     const clusterTriggerBindingNode = new TektonNodeImpl(TknImpl.ROOT, 'ClusterTriggerBinding', ContextType.CLUSTERTRIGGERBINDINGNODE, this, TreeItemCollapsibleState.Collapsed);
     const conditionsNode = new TektonNodeImpl(TknImpl.ROOT, 'Conditions', ContextType.CONDITIONSNODE, this, TreeItemCollapsibleState.Collapsed);
-    pipelineTree.push(pipelineNode, pipelineRunNode, taskNode, clustertaskNode, taskRunNode, pipelineResourceNode, triggerTemplatesNode, triggerBindingNode, eventListenerNode, conditionsNode, clusterTriggerBindingNode);
+    pipelineTree.push(namespaceNode, pipelineNode, pipelineRunNode, taskNode, clustertaskNode, taskRunNode, pipelineResourceNode, triggerTemplatesNode, triggerBindingNode, eventListenerNode, conditionsNode, clusterTriggerBindingNode);
     TknImpl.ROOT.getChildren = () => pipelineTree; // TODO: fix me
     return pipelineTree;
+  }
+
+  async getCurrentNameSpace(): Promise<string> {
+    const config: CliExitData = await this.execute(
+      Command.getConfigView(), process.cwd(), false
+    );
+    let currentContext: string;
+    try {
+      const kubectlConfig = JSON.parse(config.stdout);
+      const ctxName = await this.execute(
+        Command.getCurrentContext(), process.cwd(), false
+      );
+      currentContext = (kubectlConfig.contexts || []).find((ctx: { name: string}) => ctx.name === ctxName.stdout.trim());
+    } catch (err) {
+      // ignore
+    }
+    if (!currentContext) {
+      return '';
+    }
+    return currentContext['context'].namespace || 'default';
   }
 
   async refreshPipelineRun(tknResource: TektonNode, resourceName: string): Promise<void> {
