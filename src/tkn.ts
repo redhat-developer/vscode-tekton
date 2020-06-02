@@ -231,6 +231,9 @@ export class Command {
   static deleteTriggerBinding(name: string): CliCommand {
     return newTknCommand('triggerbinding', 'delete', name, '-f');
   }
+  static deleteCondition(name: string): CliCommand {
+    return newTknCommand('condition', 'delete', name, '-f');
+  }
   static deleteEventListeners(name: string): CliCommand {
     return newTknCommand('eventlistener', 'delete', name, '-f');
   }
@@ -735,7 +738,6 @@ export class TaskRunFromPipeline extends BaseTaskRun {
       for (const conditionName in this.rawTaskRun.conditionChecks) {
         const rawCondition = this.rawTaskRun.conditionChecks[conditionName];
         result.push(new ConditionRun(this, rawCondition.conditionName, this.tkn, rawCondition));
-
       }
       return result.sort(compareTimeNewestFirst);
     } else {

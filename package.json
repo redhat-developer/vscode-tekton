@@ -29,6 +29,7 @@
     "onCommand:tekton.pipeline.list",
     "onCommand:tekton.pipeline.describe",
     "onCommand:tekton.pipeline.delete",
+    "onCommand:tekton.condition.delete",
     "onCommand:tekton.pipelinerun.list",
     "onCommand:tekton.pipelinerun.describe",
     "onCommand:tekton.pipelinerun.logs",
@@ -521,6 +522,10 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
+          "command": "tekton.condition.delete",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
           "command": "tekton.pipelineresource.describe",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -668,6 +673,11 @@
           "command": "tekton.pipeline.delete",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/  && viewItem == pipeline",
           "group": "c2"
+        },
+        {
+          "command": "tekton.condition.delete",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/  && viewItem == conditions",
+          "group": "c1"
         },
         {
           "command": "tekton.pipelineresource.create",
