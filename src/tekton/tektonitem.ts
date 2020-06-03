@@ -89,7 +89,15 @@ export abstract class TektonItem {
   }
 
   static openInEditor(context: TektonNode): void {
-    TektonItem.loadTektonResource(context.contextValue, context.getName());
+    let name = context.getName();
+    if (context.contextValue === 'tr') {
+      for (const conditionName in context.getParent()['rawTaskRun'].conditionChecks) {
+        if (context.getParent()['rawTaskRun'].conditionChecks[conditionName].conditionName === name) {
+          name = conditionName;
+        }
+      }
+    }
+    TektonItem.loadTektonResource(context.contextValue, name);
   }
 
   static loadTektonResource(type: string, name: string): void {

@@ -816,7 +816,7 @@
         },
         {
           "command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|triggertemplates|triggerbinding|eventlistener|conditions|task|clustertriggerbinding)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|triggertemplates|triggerbinding|eventlistener|conditions|task|clustertriggerbinding|tr)$/",
           "group": "inline@2"
         },
         {
@@ -826,7 +826,7 @@
         },
         {
           "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|task|triggertemplates|triggerbinding|eventlistener|conditions|clustertriggerbinding)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|task|triggertemplates|triggerbinding|eventlistener|conditions|clustertriggerbinding|tr)$/",
           "group": "c0@1"
         }
       ],
