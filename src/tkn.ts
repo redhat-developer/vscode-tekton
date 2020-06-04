@@ -389,7 +389,7 @@ export class TektonNodeImpl implements TektonNode {
   protected readonly CONTEXT_DATA = {
     namespacenode: {
       icon: 'NS.svg',
-      tooltip: 'NameSpace(Project): {label}',
+      tooltip: 'NameSpace: {label}',
       getChildren: () => []
     },
     pipelinenode: {
