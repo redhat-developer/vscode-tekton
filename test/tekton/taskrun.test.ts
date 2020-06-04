@@ -23,13 +23,17 @@ suite('Tekton/TaskRun', () => {
   const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
   let getPipelineRunNamesStub: sinon.SinonStub;
+  let showQuickPickStub: sinon.SinonStub<unknown[], unknown>;
   const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
-  const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
-  const taskrunItem = new TestItem(pipelinerunItem, 'taskrun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
+  const pipelineRunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
+  const taskRunItem = new TestItem(pipelineRunItem, 'taskrun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
 
   setup(() => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
-    getPipelineRunNamesStub = sandbox.stub(TektonItem, 'getPipelinerunNames').resolves([pipelinerunItem]);
+    showQuickPickStub = sandbox.stub(vscode.window, 'showQuickPick').resolves(undefined);
+    getPipelineRunNamesStub = sandbox.stub(TektonItem, 'getPipelineRunNames').resolves([pipelineRunItem]);
+    sandbox.stub(TknImpl.prototype, 'getPipelineRunsList').resolves([pipelineRunItem]);
+    sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskRunItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();
   });
 
@@ -47,8 +51,8 @@ suite('Tekton/TaskRun', () => {
     suite('called from \'Tekton Pipelines Explorer\'', () => {
 
       test('executes the list tkn command in terminal', async () => {
-        await TaskRun.listFromPipelineRun(taskrunItem);
-        expect(termStub).calledOnceWith(Command.listTaskRunsForPipelineRunInTerminal(taskrunItem.getName()));
+        await TaskRun.listFromPipelineRun(taskRunItem);
+        expect(termStub).calledOnceWith(Command.listTaskRunsForPipelineRunInTerminal(taskRunItem.getName()));
       });
 
     });
@@ -60,7 +64,7 @@ suite('Tekton/TaskRun', () => {
         try {
           await TaskRun.listFromPipelineRun(null);
         } catch (err) {
-          expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
+          expect(err.message).equals('You need at least one PipelineRun available. Please create new Tekton PipelineRun and try again.');
           return;
         }
       });
@@ -68,14 +72,17 @@ suite('Tekton/TaskRun', () => {
 
     suite('called from command bar', () => {
 
+      teardown(() => {
+        termStub.restore();
+      });
+
       test('skips tkn command execution if canceled by user', async () => {
+        showQuickPickStub.onFirstCall().resolves(undefined);
         await TaskRun.listFromPipelineRun(null);
         // tslint:disable-next-line: no-unused-expression
         expect(termStub).not.called;
       });
-      teardown(() => {
-        termStub.restore();
-      });
+
     });
 
     suite('listFromTasks command', () => {
@@ -97,7 +104,7 @@ suite('Tekton/TaskRun', () => {
           try {
             await TaskRun.listFromTask(null);
           } catch (err) {
-            expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
+            expect(err.message).equals('You need at least one Task available. Please create new Tekton Task and try again.');
             return;
           }
         });
@@ -106,6 +113,7 @@ suite('Tekton/TaskRun', () => {
       suite('called from command bar', () => {
 
         test('skips tkn command execution if canceled by user', async () => {
+          showQuickPickStub.onFirstCall().resolves(undefined);
           await TaskRun.listFromTask(null);
           // tslint:disable-next-line: no-unused-expression
           expect(termStub).not.called;
@@ -117,9 +125,9 @@ suite('Tekton/TaskRun', () => {
     suite('log output', () => {
 
       test('Log calls the correct tkn command in terminal  w/ context', async () => {
-        await TaskRun.logs(taskrunItem);
+        await TaskRun.logs(taskRunItem);
 
-        expect(termStub).calledOnceWith(Command.showTaskRunLogs(taskrunItem.getName()));
+        expect(termStub).calledOnceWith(Command.showTaskRunLogs(taskRunItem.getName()));
         termStub.restore();
       });
 
@@ -128,9 +136,9 @@ suite('Tekton/TaskRun', () => {
     suite('followLog', () => {
 
       test('followLog calls the correct tkn command in terminal', async () => {
-        await TaskRun.followLogs(taskrunItem);
+        await TaskRun.followLogs(taskRunItem);
 
-        expect(termStub).calledOnceWith(Command.showTaskRunFollowLogs(taskrunItem.getName()));
+        expect(termStub).calledOnceWith(Command.showTaskRunFollowLogs(taskRunItem.getName()));
       });
 
     });
@@ -146,23 +154,23 @@ suite('Tekton/TaskRun', () => {
       test('calls the appropriate tkn command if confirmed', async () => {
         warnStub.resolves('Yes');
 
-        await TaskRun.delete(taskrunItem);
+        await TaskRun.delete(taskRunItem);
 
-        expect(execStub).calledOnceWith(Command.deleteTaskRun(taskrunItem.getName()));
+        expect(execStub).calledOnceWith(Command.deleteTaskRun(taskRunItem.getName()));
       });
 
       test('returns a confirmation message text when successful', async () => {
         warnStub.resolves('Yes');
 
-        const result = await TaskRun.delete(taskrunItem);
+        const result = await TaskRun.delete(taskRunItem);
 
-        expect(result).equals(`The TaskRun '${taskrunItem.getName()}' successfully deleted.`);
+        expect(result).equals(`The TaskRun '${taskRunItem.getName()}' successfully deleted.`);
       });
 
       test('returns null when cancelled', async () => {
         warnStub.resolves('Cancel');
 
-        const result = await TaskRun.delete(taskrunItem);
+        const result = await TaskRun.delete(taskRunItem);
 
         expect(result).null;
       });
@@ -172,11 +180,11 @@ suite('Tekton/TaskRun', () => {
         execStub.rejects('ERROR');
         let expectedError;
         try {
-          await TaskRun.delete(taskrunItem);
+          await TaskRun.delete(taskRunItem);
         } catch (err) {
           expectedError = err;
         }
-        expect(expectedError).equals(`Failed to delete the TaskRun '${taskrunItem.getName()}': 'ERROR'.`);
+        expect(expectedError).equals(`Failed to delete the TaskRun '${taskRunItem.getName()}': 'ERROR'.`);
       });
     });
   });
@@ -194,9 +202,9 @@ suite('Tekton/TaskRun', () => {
       execStub.resolves({ stdout: '{"metadata":{"labels": {"tekton.dev/task": "FooTaskName"}}, "spec":{"taskRef":{"kind": "FooKind"}}}' } as CliExitData);
       loadTektonResourceStub.returns(undefined);
 
-      await TaskRun.openDefinition(taskrunItem);
+      await TaskRun.openDefinition(taskRunItem);
 
-      expect(execStub).calledOnceWith(Command.getTaskRun(taskrunItem.getName()));
+      expect(execStub).calledOnceWith(Command.getTaskRun(taskRunItem.getName()));
       expect(loadTektonResourceStub).calledOnceWith('FooKind', 'FooTaskName');
     });
 
@@ -204,9 +212,9 @@ suite('Tekton/TaskRun', () => {
       execStub.resolves({ error: 'Foo error' } as CliExitData);
       loadTektonResourceStub.returns(undefined);
 
-      await TaskRun.openDefinition(taskrunItem);
+      await TaskRun.openDefinition(taskRunItem);
 
-      expect(execStub).calledOnceWith(Command.getTaskRun(taskrunItem.getName()));
+      expect(execStub).calledOnceWith(Command.getTaskRun(taskRunItem.getName()));
       expect(loadTektonResourceStub).not.called;
       expect(showErrorStub).calledOnceWith('TaskRun may not have started yet, try again when it starts running. "Foo error"');
     });
@@ -215,9 +223,9 @@ suite('Tekton/TaskRun', () => {
       execStub.resolves({ stdout: '{"metadata":{"labels": {"tekton.dev/task": "FooTaskName","tekton.dev/conditionCheck": "bar-condition-run"}}, "spec":{"taskRef":{"kind": "FooKind"}}}' } as CliExitData);
       loadTektonResourceStub.returns(undefined);
 
-      await TaskRun.openDefinition(taskrunItem);
+      await TaskRun.openDefinition(taskRunItem);
 
-      expect(execStub).calledOnceWith(Command.getTaskRun(taskrunItem.getName()));
+      expect(execStub).calledOnceWith(Command.getTaskRun(taskRunItem.getName()));
       expect(loadTektonResourceStub).not.called;
       expect(showErrorStub).calledOnceWith('Cannot find Condition definition for: taskrun. Please look in Pipeline definition');
     });

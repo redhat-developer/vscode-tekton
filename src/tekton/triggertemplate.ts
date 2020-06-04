@@ -12,6 +12,9 @@ import { Progress } from '../util/progress';
 export class TriggerTemplate extends TektonItem {
 
   static async delete(triggerTemplate: TektonNode): Promise<string> {
+    if (!triggerTemplate) {
+      triggerTemplate = await window.showQuickPick(await TriggerTemplate.getTriggerTemplateNames(), {placeHolder: 'Select TriggerTemplate to delete', ignoreFocusOut: true});
+    }
     if (!triggerTemplate) return null;
     const value = await window.showWarningMessage(`Do you want to delete the TriggerTemplate '${triggerTemplate.getName()}'?`, 'Yes', 'Cancel');
     if (value === 'Yes') {

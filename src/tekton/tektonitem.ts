@@ -15,6 +15,9 @@ const errorMessage = {
   Task: 'You need at least one Task available. Please create new Tekton Task and try again.',
   TaskRun: 'You need at least one TaskRun available. Please create new Tekton TaskRun and try again.',
   ClusterTask: 'You need at least one ClusterTask available. Please create new Tekton ClusterTask and try again.',
+  EventListener: 'You need at least one EventListener available. Please create new Tekton EventListener and try again.',
+  TriggerBinding: 'You need at least one TriggerBinding available. Please create new Tekton TriggerBinding and try again.',
+  TriggerTemplate: 'You need at least one TriggerTemplate available. Please create new Tekton TriggerTemplate and try again.'
 };
 
 export abstract class TektonItem {
@@ -26,33 +29,62 @@ export abstract class TektonItem {
     return tektonNode && 'This name is already used, please enter different name.';
   }
 
-  static async getPipelineNames(pipeline: TektonNode): Promise<TektonNode[]> {
-    const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelines(pipeline);
-    if (pipelineList.length === 0) { throw Error(errorMessage.Pipeline); }
+  static async getPipelineNames(): Promise<TektonNode[]> {
+    const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelines();
+    if (pipelineList.length === 0) throw Error(errorMessage.Pipeline);
     return pipelineList;
   }
 
-  static async getPipelinerunNames(pipeline: TektonNode): Promise<TektonNode[]> {
-    const pipelineRunList: Array<TektonNode> = await TektonItem.tkn.getPipelineRuns(pipeline);
-    if (pipelineRunList.length === 0) { throw Error(errorMessage.PipelineRun); }
+  static async getPipelineNode(): Promise<TektonNode> {
+    const pipelineNode: Array<TektonNode> = await TektonItem.tkn.getPipelineNodes();
+    return pipelineNode[0];
+  }
+
+  static async getPipelineRunNames(): Promise<TektonNode[]> {
+    const pipelineRunList: Array<TektonNode> = await TektonItem.tkn.getPipelineRunsList();
+    if (pipelineRunList.length === 0) throw Error(errorMessage.PipelineRun);
     return pipelineRunList;
   }
 
-  static async getTaskNames(task: TektonNode): Promise<TektonNode[]> {
-    const taskList: Array<TektonNode> = await TektonItem.tkn.getTasks(task);
-    if (taskList.length === 0) { throw Error(errorMessage.Task); }
+  static async getTaskNames(): Promise<TektonNode[]> {
+    const taskList: Array<TektonNode> = await TektonItem.tkn.getTasks();
+    if (taskList.length === 0) throw Error(errorMessage.Task);
     return taskList;
   }
 
-  static async getClusterTaskNames(clusterTask: TektonNode): Promise<TektonNode[]> {
-    const taskList: Array<TektonNode> = await TektonItem.tkn.getClusterTasks(clusterTask);
-    if (taskList.length === 0) { throw Error(errorMessage.ClusterTask); }
+  static async getTaskRunNames(): Promise<TektonNode[]> {
+    const taskRunList: Array<TektonNode> = await TektonItem.tkn.getTaskRunList();
+    if (taskRunList.length === 0) throw Error(errorMessage.TaskRun);
+    return taskRunList;
+  }
+
+  static async getClusterTaskNames(): Promise<TektonNode[]> {
+    const taskList: Array<TektonNode> = await TektonItem.tkn.getClusterTasks();
+    if (taskList.length === 0) throw Error(errorMessage.ClusterTask);
     return taskList;
   }
 
-  static async getPipelineResourceNames(pipelineResource: TektonNode): Promise<TektonNode[]> {
-    const pipelineResourceList: Array<TektonNode> = await TektonItem.tkn.getPipelineResources(pipelineResource);
-    if (pipelineResourceList.length === 0) { throw Error(errorMessage.PipelineResource); }
+  static async getEventListenerNames(): Promise<TektonNode[]> {
+    const eventListenerList: Array<TektonNode> = await TektonItem.tkn.getEventListener();
+    if (eventListenerList.length === 0) throw Error(errorMessage.EventListener);
+    return eventListenerList;
+  }
+
+  static async getTriggerBindingNames(): Promise<TektonNode[]> {
+    const triggerBindingList: Array<TektonNode> = await TektonItem.tkn.getTriggerBinding();
+    if (triggerBindingList.length === 0) throw Error(errorMessage.TriggerBinding);
+    return triggerBindingList;
+  }
+
+  static async getTriggerTemplateNames(): Promise<TektonNode[]> {
+    const triggerTemplateList: Array<TektonNode> = await TektonItem.tkn.getTriggerTemplates();
+    if (triggerTemplateList.length === 0) throw Error(errorMessage.TriggerTemplate);
+    return triggerTemplateList;
+  }
+
+  static async getPipelineResourceNames(): Promise<TektonNode[]> {
+    const pipelineResourceList: Array<TektonNode> = await TektonItem.tkn.getPipelineResources();
+    if (pipelineResourceList.length === 0) throw Error(errorMessage.PipelineResource);
     return pipelineResourceList;
   }
 

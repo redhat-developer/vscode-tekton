@@ -22,12 +22,15 @@ suite('Tekton/PipelineRun', () => {
   const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
   let getPipelineNamesStub: sinon.SinonStub;
+  let showQuickPickStub: sinon.SinonStub<unknown[], unknown>;
   const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
-  const pipelinerunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
+  const pipelineRunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
 
   setup(() => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
-    sandbox.stub(TknImpl.prototype, 'getPipelineRuns').resolves([pipelinerunItem]);
+    sandbox.stub(TknImpl.prototype, 'getPipelineRuns').resolves([pipelineRunItem]);
+    sandbox.stub(TknImpl.prototype, 'getPipelineRunsList').resolves([pipelineRunItem]);
+    showQuickPickStub = sandbox.stub(vscode.window, 'showQuickPick').resolves(undefined);
     getPipelineNamesStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();
   });
@@ -46,20 +49,20 @@ suite('Tekton/PipelineRun', () => {
     suite('called from \'Tekton Pipelines Explorer\'', () => {
 
       test('executes the list tkn command in terminal', async () => {
-        await PipelineRun.list(pipelinerunItem);
-        expect(termStub).calledOnceWith(Command.listPipelineRunsInTerminal(pipelinerunItem.getName()));
+        await PipelineRun.list(pipelineRunItem);
+        expect(termStub).calledOnceWith(Command.listPipelineRunsInTerminal(pipelineRunItem.getName()));
       });
 
     });
 
     suite('called from command palette', () => {
 
-      test('calls the appropriate error message when no pipelinerun found', async () => {
+      test('calls the appropriate error message when no pipeline Run found', async () => {
         getPipelineNamesStub.restore();
         try {
           await PipelineRun.list(null);
         } catch (err) {
-          expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
+          expect(err.message).equals('You need at least one PipelineRun available. Please create new Tekton PipelineRun and try again.');
           return;
         }
       });
@@ -69,12 +72,14 @@ suite('Tekton/PipelineRun', () => {
 
 
       test('returns null when clustertask is not defined properly', async () => {
+        showQuickPickStub.onFirstCall().resolves(undefined);
         const result = await PipelineRun.list(null);
         // tslint:disable-next-line: no-unused-expression
-        expect(result).undefined;
+        expect(result).null;
       });
 
       test('skips tkn command execution if canceled by user', async () => {
+        showQuickPickStub.onFirstCall().resolves(undefined);
         await PipelineRun.describe(null);
         // tslint:disable-next-line: no-unused-expression
         expect(termStub).not.called;
@@ -85,14 +90,15 @@ suite('Tekton/PipelineRun', () => {
 
 
       test('returns null when cancelled', async () => {
+        showQuickPickStub.onFirstCall().resolves(undefined);
         const result = await PipelineRun.describe(null);
 
-        expect(result).undefined;
+        expect(result).equals(null);
       });
 
       test('describe calls the correct tkn command in terminal', async () => {
-        await PipelineRun.describe(pipelinerunItem);
-        expect(termStub).calledOnceWith(Command.describePipelineRuns(pipelinerunItem.getName()));
+        await PipelineRun.describe(pipelineRunItem);
+        expect(termStub).calledOnceWith(Command.describePipelineRuns(pipelineRunItem.getName()));
       });
 
     });
@@ -100,16 +106,17 @@ suite('Tekton/PipelineRun', () => {
     suite('log output', () => {
 
       test('Log calls the correct tkn command in terminal  w/ context', async () => {
-        await PipelineRun.logs(pipelinerunItem);
+        await PipelineRun.logs(pipelineRunItem);
 
-        expect(termStub).calledOnceWith(Command.showPipelineRunLogs(pipelinerunItem.getName()));
+        expect(termStub).calledOnceWith(Command.showPipelineRunLogs(pipelineRunItem.getName()));
       });
 
       test('fails with no context', async () => {
+        showQuickPickStub.onFirstCall().resolves(undefined);
         const result = await PipelineRun.logs(null);
 
         // tslint:disable-next-line: no-unused-expression
-        expect(result).undefined;
+        expect(result).null;
       });
 
     });
@@ -117,9 +124,9 @@ suite('Tekton/PipelineRun', () => {
     suite('followLog', () => {
 
       test('followLog calls the correct tkn command in terminal', async () => {
-        await PipelineRun.followLogs(pipelinerunItem);
+        await PipelineRun.followLogs(pipelineRunItem);
 
-        expect(termStub).calledOnceWith(Command.showPipelineRunFollowLogs(pipelinerunItem.getName()));
+        expect(termStub).calledOnceWith(Command.showPipelineRunFollowLogs(pipelineRunItem.getName()));
       });
 
     });
@@ -128,14 +135,15 @@ suite('Tekton/PipelineRun', () => {
 
 
       test('returns undefined when cancelled', async () => {
+        showQuickPickStub.onFirstCall().resolves(undefined);
         const result = await PipelineRun.cancel(null);
-        expect(result).undefined;
+        expect(result).equals(null);
       });
 
       test('Cancel calls the correct tkn command in terminal  w/ context', async () => {
-        await PipelineRun.cancel(pipelinerunItem);
+        await PipelineRun.cancel(pipelineRunItem);
 
-        expect(termStub).calledOnceWith(Command.cancelPipelineRun(pipelinerunItem.getName()));
+        expect(termStub).calledOnceWith(Command.cancelPipelineRun(pipelineRunItem.getName()));
       });
 
     });
@@ -151,25 +159,25 @@ suite('Tekton/PipelineRun', () => {
       test('calls the appropriate tkn command if confirmed', async () => {
         warnStub.resolves('Yes');
 
-        await PipelineRun.delete(pipelinerunItem);
+        await PipelineRun.delete(pipelineRunItem);
 
-        expect(execStub).calledOnceWith(Command.deletePipelineRun(pipelinerunItem.getName()));
+        expect(execStub).calledOnceWith(Command.deletePipelineRun(pipelineRunItem.getName()));
       });
 
       test('returns a confirmation message text when successful', async () => {
         warnStub.resolves('Yes');
 
-        const result = await PipelineRun.delete(pipelinerunItem);
+        const result = await PipelineRun.delete(pipelineRunItem);
 
-        expect(result).equals(`The PipelineRun '${pipelinerunItem.getName()}' successfully deleted.`);
+        expect(result).equals(`The PipelineRun '${pipelineRunItem.getName()}' successfully deleted.`);
       });
 
       test('returns null when cancelled', async () => {
         warnStub.resolves('Cancel');
 
-        const result = await PipelineRun.delete(pipelinerunItem);
+        const result = await PipelineRun.delete(pipelineRunItem);
 
-        expect(result).null;
+        expect(result).equals(null);
       });
 
       test('throws an error message when command failed', async () => {
@@ -177,11 +185,11 @@ suite('Tekton/PipelineRun', () => {
         execStub.rejects('ERROR');
         let expectedError;
         try {
-          await PipelineRun.delete(pipelinerunItem);
+          await PipelineRun.delete(pipelineRunItem);
         } catch (err) {
           expectedError = err;
         }
-        expect(expectedError).equals(`Failed to delete the PipelineRun '${pipelinerunItem.getName()}': 'ERROR'.`);
+        expect(expectedError).equals(`Failed to delete the PipelineRun '${pipelineRunItem.getName()}': 'ERROR'.`);
       });
     });
   });
