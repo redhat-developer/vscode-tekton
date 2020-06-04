@@ -106,7 +106,7 @@
     "prefix": "Tekton: Condition",
     "description": "Create a Condition Resource",
     "body": [
-      "apiVersion: tekton.dev/v1beta1",
+      "apiVersion: tekton.dev/v1alpha1",
       "kind: Condition",
       "metadata:",
       "  name: ${1:foo}",
