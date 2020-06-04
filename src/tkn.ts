@@ -866,7 +866,7 @@ export interface Tkn {
   getTriggerBinding(triggerBinding?: TektonNode): Promise<TektonNode[]>;
   getClusterTriggerBinding(clusterTriggerBinding: TektonNode): Promise<TektonNode[]>;
   getEventListener(EventListener?: TektonNode): Promise<TektonNode[]>;
-  getConditions(conditions: TektonNode): Promise<TektonNode[]>;
+  getConditions(conditions?: TektonNode): Promise<TektonNode[]>;
   getPipelineRunsList(pipelineRun?: TektonNode): Promise<TektonNode[]>;
   getTaskRunList(taskRun?: TektonNode): Promise<TektonNode[]>;
   getRawPipelineRun(name: string): Promise<PipelineRunData | undefined>;

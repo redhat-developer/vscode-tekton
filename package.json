@@ -174,6 +174,16 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.condition.delete",
+        "title": "Delete",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.condition.delete.palette",
+        "title": "Delete Condition",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.pipeline.start.palette",
         "title": "Start Pipeline",
         "category": "Tekton"
