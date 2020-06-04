@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Tkn, tkn as tknImpl, TektonNode } from '../tkn';
+import { Tkn, tkn as tknImpl, TektonNode, ContextType } from '../tkn';
 import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { workspace, window } from 'vscode';
 import { tektonFSUri } from '../util/tekton-vfs';
@@ -17,7 +17,8 @@ const errorMessage = {
   ClusterTask: 'You need at least one ClusterTask available. Please create new Tekton ClusterTask and try again.',
   EventListener: 'You need at least one EventListener available. Please create new Tekton EventListener and try again.',
   TriggerBinding: 'You need at least one TriggerBinding available. Please create new Tekton TriggerBinding and try again.',
-  TriggerTemplate: 'You need at least one TriggerTemplate available. Please create new Tekton TriggerTemplate and try again.'
+  TriggerTemplate: 'You need at least one TriggerTemplate available. Please create new Tekton TriggerTemplate and try again.',
+  Condition: 'You need at least one Condition available. Please create new Tekton Condition and try again.',
 };
 
 export abstract class TektonItem {
@@ -33,6 +34,12 @@ export abstract class TektonItem {
     const pipelineList: Array<TektonNode> = await TektonItem.tkn.getPipelines();
     if (pipelineList.length === 0) throw Error(errorMessage.Pipeline);
     return pipelineList;
+  }
+
+  static async getConditionNames(): Promise<TektonNode[]> {
+    const conditionList: Array<TektonNode> = await TektonItem.tkn.getConditions();
+    if (conditionList.length === 0) { throw Error(errorMessage.Condition); }
+    return conditionList;
   }
 
   static async getPipelineNode(): Promise<TektonNode> {
@@ -89,7 +96,15 @@ export abstract class TektonItem {
   }
 
   static openInEditor(context: TektonNode): void {
-    TektonItem.loadTektonResource(context.contextValue, context.getName());
+    let name = context.getName();
+    if (context.contextValue === ContextType.CONDITIONTASKRUN) {
+      for (const conditionName in context.getParent()['rawTaskRun'].conditionChecks) {
+        if (context.getParent()['rawTaskRun'].conditionChecks[conditionName].conditionName === name) {
+          name = conditionName;
+        }
+      }
+    }
+    TektonItem.loadTektonResource(context.contextValue, name);
   }
 
   static loadTektonResource(type: string, name: string): void {

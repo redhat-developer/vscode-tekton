@@ -29,6 +29,7 @@
     "onCommand:tekton.pipeline.list",
     "onCommand:tekton.pipeline.describe",
     "onCommand:tekton.pipeline.delete",
+    "onCommand:tekton.condition.delete",
     "onCommand:tekton.pipelinerun.list",
     "onCommand:tekton.pipelinerun.describe",
     "onCommand:tekton.pipelinerun.logs",
@@ -143,6 +144,14 @@
         }
       },
       {
+        "command": "tekton.open.condition",
+        "title": "Open Condition Definition",
+        "icon": {
+          "light": "images/light/go-to-task.svg",
+          "dark": "images/dark/go-to-task.svg"
+        }
+      },
+      {
         "command": "tekton.open.task.palette",
         "title": "Open Task Definition",
         "category": "Tekton"
@@ -170,6 +179,16 @@
       {
         "command": "tekton.pipeline.start",
         "title": "Start",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.condition.delete",
+        "title": "Delete",
+        "category": "Tekton"
+      },
+      {
+        "command": "tekton.condition.delete.palette",
+        "title": "Delete Condition",
         "category": "Tekton"
       },
       {
@@ -517,7 +536,15 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
+          "command": "tekton.open.condition",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
           "command": "tekton.pipeline.delete",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
+          "command": "tekton.condition.delete",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
@@ -670,6 +697,11 @@
           "group": "c2"
         },
         {
+          "command": "tekton.condition.delete",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/  && viewItem == conditions",
+          "group": "c1"
+        },
+        {
           "command": "tekton.pipelineresource.create",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelineresourcenode",
           "group": "c1"
@@ -805,8 +837,13 @@
           "group": "inline@1"
         },
         {
+          "command": "tekton.open.condition",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == tr",
+          "group": "inline@1"
+        },
+        {
           "command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|triggertemplates|triggerbinding|eventlistener|conditions|task|clustertriggerbinding)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|triggertemplates|triggerbinding|eventlistener|conditions|task|clustertriggerbinding|tr)$/",
           "group": "inline@2"
         },
         {
@@ -815,8 +852,13 @@
           "group": "c0@2"
         },
         {
+          "command": "tekton.open.condition",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == tr",
+          "group": "c0@2"
+        },
+        {
           "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|task|triggertemplates|triggerbinding|eventlistener|conditions|clustertriggerbinding)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|pipelineresource|taskrun|task|triggertemplates|triggerbinding|eventlistener|conditions|clustertriggerbinding|tr)$/",
           "group": "c0@1"
         }
       ],

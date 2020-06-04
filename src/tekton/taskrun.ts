@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command, PipelineTaskRunData } from '../tkn';
+import { TektonNode, Command, PipelineTaskRunData, ContextType } from '../tkn';
 import { window } from 'vscode';
 import { Progress } from '../util/progress';
 
@@ -67,6 +67,11 @@ export class TaskRun extends TektonItem {
     if (taskName) {
       TektonItem.loadTektonResource(taskName[0], taskName[1]);
     }
+  }
+
+  static async openConditionDefinition(conditionRun: TektonNode): Promise<void> {
+    if (!conditionRun) return null;
+    TektonItem.loadTektonResource(ContextType.CONDITIONS, conditionRun.getName());
   }
 
   private static async getTaskNameByTaskRun(taskRunName: string): Promise<[string, string] | undefined> {

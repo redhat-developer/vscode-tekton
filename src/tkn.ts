@@ -76,7 +76,7 @@ export enum ContextType {
   CONDITIONSNODE = 'conditionsnode',
   CONDITIONS = 'conditions',
   PIPELINERUNNODE = 'pipelinerunnode',
-  CONDITIONRUN = 'conditions',
+  CONDITIONTASKRUN = 'tr',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -230,6 +230,9 @@ export class Command {
   }
   static deleteTriggerBinding(name: string): CliCommand {
     return newTknCommand('triggerbinding', 'delete', name, '-f');
+  }
+  static deleteCondition(name: string): CliCommand {
+    return newTknCommand('condition', 'delete', name, '-f');
   }
   static deleteEventListeners(name: string): CliCommand {
     return newTknCommand('eventlistener', 'delete', name, '-f');
@@ -488,6 +491,11 @@ export class TektonNodeImpl implements TektonNode {
       tooltip: 'Conditions: {label}',
       getChildren: () => []
     },
+    tr: {
+      icon: 'C.svg',
+      tooltip: 'ConditionRun: {label}',
+      getChildren: () => []
+    },
     taskrunnode: {
       icon: 'TR.svg',
       tooltip: 'TaskRuns: {label}',
@@ -712,7 +720,7 @@ export abstract class BaseTaskRun extends TektonNodeImpl {
 
 export class ConditionRun extends BaseTaskRun {
   constructor(parent: TektonNode, name: string, tkn: Tkn, item: PipelineRunConditionCheckStatus) {
-    super(parent, name, name, ContextType.CONDITIONRUN, tkn, TreeItemCollapsibleState.None, item.status?.startTime, item.status?.completionTime, item.status)
+    super(parent, name, name, ContextType.CONDITIONTASKRUN, tkn, TreeItemCollapsibleState.None, item.status?.startTime, item.status?.completionTime, item.status)
   }
 }
 
@@ -735,7 +743,6 @@ export class TaskRunFromPipeline extends BaseTaskRun {
       for (const conditionName in this.rawTaskRun.conditionChecks) {
         const rawCondition = this.rawTaskRun.conditionChecks[conditionName];
         result.push(new ConditionRun(this, rawCondition.conditionName, this.tkn, rawCondition));
-
       }
       return result.sort(compareTimeNewestFirst);
     } else {
@@ -859,7 +866,7 @@ export interface Tkn {
   getTriggerBinding(triggerBinding?: TektonNode): Promise<TektonNode[]>;
   getClusterTriggerBinding(clusterTriggerBinding: TektonNode): Promise<TektonNode[]>;
   getEventListener(EventListener?: TektonNode): Promise<TektonNode[]>;
-  getConditions(conditions: TektonNode): Promise<TektonNode[]>;
+  getConditions(conditions?: TektonNode): Promise<TektonNode[]>;
   getPipelineRunsList(pipelineRun?: TektonNode): Promise<TektonNode[]>;
   getTaskRunList(taskRun?: TektonNode): Promise<TektonNode[]>;
   getRawPipelineRun(name: string): Promise<PipelineRunData | undefined>;

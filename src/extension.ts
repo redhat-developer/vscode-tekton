@@ -29,6 +29,7 @@ import { initializeTknEditing } from './yaml-support/tkn-editing';
 import { ToolsConfig } from './tools';
 import { TKN_RESOURCE_SCHEME, TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider } from './util/tekton-vfs';
 import { updateTektonResource } from './tekton/deploy';
+import { Condition } from './tekton/condition';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -55,6 +56,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.pipeline.describe', (context) => execute(Pipeline.describe, context)),
     vscode.commands.registerCommand('tekton.pipeline.describe.palette', (context) => execute(Pipeline.describe, context)),
     vscode.commands.registerCommand('tekton.pipeline.delete', (context) => execute(Pipeline.delete, context)),
+    vscode.commands.registerCommand('tekton.condition.delete', (context) => execute(Condition.delete, context)),
+    vscode.commands.registerCommand('tekton.condition.delete.palette', (context) => execute(Condition.delete, context)),
     vscode.commands.registerCommand('tekton.pipeline.delete.palette', (context) => execute(Pipeline.delete, context)),
     vscode.commands.registerCommand('tekton.pipelineresource.list', (context) => execute(PipelineResource.list, context)),
     vscode.commands.registerCommand('tekton.pipelineresource.create', (context) => execute(PipelineResource.create, context)),
@@ -106,6 +109,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.custom.explorer.removeItem', removeItemFromCustomTree),
     vscode.commands.registerCommand('k8s.tekton.run.logs', k8sCommands.showLogs),
     vscode.commands.registerCommand('k8s.tekton.run.followLogs', k8sCommands.followLogs),
+    vscode.commands.registerCommand('tekton.open.condition', (context)=> execute(TaskRun.openConditionDefinition, context)),
     vscode.commands.registerCommand('tekton.open.task', (context)=> execute(TaskRun.openDefinition, context)),
     vscode.commands.registerCommand('tekton.open.task.palette', (context)=> execute(TaskRun.openDefinition, context)),
 
