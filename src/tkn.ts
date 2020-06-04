@@ -388,7 +388,7 @@ const PENDING_PATH = '../../images/generated/pending';
 export class TektonNodeImpl implements TektonNode {
   protected readonly CONTEXT_DATA = {
     namespacenode: {
-      icon: '',
+      icon: 'NS.svg',
       tooltip: 'NameSpace(Project): {label}',
       getChildren: () => []
     },
