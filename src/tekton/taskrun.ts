@@ -69,6 +69,11 @@ export class TaskRun extends TektonItem {
     }
   }
 
+  static async openConditionDefinition(conditionRun: TektonNode): Promise<void> {
+    if (!conditionRun) return null;
+    TektonItem.loadTektonResource('conditions', conditionRun.getName());
+  }
+
   private static async getTaskNameByTaskRun(taskRunName: string): Promise<[string, string] | undefined> {
     const result = await TaskRun.tkn.execute(Command.getTaskRun(taskRunName), undefined, false);
     if (result.error) {
