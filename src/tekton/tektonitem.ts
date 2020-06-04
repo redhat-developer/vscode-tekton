@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Tkn, tkn as tknImpl, TektonNode } from '../tkn';
+import { Tkn, tkn as tknImpl, TektonNode, ContextType } from '../tkn';
 import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { workspace, window } from 'vscode';
 import { tektonFSUri } from '../util/tekton-vfs';
@@ -97,7 +97,7 @@ export abstract class TektonItem {
 
   static openInEditor(context: TektonNode): void {
     let name = context.getName();
-    if (context.contextValue === 'tr') {
+    if (context.contextValue === ContextType.CONDITIONTASKRUN) {
       for (const conditionName in context.getParent()['rawTaskRun'].conditionChecks) {
         if (context.getParent()['rawTaskRun'].conditionChecks[conditionName].conditionName === name) {
           name = conditionName;

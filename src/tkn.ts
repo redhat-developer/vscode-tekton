@@ -76,7 +76,7 @@ export enum ContextType {
   CONDITIONSNODE = 'conditionsnode',
   CONDITIONS = 'conditions',
   PIPELINERUNNODE = 'pipelinerunnode',
-  TR = 'tr',
+  CONDITIONTASKRUN = 'tr',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -720,7 +720,7 @@ export abstract class BaseTaskRun extends TektonNodeImpl {
 
 export class ConditionRun extends BaseTaskRun {
   constructor(parent: TektonNode, name: string, tkn: Tkn, item: PipelineRunConditionCheckStatus) {
-    super(parent, name, name, ContextType.TR, tkn, TreeItemCollapsibleState.None, item.status?.startTime, item.status?.completionTime, item.status)
+    super(parent, name, name, ContextType.CONDITIONTASKRUN, tkn, TreeItemCollapsibleState.None, item.status?.startTime, item.status?.completionTime, item.status)
   }
 }
 
