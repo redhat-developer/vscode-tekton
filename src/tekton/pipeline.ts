@@ -31,6 +31,7 @@ export class Pipeline extends TektonItem {
       //show no pipelines if output is not correct json
     }
 
+    const pipelineResource = await Pipeline.pipelineResourceReturn();
     const pipelineTrigger = data.map<Trigger>(value => ({
       name: value.metadata.name,
       resources: value.spec.resources,
@@ -40,14 +41,16 @@ export class Pipeline extends TektonItem {
     })).filter(function (obj) {
       return obj.name === pipeline.getName();
     });
-    const inputStartPipeline = await PipelineContent.startObject(pipelineTrigger, 'Pipeline');
+    pipelineTrigger[0]['pipelineResource'] = pipelineResource ? pipelineResource : undefined;
+    pipelineViewLoader.loadView('Add OpenShift Cluster', pipelineTrigger[0]);
+    // const inputStartPipeline = await PipelineContent.startObject(pipelineTrigger, 'Pipeline');
 
-    return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
-      Pipeline.tkn.startPipeline(inputStartPipeline)
-        .then(() => Pipeline.explorer.refresh())
-        .then(() => `Pipeline '${inputStartPipeline.name}' successfully started`)
-        .catch((error) => Promise.reject(`Failed to start Pipeline with error '${error}'`))
-    );
+    // return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
+    //   Pipeline.tkn.startPipeline(inputStartPipeline)
+    //     .then(() => Pipeline.explorer.refresh())
+    //     .then(() => `Pipeline '${inputStartPipeline.name}' successfully started`)
+    //     .catch((error) => Promise.reject(`Failed to start Pipeline with error '${error}'`))
+    // );
   }
 
   static async restart(pipeline: TektonNode): Promise<string> {

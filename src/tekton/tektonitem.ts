@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Tkn, tkn as tknImpl, TektonNode, ContextType } from '../tkn';
+import { Tkn, tkn as tknImpl, TektonNode, ContextType, Command } from '../tkn';
 import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { workspace, window } from 'vscode';
 import { tektonFSUri } from '../util/tekton-vfs';
@@ -53,6 +53,21 @@ export abstract class TektonItem {
     const pipelineRunList: Array<TektonNode> = await TektonItem.tkn.getPipelineRunsList();
     if (pipelineRunList.length === 0) throw Error(errorMessage.PipelineRun);
     return pipelineRunList;
+  }
+
+  static async pipelineResourceReturn(): Promise<Ref[]> {
+    let pipeR: TknPipelineResource[] = [];
+    const result = await TektonItem.tkn.execute(Command.listPipelineResources(), process.cwd(), false);
+    try {
+      pipeR = JSON.parse(result.stdout).items;
+    } catch (ignore) {
+      //show no pipelines if output is not correct json
+    }
+    const pipeResources = pipeR.map<Ref>(value => ({
+      name: value.metadata.name,
+      type: value.spec.type,
+    }));
+    return pipeResources;
   }
 
   static async getTaskNames(): Promise<TektonNode[]> {

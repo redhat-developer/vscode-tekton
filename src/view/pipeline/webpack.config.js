@@ -19,7 +19,7 @@ module.exports = {
   },
   devtool: 'eval-source-map',
   resolve: {
-    extensions: ['.js', '.ts', '.tsx', '.json']
+    extensions: ['.js', '.ts', '.tsx', '.jsx', '.json']
   },
   module: {
     rules: [
