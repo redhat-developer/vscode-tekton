@@ -11,6 +11,7 @@ import * as cliInstance from '../cli';
 import { cli } from '../cli';
 import { TknPipelineTrigger } from '../tekton';
 import { Trigger, PipelineContent } from './pipelinecontent';
+import pipelineViewLoader from '../view/pipeline/pipelineViewLoader';
 
 export class Pipeline extends TektonItem {
 

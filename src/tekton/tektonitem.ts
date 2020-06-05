@@ -7,6 +7,8 @@ import { Tkn, tkn as tknImpl, TektonNode, ContextType } from '../tkn';
 import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { workspace, window } from 'vscode';
 import { tektonFSUri } from '../util/tekton-vfs';
+import { TknPipelineResource } from '../tekton';
+import { Ref } from './pipelinecontent';
 
 const errorMessage = {
   Pipeline: 'You need at least one Pipeline available. Please create new Tekton Pipeline and try again.',
