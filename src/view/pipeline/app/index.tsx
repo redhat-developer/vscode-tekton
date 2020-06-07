@@ -8,5 +8,7 @@ import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Header from './pipeline';
+import './_modals.scss';
+
 
 ReactDOM.render(<Header />, document.getElementById('root'));

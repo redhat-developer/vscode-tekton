@@ -38,7 +38,6 @@ const ModalStructure: React.FC<ModalStructureCombinedProps> = (props) => {
     submitDanger,
     title,
   } = props;
-  
   return (
     <Form onSubmit={handleSubmit}>
       <div className="modal-content">
