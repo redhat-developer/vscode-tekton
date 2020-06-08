@@ -9,6 +9,7 @@ import { StartPipelineFormValues, PipelineWorkspace } from './types';
 import { convertPipelineToModalData } from './utils';
 import { startPipelineSchema } from './validation-utils';
 import ModalStructure from './ModalStructure';
+import StartPipelineForm from './StartPipelineForm';
 
 const pipeline = {
   'apiVersion': 'tekton.dev/v1beta1',
@@ -177,7 +178,7 @@ export default function Header(): JSX.Element {
     >
       {(props) => (
         <ModalStructure submitBtnText='Start' title='Start Pipeline' close={close} {...props}>
-          {/* <StartPipelineForm {...props} /> */}
+          <StartPipelineForm {...props} />
         </ModalStructure>
       )}
     </Formik>
