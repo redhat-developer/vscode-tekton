@@ -77,6 +77,7 @@ export enum ContextType {
   CONDITIONS = 'conditions',
   PIPELINERUNNODE = 'pipelinerunnode',
   CONDITIONTASKRUN = 'tr',
+  NAMESPACE = 'namespacenode',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
