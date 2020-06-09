@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { PipelineResource, Pipeline } from './pipeline-augment';
+import { Pipeline, PipelineResource } from '../utils/pipeline-augment';
 import { CommonPipelineModalFormikValues } from './types';
 import { CREATE_PIPELINE_RESOURCE, initialResourceFormValues } from './const';
 
@@ -15,7 +15,7 @@ export const convertPipelineToModalData = (
     metadata: { namespace },
     spec: { params, resources },
   } = pipeline;
-  
+
   return {
     namespace,
     parameters: params || [],

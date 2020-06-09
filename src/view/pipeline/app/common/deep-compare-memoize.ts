@@ -3,12 +3,16 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import * as ReactDOM from 'react-dom';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 import * as React from 'react';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Header from './start-pipeline/StartPipelineModal';
-import './_modals.scss';
+import * as _ from 'lodash';
 
+export const useDeepCompareMemoize = <T = any>(value: T): T => {
+  const ref = React.useRef<T>();
 
-ReactDOM.render(<Header />, document.getElementById('root'));
+  if (!_.isEqual(value, ref.current)) {
+    ref.current = value;
+  }
+
+  return ref.current;
+};

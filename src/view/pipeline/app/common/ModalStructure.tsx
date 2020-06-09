@@ -4,15 +4,11 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as React from 'react';
-import * as _ from 'lodash-es';
+import * as _ from 'lodash';
 import { FormikProps, FormikValues } from 'formik';
 import { Form } from '@patternfly/react-core';
-import { ModalTitle, ModalBody, ModalSubmitFooter } from './modal';
+import { ModalTitle, ModalSubmitFooter, ModalBody } from '../components/modal';
 
-export type ModalComponentProps = {
-  cancel?: () => void;
-  close?: () => void;
-};
 
 type ModalStructureProps = {
   children: React.ReactNode;
@@ -21,10 +17,14 @@ type ModalStructureProps = {
   title: string;
 };
 
+export type ModalComponentProps = {
+  cancel?: () => void;
+  close?: () => void;
+};
+
 type ModalStructureCombinedProps = FormikProps<FormikValues> &
   ModalComponentProps &
   ModalStructureProps;
-
 
 const ModalStructure: React.FC<ModalStructureCombinedProps> = (props) => {
   const {
@@ -38,6 +38,7 @@ const ModalStructure: React.FC<ModalStructureCombinedProps> = (props) => {
     submitDanger,
     title,
   } = props;
+
   return (
     <Form onSubmit={handleSubmit}>
       <div className="modal-content">

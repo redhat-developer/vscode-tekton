@@ -5,13 +5,14 @@
 
 import * as React from 'react';
 import { Formik } from 'formik';
-import { StartPipelineFormValues, PipelineWorkspace } from './types';
-import { convertPipelineToModalData } from './utils';
-import { startPipelineSchema } from './validation-utils';
-import ModalStructure from './ModalStructure';
+import { StartPipelineFormValues } from './types';
+import { convertPipelineToModalData } from '../common/utils';
+import { PipelineWorkspace, Pipeline } from '../utils/pipeline-augment';
+import { startPipelineSchema } from '../modals/validation-utils';
+import ModalStructure from '../common/ModalStructure';
 import StartPipelineForm from './StartPipelineForm';
 
-const pipeline = {
+const pipeline: Pipeline = {
   'apiVersion': 'tekton.dev/v1beta1',
   'kind': 'Pipeline',
   'metadata': {
@@ -141,12 +142,13 @@ const pipeline = {
   }
 }
 
-
-export default function Header(): JSX.Element {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export default function Header() {
   // const userStartedLabel = useUserLabelForManualStart();
+
   const initialValues: StartPipelineFormValues = {
     ...convertPipelineToModalData(pipeline),
-    workspaces: (pipeline.spec['workspaces'] || []).map((workspace: PipelineWorkspace) => ({
+    workspaces: (pipeline.spec.workspaces || []).map((workspace: PipelineWorkspace) => ({
       ...workspace,
       type: 'EmptyDirectory',
     })),
@@ -177,7 +179,7 @@ export default function Header(): JSX.Element {
       validationSchema={startPipelineSchema}
     >
       {(props) => (
-        <ModalStructure submitBtnText='Start' title='Start Pipeline' close={close} {...props}>
+        <ModalStructure submitBtnText="Start" title="Start Pipeline" close={close} {...props}>
           <StartPipelineForm {...props} />
         </ModalStructure>
       )}

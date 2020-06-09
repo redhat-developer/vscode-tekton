@@ -4,14 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as yup from 'yup';
-import { CREATE_PIPELINE_RESOURCE, PipelineResourceType } from './const';
-
-export enum VolumeTypes {
-  EmptyDirectory = 'Empty Directory',
-  ConfigMap = 'Config Map',
-  Secret = 'Secret',
-  PVC = 'PVC',
-}
+import { CREATE_PIPELINE_RESOURCE, PipelineResourceType, VolumeTypes } from '../common/const';
 
 export const validateResourceType = yup.object().shape({
   type: yup.string().required('Required'),
@@ -56,7 +49,7 @@ export const validateResourceType = yup.object().shape({
     }),
   }),
 });
-  
+
 export const formResources = yup.array().of(
   yup.object().shape({
     name: yup.string().required('Required'),
@@ -67,7 +60,7 @@ export const formResources = yup.array().of(
     }),
   }),
 );
-  
+
 const volumeTypeSchema = yup
   .object()
   .when('type', {
@@ -112,7 +105,7 @@ const volumeTypeSchema = yup
       }),
     }),
   });
-  
+
 const commonPipelineSchema = yup.object().shape({
   parameters: yup.array().of(
     yup.object().shape({
@@ -123,7 +116,7 @@ const commonPipelineSchema = yup.object().shape({
   ),
   resources: formResources,
 });
-  
+
 export const startPipelineSchema = commonPipelineSchema.shape({
   workspaces: yup.array().of(
     yup.object().shape({
@@ -133,7 +126,7 @@ export const startPipelineSchema = commonPipelineSchema.shape({
   ),
   secretOpen: yup.boolean().equals([false]),
 });
-  
+
 export const addTriggerSchema = commonPipelineSchema.shape({
   triggerBinding: yup.object().shape({
     name: yup.string().required('Required'),
@@ -147,7 +140,7 @@ export const addTriggerSchema = commonPipelineSchema.shape({
       .required('Required'),
   }),
 });
-  
+
 export const advancedSectionValidationSchema = yup.object().shape({
   secretName: yup.string().required('Required'),
   type: yup.string().required('Required'),

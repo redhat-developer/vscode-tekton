@@ -21,9 +21,20 @@ export interface FieldProps {
   validated?: ValidatedOptions;
 }
 
+
 export interface BaseInputFieldProps extends FieldProps {
   type?: TextInputTypes;
   placeholder?: string;
   onChange?: (event) => void;
   onBlur?: (event) => void;
+}
+
+export interface DropdownFieldProps extends FieldProps {
+  items?: object;
+  selectedKey?: string;
+  title?: React.ReactNode;
+  fullWidth?: boolean;
+  disabled?: boolean;
+  autocompleteFilter?: (text: string, item: object, key?: string) => boolean;
+  onChange?: (value: string) => void;
 }

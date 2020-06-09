@@ -3,6 +3,10 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-export const getFieldId = (fieldName: string, fieldType: string) => {
-  return `form-${fieldType}-${fieldName?.replace(/\./g, '-')}-field`;
+import { CommonPipelineModalFormikValues } from '../common/types';
+import { PipelineWorkspace } from '../utils/pipeline-augment';
+
+export type StartPipelineFormValues = CommonPipelineModalFormikValues & {
+  workspaces: PipelineWorkspace[];
+  secretOpen: boolean;
 };

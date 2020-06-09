@@ -5,12 +5,18 @@
 
 export const CREATE_PIPELINE_RESOURCE = '#CREATE_PIPELINE_RESOURCE#';
 
-
 export enum PipelineResourceType {
   git = 'git',
   image = 'image',
   cluster = 'cluster',
   storage = 'storage',
+}
+
+export enum VolumeTypes {
+  EmptyDirectory = 'Empty Directory',
+  ConfigMap = 'Config Map',
+  Secret = 'Secret',
+  PVC = 'PVC',
 }
 
 export const initialResourceFormValues = {

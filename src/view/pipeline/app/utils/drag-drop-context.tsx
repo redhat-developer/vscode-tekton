@@ -3,12 +3,17 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import * as ReactDOM from 'react-dom';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as React from 'react';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Header from './start-pipeline/StartPipelineModal';
-import './_modals.scss';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 
-ReactDOM.render(<Header />, document.getElementById('root'));
+const withDragDropContext = <TProps extends {}>(Component: React.ComponentClass<TProps>) => (
+  props: TProps,
+) => (
+  <DndProvider backend={HTML5Backend}>
+    <Component {...props} />
+  </DndProvider>
+);
+
+export default withDragDropContext;

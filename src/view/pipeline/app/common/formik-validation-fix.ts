@@ -3,12 +3,15 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import * as ReactDOM from 'react-dom';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as React from 'react';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Header from './start-pipeline/StartPipelineModal';
-import './_modals.scss';
+import { useFormikContext, FormikValues } from 'formik';
+import { useDeepCompareMemoize } from './deep-compare-memoize';
 
+export const useFormikValidationFix = (value: any) => {
+  const { validateForm } = useFormikContext<FormikValues>();
+  const memoizedValue = useDeepCompareMemoize(value);
 
-ReactDOM.render(<Header />, document.getElementById('root'));
+  React.useEffect(() => {
+    validateForm();
+  }, [memoizedValue, validateForm]);
+};

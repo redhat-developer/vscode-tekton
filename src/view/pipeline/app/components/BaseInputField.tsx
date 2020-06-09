@@ -5,9 +5,11 @@
 
 import * as React from 'react';
 import { useField } from 'formik';
-import { FormGroup, ValidatedOptions } from '@patternfly/react-core';
-import { BaseInputFieldProps } from './field-types';
+import { FormGroup, ValidatedOptions } from '@patternfly/react-core'; 
+import { BaseInputFieldProps } from '../common/field-types';
 import { getFieldId } from './field-utils';
+
+
 
 const BaseInputField: React.FC<BaseInputFieldProps & {
   children: (props) => React.ReactNode;
@@ -51,5 +53,5 @@ const BaseInputField: React.FC<BaseInputFieldProps & {
     </FormGroup>
   );
 };
-  
+
 export default BaseInputField;

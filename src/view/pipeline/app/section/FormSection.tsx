@@ -44,5 +44,5 @@ const FormSection: React.FC<FormSectionProps> = ({
     {children}
   </div>
 );
-  
+
 export default FormSection;

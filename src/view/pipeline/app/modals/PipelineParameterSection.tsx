@@ -5,15 +5,16 @@
 
 import * as React from 'react';
 import { FieldArray } from 'formik';
+import { PipelineParam } from '../utils/pipeline-augment';
+import FormSection from '../section/FormSection';
+import InputField from '../components/InputField';
 import { TextInputTypes } from '@patternfly/react-core';
-import { PipelineParam } from './types';
-import FormSection from './FormSection';
-import InputField from './InputField';
+
 
 type ParametersSectionProps = {
   parameters: PipelineParam[];
 };
-  
+
 const PipelineParameterSection: React.FC<ParametersSectionProps> = ({ parameters }) => (
   <FieldArray
     name="parameters"
@@ -37,5 +38,5 @@ const PipelineParameterSection: React.FC<ParametersSectionProps> = ({ parameters
     }
   />
 );
-  
+
 export default PipelineParameterSection;
