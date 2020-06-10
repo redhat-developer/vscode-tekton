@@ -164,6 +164,19 @@
   }
 }
 
+.pf-c-select__menu {
+  position: absolute;
+  top: var(--pf-c-select__menu--Top);
+  z-index: var(--pf-c-select__menu--ZIndex);
+  min-width: 100%;
+  padding-top: var(--pf-c-select__menu--PaddingTop);
+  padding-bottom: var(--pf-c-select__menu--PaddingBottom);
+  background-color: var(--pf-c-select__menu--BackgroundColor);
+  background-clip: padding-box;
+  border: var(--pf-c-select__menu--BorderWidth) solid transparent;
+  box-shadow: var(--pf-c-select__menu--BoxShadow);
+}
+
 .modal-footer {
   background-color: var(--pf-global--BackgroundColor--100);
   margin-top: 0;

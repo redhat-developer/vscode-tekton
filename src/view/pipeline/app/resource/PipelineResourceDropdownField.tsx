@@ -4,13 +4,14 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as React from 'react';
-import { useField } from 'formik';
+import { useField, useFormikContext, FormikValues } from 'formik';
 import { FormGroup } from '@patternfly/react-core';
 import { DropdownFieldProps } from '../common/field-types';
 import { PipelineModalFormResource } from '../common/types';
 import { CREATE_PIPELINE_RESOURCE } from '../common/const';
 import { useFormikValidationFix } from '../common/formik-validation-fix';
 import PipelineResourceParam from '../pipeline-resource/PipelineResourceParam';
+import PipelineResourceDropdown from './PipelineResourceDropdown';
 
 
 type PipelineResourceDropdownFieldProps = DropdownFieldProps & {
@@ -21,8 +22,8 @@ const PipelineResourceDropdownField: React.FC<PipelineResourceDropdownFieldProps
   const { filterType, name, label } = props;
 
   const [field] = useField<PipelineModalFormResource>(name);
-  // const { values } = useFormikContext<FormikValues>();
-  // const { namespace } = values;
+  const { values } = useFormikContext<FormikValues>();
+  const { namespace } = values;
   const {
     value: { selection },
   } = field;
@@ -33,14 +34,14 @@ const PipelineResourceDropdownField: React.FC<PipelineResourceDropdownFieldProps
   return (
     <>
       <FormGroup fieldId={name} label={label} isRequired>
-        {/* <PipelineResourceDropdown
+        <PipelineResourceDropdown
           {...props}
           autoSelect={selection == null}
           filterType={filterType}
           namespace={namespace}
           name={`${name}.selection`}
           selectedKey={selection}
-        /> */}
+        />
       </FormGroup>
 
       {creating && <PipelineResourceParam name={`${name}.data`} type={filterType} />}

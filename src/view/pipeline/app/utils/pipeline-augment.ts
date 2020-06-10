@@ -101,6 +101,13 @@ export type PipelineRunInlineResource = PipelineRunResourceCommonProperties & {
   };
 };
 
+export type PipelineResourceKind = K8sResourceKind & {
+  spec: {
+    params: { name: string; value: string }[];
+    type: string;
+  };
+};
+
 export type PipelineRunReferenceResource = PipelineRunResourceCommonProperties & {
   resourceRef: {
     name: string;
