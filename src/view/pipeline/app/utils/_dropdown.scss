@@ -1,0 +1,76 @@
+$co-side-nav-font-size: 16px; 
+
+.pf-c-dropdown__toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: var(--pf-c-dropdown__toggle--MinWidth);
+    max-width: 100%;
+    padding: var(--pf-c-dropdown__toggle--PaddingTop) var(--pf-c-dropdown__toggle--PaddingRight) var(--pf-c-dropdown__toggle--PaddingBottom) var(--pf-c-dropdown__toggle--PaddingLeft);
+    font-size: var(--pf-c-dropdown__toggle--FontSize);
+    font-weight: var(--pf-c-dropdown__toggle--FontWeight);
+    line-height: var(--pf-c-dropdown__toggle--LineHeight);
+    color: var(--pf-c-dropdown__toggle--Color);
+    background-color: var(--pf-c-dropdown__toggle--BackgroundColor);
+    border: none;
+}
+
+.dropdown--full-width {
+  &,
+  .pf-c-dropdown__toggle {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+.pf-c-dropdown__menu-item  {
+  padding-left: 7px;
+}
+
+.pf-c-dropdown__menu-item,
+// For Edge
+.pf-c-dropdown__toggle {
+  h1 {
+    font-size: $co-side-nav-font-size;
+  }
+}
+
+.co-namespace-selector .dropdown-menu__autocomplete-filter {
+  li {
+    display: flex;
+    padding: 0;
+    &:focus {
+      outline: none;
+    }
+    &.active a {
+      background-color: var(--pf-global--BackgroundColor--150);
+    }
+    a {
+      cursor: pointer;
+      flex-grow: 1;
+      width: 100%;
+      &.disabled {
+        color: var(--pf-global--Color--dark-200);
+        cursor: not-allowed;
+        &:active,
+        &:focus,
+        &:hover {
+          background-color: inherit;
+          border-color: transparent;
+          color: var(--pf-global--Color--dark-200) !important;
+        }
+      }
+      &.next-to-bookmark {
+        padding-left: 5px
+      }
+    }
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+}
+
