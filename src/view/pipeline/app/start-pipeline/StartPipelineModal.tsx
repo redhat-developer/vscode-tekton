@@ -142,7 +142,106 @@ const pipeline: Pipeline = {
   }
 }
 
+// const pipeline: Pipeline = {
+//   'apiVersion': 'tekton.dev/v1beta1',
+//   'kind': 'Pipeline',
+//   'metadata': {
+//     'annotations': {
+//       'kubectl.kubernetes.io/last-applied-configuration': '{"apiVersion":"tekton.dev/v1beta1","kind":"Pipeline","metadata":{"annotations":{},"name":"fetch-and-print-recipe","namespace":"pipelines-tutorial"},"spec":{"tasks":[{"name":"fetch-the-recipe","taskRef":{"name":"fetch-secure-data"},"workspaces":[{"name":"super-secret-password","workspace":"password-vault"},{"name":"secure-store","workspace":"recipe-store"},{"name":"filedrop","workspace":"shared-data"}]},{"name":"print-the-recipe","params":[{"name":"filename","value":"recipe.txt"}],"runAfter":["fetch-the-recipe"],"taskRef":{"name":"print-data"},"workspaces":[{"name":"storage","workspace":"shared-data"}]}],"workspaces":[{"name":"password-vault"},{"name":"recipe-store"},{"name":"shared-data"}]}}\n'
+//     },
+//     'creationTimestamp': '2020-06-12T16:05:41Z',
+//     'generation': 1,
+//     'managedFields': [
+//       {
+//         'apiVersion': 'tekton.dev/v1beta1',
+//         'fieldsType': 'FieldsV1',
+//         'fieldsV1': {
+//           'f:metadata': {
+//             'f:annotations': {
+//               '.': {},
+//               'f:kubectl.kubernetes.io/last-applied-configuration': {}
+//             }
+//           },
+//           'f:spec': {
+//             '.': {},
+//             'f:tasks': {},
+//             'f:workspaces': {}
+//           }
+//         },
+//         'manager': 'kubectl',
+//         'operation': 'Update',
+//         'time': '2020-06-12T16:05:41Z'
+//       }
+//     ],
+//     'name': 'fetch-and-print-recipe',
+//     'namespace': 'pipelines-tutorial',
+//     'resourceVersion': '41631',
+//     'selfLink': '/apis/tekton.dev/v1beta1/namespaces/pipelines-tutorial/pipelines/fetch-and-print-recipe',
+//     'uid': '521708a0-5e83-4ba5-b4db-ba5c78f6f7f1'
+//   },
+//   'spec': {
+//     'tasks': [
+//       {
+//         'name': 'fetch-the-recipe',
+//         'taskRef': {
+//           'kind': 'Task',
+//           'name': 'fetch-secure-data'
+//         },
+//         'workspaces': [
+//           {
+//             'name': 'super-secret-password',
+//             'workspace': 'password-vault'
+//           },
+//           {
+//             'name': 'secure-store',
+//             'workspace': 'recipe-store'
+//           },
+//           {
+//             'name': 'filedrop',
+//             'workspace': 'shared-data'
+//           }
+//         ]
+//       },
+//       {
+//         'name': 'print-the-recipe',
+//         'params': [
+//           {
+//             'name': 'filename',
+//             'value': 'recipe.txt'
+//           }
+//         ],
+//         'runAfter': [
+//           'fetch-the-recipe'
+//         ],
+//         'taskRef': {
+//           'kind': 'Task',
+//           'name': 'print-data'
+//         },
+//         'workspaces': [
+//           {
+//             'name': 'storage',
+//             'workspace': 'shared-data'
+//           }
+//         ]
+//       }
+//     ],
+//     'workspaces': [
+//       {
+//         'name': 'password-vault'
+//       },
+//       {
+//         'name': 'recipe-store'
+//       },
+//       {
+//         'name': 'shared-data'
+//       }
+//     ]
+//   }
+// }
+
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+
 export default function Header() {
   // const userStartedLabel = useUserLabelForManualStart();
 

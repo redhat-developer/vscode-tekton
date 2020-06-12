@@ -13,14 +13,8 @@ export interface Param {
 
 
 export interface PipelineWorkspace extends Param {
-  type: string;
-  data?: {
-    [key: string]: string;
-  };
-}
-
-export interface PipelineWorkspace extends Param {
-  type: string;
+  type?: string;
+  workspace?: string;
   data?: {
     [key: string]: string;
   };
@@ -63,6 +57,7 @@ export interface PipelineTask {
   taskRef: PipelineTaskRef;
   params?: PipelineTaskParam[];
   resources?: PipelineTaskResources;
+  workspaces?: PipelineWorkspace[];
 }
 
 export interface Pipeline extends K8sResourceKind {

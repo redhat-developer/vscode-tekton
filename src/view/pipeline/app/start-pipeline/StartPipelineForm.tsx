@@ -6,15 +6,16 @@
 
 import * as React from 'react';
 import { FormikValues } from 'formik';
-import PipelineParameterSection from '../modals/PipelineParameterSection';
+import PipelineParameterSection from '../parameter/PipelineParameterSection';
 import PipelineResourceSection from '../resource/PipelineResourceSection';
+import PipelineWorkspacesSection from '../workspaces/PiplelineWorkspacesSection';
 
 const StartPipelineForm: React.FC<FormikValues> = ({ values }) => {
   return (
     <>
       <PipelineParameterSection parameters={values.parameters} />
       <PipelineResourceSection />
-      {/* <PipelineWorkspacesSection /> */}
+      <PipelineWorkspacesSection />
       {/* <FormSection title="Advanced Options" fullWidth>
         <PipelineSecretSection namespace={values.namespace} />
       </FormSection> */}
