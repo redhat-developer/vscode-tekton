@@ -645,6 +645,8 @@ export function getPipelineRunTaskState(status: TaskRunStatus | ConditionCheckSt
         } else {
           result = 'Failed';
         }
+      } else if (status === 'Unknown') {
+        result = 'Unknown';
       }
     }
   }
