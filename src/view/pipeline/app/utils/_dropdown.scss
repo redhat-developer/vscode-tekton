@@ -1,6 +1,12 @@
-$co-side-nav-font-size: 16px; 
+$co-side-nav-font-size: 16px;
 
-.pf-c-dropdown__toggle {
+.dropdown--full-width {
+  &,
+  .pf-c-dropdown__toggle {
+    justify-content: space-between;
+    width: 100%;
+    font-size: 14px;
+    height: auto;
     position: relative;
     display: flex;
     align-items: center;
@@ -11,25 +17,28 @@ $co-side-nav-font-size: 16px;
     font-size: var(--pf-c-dropdown__toggle--FontSize);
     font-weight: var(--pf-c-dropdown__toggle--FontWeight);
     line-height: var(--pf-c-dropdown__toggle--LineHeight);
-    color: var(--pf-c-dropdown__toggle--Color);
+    color: #1d1b1bd9;
     background-color: var(--pf-c-dropdown__toggle--BackgroundColor);
     border: none;
-}
-
-.dropdown--full-width {
-  &,
-  .pf-c-dropdown__toggle {
-    justify-content: space-between;
-    width: 100%;
+  }
+  .pf-c-dropdown__menu {
+    position: absolute;
+    top: var(--pf-c-dropdown__menu--Top);
+    z-index: var(--pf-c-dropdown__menu--ZIndex);
+    min-width: 100%;
+    padding-top: var(--pf-c-dropdown__menu--PaddingTop);
+    padding-bottom: var(--pf-c-dropdown__menu--PaddingBottom);
+    background: var(--pf-c-dropdown__menu--BackgroundColor);
+    background-clip: padding-box;
+    border: var(--pf-c-dropdown__menu--BorderWidth) solid transparent;
+    box-shadow: var(--pf-c-dropdown__menu--BoxShadow);
+  }
+  .pf-c-dropdown__menu-item {
+    padding: var(--pf-c-dropdown__menu-item--PaddingTop) var(--pf-c-dropdown__menu-item--PaddingRight) var(--pf-c-dropdown__menu-item--PaddingBottom) var(--pf-c-dropdown__menu-item--PaddingLeft);
+    color: #1d1b1bd9;
   }
 }
 
-.pf-c-dropdown__menu-item  {
-  padding-left: 7px;
-}
-
-.pf-c-dropdown__menu-item,
-// For Edge
 .pf-c-dropdown__toggle {
   h1 {
     font-size: $co-side-nav-font-size;
