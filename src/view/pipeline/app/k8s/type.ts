@@ -59,6 +59,58 @@ export type K8sResourceKind = K8sResourceCommon & {
     [key: string]: any;
   };
   status?: { [key: string]: any };
-  type?: { [key: string]: any };
+  type?: { [key: string]: any } | string;
   data?: { [key: string]: any };
+};
+
+export type K8sVerb =
+  | 'create'
+  | 'get'
+  | 'list'
+  | 'update'
+  | 'patch'
+  | 'delete'
+  | 'deletecollection'
+  | 'watch';
+
+export enum BadgeType {
+  DEV = 'Dev Preview',
+  TECH = 'Tech Preview',
+}
+
+export type FirehoseResult<
+  R extends K8sResourceCommon | K8sResourceCommon[] = K8sResourceKind[]
+> = {
+  loaded?: boolean;
+  loadError?: string;
+  optional?: boolean;
+  data: R;
+  kind?: string;
+};
+
+export type K8sKind = {
+  abbr: string;
+  kind: string;
+  label: string;
+  labelPlural: string;
+  plural: string;
+  propagationPolicy?: 'Foreground' | 'Background';
+
+  id?: string;
+  crd?: boolean;
+  apiVersion: string;
+  apiGroup?: string;
+  namespaced?: boolean;
+  selector?: Selector;
+  labels?: { [key: string]: string };
+  annotations?: { [key: string]: string };
+  verbs?: K8sVerb[];
+  shortNames?: string[];
+  badge?: BadgeType;
+  color?: string;
+
+  // Legacy option for supporing plural names in URL paths when `crd: true`.
+  // This should not be set for new models, but is needed to avoid breaking
+  // existing links as we transition to using the API group in URL paths.
+  legacyPluralURL?: boolean;
 };

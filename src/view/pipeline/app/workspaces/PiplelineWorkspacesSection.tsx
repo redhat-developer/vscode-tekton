@@ -10,40 +10,42 @@ import FormSection from '../section/FormSection';
 import { PipelineWorkspace } from '../utils/pipeline-augment';
 import { VolumeTypes } from '../common/const';
 import DropdownField from './DropdownField';
+import MultipleResourceKeySelector from '../common/MultipleResourceKeySelector';
+import { SecretModel, ConfigMapModel } from '../models';
 
 
 
-// const getVolumeTypeFields = (volumeType: VolumeTypes, index: number) => {
-//   switch (VolumeTypes[volumeType]) {
-//     case VolumeTypes.Secret: {
-//       return (
-//         <MultipleResourceKeySelector
-//           resourceNameField={`workspaces.${index}.data.secret.secretName`}
-//           resourceKeysField={`workspaces.${index}.data.secret.items`}
-//           label="Secret"
-//           resourceModel={SecretModel}
-//           required
-//         />
-//       );
-//     }
-//     case VolumeTypes.ConfigMap: {
-//       return (
-//         <MultipleResourceKeySelector
-//           resourceNameField={`workspaces.${index}.data.configMap.name`}
-//           resourceKeysField={`workspaces.${index}.data.configMap.items`}
-//           label="Config Map"
-//           resourceModel={ConfigMapModel}
-//           required
-//         />
-//       );
-//     }
-//     case VolumeTypes.PVC: {
-//       return <PVCDropdown name={`workspaces.${index}.data.persistentVolumeClaim.claimName`} />;
-//     }
-//     default:
-//       return null;
-//   }
-// };
+const getVolumeTypeFields = (volumeType: VolumeTypes, index: number) => {
+  switch (VolumeTypes[volumeType]) {
+    case VolumeTypes.Secret: {
+      return (
+        <MultipleResourceKeySelector
+          resourceNameField={`workspaces.${index}.data.secret.secretName`}
+          resourceKeysField={`workspaces.${index}.data.secret.items`}
+          label="Secret"
+          resourceModel={SecretModel}
+          required
+        />
+      );
+    }
+    case VolumeTypes.ConfigMap: {
+      return (
+        <MultipleResourceKeySelector
+          resourceNameField={`workspaces.${index}.data.configMap.name`}
+          resourceKeysField={`workspaces.${index}.data.configMap.items`}
+          label="Config Map"
+          resourceModel={ConfigMapModel}
+          required
+        />
+      );
+    }
+    // case VolumeTypes.PVC: {
+    //   return <PVCDropdown name={`workspaces.${index}.data.persistentVolumeClaim.claimName`} />;
+    // }
+    default:
+      return null;
+  }
+};
 
 const PipelineWorkspacesSection: React.FC = () => {
   const { setFieldValue } = useFormikContext<FormikValues>();
@@ -61,7 +63,7 @@ const PipelineWorkspacesSection: React.FC = () => {
               fullWidth
               required
             />
-            {/* {getVolumeTypeFields(workspace.type as VolumeTypes, index)} */}
+            {getVolumeTypeFields(workspace.type as VolumeTypes, index)}
           </div>
         ))}
       </FormSection>
