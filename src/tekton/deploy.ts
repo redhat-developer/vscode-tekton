@@ -27,7 +27,7 @@ export async function updateTektonResource(document: vscode.TextDocument): Promi
   if (document.languageId !== 'yaml') return;
   if (!(document.uri.scheme.startsWith('tekton'))) {
     const verifyTknYaml = tektonYaml.isTektonYaml(document);
-    if (!contextGlobalState.workspaceState.get(document.uri.fsPath) && verifyTknYaml) {
+    if (!contextGlobalState.workspaceState.get(document.uri.fsPath) && verifyTknYaml && !tektonYaml.hasErrors(document)) {
       value = await vscode.window.showWarningMessage('Detected Tekton resources. Do you want to deploy to cluster?', 'Deploy', 'Deploy Once', 'Cancel');
     }
     if (value === 'Deploy') {
@@ -46,7 +46,7 @@ export async function updateTektonResource(document: vscode.TextDocument): Promi
           let yamlData = '';
           const resourceCheckRegex = /^(Task|PipelineResource|Pipeline|Condition|ClusterTask|EventListener|TriggerBinding)$/ as RegExp;
           const fileContents = await fs.readFile(document.uri.fsPath, 'utf8');
-          const data: object[] = yaml.safeLoadAll(fileContents).filter((obj: {kind: string}) => {
+          const data: object[] = yaml.safeLoadAll(fileContents).filter((obj: { kind: string }) => {
             if (obj) {
               return resourceCheckRegex.test(obj.kind)
             }

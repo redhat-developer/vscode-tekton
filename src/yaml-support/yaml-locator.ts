@@ -67,6 +67,8 @@ export interface YamlCachedDocuments {
   version: number;
 
   tknDocuments: TknDocument[];
+
+  hasParseError: boolean;
 }
 
 export interface YamlMatchedElement {
@@ -90,6 +92,7 @@ export interface VirtualDocument {
  * A yaml interpreter parse the yaml text and find the matched ast node from vscode location.
  */
 export class YamlLocator {
+
   // a mapping of URIs to cached documents
   private cache: { [key: string]: YamlCachedDocuments } = {};
 
@@ -146,6 +149,12 @@ export class YamlLocator {
     return this.getDocumentAtPosition(cacheEntry.tknDocuments, offset);
   }
 
+  hasParseError(textDocument: vscode.TextDocument): boolean {
+    const key: string = textDocument.uri.toString();
+    this.ensureCache(key, textDocument);
+    return this.cache[key].hasParseError
+  }
+
   private convertPosition(lineLens: number[], lineNumber: number, columnNumber: number): number {
     let pos = 0;
     for (let i = 0; i < lineNumber; i++) {
@@ -160,17 +169,22 @@ export class YamlLocator {
 
   private ensureCache(key: string, textDocument: VirtualDocument): void {
     if (!this.cache[key]) {
-      this.cache[key] = { version: -1 } as YamlCachedDocuments;
+      this.cache[key] = { version: -1, tknDocuments: [], yamlDocs: [], lineLengths: [] } as YamlCachedDocuments;
     }
 
     if (this.cache[key].version !== textDocument.version) {
       // the document and line lengths from parse method is cached into YamlCachedDocuments to avoid duplicate
       // parse against the same text.
-      const { documents, lineLengths } = parse(textDocument.getText());
-      this.cache[key].yamlDocs = documents;
-      this.cache[key].lineLengths = lineLengths;
-      this.cache[key].version = textDocument.version;
-      this.cache[key].tknDocuments = documents.filter(d => isYamlDocumentSupported(d)).map(d => new TknDocument(d, lineLengths));
+      try {
+        const { documents, lineLengths } = parse(textDocument.getText());
+        this.cache[key].yamlDocs = documents;
+        this.cache[key].lineLengths = lineLengths;
+        this.cache[key].version = textDocument.version;
+        this.cache[key].tknDocuments = documents.filter(d => isYamlDocumentSupported(d)).map(d => new TknDocument(d, lineLengths));
+        this.cache[key].hasParseError = false;
+      } catch (e) {
+        this.cache[key].hasParseError = true;
+      }
     }
   }
 }

@@ -69,6 +69,59 @@ suite('Tekton yaml', () => {
       expect(tknType).is.undefined;
     });
 
+    test('"hasError" should return true if yaml has syntax error', () => {
+      const yaml = `
+            apiVersion: tekton.dev/v1alpha1
+            kind: PipeFoo
+            metadata:
+              name: pipeline-with-parameters
+            spec:
+              params:
+                - name: context
+                  type: string
+                  description: Path to context
+                  default: /some/where/or/other
+              tasks:
+                - name: build-skaffold-web
+                  taskRef:
+                    name: build-push
+                  params:
+                    - name: pathToDockerFile
+                      value: Dockerfile
+                    - name: pathToContext
+                      value: 
+                        -
+            `
+      const hasErrors = tektonYaml.hasErrors({ getText: () => yaml, version: 1, uri: vscode.Uri.parse('file:///foo/error.yaml') } as vscode.TextDocument);
+      expect(hasErrors).is.true;
+    });
+
+    test('"hasError" should return false if yaml not have syntax error', () => {
+      const yaml = `
+            apiVersion: tekton.dev/v1alpha1
+            kind: PipeFoo
+            metadata:
+              name: pipeline-with-parameters
+            spec:
+              params:
+                - name: context
+                  type: string
+                  description: Path to context
+                  default: /some/where/or/other
+              tasks:
+                - name: build-skaffold-web
+                  taskRef:
+                    name: build-push
+                  params:
+                    - name: pathToDockerFile
+                      value: Dockerfile
+                    - name: pathToContext
+                      value: some
+            `
+      const hasErrors = tektonYaml.hasErrors({ getText: () => yaml, version: 1, uri: vscode.Uri.parse('file:///foo/no-error.yaml') } as vscode.TextDocument);
+      expect(hasErrors).is.false;
+    });
+
     test('"getTektonDocuments" should provide documents by type (Pipeline)', async () => {
       const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/multitype.yaml'));
       const docs = tektonYaml.getTektonDocuments({ getText: () => yaml.toString(), version: 1, uri: vscode.Uri.parse('file:///foo/multitype.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);

@@ -94,6 +94,19 @@ export class TektonYaml {
     return undefined;
   }
 
+  hasErrors(vsDocument: vscode.TextDocument): boolean {
+    if (!yamlLocator.hasParseError(vsDocument)) {
+      const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
+      for (const yamlDoc of yamlDocuments) {
+        if (yamlDoc.errors?.length > 0) {
+          return true;
+        }
+      }
+      return false;
+    }
+    return true;
+  }
+
   getTektonYamlType(doc: YamlDocument): TektonYamlType | undefined {
     const rootMap = this.getRootMap(doc);
     if (rootMap) {
