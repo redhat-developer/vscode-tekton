@@ -27,13 +27,14 @@ export async function updateTektonResource(document: vscode.TextDocument): Promi
   if (document.languageId !== 'yaml') return;
   if (!(document.uri.scheme.startsWith('tekton'))) {
     const verifyTknYaml = tektonYaml.isTektonYaml(document);
-    if (!contextGlobalState.workspaceState.get(document.uri.fsPath) && verifyTknYaml && !tektonYaml.hasErrors(document)) {
+    const hasErrors = tektonYaml.hasErrors(document);
+    if (!contextGlobalState.workspaceState.get(document.uri.fsPath) && verifyTknYaml && !hasErrors) {
       value = await vscode.window.showWarningMessage('Detected Tekton resources. Do you want to deploy to cluster?', 'Deploy', 'Deploy Once', 'Cancel');
     }
     if (value === 'Deploy') {
       contextGlobalState.workspaceState.update(document.uri.fsPath, true);
     }
-    if (verifyTknYaml && (/Deploy/.test(value) || contextGlobalState.workspaceState.get(document.uri.fsPath))) {
+    if (verifyTknYaml && !hasErrors && (/Deploy/.test(value) || contextGlobalState.workspaceState.get(document.uri.fsPath))) {
       const quote = Platform.OS === 'win32' ? '"' : '\'';
       const result = await cli.execute(Command.create(`${quote}${document.uri.fsPath}${quote}`));
       if (result.error) {
