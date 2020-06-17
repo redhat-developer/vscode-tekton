@@ -50,6 +50,8 @@
 @import '~patternfly/dist/sass/patternfly/color-variables';
 
 $font-size-base: 14px;
+$color-configmap-dark: $pf-color-purple-600;
+$color-secret-dark: $pf-color-orange-400;
 
 
 .co-overlay {
@@ -439,4 +441,82 @@ label {
 
 .odc-multiple-key-selector {
   padding-top: var(--pf-global--spacer--md);
+}
+
+.btn-dropdown__content-wrap {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.pf-c-dropdown__menu {
+  position: absolute;
+  top: var(--pf-c-dropdown__menu--Top);
+  z-index: var(--pf-c-dropdown__menu--ZIndex);
+  min-width: 100%;
+  padding-top: var(--pf-c-dropdown__menu--PaddingTop);
+  padding-bottom: var(--pf-c-dropdown__menu--PaddingBottom);
+  background: var(--pf-c-dropdown__menu--BackgroundColor);
+  background-clip: padding-box;
+  border: var(--pf-c-dropdown__menu--BorderWidth) solid transparent;
+  box-shadow: var(--pf-c-dropdown__menu--BoxShadow);
+}
+
+.dropdown-menu__autocomplete-filter {
+  max-height: 60vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.dropdown-menu__filter {
+  padding: 5px var(--pf-c-dropdown__menu-item--PaddingRight) 10px;
+}
+
+.co-resource-item {
+  align-items: baseline;
+  display: flex;
+  min-width: 0;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.dropdown .co-m-resource-icon {
+  margin-left: 2px;
+}
+
+.co-m-resource-alertrule,
+.co-m-resource-configmap {
+  background-color: $color-configmap-dark;
+}
+
+.co-m-resource-secret {
+  background-color: $color-secret-dark;
+}
+
+.co-m-resource-icon {
+  border-radius: 20px;
+  color: #fff;
+  display: inline-block;
+  flex-shrink: 0;
+  font-size: 14px;
+  line-height: 16px;
+  margin-right: 4px;
+  min-width: 18px;
+  padding: 1px 4px;
+  text-align: center;
+  white-space: nowrap;
 }

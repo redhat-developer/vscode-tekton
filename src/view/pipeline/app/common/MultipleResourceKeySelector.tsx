@@ -14,6 +14,7 @@ import { FormGroup } from '@patternfly/react-core';
 import { getFieldId } from '../components/field-utils';
 import { useFormikValidationFix } from './formik-validation-fix';
 import ResourceDropdown from '../dropdown/ResourceDropdown';
+import MultipleKeySelector from './MultipleKeySelector';
 
 
 interface MultipleResourceKeySelectorProps {
@@ -36,7 +37,7 @@ const MultipleResourceKeySelector: React.FC<MultipleResourceKeySelectorProps> = 
   const isValid = !(touched && error);
   const fieldId = getFieldId(resourceNameField, 'res-dropdown');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [, setKeys] = React.useState({});
+  const [keys, setKeys] = React.useState({});
 
   useFormikValidationFix(field.value);
 
@@ -213,7 +214,7 @@ const MultipleResourceKeySelector: React.FC<MultipleResourceKeySelectorProps> = 
         }}
         showBadge
       />
-      {/* {field.value && <MultipleKeySelector name={resourceKeysField} keys={keys} />} */}
+      {field.value && <MultipleKeySelector name={resourceKeysField} keys={keys} />}
     </FormGroup>
   );
 };
