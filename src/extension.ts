@@ -36,9 +36,6 @@ let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 
-  // start detecting 'tkn' on extension start
-  await ToolsConfig.detectOrDownload();
-
   contextGlobalState = context;
   migrateFromTkn018();
 
@@ -109,9 +106,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.custom.explorer.removeItem', removeItemFromCustomTree),
     vscode.commands.registerCommand('k8s.tekton.run.logs', k8sCommands.showLogs),
     vscode.commands.registerCommand('k8s.tekton.run.followLogs', k8sCommands.followLogs),
-    vscode.commands.registerCommand('tekton.open.condition', (context)=> execute(TaskRun.openConditionDefinition, context)),
-    vscode.commands.registerCommand('tekton.open.task', (context)=> execute(TaskRun.openDefinition, context)),
-    vscode.commands.registerCommand('tekton.open.task.palette', (context)=> execute(TaskRun.openDefinition, context)),
+    vscode.commands.registerCommand('tekton.open.condition', (context) => execute(TaskRun.openConditionDefinition, context)),
+    vscode.commands.registerCommand('tekton.open.task', (context) => execute(TaskRun.openDefinition, context)),
+    vscode.commands.registerCommand('tekton.open.task.palette', (context) => execute(TaskRun.openDefinition, context)),
 
     pipelineExplorer,
     // Temporarily loaded resource providers
@@ -119,6 +116,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider, { isCaseSensitive: true, isReadonly: true }),
   ];
   disposables.forEach((e) => context.subscriptions.push(e));
+
+  // start detecting 'tkn' on extension start
+  ToolsConfig.detectOrDownload();
 
   setCommandContext(CommandContext.TreeZenMode, false);
   setCommandContext(CommandContext.PipelinePreview, false);
