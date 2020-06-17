@@ -202,6 +202,9 @@ export class Command {
   static restartPipeline(name: string): CliCommand {
     return newTknCommand('pipeline', 'start', name, '--last', '-s', 'pipeline');
   }
+  static getPipeline(name: string): CliCommand {
+    return newK8sCommand('get', 'pipeline', name, '-o', 'json');
+  }
   @verbose
   static deletePipeline(name: string): CliCommand {
     return newTknCommand('pipeline', 'delete', name, '-f');

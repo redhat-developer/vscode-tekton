@@ -12,6 +12,7 @@ import { cli } from '../cli';
 import { TknPipelineTrigger } from '../tekton';
 import { Trigger, PipelineContent } from './pipelinecontent';
 import pipelineViewLoader from '../view/pipeline/pipelineViewLoader';
+import { pipelineData } from './webviewstartpipeline';
 
 export class Pipeline extends TektonItem {
 
@@ -42,7 +43,8 @@ export class Pipeline extends TektonItem {
       return obj.name === pipeline.getName();
     });
     pipelineTrigger[0]['pipelineResource'] = pipelineResource ? pipelineResource : undefined;
-    pipelineViewLoader.loadView('Start Pipeline', pipelineTrigger[0]);
+    // const pipelineDatas = await Pipeline.tkn.execute(Command.getPipeline(pipeline.getName()), process.cwd(), false);
+    pipelineViewLoader.loadView('Start Pipeline', await pipelineData(pipeline.getName()));
     // const inputStartPipeline = await PipelineContent.startObject(pipelineTrigger, 'Pipeline');
 
     // return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>

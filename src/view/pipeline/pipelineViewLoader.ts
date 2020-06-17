@@ -44,7 +44,7 @@ export default class PipelineViewLoader {
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  static async loadView(title: string, context: Trigger): Promise<vscode.WebviewPanel> {
+  static async loadView(title: string, context: any): Promise<vscode.WebviewPanel> {
     stringToContext.set('pipelineStart', context);
     const localResourceRoot = vscode.Uri.file(path.join(PipelineViewLoader.extensionPath, 'out', 'pipelineView'));
 
@@ -60,7 +60,7 @@ export default class PipelineViewLoader {
     return panel;
   }
 
-  private static getWebviewContent(extensionPath: string, context: Trigger): string {
+  private static getWebviewContent(extensionPath: string, context: any): string {
     // Local path to main script run in the webview
     const reactAppRootOnDisk = path.join(extensionPath, 'out', 'pipelineView');
     const reactAppPathOnDisk = vscode.Uri.file(
@@ -75,7 +75,7 @@ export default class PipelineViewLoader {
         script-src 'unsafe-eval' 'unsafe-inline' vscode-resource:;
         style-src vscode-resource: 'unsafe-inline';">`;
     return `${htmlString}`
-      .replace('%COMMAND%', JSON.stringify(context))
+      .replace('%COMMAND%', JSON.stringify(context).replace(/\\/g, '\\\\'))
       .replace('pipelineView.js',`${reactAppUri}`)
       .replace('<!-- meta http-equiv="Content-Security-Policy" -->', meta);
   }

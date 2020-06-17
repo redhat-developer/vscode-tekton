@@ -895,6 +895,7 @@
     "icons-build": "node ./out/build/build-svg-icons.js"
   },
   "devDependencies": {
+    "@types/immutable": "3.x",
     "@patternfly/react-core": "^3.158.1",
     "@types/byline": "^4.2.31",
     "@types/chai": "^4.1.7",
@@ -980,6 +981,7 @@
     "fuzzysearch": "^1.0.3",
     "git-fetch-pack": "^0.1.1",
     "git-transport-protocol": "^0.1.0",
+    "immutable": "3.x",
     "hasha": "5.0.0",
     "html-webpack-plugin": "^4.3.0",
     "humanize-duration": "^3.21.0",
