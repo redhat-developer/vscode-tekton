@@ -35,7 +35,7 @@ suite('Deploy File', () => {
   let workspaceStateGetStub: sinon.SinonStub;
   let workspaceStateUpdateStub: sinon.SinonStub;
   let showInformationMessageStub: sinon.SinonStub;
-  let hasErrorsStub: sinon.SinonStub;
+  let hasGetDiagnosticsStub: sinon.SinonStub;
 
   const sampleYaml = `
         # pipeline.yaml
@@ -126,7 +126,7 @@ suite('Deploy File', () => {
     execStub = sandbox.stub(cli, 'execute').resolves();
     sandbox.stub(pipelineExplorer, 'refresh').resolves();
     sandbox.stub(tektonYaml, 'isTektonYaml').resolves('ClusterTask');
-    hasErrorsStub = sandbox.stub(tektonYaml, 'hasErrors').returns(false);
+    hasGetDiagnosticsStub = sandbox.stub(vscode.languages, 'getDiagnostics').returns([]);
     quote = Platform.OS === 'win32' ? '"' : '\'';
 
   });
@@ -231,7 +231,7 @@ suite('Deploy File', () => {
         stdout: 'successfully created'
       });
       workspaceStateGetStub.onFirstCall().returns('path');
-      hasErrorsStub.returns(true);
+      hasGetDiagnosticsStub.returns([{ severity: vscode.DiagnosticSeverity.Error }]);
       await updateTektonResource(textDocument);
       expect(execStub).not.called;
     });

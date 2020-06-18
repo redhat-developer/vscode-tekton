@@ -21,13 +21,24 @@ function checkDeploy(): boolean {
     .get<boolean>('deploy');
 }
 
+function hasErrorsInDocument(doc: vscode.TextDocument): boolean {
+  const diagnostics = vscode.languages.getDiagnostics(doc.uri);
+  for (const diagnostic of diagnostics) {
+    if (diagnostic.severity === vscode.DiagnosticSeverity.Error) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export async function updateTektonResource(document: vscode.TextDocument): Promise<void> {
   let value: string;
   if (!checkDeploy()) return;
   if (document.languageId !== 'yaml') return;
   if (!(document.uri.scheme.startsWith('tekton'))) {
     const verifyTknYaml = tektonYaml.isTektonYaml(document);
-    const hasErrors = tektonYaml.hasErrors(document);
+    const hasErrors = hasErrorsInDocument(document);
     if (!contextGlobalState.workspaceState.get(document.uri.fsPath) && verifyTknYaml && !hasErrors) {
       value = await vscode.window.showWarningMessage('Detected Tekton resources. Do you want to deploy to cluster?', 'Deploy', 'Deploy Once', 'Cancel');
     }
