@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-node('rhel7'){
+node('rhel8'){
 
     stage ('Checkout vscode-tekton code') {
         deleteDir()
@@ -42,7 +42,7 @@ node('rhel7'){
     }
 }
 
-node('rhel7'){
+node('rhel8'){
     if(publishToMarketPlace.equals('true')){
         timeout(time:5, unit:'DAYS') {
             input message:'Approve deployment?', submitter: 'ltulloch,degolovi,yvydolob'
