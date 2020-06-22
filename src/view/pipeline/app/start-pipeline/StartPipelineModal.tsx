@@ -12,6 +12,14 @@ import { startPipelineSchema } from '../modals/validation-utils';
 import ModalStructure from '../common/ModalStructure';
 import StartPipelineForm from './StartPipelineForm';
 
+
+declare global {
+  interface Window {
+      acquireVsCodeApi(): any;
+  }
+}
+
+const vscode = window.acquireVsCodeApi();
 const resource = (window as any).cmdText;
 const pipeline: Pipeline = JSON.parse(resource).pipeline;
 
@@ -32,19 +40,7 @@ export default function Header() {
 
   const handleSubmit = (values: StartPipelineFormValues, actions): void => {
     actions.setSubmitting(true);
-
-    // submitStartPipeline(values, pipeline, userStartedLabel)
-    //   .then((res) => {
-    //     actions.setSubmitting(false);
-    //     onSubmit && onSubmit(res);
-    //     close();
-    //   })
-    //   .catch((err) => {
-    //     actions.setSubmitting(false);
-    //     actions.setStatus({ submitError: err.message });
-    //     errorModal({ error: err.message });
-    //     close();
-    //   });
+    vscode.postMessage({action: 'start', data: values});
   };
 
   return (

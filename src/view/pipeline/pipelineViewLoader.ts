@@ -57,6 +57,9 @@ export default class PipelineViewLoader {
 
     // TODO: When webview is going to be ready?
     panel.webview.html = PipelineViewLoader.getWebviewContent(PipelineViewLoader.extensionPath, context);
+    panel.webview.onDidReceiveMessage((event) => {
+      console.log(event);
+    });
     return panel;
   }
 

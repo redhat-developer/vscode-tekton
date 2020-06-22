@@ -71,9 +71,9 @@ interface TknResource {
     };
   };
   pipelineResource: any;
-  secret: any;
-  configMap: any;
-  pvc: any;
+  Secret: any;
+  ConfigMap: any;
+  PersistentVolumeClaim: any;
 }
 
 
@@ -81,19 +81,19 @@ export const pipelineData = async (name: string) => {
   const pipelineData: TknResource = {
     pipeline: undefined,
     pipelineResource: undefined,
-    secret: undefined,
-    configMap: undefined,
-    pvc: undefined
+    Secret: undefined,
+    ConfigMap: undefined,
+    PersistentVolumeClaim: undefined
   };
   const pipeline = await TektonItem.tkn.execute(Command.getPipeline(name), process.cwd(), false);
   pipelineData.pipeline = JSON.parse(pipeline.stdout);
   if (pipelineData.pipeline.spec.workspaces) {
     const secret = await TektonItem.tkn.execute(Command.workspace('Secret'), process.cwd(), false);
-    pipelineData.secret = [JSON.parse(secret.stdout)];
+    pipelineData.Secret = JSON.parse(secret.stdout).items;
     const configMap = await TektonItem.tkn.execute(Command.workspace('ConfigMap'), process.cwd(), false);
-    pipelineData.configMap = [JSON.parse(configMap.stdout)];
+    pipelineData.ConfigMap = JSON.parse(configMap.stdout).items;
     const pvc = await TektonItem.tkn.execute(Command.workspace('PersistentVolumeClaim'), process.cwd(), false);
-    pipelineData.pvc = [JSON.parse(pvc.stdout)];
+    pipelineData.PersistentVolumeClaim = JSON.parse(pvc.stdout).items;
   }
   const resource = await TektonItem.tkn.execute(Command.getPipelineResource(), process.cwd(), false);
   pipelineData.pipelineResource = JSON.parse(resource.stdout).items;
