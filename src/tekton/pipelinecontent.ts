@@ -30,6 +30,7 @@ export interface Workspaces {
 }
   
 export interface Resources {
+  selection?: string;
   name: string;
   resourceRef: string;
   resourceType?: string;

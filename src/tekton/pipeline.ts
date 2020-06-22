@@ -6,7 +6,7 @@
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
 import { Progress } from '../util/progress';
-import { window } from 'vscode';
+import { window, workspace } from 'vscode';
 import * as cliInstance from '../cli';
 import { cli } from '../cli';
 import { TknPipelineTrigger } from '../tekton';
@@ -16,7 +16,18 @@ import { pipelineData } from './webviewstartpipeline';
 
 export class Pipeline extends TektonItem {
 
+
+  static checkWebViewStartPipeline(): boolean {
+    return workspace
+      .getConfiguration('vs-tekton')
+      .get<boolean>('StartPipeline');
+  }
+
   static async start(pipeline: TektonNode): Promise<string> {
+    if (Pipeline.checkWebViewStartPipeline()) {
+      pipelineViewLoader.loadView('Start Pipeline', await pipelineData(pipeline.getName()));
+      return;
+    }
     if (!pipeline) {
       pipeline = await window.showQuickPick(await Pipeline.getPipelineNames(), {placeHolder: 'Select Pipeline to start', ignoreFocusOut: true});
     }
@@ -32,7 +43,6 @@ export class Pipeline extends TektonItem {
       //show no pipelines if output is not correct json
     }
 
-    const pipelineResource = await Pipeline.pipelineResourceReturn();
     const pipelineTrigger = data.map<Trigger>(value => ({
       name: value.metadata.name,
       resources: value.spec.resources,
@@ -42,17 +52,14 @@ export class Pipeline extends TektonItem {
     })).filter(function (obj) {
       return obj.name === pipeline.getName();
     });
-    pipelineTrigger[0]['pipelineResource'] = pipelineResource ? pipelineResource : undefined;
-    // const pipelineDatas = await Pipeline.tkn.execute(Command.getPipeline(pipeline.getName()), process.cwd(), false);
-    pipelineViewLoader.loadView('Start Pipeline', await pipelineData(pipeline.getName()));
-    // const inputStartPipeline = await PipelineContent.startObject(pipelineTrigger, 'Pipeline');
+    const inputStartPipeline = await PipelineContent.startObject(pipelineTrigger, 'Pipeline');
 
-    // return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
-    //   Pipeline.tkn.startPipeline(inputStartPipeline)
-    //     .then(() => Pipeline.explorer.refresh())
-    //     .then(() => `Pipeline '${inputStartPipeline.name}' successfully started`)
-    //     .catch((error) => Promise.reject(`Failed to start Pipeline with error '${error}'`))
-    // );
+    return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
+      Pipeline.tkn.startPipeline(inputStartPipeline)
+        .then(() => Pipeline.explorer.refresh())
+        .then(() => `Pipeline '${inputStartPipeline.name}' successfully started`)
+        .catch((error) => Promise.reject(`Failed to start Pipeline with error '${error}'`))
+    );
   }
 
   static async restart(pipeline: TektonNode): Promise<string> {

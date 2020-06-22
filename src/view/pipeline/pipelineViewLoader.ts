@@ -7,6 +7,9 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Trigger } from '../../tekton/pipelinecontent';
+import { Progress } from '../../util/progress';
+import { TektonItem } from '../../tekton/tektonitem';
+import { commands } from 'vscode';
 
 export interface NameType {
   name: string;
@@ -57,8 +60,17 @@ export default class PipelineViewLoader {
 
     // TODO: When webview is going to be ready?
     panel.webview.html = PipelineViewLoader.getWebviewContent(PipelineViewLoader.extensionPath, context);
-    panel.webview.onDidReceiveMessage((event) => {
-      console.log(event);
+    panel.webview.onDidReceiveMessage(async (event) => {
+      if (event.action === 'start') {
+        await commands.executeCommand('workbench.action.closeActiveEditor');
+        const inputStartPipeline = event.data;
+        return Progress.execFunctionWithProgress('Starting Pipeline.', () =>
+          TektonItem.tkn.startPipeline(inputStartPipeline)
+            .then(() => TektonItem.explorer.refresh())
+            .then(() => `Pipeline '${inputStartPipeline.name}' successfully started`)
+            .catch((error) => Promise.reject(`Failed to start Pipeline with error '${error}'`))
+        );
+      }
     });
     return panel;
   }

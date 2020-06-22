@@ -148,7 +148,8 @@ export class Command {
     const svcAcct: string[] = pipelineData.serviceAccount ? ['-s ', pipelineData.serviceAccount] : ['-s', 'pipeline'];
     pipelineData.resources.forEach(element => {
       resources.push('--resource');
-      resources.push(element.name + '=' + element.resourceRef);
+      const resourceRef = element.resourceRef ? element.resourceRef : element.selection;
+      resources.push(element.name + '=' + resourceRef);
     });
 
     if (pipelineData.params.length === 0) {
