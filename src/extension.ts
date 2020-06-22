@@ -117,8 +117,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   ];
   disposables.forEach((e) => context.subscriptions.push(e));
 
-  // start detecting 'tkn' on extension start
-  ToolsConfig.detectOrDownload();
+  detectTknCli();
 
   setCommandContext(CommandContext.TreeZenMode, false);
   setCommandContext(CommandContext.PipelinePreview, false);
@@ -164,6 +163,17 @@ async function isTekton(): Promise<boolean> {
 // this method is called when your extension is deactivated
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export function deactivate(): void {
+}
+
+async function detectTknCli(): Promise<void> {
+  setCommandContext(CommandContext.TknCli, false);
+
+  // start detecting 'tkn' on extension start
+  const tknPath = await ToolsConfig.detectOrDownload();
+
+  if (tknPath) {
+    setCommandContext(CommandContext.TknCli, true);
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
