@@ -35,6 +35,7 @@ suite('Deploy File', () => {
   let workspaceStateGetStub: sinon.SinonStub;
   let workspaceStateUpdateStub: sinon.SinonStub;
   let showInformationMessageStub: sinon.SinonStub;
+  let hasGetDiagnosticsStub: sinon.SinonStub;
 
   const sampleYaml = `
         # pipeline.yaml
@@ -125,6 +126,7 @@ suite('Deploy File', () => {
     execStub = sandbox.stub(cli, 'execute').resolves();
     sandbox.stub(pipelineExplorer, 'refresh').resolves();
     sandbox.stub(tektonYaml, 'isTektonYaml').resolves('ClusterTask');
+    hasGetDiagnosticsStub = sandbox.stub(vscode.languages, 'getDiagnostics').returns([]);
     quote = Platform.OS === 'win32' ? '"' : '\'';
 
   });
@@ -204,7 +206,7 @@ suite('Deploy File', () => {
       showErrorMessageStub.calledTwice;
       workspaceStateGetStub.calledOnce;
     });
-    
+
     test('update the path to workspaceState', async () => {
       execStub.resolves({
         error: undefined,
@@ -220,6 +222,18 @@ suite('Deploy File', () => {
       showWarningMessageStub.calledOnce;
       workspaceStateGetStub.calledOnce;
       workspaceStateUpdateStub.calledOnce;
+    });
+
+    test('do not update if file has yaml syntax error', async () => {
+      execStub.resolves({
+        error: undefined,
+        stderr: '',
+        stdout: 'successfully created'
+      });
+      workspaceStateGetStub.onFirstCall().returns('path');
+      hasGetDiagnosticsStub.returns([{ severity: vscode.DiagnosticSeverity.Error }]);
+      await updateTektonResource(textDocument);
+      expect(execStub).not.called;
     });
 
   });
