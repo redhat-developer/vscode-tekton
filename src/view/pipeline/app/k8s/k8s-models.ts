@@ -7,7 +7,7 @@ import { Map as ImmutableMap } from 'immutable';
 import * as _ from 'lodash-es';
 import { K8sResourceKindReference, GroupVersionKind } from '../utils/resource-icon';
 import { K8sKind } from './type';
-import * as staticModels from '../models';
+import * as staticModels from '../modals';
 import { referenceForModel } from './k8s';
 
 

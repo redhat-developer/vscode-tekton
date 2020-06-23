@@ -11,7 +11,7 @@ import { PipelineWorkspace } from '../utils/pipeline-augment';
 import { VolumeTypes } from '../common/const';
 import DropdownField from './DropdownField';
 import MultipleResourceKeySelector from '../common/MultipleResourceKeySelector';
-import { SecretModel, ConfigMapModel } from '../models';
+import { SecretModel, ConfigMapModel, PersistentVolumeClaimModel } from '../modals';
 
 
 
@@ -39,9 +39,17 @@ const getVolumeTypeFields = (volumeType: VolumeTypes, index: number) => {
         />
       );
     }
-    // case VolumeTypes.PVC: {
-    //   return <PVCDropdown name={`workspaces.${index}.data.persistentVolumeClaim.claimName`} />;
-    // }
+    case VolumeTypes.PVC: {
+      return (
+        <MultipleResourceKeySelector
+          resourceNameField={`workspaces.${index}.data.persistentVolumeClaim.name`}
+          resourceKeysField={`workspaces.${index}.data.persistentVolumeClaim.items`}
+          label="Persistent Volume Claim"
+          resourceModel={PersistentVolumeClaimModel}
+          required
+        />
+      );
+    }
     default:
       return null;
   }

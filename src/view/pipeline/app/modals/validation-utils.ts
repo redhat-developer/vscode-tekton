@@ -101,7 +101,7 @@ const volumeTypeSchema = yup
     is: (type) => VolumeTypes[type] === VolumeTypes.PVC,
     then: yup.object().shape({
       persistentVolumeClaim: yup.object().shape({
-        claimName: yup.string().required('Required'),
+        name: yup.string().required('Required'),
       }),
     }),
   });

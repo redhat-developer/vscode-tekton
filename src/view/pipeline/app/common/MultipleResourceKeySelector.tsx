@@ -46,12 +46,14 @@ const MultipleResourceKeySelector: React.FC<MultipleResourceKeySelectorProps> = 
   const autocompleteFilter = (strText, item): boolean => fuzzy(strText, item?.props?.name);
 
   const generateKeys = (resourceName: string) => {
-    const selectedResource: K8sResourceKind = _.find(resources, (res) => {
-      return _.get(res, 'metadata.name') === resourceName;
-    });
-    const keyMap = selectedResource?.data;
-    const itemKeys = Object.keys(keyMap).reduce((acc, key) => ({ ...acc, [key]: key }), {});
-    setKeys(itemKeys);
+    if (resourceModel.kind !== 'PersistentVolumeClaim') {
+      const selectedResource: K8sResourceKind = _.find(resources, (res) => {
+        return _.get(res, 'metadata.name') === resourceName;
+      });
+      const keyMap = selectedResource?.data;
+      const itemKeys = Object.keys(keyMap).reduce((acc, key) => ({ ...acc, [key]: key }), {});
+      setKeys(itemKeys);
+    }
   };
 
   return (
