@@ -26,7 +26,7 @@ export class Pipeline extends TektonItem {
   static async start(pipeline: TektonNode): Promise<string> {
     if (Pipeline.checkWebViewStartPipeline()) {
       pipelineViewLoader.loadView('Start Pipeline', await pipelineData(pipeline.getName()));
-      return;
+      return null;
     }
     if (!pipeline) {
       pipeline = await window.showQuickPick(await Pipeline.getPipelineNames(), {placeHolder: 'Select Pipeline to start', ignoreFocusOut: true});

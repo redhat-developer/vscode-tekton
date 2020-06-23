@@ -131,7 +131,7 @@ suite('PipelineContent', () => {
       const result = await PipelineContent.startObject(pipelineTrigger, 'pipeline');
       expect(result).deep.equals({
         name: 'build-and-deploy',
-        params: [
+        parameters: [
           {
             default: undefined,
             description: 'name of the deployment to be patched',
@@ -164,7 +164,7 @@ suite('PipelineContent', () => {
       const result = await PipelineContent.startObject(pipelineTrigger, 'pipeline');
       expect(result).deep.equals({
         name: 'build-and-deploy',
-        params: [
+        parameters: [
           {
             default: {
               label: 'params-data'
@@ -240,7 +240,7 @@ suite('PipelineContent', () => {
       const result = await PipelineContent.startObject(workspace, 'pipeline');
       expect(result).deep.equals({
         name: 'fetch-and-print-recipe',
-        params: [],
+        parameters: [],
         resources: [],
         serviceAccount: undefined,
         workspaces: [
@@ -282,7 +282,7 @@ suite('PipelineContent', () => {
       const result = await PipelineContent.startObject(serviceTrigger, 'pipeline');
       expect(result).deep.equals({
         name: 'build-and-deploy',
-        params: [],
+        parameters: [],
         resources: [],
         serviceAccount: 'service',
         workspaces: []
@@ -295,7 +295,7 @@ suite('PipelineContent', () => {
       const result = await PipelineContent.startObject(serviceTrigger, 'pipeline');
       expect(result).deep.equals({
         name: 'build-and-deploy',
-        params: [],
+        parameters: [],
         resources: [],
         serviceAccount: 'service',
         workspaces: []

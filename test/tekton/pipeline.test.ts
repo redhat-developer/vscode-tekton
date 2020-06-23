@@ -34,6 +34,7 @@ suite('Tekton/Pipeline', () => {
 
   setup(() => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
+    sandbox.stub(Pipeline, 'checkWebViewStartPipeline').returns(false);
     showQuickPickStub = sandbox.stub(vscode.window, 'showQuickPick').resolves(undefined);
     sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
     getPipelineStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
