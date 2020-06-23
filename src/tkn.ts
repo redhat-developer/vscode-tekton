@@ -112,9 +112,9 @@ function tknWorkspace(pipelineData: StartObject): string[] {
   const workspace: string[] = [];
   if (checkWebViewStartPipeline()) {
     pipelineData.workspaces.forEach(element => {
-      if (element.type === 'PersistentVolumeClaim') {
+      if (element.type === 'PVC') {
         workspace.push('-w');
-        workspace.push(`name=${element.name},claimName=${element.workspaceName},subPath=${element.subPath}`);
+        workspace.push(`name=${element.name},claimName=${element.data['persistentVolumeClaim'].name}`);
       } else if (element.type === 'ConfigMap') {
         if (element.data['configMap'].items) {
           element.data['configMap'].items.forEach(obj => {

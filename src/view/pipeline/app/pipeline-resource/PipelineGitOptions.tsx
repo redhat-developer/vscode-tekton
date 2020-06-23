@@ -17,12 +17,12 @@ const PipelineGitOptions: React.FC<PipelineGitOptionsProps> = ({ prefixName }) =
       helpText="Please provide git URL."
       required
     />
-    <InputField
+    {/* <InputField
       type={TextInputTypes.text}
       name={`${prefixName}.params.revision`}
       label="Revision"
       helpText="Please provide Revisions. i.e master"
-    />
+    /> */}
   </>
 );
 

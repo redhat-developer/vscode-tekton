@@ -67,7 +67,7 @@ export default class PipelineViewLoader {
       if (event.action === 'start') {
         await commands.executeCommand('workbench.action.closeActiveEditor');
         const inputStartPipeline = event.data;
-        return Progress.execFunctionWithProgress('Starting Pipeline.', () =>
+        return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
           TektonItem.tkn.startPipeline(inputStartPipeline)
             .then(() => TektonItem.explorer.refresh())
             .then(() => `Pipeline '${inputStartPipeline.name}' successfully started`)
