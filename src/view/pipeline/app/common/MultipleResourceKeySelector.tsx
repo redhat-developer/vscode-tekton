@@ -81,7 +81,7 @@ const MultipleResourceKeySelector: React.FC<MultipleResourceKeySelectorProps> = 
         }}
         showBadge
       />
-      {field.value && <MultipleKeySelector name={resourceKeysField} keys={keys} />}
+      {field.value && resourceModel.kind !== 'PersistentVolumeClaim' && <MultipleKeySelector name={resourceKeysField} keys={keys} />}
     </FormGroup>
   );
 };

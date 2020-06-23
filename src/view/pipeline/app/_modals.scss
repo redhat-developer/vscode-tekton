@@ -498,16 +498,8 @@ label {
   margin-left: 2px;
 }
 
-.co-m-resource-alertrule,
-.co-m-resource-configmap {
-  background-color: $color-configmap-dark;
-}
-
-.co-m-resource-secret {
-  background-color: $color-secret-dark;
-}
-
 .co-m-resource-icon {
+  background-color: #2b9af3;
   border-radius: 20px;
   color: #fff;
   display: inline-block;
@@ -519,4 +511,13 @@ label {
   padding: 1px 4px;
   text-align: center;
   white-space: nowrap;
+}
+
+.co-m-resource-alertrule,
+.co-m-resource-configmap {
+  background-color: $color-configmap-dark;
+}
+
+.co-m-resource-secret {
+  background-color: $color-secret-dark;
 }

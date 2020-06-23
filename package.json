@@ -884,7 +884,7 @@
     "verify": "node ./out/build/verify-tools.js",
     "vscode:prepublish": "npm run build",
     "compile": "tsc -p ./ && npm run build-preview && npm run webview-start",
-    "webview-start": "webpack-cli --mode production --config src/view/webpack.config.js",
+    "webview-start": "webpack-cli --mode development --config src/view/webpack.config.js",
     "webview-start-watch": "webpack-cli -w --mode development --config src/view/webpack.config.js",
     "watch": "tsc -watch -p ./",
     "clean": "rimraf out && rimraf preview",
