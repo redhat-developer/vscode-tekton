@@ -7,8 +7,7 @@
 import * as React from 'react';
 import { ButtonBar } from '../utils/button-bar';
 import { ActionGroup, Button } from '@patternfly/react-core';
-
-
+import { vscode } from '../start-pipeline/StartPipelineModal';
 
 export type ModalTitleProps = {
   className?: string;
@@ -76,15 +75,13 @@ export const ModalSubmitFooter: React.SFC<ModalSubmitFooterProps> = ({
   message,
   errorMessage,
   inProgress,
-  cancel,
   submitText,
   cancelText,
   submitDisabled,
   submitDanger,
 }) => {
-  const onCancelClick = (e) => {
-    e.stopPropagation();
-    cancel(e);
+  const onCancelClick = (): void => {
+    vscode.postMessage({action: 'cancel'});
   };
 
   return (

@@ -61,6 +61,9 @@ export default class PipelineViewLoader {
     // TODO: When webview is going to be ready?
     panel.webview.html = PipelineViewLoader.getWebviewContent(PipelineViewLoader.extensionPath, context);
     panel.webview.onDidReceiveMessage(async (event) => {
+      if (event.action === 'cancel') {
+        await commands.executeCommand('workbench.action.closeActiveEditor');
+      }
       if (event.action === 'start') {
         await commands.executeCommand('workbench.action.closeActiveEditor');
         const inputStartPipeline = event.data;

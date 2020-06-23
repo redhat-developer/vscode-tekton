@@ -19,7 +19,7 @@ declare global {
   }
 }
 
-const vscode = window.acquireVsCodeApi();
+export const vscode = window.acquireVsCodeApi();
 const resource = (window as any).cmdText;
 const pipeline: Pipeline = JSON.parse(resource).pipeline;
 
