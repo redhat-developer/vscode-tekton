@@ -27,6 +27,8 @@ export interface Workspaces {
   value?: string;
   subPath?: string;
   emptyDir?: string;
+  type?: string;
+  data?: any;
 }
   
 export interface Resources {
@@ -45,7 +47,7 @@ export interface Params {
 export interface StartObject {
   name: string;
   resources: Resources[];
-  params: Params[] | undefined;
+  parameters: Params[] | undefined;
   workspaces: Workspaces[];
   serviceAccount: string | undefined;
 }
@@ -53,7 +55,7 @@ export interface StartObject {
 export interface Trigger {
   name: string;
   resources: NameType[];
-  params?: Params[];
+  parameters?: Params[];
   workspaces?: Workspaces[];
   serviceAcct: string | undefined;
 }
@@ -88,10 +90,10 @@ export class PipelineContent extends TektonItem {
     return pick.label;
   }
 
-  static async inputParameters(context: Trigger[], params: QuickPickItem[], message: string): Promise<Params[]> {
+  static async inputParameters(context: Trigger[], parameters: QuickPickItem[], message: string): Promise<Params[]> {
     const paramData = [];
-    for (const item of params) {
-      const selectedParam = context[0].params.find(x => x.name === item.label);
+    for (const item of parameters) {
+      const selectedParam = context[0].parameters.find(x => x.name === item.label);
       const title = `Params: ${item['label']}`;
       const paramVal = await PipelineContent.getParamValues(selectedParam.name);
       const pick = await multiStepInput.showQuickPick({
@@ -236,12 +238,12 @@ export class PipelineContent extends TektonItem {
 
   static async startObject(context: Trigger[], message: string): Promise<StartObject> {
     const resources: QuickPickItem[] | undefined = context[0].resources ? context[0].resources.map<QuickPickItem>(label => ({ label: label.name, resourceGitImageType: label['type'] ? label['type'] : undefined ,resourceType: label['resourceType'] ? label['resourceType'] : undefined })) : undefined;
-    const params: QuickPickItem[] | undefined = context[0].params ? context[0].params.map<QuickPickItem>(label => ({ label: label.name })) : undefined;
+    const parameters: QuickPickItem[] | undefined = context[0].parameters ? context[0].parameters.map<QuickPickItem>(label => ({ label: label.name })) : undefined;
     const workspaces: QuickPickItem[] | undefined = context[0].workspaces ? context[0].workspaces.map<QuickPickItem>(label => ({ label: label.name })) : undefined;
 
     const inputStart = {
       resources: [],
-      params: [],
+      parameters: [],
       workspaces: []
     } as StartObject;
     inputStart.name = context[0].name;
@@ -258,9 +260,9 @@ export class PipelineContent extends TektonItem {
         inputStart.resources.push(selectedResource);
       }
     }
-    if (params) {
-      const paramData = await PipelineContent.inputParameters(context, params, message);
-      paramData.map((value: Params) => { inputStart.params.push(value); })
+    if (parameters) {
+      const paramData = await PipelineContent.inputParameters(context, parameters, message);
+      paramData.map((value: Params) => { inputStart.parameters.push(value); })
     }
     if (inputStart.serviceAccount) {
       await PipelineContent.pickServiceAcct(inputStart);

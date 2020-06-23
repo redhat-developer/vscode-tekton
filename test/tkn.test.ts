@@ -168,7 +168,7 @@ suite('tkn', () => {
       startPipelineObj = {
         name: 'pipeline',
         resources: testResources,
-        params: testParams,
+        parameters: testParams,
         workspaces: [],
         serviceAccount: undefined
       };

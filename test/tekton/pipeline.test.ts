@@ -208,14 +208,14 @@ suite('Tekton/Pipeline', () => {
       pipeTrigger = [{
         name: 'pipeline',
         resources: testNames,
-        params: testParams,
+        parameters: testParams,
         serviceAcct: undefined
       }];
 
       startPipelineObj = {
         name: 'pipeline',
         resources: testResources,
-        params: testParams,
+        parameters: testParams,
         workspaces: [],
         serviceAccount: undefined
       };

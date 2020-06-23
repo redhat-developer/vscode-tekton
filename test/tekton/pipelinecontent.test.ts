@@ -29,7 +29,7 @@ suite('PipelineContent', () => {
     let showShowInputBox: sinon.SinonStub<unknown[], unknown>;
     const pipelineTrigger: Trigger[] = [{
       name: 'build-and-deploy',
-      params: [{
+      parameters: [{
         description: 'name of the deployment to be patched',
         name: 'deployment-name',
       }],
@@ -47,7 +47,7 @@ suite('PipelineContent', () => {
 
     const serviceTrigger: Trigger[] = [{
       name: 'build-and-deploy',
-      params: undefined,
+      parameters: undefined,
       resources: undefined,
       serviceAcct: 'service',
       workspaces: undefined
@@ -55,7 +55,7 @@ suite('PipelineContent', () => {
 
     const workspace: Trigger[] = [{
       name: 'fetch-and-print-recipe',
-      params: undefined,
+      parameters: undefined,
       resources: undefined,
       serviceAcct: undefined,
       workspaces: [

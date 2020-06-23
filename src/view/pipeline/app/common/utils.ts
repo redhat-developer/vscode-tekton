@@ -12,11 +12,12 @@ export const convertPipelineToModalData = (
   alwaysCreateResources = false,
 ): CommonPipelineModalFormikValues => {
   const {
-    metadata: { namespace },
+    metadata: { namespace, name },
     spec: { params, resources },
   } = pipeline;
 
   return {
+    name,
     namespace,
     parameters: params || [],
     resources: (resources || []).map((resource: PipelineResource) => ({

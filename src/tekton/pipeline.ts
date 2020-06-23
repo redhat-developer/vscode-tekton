@@ -46,7 +46,7 @@ export class Pipeline extends TektonItem {
     const pipelineTrigger = data.map<Trigger>(value => ({
       name: value.metadata.name,
       resources: value.spec.resources,
-      params: value.spec.params ? value.spec.params : undefined,
+      parameters: value.spec.params ? value.spec.params : undefined,
       workspaces: value.spec['workspaces'] ? value.spec['workspaces'] : undefined,
       serviceAcct: value.spec.serviceAccount ? value.spec.serviceAccount : undefined
     })).filter(function (obj) {

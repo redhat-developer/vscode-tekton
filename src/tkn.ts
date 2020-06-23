@@ -102,20 +102,58 @@ function verbose(_target: any, key: string, descriptor: any): void {
   };
 }
 
+function checkWebViewStartPipeline(): boolean {
+  return workspace
+    .getConfiguration('vs-tekton')
+    .get<boolean>('StartPipeline');
+}
+
 function tknWorkspace(pipelineData: StartObject): string[] {
   const workspace: string[] = [];
-  pipelineData.workspaces.forEach(element => {
-    workspace.push('-w');
-    if (element.workspaceType === 'PersistentVolumeClaim') {
-      workspace.push(`name=${element.name},claimName=${element.workspaceName},subPath=${element.subPath}`);
-    } else if (element.workspaceType === 'ConfigMap') {
-      workspace.push(`name=${element.name},config=${element.workspaceName},item=${element.key}=${element.value}`);
-    } else if (element.workspaceType === 'Secret') {
-      workspace.push(`name=${element.name},secret=${element.workspaceName}`);
-    } else if (element.workspaceType === 'EmptyDir') {
-      workspace.push(`name=${element.name},emptyDir=${element.emptyDir}`);
-    }
-  });
+  if (checkWebViewStartPipeline()) {
+    pipelineData.workspaces.forEach(element => {
+      if (element.type === 'PersistentVolumeClaim') {
+        workspace.push('-w');
+        workspace.push(`name=${element.name},claimName=${element.workspaceName},subPath=${element.subPath}`);
+      } else if (element.type === 'ConfigMap') {
+        if (element.data['configMap'].items) {
+          element.data['configMap'].items.forEach(obj => {
+            workspace.push('-w');
+            workspace.push(`name=${element.name},config=${element.data['configMap'].name},item=${obj.key}=${obj.path}`);
+          });
+        } else {
+          workspace.push('-w');
+          workspace.push(`name=${element.name},config=${element.data['configMap'].name}`);
+        }
+      } else if (element.type === 'Secret') {
+        if (element.data['secret'].items) {
+          element.data['secret'].items.forEach(obj => {
+            workspace.push('-w');
+            workspace.push(`name=${element.name},secret=${element.data['secret'].secretName},item=${obj.key}=${obj.path}`);
+          });
+        } else {
+          workspace.push('-w');
+          workspace.push(`name=${element.name},secret=${element.data['secret'].secretName}`);
+        }
+      } else if (element.type === 'EmptyDirectory') {
+        workspace.push('-w');
+        workspace.push(`name=${element.name},emptyDir=''`);
+      }
+    })
+  } else {
+    pipelineData.workspaces.forEach(element => {
+      workspace.push('-w');
+      if (element.workspaceType === 'PersistentVolumeClaim') {
+        workspace.push(`name=${element.name},claimName=${element.workspaceName},subPath=${element.subPath}`);
+      } else if (element.workspaceType === 'ConfigMap') {
+        workspace.push(`name=${element.name},config=${element.workspaceName},item=${element.key}=${element.value}`);
+      } else if (element.workspaceType === 'Secret') {
+        workspace.push(`name=${element.name},secret=${element.workspaceName}`);
+      } else if (element.workspaceType === 'EmptyDir') {
+        workspace.push(`name=${element.name},emptyDir=${element.emptyDir}`);
+      }
+    });
+  }
   return workspace;
 }
 
@@ -152,7 +190,7 @@ export class Command {
       resources.push(element.name + '=' + resourceRef);
     });
 
-    if (pipelineData.params.length === 0) {
+    if (pipelineData.parameters.length === 0) {
       if (pipelineData.workspaces.length === 0) {
         return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...svcAcct);
       } else {
@@ -161,7 +199,7 @@ export class Command {
       }
     } else {
       const params: string[] = [];
-      pipelineData.params.forEach(element => {
+      pipelineData.parameters.forEach(element => {
         params.push('--param');
         params.push(element.name + '=' + element.default);
       });
@@ -187,12 +225,12 @@ export class Command {
       }
     });
 
-    if (taskData.params.length === 0) {
+    if (taskData.parameters.length === 0) {
       return newTknCommand('task', 'start', taskData.name, ...resources, ...svcAcct);
     }
     else {
       const params: string[] = [];
-      taskData.params.forEach(element => {
+      taskData.parameters.forEach(element => {
         params.push('--param');
         params.push(element.name + '=' + element.default);
       });
