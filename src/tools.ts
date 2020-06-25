@@ -70,7 +70,7 @@ export class ToolsConfig {
 
         if (response !== downloadVersion) {
           response = await vscode.window.showInformationMessage(
-            `Cannot find Tekton CLI ${ToolsConfig.tool['tkn'].versionRangeLabel} for interacting with Tekton Pipelines.`, installRequest, 'Help', 'Cancel');
+            `Cannot find Tekton CLI ${ToolsConfig.tool['tkn'].versionRangeLabel} for interacting with Tekton Pipelines. Commands which requires Tekton CLI will be disabled.`, installRequest, 'Help', 'Cancel');
         }
         await fsex.ensureDir(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
         if (response === installRequest || response === downloadVersion) {
