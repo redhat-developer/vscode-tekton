@@ -54,7 +54,7 @@ export class ToolsConfig {
 
       if (toolLocation) {
         const currentVersion = await ToolsConfig.getVersion(toolLocation);
-        if (!semver.satisfies(currentVersion, ToolsConfig.tool['tkn'].versionRange)) {
+        if (!semver.satisfies(currentVersion, `>=${ToolsConfig.tool['tkn'].versionRange}`)) {
           response = await vscode.window.showWarningMessage(`Detected unsupported tkn version: ${currentVersion}. Supported tkn version: ${ToolsConfig.tool['tkn'].versionRangeLabel}.`, downloadVersion, 'Cancel');
         }
       }
@@ -142,7 +142,7 @@ export class ToolsConfig {
     for (const location of locations) {
       if (await fsex.pathExists(location)) {
         const configVersion = await ToolsConfig.getVersion(location);
-        if (location && (configVersion > versionRange) || semver.satisfies(configVersion, versionRange)) {
+        if (location && (semver.satisfies(configVersion, `>=${versionRange}`)) || semver.satisfies(configVersion, versionRange)) {
           result = location;
           break;
         }
