@@ -93,21 +93,26 @@ export class PipelineContent extends TektonItem {
       const selectedParam = context[0].params.find(x => x.name === item.label);
       const title = `Params: ${item['label']}`;
       const paramVal = await PipelineContent.getParamValues(selectedParam.name);
-      const pick = await multiStepInput.showQuickPick({
-        title,
-        placeholder: `Select ${message} Parameter`,
-        items: paramVal,
-      });
-      if (pick.label === selectedParam.name) {
-        const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: selectedParam.default };
-        paramData.push(parameter);
-      } else {
-        const inputVal = await multiStepInput.showInputBox({
+      if (!selectedParam.default) {
+        const pick = await multiStepInput.showQuickPick({
           title,
-          prompt: `Input ${message} default Value`,
-          validate: PipelineContent.validateInput,
+          placeholder: `Select ${message} Parameter`,
+          items: paramVal,
         });
-        const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: inputVal };
+        if (pick.label === selectedParam.name) {
+          const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: selectedParam.default };
+          paramData.push(parameter);
+        } else {
+          const inputVal = await multiStepInput.showInputBox({
+            title,
+            prompt: `Input ${message} default Value`,
+            validate: PipelineContent.validateInput,
+          });
+          const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: inputVal };
+          paramData.push(parameter);
+        }
+      } else {
+        const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: selectedParam.default };
         paramData.push(parameter);
       }
     }

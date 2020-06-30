@@ -36,9 +36,7 @@ export class Pipeline extends TektonItem {
       params: value.spec.params ? value.spec.params : undefined,
       workspaces: value.spec['workspaces'] ? value.spec['workspaces'] : undefined,
       serviceAcct: value.spec.serviceAccount ? value.spec.serviceAccount : undefined
-    })).filter(function (obj) {
-      return obj.name === pipeline.getName();
-    });
+    })).filter((obj) => obj.name === pipeline.getName());
     const inputStartPipeline = await PipelineContent.startObject(pipelineTrigger, 'Pipeline');
 
     return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
