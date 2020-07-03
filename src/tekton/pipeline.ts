@@ -6,11 +6,12 @@
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
 import { Progress } from '../util/progress';
-import { window } from 'vscode';
+import { window, ViewColumn } from 'vscode';
 import * as cliInstance from '../cli';
 import { cli } from '../cli';
 import { TknPipelineTrigger } from '../tekton';
 import { Trigger, PipelineContent } from './pipelinecontent';
+import { PipelineWizard } from '../pipeline/wizard';
 
 export class Pipeline extends TektonItem {
 
@@ -91,5 +92,29 @@ export class Pipeline extends TektonItem {
 
   static getDeleteCommand(pipeline: TektonNode): cliInstance.CliCommand {
     return Command.deletePipeline(pipeline.getName());
+  }
+
+  static async startWizard(pipeline: TektonNode): Promise<void> {
+    const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.getPipeline(pipeline.getName()), process.cwd(), false);
+    let data: TknPipelineTrigger;
+    if (result.error) {
+      console.log(result + ' Std.err when processing pipelines');
+    }
+    try {
+      data = JSON.parse(result.stdout);
+    } catch (ignore) {
+      //show no pipelines if output is not correct json
+    }
+
+    const trigger = {
+      name: data.metadata.name,
+      resources: data.spec.resources,
+      params: data.spec.params,
+      workspaces: data.spec['workspaces'],
+      serviceAcct: data.spec.serviceAccount
+    };
+
+    const wizard = PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active);
+
   }
 }

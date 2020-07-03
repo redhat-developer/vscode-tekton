@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es6",
+		"outDir": "out",
+		"sourceMap": true,
+		"rootDir": ".",
+		"jsx": "react",
+		"lib": [
+			"es2018",
+			"DOM",
+			"DOM.Iterable"
+		]
+	},
+	"include": [
+		"./app",
+	]
+}
