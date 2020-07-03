@@ -781,7 +781,7 @@
     "test": "npm run clean && npm run compile && npm run verify && node ./out/build/install-vscode.js && node ./out/build/unit-tests.js",
     "update-deps": "node_modules/.bin/ncu --upgrade --loglevel verbose --packageFile package.json && npm update",
     "coverage:upload": "codecov -f coverage/coverage-final.json",
-    "build": "npm run clean && npm run lint && npm run compile",
+    "build": "npm run clean && npm run lint && npm run compile && npm run build:webview",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "build-preview": "webpack-cli --mode production",
