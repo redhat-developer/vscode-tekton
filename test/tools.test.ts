@@ -103,15 +103,6 @@ suite('tool configuration', () => {
       assert.equal(toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
     });
 
-    test('show warning message when greater version is detected', async () => {
-      sb.stub(shelljs, 'which');
-      sb.stub(fsex, 'pathExists').resolves(true);
-      getVersionStub.returns('2.0.1');
-      const toolLocation = await ToolsConfig.detectOrDownload();
-      assert.ok(warningMessageStub.calledOnce);
-      assert.equal(toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
-    });
-
     test('ask to download tool if previously downloaded version is not correct and download if requested by user', async () => {
       sb.stub(shelljs, 'which');
       sb.stub(fsex, 'pathExists').resolves(true);

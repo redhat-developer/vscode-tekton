@@ -36,9 +36,6 @@ let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 
-  // start detecting 'tkn' on extension start
-  await ToolsConfig.detectOrDownload();
-
   contextGlobalState = context;
   migrateFromTkn018();
 
@@ -114,12 +111,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.open.task.palette', (context)=> execute(TaskRun.openDefinition, context)),
     vscode.commands.registerCommand('tekton.pipeline.wizard.start', (context) => execute(Pipeline.startWizard, context)),
 
+
     pipelineExplorer,
     // Temporarily loaded resource providers
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME, tektonVfsProvider, { isCaseSensitive: true, }),
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider, { isCaseSensitive: true, isReadonly: true }),
   ];
   disposables.forEach((e) => context.subscriptions.push(e));
+
+  detectTknCli();
 
   setCommandContext(CommandContext.TreeZenMode, false);
   setCommandContext(CommandContext.PipelinePreview, false);
@@ -165,6 +165,17 @@ async function isTekton(): Promise<boolean> {
 // this method is called when your extension is deactivated
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export function deactivate(): void {
+}
+
+async function detectTknCli(): Promise<void> {
+  setCommandContext(CommandContext.TknCli, false);
+
+  // start detecting 'tkn' on extension start
+  const tknPath = await ToolsConfig.detectOrDownload();
+
+  if (tknPath) {
+    setCommandContext(CommandContext.TknCli, true);
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

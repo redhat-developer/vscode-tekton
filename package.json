@@ -2,7 +2,7 @@
   "name": "vscode-tekton-pipelines",
   "displayName": "Tekton Pipelines",
   "description": "Tekton Pipelines extension by Red Hat",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "MIT",
   "publisher": "redhat",
   "author": "Red Hat",
@@ -18,6 +18,13 @@
   "categories": [
     "Snippets",
     "Other"
+  ],
+  "keywords": [
+    "Pipelines",
+    "Tekton",
+    "k8s",
+    "kubernetos",
+    "openshift"
   ],
   "icon": "images/tekton.png",
   "activationEvents": [
@@ -120,12 +127,14 @@
       {
         "command": "k8s.tekton.run.logs",
         "title": "Show Logs",
-        "category": "Kubernetes"
+        "category": "Kubernetes",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "k8s.tekton.run.followLogs",
         "title": "Follow Logs",
-        "category": "Kubernetes"
+        "category": "Kubernetes",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.edit",
@@ -169,17 +178,20 @@
       {
         "command": "tekton.about",
         "title": "About",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.output",
         "title": "Show Output Channel",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipeline.start",
         "title": "Start",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipeline.wizard.start",
@@ -189,17 +201,20 @@
       {
         "command": "tekton.condition.delete",
         "title": "Delete",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.condition.delete.palette",
         "title": "Delete Condition",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipeline.start.palette",
         "title": "Start Pipeline",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.openInEditor",
@@ -209,242 +224,290 @@
       {
         "command": "tekton.pipeline.restart",
         "title": "Start Last Run",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipeline.list",
         "title": "List Pipelines",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipeline.describe",
         "title": "Describe",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipeline.describe.palette",
         "title": "Describe Pipeline",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipeline.delete",
         "title": "Delete",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipeline.delete.palette",
         "title": "Delete Pipeline",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelineresource.list",
         "title": "List PipelineResources",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelineresource.create",
         "title": "Create",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelineresource.create.palette",
         "title": "Create Pipeline Resource",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelineresource.describe",
         "title": "Describe",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelineresource.describe.palette",
         "title": "Describe Pipeline Resource",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelineresource.delete",
         "title": "Delete",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelineresource.delete.palette",
         "title": "Delete Pipeline Resource",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelinerun.list",
         "title": "List PipelineRuns",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelinerun.describe",
         "title": "Describe",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelinerun.describe.palette",
         "title": "Describe Pipeline Run",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelinerun.logs",
         "title": "Show Logs",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelinerun.logs.palette",
         "title": "Show Pipeline Run Logs",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelinerun.followLogs",
         "title": "Follow Logs",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelinerun.followLogs.palette",
         "title": "Follow Pipeline Run Logs",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelinerun.cancel",
         "title": "Cancel",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelinerun.cancel.palette",
         "title": "Cancel Pipeline Run",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelinerun.delete",
         "title": "Delete",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipelinerun.delete.palette",
         "title": "Delete Pipeline Run",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.task.start",
         "title": "Start",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.task.start.palette",
         "title": "Start Task",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.task.list",
         "title": "List Tasks",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.task.delete",
         "title": "Delete",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.task.delete.palette",
         "title": "Delete Task",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.triggertemplate.delete",
         "title": "Delete",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.triggertemplate.delete.palette",
         "title": "Delete TriggerTemplate",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.triggerbinding.delete",
         "title": "Delete",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.triggerbinding.delete.palette",
         "title": "Delete TriggerBinding",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.eventlistener.delete",
         "title": "Delete",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.eventlistener.delete.palette",
         "title": "Delete EventListener",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.clustertask.list",
         "title": "List ClusterTasks",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.clustertask.delete",
         "title": "Delete",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.clustertask.delete.palette",
         "title": "Delete ClusterTask",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.taskrun.list",
         "title": "List TaskRuns",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.taskrun.list.palette",
         "title": "List TaskRuns from Pipeline Run",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.taskrun.listFromTask",
         "title": "List TaskRuns",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.taskrun.listFromTask.palette",
         "title": "List TaskRuns from Task",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.taskrun.logs",
         "title": "Show Logs",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.taskrun.logs.palette",
         "title": "Show Task Run Logs",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.taskrun.followLogs",
         "title": "Follow Logs",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.taskrun.followLogs.palette",
         "title": "Follow Task Run Logs",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.taskrun.delete",
         "title": "Delete",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.taskrun.delete.palette",
         "title": "Delete Task Run",
-        "category": "Tekton"
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.explorer.refresh",
@@ -977,7 +1040,6 @@
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
     "node-yaml-parser": "0.0.9",
-    "open": "^6.4.0",
     "pluralize": "^4.0.0",
     "request": "^2.88.0",
     "request-progress": "^3.0.0",
