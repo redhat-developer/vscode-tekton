@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.3.0 (July 3, 2020)
+
+This release brings to you:
+
+* [#288](https://github.com/redhat-developer/vscode-tekton/issues/288) All command should be accessible from command palette
+* [#311](https://github.com/redhat-developer/vscode-tekton/issues/311) Delete command for conditions
+* [#331](https://github.com/redhat-developer/vscode-tekton/issues/331) Update tkn version to `0.10.0`
+* [#296](https://github.com/redhat-developer/vscode-tekton/issues/296) Tekton.edit error when clicking on the "Open in Editor" icon
+* Bugfixes or minor issues:
+  * [#284](https://github.com/redhat-developer/vscode-tekton/issues/284) v1beta1 in Condition snippet but they are still in alpha
+  * [#321](https://github.com/redhat-developer/vscode-tekton/issues/321) 'Open in Editor' works wrong for condition run
+
 ## 0.2.0 (June 1, 2020)
 
 This release brings to you:
