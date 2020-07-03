@@ -182,6 +182,11 @@
         "category": "Tekton"
       },
       {
+        "command": "tekton.pipeline.wizard.start",
+        "title": "Start Wizard",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.condition.delete",
         "title": "Delete",
         "category": "Tekton"
@@ -528,6 +533,10 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
+          "command": "tekton.pipeline.wizard.start",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
           "command": "tekton.openInEditor",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -680,6 +689,11 @@
           "command": "tekton.pipeline.start",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
           "group": "c1@2"
+        },
+        {
+          "command": "tekton.pipeline.wizard.start",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
+          "group": "c1@3"
         },
         {
           "command": "tekton.pipeline.list",
@@ -889,7 +903,9 @@
     "build-preview": "webpack-cli --mode production",
     "preview-watch": "webpack-cli -w --mode development",
     "snippets-build": "node ./out/build/build-snippets.js",
-    "icons-build": "node ./out/build/build-svg-icons.js"
+    "icons-build": "node ./out/build/build-svg-icons.js",
+    "build:webview": "webpack-cli --mode production --config ./src/webview/pipeline/webpack.config.js",
+    "watch:webview": "webpack-cli -w --mode development --config ./src/webview/pipeline/webpack.config.js"
   },
   "devDependencies": {
     "@types/byline": "^4.2.31",
@@ -916,11 +932,13 @@
     "@typescript-eslint/parser": "^2.12.0",
     "chai": "^4.2.0",
     "codecov": "^3.5.0",
+    "css-loader": "^3.6.0",
     "cytoscape": "^3.14.0",
     "cytoscape-dagre": "^2.2.2",
     "decache": "^4.5.1",
     "eslint": "^6.7.2",
     "eslint-plugin-header": "^3.0.0",
+    "file-loader": "^6.0.0",
     "glob": "^7.1.3",
     "istanbul": "^0.4.5",
     "mocha": "^6.2.2",
@@ -932,9 +950,11 @@
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "source-map-support": "^0.5.16",
+    "style-loader": "^1.2.1",
     "tmp": "0.1.0",
     "ts-loader": "^6.2.1",
     "typescript": "^3.5.2",
+    "vscode-codicons": "0.0.4",
     "vscode-test": "^1.3.0",
     "walker": "^1.0.7",
     "webpack": "^4.41.6",

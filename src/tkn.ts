@@ -367,6 +367,10 @@ export class Command {
     return newK8sCommand('get', 'pipelinerun', name, '-o', 'json');
   }
 
+  static getPipeline(name: string): CliCommand {
+    return newK8sCommand('get', 'pipeline', name, '-o', 'json');
+  }
+
   static create(file: string): CliCommand {
     return newK8sCommand('create', '--save-config', '-f', file);
   }
