@@ -4,12 +4,8 @@
  *-----------------------------------------------------------------------------------------------*/
 import { tkn } from '../tkn';
 import { TknTask } from '../tekton';
+import { Snippet } from './snippet';
 
-export interface Snippet {
-  label: string;
-  description?: string;
-  body: TaskSnippet;
-}
 
 interface TaskSnippet {
   name: string;
@@ -56,7 +52,7 @@ interface Param {
   value: string | string[];
 }
 
-export async function getTknTasksSnippets(): Promise<Snippet[]> {
+export async function getTknTasksSnippets(): Promise<Snippet<TaskSnippet>[]> {
   const [rawClusterTasks, rawTasks] = await Promise.all([tkn.getRawClusterTasks(), tkn.getRawTasks()]);
 
   const allRawTasks = rawClusterTasks.concat(rawTasks);
@@ -65,8 +61,8 @@ export async function getTknTasksSnippets(): Promise<Snippet[]> {
   return snippets;
 }
 
-export function convertTasksToSnippet(rawTasks: TknTask[]): Snippet[] {
-  const result: Snippet[] = [];
+export function convertTasksToSnippet(rawTasks: TknTask[]): Snippet<TaskSnippet>[] {
+  const result: Snippet<TaskSnippet>[] = [];
 
   for (const task of rawTasks) {
     result.push({
