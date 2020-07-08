@@ -4,114 +4,22 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { createDiv } from './util';
-import { Trigger } from './types';
-import { debounce } from 'debounce';
-
-export interface Widget {
-  getElement(): HTMLElement;
-}
-export class BaseWidget implements Widget {
-  protected element: HTMLElement;
-
-  getElement(): HTMLElement {
-    return this.element;
-  }
-}
-
-export class NavigationItem extends BaseWidget {
-  constructor(name: string) {
-    super();
-    this.element = createDiv('navigationItem');
-    this.element.innerText = name;
-    this.element.title = name;
-  }
-
-  setSelected(): void {
-    this.element.classList.add('navigationItem-selected');
-  }
-
-  removeSelection(): void {
-    this.element.classList.remove('navigationItem-selected');
-  }
-}
-
-export type Listener<T> = (item: T) => void;
-
-export class NavigationList extends BaseWidget {
-
-  private selectedItem: NavigationItem;
-
-  private selectionListener: Listener<NavigationItem>;
-
-  constructor() {
-    super();
-    this.element = document.createElement('div');
-    this.element.className = 'navigation';
-  }
-
-  addItem(item: NavigationItem): void {
-    this.element.appendChild(item.getElement());
-    item.getElement().onclick = (() => {
-      this.selectItem(item);
-      if (this.selectionListener) {
-        this.selectionListener(item);
-      }
-    });
-  }
-
-  selectItem(item: NavigationItem): void {
-    if (this.selectedItem == item) {
-      return;
-    }
-
-    if (this.selectedItem) {
-      this.selectedItem.removeSelection();
-    }
-    item.setSelected();
-    this.selectedItem = item;
-  }
-
-  setSelectionListener(listener: Listener<NavigationItem>): void {
-    this.selectionListener = listener;
-  }
-
-}
-
-export class GroupItem extends BaseWidget {
-
-  constructor(private title: string) {
-    super();
-    this.element = createDiv('editorGroup');
-    this.element.innerText = title;
-  }
-
-  addEditItem(item: EditItem): void {
-    this.element.appendChild(item.getElement());
-  }
-
-  getName(): string {
-    return this.title;
-  }
-
-}
-
-export class LabelItem extends BaseWidget {
-  constructor(title: string) {
-    super();
-    this.element = createDiv('editorLabel');
-    this.element.innerText = title;
-  }
-}
+import { Trigger, NameType } from './types';
+import { NavigationList, NavigationItem } from './navigation';
+import { BaseWidget, Widget } from './widget';
+import { Editor, GroupItem, EditItem } from './maincontent';
+import { VolumeTypes } from './const';
 
 export class InputWidget extends BaseWidget {
-  constructor() {
+  constructor(text?: string) {
     super();
     const editorInput = createDiv('editor-input-box');
     const input = document.createElement('input');
     input.classList.add('input');
     input.autocapitalize = 'off';
     input.spellcheck = false;
-    input.type = 'text';
+    input.placeholder = text ?? '';
+    input.type = text;
     this.element = editorInput;
     const wrapper = createDiv('wrapper');
     wrapper.appendChild(input);
@@ -120,86 +28,39 @@ export class InputWidget extends BaseWidget {
 }
 
 export class SelectWidget extends BaseWidget {
-  constructor(items: string[]) {
+  public select: HTMLSelectElement;
+  constructor() {
     super();
     this.element = createDiv('select-container');
-    const select = document.createElement('select');
-    select.classList.add('editor-select-box');
-    this.element.appendChild(select);
+    this.select = document.createElement('select');
+    this.select.classList.add('editor-select-box');
+    this.element.appendChild(this.select);
+  }
+
+  pipelineResource(items: string[], resource: NameType): Widget {
     items.forEach(val => {
+      if (val['spec'].type === resource.type) {
+        const op = document.createElement('option');
+        op.value = val['metadata'].name;
+        op.text = val['metadata'].name;
+        this.select.appendChild(op);
+      }
+    });
+    return this;
+  }
+
+  workspaces(type: unknown): Widget {
+    Object.keys(type).forEach(val => {
       const op = document.createElement('option');
       op.value = val;
       op.text = val;
-      select.appendChild(op);
-    });
-  }
-}
-
-export class EditItem extends BaseWidget {
-
-  constructor(title: string, input: Widget) {
-    super();
-    this.element = createDiv('editItem');
-    this.element.appendChild(new LabelItem(title).getElement());
-    this.element.appendChild(input.getElement());
-  }
-}
-
-export class Editor extends BaseWidget {
-
-  private selectedGroup: GroupItem;
-
-  private children: GroupItem[] = [];
-  private selectionListener: Listener<GroupItem>;
-
-  private update = debounce(this.updateSelection.bind(this), 10);
-
-  constructor() {
-    super();
-    this.element = document.createElement('div');
-    this.element.className = 'main';
-    this.element.onscroll = () => {
-      this.update();
-    };
-  }
-
-  addGroup(group: GroupItem): void {
-    this.children.push(group);
-    this.element.appendChild(group.getElement());
-    this.update();
-  }
-
-  updateSelection(): void {
-    let h = 0;
-    let selected: GroupItem;
-    for (const child of this.children) {
-      const el = child.getElement();
-      h += el.offsetHeight;
-      if (h === 0 && this.element.scrollTop === 0) {
-        selected = child;
-        break;
-      }
-      if (h >= this.element.scrollTop + 40) {
-        selected = child;
-        break;
-      }
-    }
-
-    if (selected && this.selectedGroup !== selected) {
-      this.selectedGroup = selected;
-      if (this.selectionListener) {
-        this.selectionListener(selected);
-      }
-    }
-  }
-
-  addSelectionListener(listener: Listener<GroupItem>): void {
-    this.selectionListener = listener;
+      this.select.appendChild(op);
+    })
+    return this;
   }
 }
 
 export class ButtonsPanel extends BaseWidget {
-
   private startButton: HTMLAnchorElement;
 
   constructor() {
@@ -214,8 +75,6 @@ export class ButtonsPanel extends BaseWidget {
     this.element.appendChild(this.startButton);
 
   }
-
-
 }
 
 export class PipelineRunEditor implements Widget {
@@ -250,7 +109,7 @@ export class PipelineRunEditor implements Widget {
     if (this.trigger.params) {
       const parametersGroup = new GroupItem('Parameters');
       for (const param of this.trigger.params) {
-        parametersGroup.addEditItem(new EditItem(param.name, new InputWidget()));
+        parametersGroup.addEditItem(new EditItem(param.name, new InputWidget('Name')));
         //TODO: complete this
       }
       this.editor.addGroup(parametersGroup);
@@ -262,11 +121,23 @@ export class PipelineRunEditor implements Widget {
     if (this.trigger.resources) {
       const resourcesGroup = new GroupItem('Resources');
       for (const resource of this.trigger.resources) {
-        resourcesGroup.addEditItem(new EditItem(resource.name, new InputWidget()));
+        resourcesGroup.addEditItem(new EditItem(resource.name, new SelectWidget().pipelineResource(this.trigger.pipelineResource, resource)));
         //TODO: complete this
       }
       this.editor.addGroup(resourcesGroup);
       const navigationItem = new NavigationItem('Resources');
+      this.navigation.addItem(navigationItem);
+      this.navigationToGroupMap.set(navigationItem, resourcesGroup);
+    }
+
+    if (this.trigger.workspaces) {
+      const resourcesGroup = new GroupItem('Workspaces');
+      for (const workspace of this.trigger.workspaces) {
+        resourcesGroup.addEditItem(new EditItem(workspace.name, new SelectWidget().workspaces(VolumeTypes)));
+        //TODO: complete this
+      }
+      this.editor.addGroup(resourcesGroup);
+      const navigationItem = new NavigationItem('Workspaces');
       this.navigation.addItem(navigationItem);
       this.navigationToGroupMap.set(navigationItem, resourcesGroup);
     }

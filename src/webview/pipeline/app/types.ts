@@ -36,4 +36,5 @@ export interface Trigger {
   params?: Params[];
   workspaces?: Workspaces[];
   serviceAcct: string | undefined;
+  pipelineResource?: string[];
 }

@@ -105,16 +105,16 @@ export class Pipeline extends TektonItem {
     } catch (ignore) {
       //show no pipelines if output is not correct json
     }
+    const resource = await TektonItem.tkn.execute(Command.getPipelineResource(), process.cwd(), false);
 
     const trigger = {
       name: data.metadata.name,
       resources: data.spec.resources,
       params: data.spec.params,
       workspaces: data.spec['workspaces'],
-      serviceAcct: data.spec.serviceAccount
+      serviceAcct: data.spec.serviceAccount,
+      pipelineResource: JSON.parse(resource.stdout).items
     };
-
-    const wizard = PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active);
-
+    PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active);
   }
 }
