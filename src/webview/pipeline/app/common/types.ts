@@ -5,7 +5,7 @@
 
 export interface NameType {
   name: string;
-  type: string;
+  type?: string;
 }
 
 export interface Workspaces {
@@ -26,8 +26,9 @@ export interface Resources {
 
 export interface Params {
   default?: string;
-  description: string;
+  description?: string;
   name: string;
+  type?: string;
 }
 
 export interface Trigger {

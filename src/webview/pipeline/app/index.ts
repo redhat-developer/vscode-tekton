@@ -6,7 +6,7 @@
 import './style.css';
 import 'vscode-codicons/dist/codicon.ttf'
 import { PipelineRunEditor } from './editor';
-import { Trigger } from './types';
+import { Trigger } from './common/types';
 
 declare let acquireVsCodeApi: any;
 const vscode = acquireVsCodeApi();

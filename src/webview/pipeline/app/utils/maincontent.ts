@@ -5,7 +5,7 @@
 
 import { createDiv } from './util';
 import { debounce } from 'debounce';
-import { Listener, BaseWidget, Widget } from './widget';
+import { Listener, BaseWidget, Widget } from '../common/widget';
 
 export class LabelItem extends BaseWidget {
   constructor(title: string) {
@@ -40,7 +40,6 @@ export class GroupItem extends BaseWidget {
   getName(): string {
     return this.title;
   }
-
 }
 
 export class Editor extends BaseWidget {

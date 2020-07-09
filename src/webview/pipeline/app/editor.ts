@@ -3,79 +3,14 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { createDiv } from './util';
-import { Trigger, NameType } from './types';
-import { NavigationList, NavigationItem } from './navigation';
-import { BaseWidget, Widget } from './widget';
-import { Editor, GroupItem, EditItem } from './maincontent';
-import { VolumeTypes } from './const';
-
-export class InputWidget extends BaseWidget {
-  constructor(text?: string) {
-    super();
-    const editorInput = createDiv('editor-input-box');
-    const input = document.createElement('input');
-    input.classList.add('input');
-    input.autocapitalize = 'off';
-    input.spellcheck = false;
-    input.placeholder = text ?? '';
-    input.type = text;
-    this.element = editorInput;
-    const wrapper = createDiv('wrapper');
-    wrapper.appendChild(input);
-    editorInput.appendChild(wrapper);
-  }
-}
-
-export class SelectWidget extends BaseWidget {
-  public select: HTMLSelectElement;
-  constructor() {
-    super();
-    this.element = createDiv('select-container');
-    this.select = document.createElement('select');
-    this.select.classList.add('editor-select-box');
-    this.element.appendChild(this.select);
-  }
-
-  pipelineResource(items: string[], resource: NameType): Widget {
-    items.forEach(val => {
-      if (val['spec'].type === resource.type) {
-        const op = document.createElement('option');
-        op.value = val['metadata'].name;
-        op.text = val['metadata'].name;
-        this.select.appendChild(op);
-      }
-    });
-    return this;
-  }
-
-  workspaces(type: unknown): Widget {
-    Object.keys(type).forEach(val => {
-      const op = document.createElement('option');
-      op.value = val;
-      op.text = val;
-      this.select.appendChild(op);
-    })
-    return this;
-  }
-}
-
-export class ButtonsPanel extends BaseWidget {
-  private startButton: HTMLAnchorElement;
-
-  constructor() {
-    super();
-    this.element = document.createElement('div');
-    this.element.className = 'buttons';
-
-    this.startButton = document.createElement('a');
-    this.startButton.textContent = 'Start';
-    this.startButton.setAttribute('role', 'button');
-    this.startButton.className = 'startButton';
-    this.element.appendChild(this.startButton);
-
-  }
-}
+import { Trigger, Params, Workspaces } from './common/types';
+import { NavigationList, NavigationItem } from './utils/navigation';
+import { Widget } from './common/widget';
+import { Editor, GroupItem, EditItem } from './utils/maincontent';
+import { VolumeTypes } from './utils/const';
+import { ButtonsPanel } from './element/buttonspanel';
+import { SelectWidget } from './element/selectwidget';
+import { InputWidget } from './element/inputwidget';
 
 export class PipelineRunEditor implements Widget {
   private element: HTMLElement;
@@ -92,9 +27,7 @@ export class PipelineRunEditor implements Widget {
 
     this.navigation = new NavigationList();
     this.editor = new Editor();
-
     this.buttonsPanel = new ButtonsPanel();
-
 
     this.element.appendChild(this.navigation.getElement());
     this.element.appendChild(this.editor.getElement());
@@ -104,42 +37,55 @@ export class PipelineRunEditor implements Widget {
     this.update();
   }
 
+  createElement(title: string, resourceType: Params[] | Workspaces[]): void {
+    const resourceGroup = new GroupItem(title);
+    for (const resource of resourceType) {
+      let element: Widget;
+      if (title === 'Parameters') {
+        element = new InputWidget('Name')
+      } else if (title === 'Workspaces') {
+        element = new SelectWidget().workspaces(VolumeTypes)
+      } else {
+        element = new SelectWidget('Resources').pipelineResource(this.trigger.pipelineResource, resource);
+      }
+      resourceGroup.addEditItem(new EditItem(resource.name, element));
+      //TODO: complete this
+    }
+    this.editor.addGroup(resourceGroup);
+    const navigationItem = new NavigationItem(title);
+    this.navigation.addItem(navigationItem);
+    this.navigationToGroupMap.set(navigationItem, resourceGroup);
+  }
+
   private update(): void {
 
     if (this.trigger.params) {
-      const parametersGroup = new GroupItem('Parameters');
-      for (const param of this.trigger.params) {
-        parametersGroup.addEditItem(new EditItem(param.name, new InputWidget('Name')));
-        //TODO: complete this
-      }
-      this.editor.addGroup(parametersGroup);
-      const navigationItem = new NavigationItem('Parameters');
-      this.navigation.addItem(navigationItem);
-      this.navigationToGroupMap.set(navigationItem, parametersGroup);
+      this.createElement('Parameters', this.trigger.params);
     }
 
+    const gitResource = [];
+    const imageResource = [];
+
     if (this.trigger.resources) {
-      const resourcesGroup = new GroupItem('Resources');
-      for (const resource of this.trigger.resources) {
-        resourcesGroup.addEditItem(new EditItem(resource.name, new SelectWidget().pipelineResource(this.trigger.pipelineResource, resource)));
-        //TODO: complete this
+      this.trigger.resources.filter(val => {
+        if (val.type === 'git') {
+          gitResource.push(val);
+        } else if (val.type === 'image') {
+          imageResource.push(val)
+        }
+      });
+      if (gitResource.length !== 0) {
+        this.createElement('Git Resource', gitResource);
+        // new SelectWidget().selectText();
       }
-      this.editor.addGroup(resourcesGroup);
-      const navigationItem = new NavigationItem('Resources');
-      this.navigation.addItem(navigationItem);
-      this.navigationToGroupMap.set(navigationItem, resourcesGroup);
+
+      if (imageResource.length !== 0) {
+        this.createElement('Image Resource', imageResource);
+      }
     }
 
     if (this.trigger.workspaces) {
-      const resourcesGroup = new GroupItem('Workspaces');
-      for (const workspace of this.trigger.workspaces) {
-        resourcesGroup.addEditItem(new EditItem(workspace.name, new SelectWidget().workspaces(VolumeTypes)));
-        //TODO: complete this
-      }
-      this.editor.addGroup(resourcesGroup);
-      const navigationItem = new NavigationItem('Workspaces');
-      this.navigation.addItem(navigationItem);
-      this.navigationToGroupMap.set(navigationItem, resourcesGroup);
+      this.createElement('Workspaces', this.trigger.workspaces);
     }
   }
 

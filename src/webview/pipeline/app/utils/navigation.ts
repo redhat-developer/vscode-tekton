@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { createDiv } from './util';
-import { BaseWidget, Listener } from './widget';
+import { BaseWidget, Listener } from '../common/widget';
 
 export class NavigationItem extends BaseWidget {
   constructor(name: string) {
@@ -38,6 +38,7 @@ export class NavigationList extends BaseWidget {
   addItem(item: NavigationItem): void {
     this.element.appendChild(item.getElement());
     item.getElement().onclick = (() => {
+      console.log(JSON.stringify(this));
       this.selectItem(item);
       if (this.selectionListener) {
         this.selectionListener(item);
