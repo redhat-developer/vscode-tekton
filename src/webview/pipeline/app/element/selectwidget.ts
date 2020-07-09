@@ -9,8 +9,6 @@ import { EditItem } from '../utils/maincontent';
 import { InputWidget } from './inputwidget';
 import { NameType } from '../common/types';
 
-
-
 export class SelectWidget extends BaseWidget {
   public select: HTMLSelectElement;
   constructor(id?: string) {
@@ -20,33 +18,18 @@ export class SelectWidget extends BaseWidget {
     this.select = document.createElement('select');
     this.select.classList.add('editor-select-box');
     // this.select.onclick = () => this.selectText(this.select.parentNode);
-    this.select.onchange = () => this.addInputBox(this.select.parentNode.parentNode);
+    this.select.onchange = () => this.addInputBox(this.select.parentNode.parentNode, this.select.value);
     this.element.appendChild(this.select);
-    // this.element.onload = () => this.selectText();
-    // this.selectText();
   }
 
-  selectText(): void {
-    console.log('testteststststststststststtststststststststtstststststst');
-    const iframe = document;//.getElementById('active-frame');
-    console.log(iframe);
-    const resourceSelectList = iframe['contentWindow'].document.getElementById('Resources').childNodes;
-    console.log(resourceSelectList);
-    const op = document.createElement('option');
-    op.value = 'Create Pipeline Resource';
-    op.text = 'Create Pipeline Resource';
-    resourceSelectList.forEach(selectElement => {
-      console.log('aaaaaaaaaaaaaaaaasasasasasassasasasasasassasasasasasasas');
-      selectElement.insertBefore(op, this.select.firstChild)
-    });
-    // event.insertBefore(op, this.select.firstChild);
-    // console.log(event);
-  }
-
-  addInputBox(event: any): void {
-    const input = new EditItem('URL', new InputWidget('Please provide Name/URL'));
-    // console.log(event);
-    event.insertBefore(input.getElement(), event.nextSibling);
+  addInputBox(event: Node & ParentNode, value: string): void {
+    if (value.trim() === 'Create Pipeline Resource' && event.lastElementChild.id.trim() !== 'input-resource') {
+      const input = new EditItem('URL', new InputWidget('Please provide Name/URL'), 'input-resource');
+      console.log(event.lastElementChild.id);
+      event.appendChild(input.getElement());
+    } else if (event.lastElementChild.id.trim() === 'input-resource') {
+      event.lastElementChild.remove()
+    }
   }
 
   pipelineResource(items: string[], resource: NameType): Widget {

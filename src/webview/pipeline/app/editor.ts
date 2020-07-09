@@ -76,7 +76,6 @@ export class PipelineRunEditor implements Widget {
       });
       if (gitResource.length !== 0) {
         this.createElement('Git Resource', gitResource);
-        // new SelectWidget().selectText();
       }
 
       if (imageResource.length !== 0) {
