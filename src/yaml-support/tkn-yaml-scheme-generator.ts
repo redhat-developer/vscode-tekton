@@ -5,9 +5,11 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { readFile } from 'fs-extra'
-import { Snippet, getTknTasksSnippets } from './tkn-tasks-provider';
+import { getTknTasksSnippets } from './tkn-tasks-provider';
 import { schemeStorage } from './tkn-scheme-storage'
 import { pipelineYaml } from './tkn-yaml';
+import { Snippet } from './snippet';
+import { getTknConditionsSnippets } from './tkn-conditions-provider';
 
 let context: vscode.ExtensionContext;
 export function generateScheme(extContext: vscode.ExtensionContext, vsDocument: vscode.TextDocument): Promise<string> {
@@ -18,7 +20,7 @@ export function generateScheme(extContext: vscode.ExtensionContext, vsDocument: 
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function injectTaskSnippets(templateObj: any, snippets: Snippet[]): {} {
+function injectTaskSnippets(templateObj: any, snippets: Snippet<{}>[]): {} {
   templateObj.definitions.PipelineSpec.properties.tasks.defaultSnippets = snippets;
   return templateObj;
 }
@@ -45,9 +47,17 @@ function injectResourceName(templateObj: any, resNames: string[]): {} {
   return templateObj;
 }
 
+function injectConditionRefs(templateObj: any, conditions: string[]): {} {
+  if (conditions && conditions.length > 0) {
+    templateObj.definitions.PipelineTaskCondition.properties.conditionRef.enum = conditions;
+  }
+  return templateObj;
+}
+
 async function generate(doc: vscode.TextDocument): Promise<string> {
   const template = await readFile(path.join(context.extensionPath, 'scheme', 'pipeline.json'), 'UTF8');
   const snippets = await getTknTasksSnippets();
+  const conditions = await getTknConditionsSnippets();
   const definedTasks = pipelineYaml.getPipelineTasksName(doc);
   const declaredResources = pipelineYaml.getDeclaredResources(doc);
 
@@ -57,5 +67,6 @@ async function generate(doc: vscode.TextDocument): Promise<string> {
   const tasksRef = snippets.map(value => value.body.taskRef.name);
   templateWithSnippets = injectTasksName(templateWithSnippets, definedTasks, tasksRef);
   templateWithSnippets = injectResourceName(templateWithSnippets, resNames);
+  templateWithSnippets = injectConditionRefs(templateWithSnippets, conditions);
   return JSON.stringify(templateWithSnippets);
 }
