@@ -32,6 +32,7 @@ export interface TknSpec {
   resources?: TknResource[];
   params?: TknParams[];
   serviceAccount?: string;
+  workspaces?: TknWorkspaces[];
 }
 
 export interface TknTaskSpec {
@@ -65,6 +66,9 @@ export interface TaskResource {
   optional?: boolean;
 }
 
+export interface TknWorkspaces {
+  name: string;
+}
 
 export interface TknPipelineTrigger {
   metadata: TknMetadata;

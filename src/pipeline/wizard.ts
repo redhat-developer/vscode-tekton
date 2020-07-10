@@ -8,19 +8,17 @@ import { contextGlobalState } from '../extension';
 import * as path from 'path';
 import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
-import { Trigger } from '../tekton/pipelinecontent';
+import { TknResourceItem } from '../tekton/webviewstartpipeline';
 
 export interface PipelineWizardInput {
   readonly resourceColumn: vscode.ViewColumn;
-  readonly trigger: Trigger;
+  readonly trigger: TknResourceItem;
 }
 
 export class PipelineWizard extends Disposable {
   static viewType = 'tekton.pipeline.start.wizard';
 
-  public static create(
-    input: PipelineWizardInput,
-    previewColumn: vscode.ViewColumn): PipelineWizard {
+  public static create(input: PipelineWizardInput, previewColumn: vscode.ViewColumn): PipelineWizard {
     const webview = vscode.window.createWebviewPanel(
       PipelineWizard.viewType,
       `Start Pipeline: ${path.basename(input.trigger.name)}`,
@@ -29,8 +27,6 @@ export class PipelineWizard extends Disposable {
         enableFindWidget: true,
         ...getWebviewOptions()
       });
-
-
     return new PipelineWizard(webview, input);
   }
 

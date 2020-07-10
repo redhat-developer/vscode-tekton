@@ -22,8 +22,8 @@ const errorMessage = {
 };
 
 export abstract class TektonItem {
-  protected static readonly tkn: Tkn = tknImpl;
-  protected static readonly explorer: PipelineExplorer = pipelineExplorer;
+  static readonly tkn: Tkn = tknImpl;
+  static readonly explorer: PipelineExplorer = pipelineExplorer;
 
   static validateUniqueName(data: Array<TektonNode>, value: string): string {
     const tektonNode = data.find((tektonNode) => tektonNode.getName() === value);

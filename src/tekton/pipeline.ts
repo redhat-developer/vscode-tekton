@@ -12,6 +12,7 @@ import { cli } from '../cli';
 import { TknPipelineTrigger } from '../tekton';
 import { Trigger, PipelineContent } from './pipelinecontent';
 import { PipelineWizard } from '../pipeline/wizard';
+import { pipelineData } from './webviewstartpipeline';
 
 export class Pipeline extends TektonItem {
 
@@ -105,16 +106,7 @@ export class Pipeline extends TektonItem {
     } catch (ignore) {
       //show no pipelines if output is not correct json
     }
-    const resource = await TektonItem.tkn.execute(Command.getPipelineResource(), process.cwd(), false);
-
-    const trigger = {
-      name: data.metadata.name,
-      resources: data.spec.resources,
-      params: data.spec.params,
-      workspaces: data.spec['workspaces'],
-      serviceAcct: data.spec.serviceAccount,
-      pipelineResource: JSON.parse(resource.stdout).items
-    };
+    const trigger = await pipelineData(data);
     PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active);
   }
 }

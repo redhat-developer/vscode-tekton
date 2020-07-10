@@ -7,11 +7,11 @@ import { Widget, BaseWidget } from '../common/widget';
 import { createDiv } from '../utils/util';
 import { EditItem } from '../utils/maincontent';
 import { InputWidget } from './inputwidget';
-import { NameType } from '../common/types';
+import { NameType, Trigger } from '../common/types';
 
 export class SelectWidget extends BaseWidget {
   public select: HTMLSelectElement;
-  constructor(id?: string) {
+  constructor(id?: string, public trigger?: Trigger) {
     super();
     this.element = createDiv('select-container');
     this.element.id = id ?? '';
@@ -23,6 +23,9 @@ export class SelectWidget extends BaseWidget {
   }
 
   addInputBox(event: Node & ParentNode, value: string): void {
+    console.log(this.trigger);
+    console.log(event);
+    console.log(value);
     if (value.trim() === 'Create Pipeline Resource' && event.lastElementChild.id.trim() !== 'input-resource') {
       const input = new EditItem('URL', new InputWidget('Please provide Name/URL'), 'input-resource');
       console.log(event.lastElementChild.id);

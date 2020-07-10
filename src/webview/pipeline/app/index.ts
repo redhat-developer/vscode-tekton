@@ -7,7 +7,6 @@ import './style.css';
 import 'vscode-codicons/dist/codicon.ttf'
 import { PipelineRunEditor } from './editor';
 import { Trigger } from './common/types';
-import { SelectWidget } from './element/selectwidget';
 
 declare let acquireVsCodeApi: any;
 const vscode = acquireVsCodeApi();
@@ -15,7 +14,6 @@ const vscode = acquireVsCodeApi();
 const rootElement = document.getElementById('root');
 
 window.addEventListener('message', event => {
-
   switch (event.data.type) {
     case 'trigger':
       rootElement.appendChild(new PipelineRunEditor(event.data.data).getElement());
