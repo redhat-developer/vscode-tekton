@@ -6,7 +6,7 @@
 import { Trigger, Params, Workspaces } from './common/types';
 import { NavigationList, NavigationItem } from './utils/navigation';
 import { Widget } from './common/widget';
-import { Editor, GroupItem, EditItem } from './utils/maincontent';
+import { Editor, GroupItem, EditItem } from './element/maincontent';
 import { VolumeTypes } from './utils/const';
 import { ButtonsPanel } from './element/buttonspanel';
 import { SelectWidget } from './element/selectwidget';
@@ -44,7 +44,7 @@ export class PipelineRunEditor implements Widget {
       if (title === 'Parameters') {
         element = new InputWidget('Name')
       } else if (title === 'Workspaces') {
-        element = new SelectWidget().workspaces(VolumeTypes)
+        element = new SelectWidget('Workspaces-volume', this.trigger).workspaces(VolumeTypes)
       } else {
         element = new SelectWidget('Resources').pipelineResource(this.trigger.pipelineResource, resource);
       }

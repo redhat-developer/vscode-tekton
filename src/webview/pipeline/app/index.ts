@@ -17,7 +17,7 @@ window.addEventListener('message', event => {
   switch (event.data.type) {
     case 'trigger':
       rootElement.appendChild(new PipelineRunEditor(event.data.data).getElement());
-      selectText(document.querySelectorAll('[id^=Resources]'));
+      selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource');
       vscode.setState(event.data.data); // TODO: fix this, store real state
       break;
   }
@@ -29,13 +29,13 @@ if (previousState) {
   restore(previousState);
 }
 
-
-function selectText(nodeList: NodeListOf<Element>): void {
+export function selectText(nodeList: NodeListOf<Element>, text?: string, selected?: boolean): void {
   nodeList.forEach(element => {
     const resourceSelectList = element.childNodes;
     const op = document.createElement('option');
-    op.value = 'Create Pipeline Resource';
-    op.text = 'Create Pipeline Resource';
+    op.value = text;
+    op.text = text;
+    op.selected = selected ?? false;
     resourceSelectList.forEach(selectElement => {
       selectElement.insertBefore(op, selectElement.firstChild)
     });
@@ -44,7 +44,5 @@ function selectText(nodeList: NodeListOf<Element>): void {
 
 function restore(state: Trigger): void {
   rootElement.appendChild(new PipelineRunEditor(state).getElement());
-  selectText(document.querySelectorAll('[id^=Resources]'));
+  selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource');
 }
-
-

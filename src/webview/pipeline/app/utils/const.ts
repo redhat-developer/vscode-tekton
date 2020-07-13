@@ -8,5 +8,5 @@ export enum VolumeTypes {
   EmptyDirectory = 'Empty Directory',
   ConfigMap = 'Config Map',
   Secret = 'Secret',
-  PVC = 'PVC',
+  PersistentVolumeClaim = 'PVC',
 }

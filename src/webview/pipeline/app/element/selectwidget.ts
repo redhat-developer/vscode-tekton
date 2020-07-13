@@ -5,9 +5,11 @@
 
 import { Widget, BaseWidget } from '../common/widget';
 import { createDiv } from '../utils/util';
-import { EditItem } from '../utils/maincontent';
+import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
 import { NameType, Trigger } from '../common/types';
+import { VolumeTypes } from '../utils/const';
+import { selectText } from '../index';
 
 export class SelectWidget extends BaseWidget {
   public select: HTMLSelectElement;
@@ -18,21 +20,43 @@ export class SelectWidget extends BaseWidget {
     this.select = document.createElement('select');
     this.select.classList.add('editor-select-box');
     // this.select.onclick = () => this.selectText(this.select.parentNode);
-    this.select.onchange = () => this.addInputBox(this.select.parentNode.parentNode, this.select.value);
+    this.select.onchange = () => this.addElement(this.select.parentNode.parentNode, this.select.value);
     this.element.appendChild(this.select);
   }
 
-  addInputBox(event: Node & ParentNode, value: string): void {
-    console.log(this.trigger);
-    console.log(event);
-    console.log(value);
+  addElement(event: Node & ParentNode, value: string): void {
     if (value.trim() === 'Create Pipeline Resource' && event.lastElementChild.id.trim() !== 'input-resource') {
       const input = new EditItem('URL', new InputWidget('Please provide Name/URL'), 'input-resource');
-      console.log(event.lastElementChild.id);
       event.appendChild(input.getElement());
     } else if (event.lastElementChild.id.trim() === 'input-resource') {
-      event.lastElementChild.remove()
+      event.lastElementChild.remove();
     }
+    try {
+      const sectionId = `${value}-Workspaces`;
+      const editId = 'Workspaces-Edit';
+      console.log(this.trigger[value]);
+      if (this.trigger[value]) {
+        if (event.lastElementChild.id.trim() === editId) event.lastElementChild.remove();
+        const workspacesType = new SelectWidget(sectionId).workspacesResource(this.trigger[value]);
+        const workspacesOp = new EditItem(VolumeTypes[value], workspacesType, editId);
+        event.appendChild(workspacesOp.getElement());
+        selectText(document.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[value]}`, true);
+      } else if (event.lastElementChild.id.trim() === editId) {
+        event.lastElementChild.remove();
+      }
+    } catch (err) {
+      // ignores
+    }
+  }
+
+  workspacesResource(items: string[]): Widget {
+    items.forEach(val => {
+      const op = document.createElement('option');
+      op.value = val['metadata'].name;
+      op.text = val['metadata'].name;
+      this.select.appendChild(op);
+    });
+    return this;
   }
 
   pipelineResource(items: string[], resource: NameType): Widget {

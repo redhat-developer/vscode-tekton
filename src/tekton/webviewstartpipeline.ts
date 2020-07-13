@@ -45,7 +45,7 @@ export async function pipelineData(pipeline: TknPipelineTrigger): Promise<TknRes
     name: pipeline.metadata.name,
     resources: pipeline.spec.resources,
     params: pipeline.spec.params,
-    workspaces: pipeline.spec['workspaces'],
+    workspaces: pipeline.spec.workspaces,
     serviceAcct: pipeline.spec.serviceAccount,
     pipelineResource: undefined,
     Secret: undefined,

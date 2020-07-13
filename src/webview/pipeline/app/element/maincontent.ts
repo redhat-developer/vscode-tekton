@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { createDiv } from './util';
+import { createDiv } from '../utils/util';
 import { debounce } from 'debounce';
 import { Listener, BaseWidget, Widget } from '../common/widget';
 
