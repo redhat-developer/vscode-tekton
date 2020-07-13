@@ -1,6 +1,6 @@
 {
   "Resource Limits and Requests": {
-    "prefix": "Tekton: K8s Limits",
+    "prefix": "K8s Limits",
     "description": "Defines the Kubernetes resource limits and requests",
     "body": [
       "resources:",
@@ -13,7 +13,7 @@
     ]
   },
   "Task": {
-    "prefix": "Tekton: Task",
+    "prefix": "Task",
     "description": "Create a Tekton Task Resource",
     "body": [
       "apiVersion: tekton.dev/v1beta1",
@@ -41,7 +41,7 @@
     ]
   },
   "TaskRun": {
-    "prefix": "Tekton: TaskRun",
+    "prefix": "TaskRun",
     "description": "Create a Tekton TaskRun Resource",
     "body": [
       "apiVersion: tekton.dev/v1beta1",
@@ -54,7 +54,7 @@
     ]
   },
   "Pipeline": {
-    "prefix": "Tekton: Pipeline",
+    "prefix": "Pipeline",
     "description": "Create a Tekton Pipeline Resource",
     "body": [
       "apiVersion: tekton.dev/v1beta1",
@@ -72,7 +72,7 @@
     ]
   },
   "PipelineRun": {
-    "prefix": "Tekton: PipelineRun",
+    "prefix": "PipelineRun",
     "description": "Create a Tekton PipelineRun Resource",
     "body": [
       "apiVersion: tekton.dev/v1beta1",
@@ -89,7 +89,7 @@
     ]
   },
   "ClusterTask": {
-    "prefix": "Tekton: ClusterTask",
+    "prefix": "ClusterTask",
     "description": "Create a ClusterTask Resource",
     "body": [
       "apiVersion: tekton.dev/v1beta1",
@@ -103,7 +103,7 @@
     ]
   },
   "Condition": {
-    "prefix": "Tekton: Condition",
+    "prefix": "Condition",
     "description": "Create a Condition Resource",
     "body": [
       "apiVersion: tekton.dev/v1alpha1",
@@ -117,7 +117,7 @@
     ]
   },
   "PipelineResource": {
-    "prefix": "Tekton: PipelineResource",
+    "prefix": "PipelineResource",
     "description": "Create a PipelineResource Resource",
     "body": [
       "apiVersion: tekton.dev/v1alpha1",
@@ -131,7 +131,7 @@
     ]
   },
   "TriggerTemplate": {
-    "prefix": "Tekton: TriggerTemplate",
+    "prefix": "TriggerTemplate",
     "description": "Create a TriggerTemplate Resource",
     "body": [
       "apiVersion: tekton.dev/v1beta1",
@@ -144,7 +144,7 @@
     ]
   },
   "TriggerBinding": {
-    "prefix": "Tekton: TriggerBinding",
+    "prefix": "TriggerBinding",
     "description": "Create a TriggerBinding Resource",
     "body": [
       "apiVersion: tekton.dev/v1beta1",
@@ -158,7 +158,7 @@
     ]
   },
   "ClusterTriggerBinding": {
-    "prefix": "Tekton: ClusterTriggerBinding",
+    "prefix": "ClusterTriggerBinding",
     "description": "Create a ClusterTriggerBinding Resource",
     "body": [
       "apiVersion: tekton.dev/v1beta1",
@@ -172,7 +172,7 @@
     ]
   },
   "EventListener": {
-    "prefix": "Tekton: EventListener",
+    "prefix": "EventListener",
     "description": "Create an EventListener Resource",
     "body": [
       "apiVersion: tekton.dev/v1beta1",
@@ -190,7 +190,7 @@
     ]
   },
   "PipelineResource Type": {
-    "prefix": "Tekton: PipelineResourceType",
+    "prefix": "PipelineResourceType",
     "description": "Create a PipelineResource Type Resource",
     "body": [
       "- name: ${1:app-source}",
@@ -198,7 +198,7 @@
     ]
   },
   "Pipeline Task Reference": {
-    "prefix": "Tekton: PipelineTaskReference",
+    "prefix": "PipelineTaskReference",
     "description": "Tekton Pipeline Task Reference",
     "body": [
       "- name: ${1:taskName}",
@@ -211,7 +211,7 @@
     ]
   },
   "Pipeline Task Reference Input": {
-    "prefix": "Tekton: PipelineTaskReferenceInput",
+    "prefix": "PipelineTaskReferenceInput",
     "description": "Tekton Pipeline Task Reference Inputs, Parameters and Outputs",
     "body": [
       "params:",
@@ -227,7 +227,7 @@
     ]
   },
   "Pipeline Task Conditions": {
-    "prefix": "Tekton: PipelineTaskConditions",
+    "prefix": "PipelineTaskConditions",
     "description": "Tekton Pipeline Task Conditions",
     "body": [
       "conditions:",
@@ -238,7 +238,7 @@
     ]
   },
   "TaskStep": {
-    "prefix": "Tekton: TaskStep",
+    "prefix": "TaskStep",
     "description": "Tekton Task Step",
     "body": [
       "- name: ${2:echo2}",
@@ -251,7 +251,7 @@
     ]
   },
   "Param": {
-    "prefix": "Tekton: Parameter",
+    "prefix": "Parameter",
     "description": "A generic parameter used across any YAML that are key/value pair",
     "body": [
       "- name: ${1:foo}",
@@ -260,7 +260,7 @@
     ]
   },
   "Task Input": {
-    "prefix": "Tekton: TaskInput",
+    "prefix": "TaskInput",
     "description": "Tekton Task Inputs, Parameters and Outputs",
     "body": [
       "params:",
@@ -283,7 +283,7 @@
     ]
   },
   "Task Param": {
-    "prefix": "Tekton: TaskParameter",
+    "prefix": "TaskParameter",
     "description": "Tekton Pipeline Task Parameter",
     "body": [
       "- name: ${1:foo}",

@@ -13,102 +13,102 @@ interface Snippet {
 
 const snippets: { [key: string]: Snippet } = {
   'Resource Limits and Requests': {
-    prefix: 'Tekton: K8s Limits',
+    prefix: 'K8s Limits',
     description: 'Defines the Kubernetes resource limits and requests',
     body: load('k8s-limits.yaml'),
   },
   'Task': {
-    prefix: 'Tekton: Task',
+    prefix: 'Task',
     description: 'Create a Tekton Task Resource',
     body: load('task.yaml'),
   },
   'TaskRun': {
-    prefix: 'Tekton: TaskRun',
+    prefix: 'TaskRun',
     description: 'Create a Tekton TaskRun Resource',
     body: load('taskrun.yaml'),
   },
   'Pipeline': {
-    prefix: 'Tekton: Pipeline',
+    prefix: 'Pipeline',
     description: 'Create a Tekton Pipeline Resource',
     body: load('pipeline.yaml'),
   },
   'PipelineRun': {
-    prefix: 'Tekton: PipelineRun',
+    prefix: 'PipelineRun',
     description: 'Create a Tekton PipelineRun Resource',
     body: load('pipelinerun.yaml'),
   },
   'ClusterTask': {
-    prefix: 'Tekton: ClusterTask',
+    prefix: 'ClusterTask',
     description: 'Create a ClusterTask Resource',
     body: load('clustertask.yaml'),
   },
   'Condition': {
-    prefix: 'Tekton: Condition',
+    prefix: 'Condition',
     description: 'Create a Condition Resource',
     body: load('condition.yaml')
   },
   'PipelineResource': {
-    prefix: 'Tekton: PipelineResource',
+    prefix: 'PipelineResource',
     description: 'Create a PipelineResource Resource',
     body: load('pipelineResource.yaml'),
   },
   'TriggerTemplate': {
-    prefix: 'Tekton: TriggerTemplate',
+    prefix: 'TriggerTemplate',
     description: 'Create a TriggerTemplate Resource',
     body: load('triggertemplate.yaml')
   },
   'TriggerBinding': {
-    prefix: 'Tekton: TriggerBinding',
+    prefix: 'TriggerBinding',
     description: 'Create a TriggerBinding Resource',
     body: load('triggerbinding.yaml')
   },
   'ClusterTriggerBinding': {
-    prefix: 'Tekton: ClusterTriggerBinding',
+    prefix: 'ClusterTriggerBinding',
     description: 'Create a ClusterTriggerBinding Resource',
     body: load('cluster-triggerbinding.yaml')
   },
   'EventListener': {
-    prefix: 'Tekton: EventListener',
+    prefix: 'EventListener',
     description: 'Create an EventListener Resource',
     body: load('EventListener.yaml')
   },
   'PipelineResource Type': {
-    prefix: 'Tekton: PipelineResourceType',
+    prefix: 'PipelineResourceType',
     description: 'Create a PipelineResource Type Resource',
     body: load('pipelineResourceType.yaml'),
   },
   'Pipeline Task Reference': {
-    prefix: 'Tekton: PipelineTaskReference',
+    prefix: 'PipelineTaskReference',
     description: 'Tekton Pipeline Task Reference',
     body: load('pipelineTaskReference.yaml'),
   },
   'Pipeline Task Reference Input': {
-    prefix: 'Tekton: PipelineTaskReferenceInput',
+    prefix: 'PipelineTaskReferenceInput',
     description: 'Tekton Pipeline Task Reference Inputs, Parameters and Outputs',
     body: load('pipelineTaskReferenceInputs.yaml'),
   },
   'Pipeline Task Conditions': {
-    prefix: 'Tekton: PipelineTaskConditions',
+    prefix: 'PipelineTaskConditions',
     description: 'Tekton Pipeline Task Conditions',
     body: load('pipelineTaskCondition.yaml')
   },
   'TaskStep': {
-    prefix: 'Tekton: TaskStep',
+    prefix: 'TaskStep',
     description: 'Tekton Task Step',
     body: load('tektonTaskStep.yaml'),
   },
   'Param': {
-    prefix: 'Tekton: Parameter',
+    prefix: 'Parameter',
     description: 'A generic parameter used across any YAML that are key/value pair',
     body: load('tektonParameter.yaml'),
   },
   'Task Input': {
-    prefix: 'Tekton: TaskInput',
+    prefix: 'TaskInput',
     description: 'Tekton Task Inputs, Parameters and Outputs',
     body: load('taskinput.yaml'),
   },
   'Task Param': {
-    prefix: 'Tekton: TaskParameter',
+    prefix: 'TaskParameter',
     description: 'Tekton Pipeline Task Parameter',
     body: load('tektonTaskParameter.yaml'),
   },
