@@ -42,13 +42,13 @@ export class PipelineRunEditor implements Widget {
     for (const resource of resourceType) {
       let element: Widget;
       if (title === 'Parameters') {
-        element = new InputWidget('Name')
+        element = new InputWidget('Name');
       } else if (title === 'Workspaces') {
         element = new SelectWidget('Workspaces-volume', this.trigger).workspaces(VolumeTypes)
       } else {
         element = new SelectWidget('Resources').pipelineResource(this.trigger.pipelineResource, resource);
       }
-      resourceGroup.addEditItem(new EditItem(resource.name, element));
+      resourceGroup.addEditItem(new EditItem(resource.name, element, resource.name));
       //TODO: complete this
     }
     this.editor.addGroup(resourceGroup);
