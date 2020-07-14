@@ -79,6 +79,7 @@ body {
   color: var(--vscode-settings-headerForeground);
   font-weight: 600;
   font-size: var(--vscode-font-size);
+  padding-bottom: 8px;
 }
 
 .editItem {
@@ -121,26 +122,12 @@ body {
   padding: 0;
   box-sizing: border-box;
   font-size: var(--vscode-font-size);
-  width: 466px;
+  width: 465px;
   height: 26px;
   background-color: var(--vscode-settings-textInputBackground);
   color: var(--vscode-settings-textInputForeground);
   line-height: 1.4em!important;
-  margin-top: 8px;
-}
-
-.editor-input-box-input {
-  position: relative;
-  display: block;
-  padding: 0;
-  box-sizing: border-box;
-  font-size: var(--vscode-font-size);
-  width: 466px;
-  height: 26px;
-  background-color: var(--vscode-settings-textInputBackground);
-  color: var(--vscode-settings-textInputForeground);
-  line-height: 1.4em!important;
-  margin-top: 8px;
+  left: 0.5px;
 }
 
 .wrapper {
@@ -174,9 +161,32 @@ body {
 }
 
 .select-container {
-  margin-top: 9px;
+  /* margin-top: 9px; */
+  /* width: 466px; */
   font-family: inherit;
   font-size: inherit;
+}
+
+.editor-select-box-item {
+  width: 466px;
+  font-family: inherit;
+  font-size: var(--vscode-font-size);
+  border: 1px solid;
+  background-color: var(--vscode-settings-dropdownBackground);
+  color: var(--vscode-settings-dropdownForeground);
+  border-color: var(--vscode-settings-dropdownBorder);
+  height: 26px;
+  padding: 2px 8px;
+  align-items: center;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0px;
+}
+
+.editor-select-box-item:focus {
+  outline-color: var(--vscode-focusBorder);
+  outline-width: 1px;
+  outline-style: solid;
+  opacity: 1!important;
 }
 
 .select-container:after {

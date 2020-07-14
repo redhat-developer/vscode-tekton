@@ -36,10 +36,10 @@ export class SelectWidget extends BaseWidget {
       const editId = 'Workspaces-Edit';
       const optionId = select[select.selectedIndex].id;
       if (optionId) {
-        const selectItem = new SelectWidget().selectItem(this.trigger[optionId], select.value);
+        const selectItem = new SelectWidget(null, null, 'editor-select-box-item').selectItem(this.trigger[optionId], select.value);
         const selectItemOp = new EditItem('Items', selectItem, 'option-workspace-id', 'inner-editItem');
         event.appendChild(selectItemOp.getElement());
-        event.lastChild.appendChild(new InputWidget('Enter a path', 'editor-input-box-input').getElement());
+        event.lastChild.appendChild(new InputWidget('Enter a path').getElement());
       }
       if (this.trigger[select.value]) {
         if (event.lastElementChild.id.trim() === editId) event.lastElementChild.remove();
