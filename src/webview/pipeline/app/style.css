@@ -50,6 +50,24 @@ body {
   cursor: pointer;
 }
 
+.elementButtons {
+  padding-top: 12px;
+}
+
+.addItemButtons {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  width: auto;
+  padding: 2px 14px;
+  cursor: pointer;
+  font-size: var(--vscode-font-size);
+}
+
+.addItemButtons:hover {
+  background: var(--vscode-button-hoverBackground);
+  color: var(--vscode-button-foreground);
+}
+
 .startButton:hover {
   background: var(--vscode-button-hoverBackground);
   color: var(--vscode-button-foreground);

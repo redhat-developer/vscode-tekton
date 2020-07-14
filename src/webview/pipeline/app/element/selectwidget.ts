@@ -10,6 +10,7 @@ import { InputWidget } from './inputwidget';
 import { NameType, Trigger } from '../common/types';
 import { VolumeTypes } from '../utils/const';
 import { selectText } from '../index';
+import { ButtonsPanel } from './buttonspanel';
 
 export class SelectWidget extends BaseWidget {
   public select: HTMLSelectElement;
@@ -65,7 +66,8 @@ export class SelectWidget extends BaseWidget {
     const selectItemOp = new EditItem('Items', selectItem, 'option-workspace-id', 'inner-editItem');
     event.appendChild(createDiv(newDivClass));
     event.lastChild.appendChild(selectItemOp.getElement());
-    event.lastChild.lastChild.appendChild(new InputWidget('Enter a path').getElement());
+    event.lastChild.appendChild(new InputWidget('Enter a path').getElement());
+    event.lastChild.appendChild(new ButtonsPanel('Add items', 'elementButtons', 'addItemButtons').getElement());
   }
 
   selectItem(items: string[], name?: string): Widget {

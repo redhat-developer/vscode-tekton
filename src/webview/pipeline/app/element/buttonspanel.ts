@@ -8,16 +8,20 @@ import { BaseWidget } from '../common/widget';
 export class ButtonsPanel extends BaseWidget {
   private startButton: HTMLAnchorElement;
 
-  constructor() {
+  constructor(textContent?: string, className?: string, buttonClassName?: string) {
     super();
     this.element = document.createElement('div');
-    this.element.className = 'buttons';
+    this.element.className = className ?? 'buttons';
 
     this.startButton = document.createElement('a');
-    this.startButton.textContent = 'Start';
+    this.startButton.textContent = textContent ?? 'Start';
     this.startButton.setAttribute('role', 'button');
-    this.startButton.className = 'startButton';
+    this.startButton.className = buttonClassName ?? 'startButton';
+    this.startButton.onclick = () => this.addItem(this.startButton.parentNode.parentNode);
     this.element.appendChild(this.startButton);
+  }
 
+  addItem(event: Node & ParentNode): void {
+    console.log(event);
   }
 }
