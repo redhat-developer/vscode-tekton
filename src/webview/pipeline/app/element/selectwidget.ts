@@ -36,23 +36,36 @@ export class SelectWidget extends BaseWidget {
       const editId = 'Workspaces-Edit';
       const optionId = select[select.selectedIndex].id;
       if (optionId) {
+        const selectedItem = event.querySelectorAll('.items-section-workspace');
+        if (optionId === 'select-workspace-option') selectedItem.forEach(element => element.remove());
         const selectItem = new SelectWidget(null, null, 'editor-select-box-item').selectItem(this.trigger[optionId], select.value);
-        const selectItemOp = new EditItem('Items', selectItem, 'option-workspace-id', 'inner-editItem');
-        event.appendChild(selectItemOp.getElement());
-        event.lastChild.appendChild(new InputWidget('Enter a path').getElement());
+        if (selectedItem.length) {
+          selectedItem.forEach(element => element.remove());
+          this.createItem(event, selectItem);
+        } else {
+          this.createItem(event, selectItem);
+        }
       }
       if (this.trigger[select.value]) {
         if (event.lastElementChild.id.trim() === editId) event.lastElementChild.remove();
         const workspacesType = new SelectWidget(sectionId, this.trigger).workspacesResource(this.trigger[select.value], select.value);
         const workspacesOp = new EditItem(VolumeTypes[select.value], workspacesType, editId, 'inner-editItem');
         event.appendChild(workspacesOp.getElement());
-        selectText(document.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[select.value]}`, true);
+        selectText(event.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[select.value]}`, true, 'select-workspace-option');
       } else if (event.lastElementChild.id.trim() === editId) {
         event.lastElementChild.remove();
       }
     } catch (err) {
       // ignores
     }
+  }
+
+  createItem(event: Node & ParentNode, selectItem: Widget): void {
+    const newDivClass = 'items-section-workspace';
+    const selectItemOp = new EditItem('Items', selectItem, 'option-workspace-id', 'inner-editItem');
+    event.appendChild(createDiv(newDivClass));
+    event.lastChild.appendChild(selectItemOp.getElement());
+    event.lastChild.lastChild.appendChild(new InputWidget('Enter a path').getElement());
   }
 
   selectItem(items: string[], name?: string): Widget {
