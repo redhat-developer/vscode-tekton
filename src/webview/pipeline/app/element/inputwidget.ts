@@ -7,9 +7,9 @@ import { createDiv } from '../utils/util';
 import { BaseWidget } from '../common/widget';
 
 export class InputWidget extends BaseWidget {
-  constructor(text?: string) {
+  constructor(text?: string, className?: string) {
     super();
-    const editorInput = createDiv('editor-input-box');
+    const editorInput = createDiv(className ?? 'editor-input-box');
     const input = document.createElement('input');
     input.classList.add('input');
     input.autocapitalize = 'off';

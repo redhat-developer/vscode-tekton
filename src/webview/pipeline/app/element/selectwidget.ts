@@ -26,7 +26,7 @@ export class SelectWidget extends BaseWidget {
 
   addElement(event: Node & ParentNode, select: HTMLSelectElement): void {
     if (select.value.trim() === 'Create Pipeline Resource' && event.lastElementChild.id.trim() !== 'input-resource') {
-      const input = new EditItem('URL', new InputWidget('Please provide Name/URL'), 'input-resource');
+      const input = new EditItem('URL', new InputWidget('Please provide Name/URL'), 'input-resource', 'inner-editItem');
       event.appendChild(input.getElement());
     } else if (event.lastElementChild.id.trim() === 'input-resource') {
       event.lastElementChild.remove();
@@ -37,14 +37,14 @@ export class SelectWidget extends BaseWidget {
       const optionId = select[select.selectedIndex].id;
       if (optionId) {
         const selectItem = new SelectWidget().selectItem(this.trigger[optionId], select.value);
-        const selectItemOp = new EditItem('Items', selectItem);
+        const selectItemOp = new EditItem('Items', selectItem, 'option-workspace-id', 'inner-editItem');
         event.appendChild(selectItemOp.getElement());
-        event.lastChild.appendChild(new InputWidget('Enter a path').getElement());
+        event.lastChild.appendChild(new InputWidget('Enter a path', 'editor-input-box-input').getElement());
       }
       if (this.trigger[select.value]) {
         if (event.lastElementChild.id.trim() === editId) event.lastElementChild.remove();
         const workspacesType = new SelectWidget(sectionId, this.trigger).workspacesResource(this.trigger[select.value], select.value);
-        const workspacesOp = new EditItem(VolumeTypes[select.value], workspacesType, editId);
+        const workspacesOp = new EditItem(VolumeTypes[select.value], workspacesType, editId, 'inner-editItem');
         event.appendChild(workspacesOp.getElement());
         selectText(document.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[select.value]}`, true);
       } else if (event.lastElementChild.id.trim() === editId) {
