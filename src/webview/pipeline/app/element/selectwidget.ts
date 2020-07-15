@@ -38,13 +38,17 @@ export class SelectWidget extends BaseWidget {
       const optionId = select[select.selectedIndex].id;
       if (optionId) {
         const selectedItem = event.querySelectorAll('.items-section-workspace');
-        if (optionId === 'select-workspace-option') selectedItem.forEach(element => element.remove());
-        const selectItem = new SelectWidget(null, null, 'editor-select-box-item').selectItem(this.trigger[optionId], select.value);
+        const buttonItem = event.querySelectorAll('.elementButtons');
+        if (optionId === 'select-workspace-option') {
+          selectedItem.forEach(element => element.remove());
+          buttonItem.forEach(element => element.remove());
+        }
         if (selectedItem.length) {
           selectedItem.forEach(element => element.remove());
-          this.createItem(event, selectItem);
+          buttonItem.forEach(element => element.remove());
+          this.createItem(event, optionId, select.value);
         } else {
-          this.createItem(event, selectItem);
+          this.createItem(event, optionId, select.value);
         }
       }
       if (this.trigger[select.value]) {
@@ -61,13 +65,14 @@ export class SelectWidget extends BaseWidget {
     }
   }
 
-  createItem(event: Node & ParentNode, selectItem: Widget): void {
+  createItem(event: Node & ParentNode, optionId: string, selectValue?: string): void {
     const newDivClass = 'items-section-workspace';
+    const selectItem = new SelectWidget(null, null, 'editor-select-box-item').selectItem(this.trigger[optionId], selectValue);
     const selectItemOp = new EditItem('Items', selectItem, 'option-workspace-id', 'inner-editItem');
     event.appendChild(createDiv(newDivClass));
     event.lastChild.appendChild(selectItemOp.getElement());
     event.lastChild.appendChild(new InputWidget('Enter a path').getElement());
-    event.lastChild.appendChild(new ButtonsPanel('Add items', 'elementButtons', 'addItemButtons').getElement());
+    event.appendChild(new ButtonsPanel('Add items', 'elementButtons', 'addItemButtons', this.trigger, optionId, selectValue).getElement());
   }
 
   selectItem(items: string[], name?: string): Widget {

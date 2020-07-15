@@ -4,11 +4,16 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { BaseWidget } from '../common/widget';
+import { Trigger } from '../common/types';
+import { SelectWidget } from './selectwidget';
+import { EditItem } from './maincontent';
+import { createDiv } from '../utils/util';
+import { InputWidget } from './inputwidget';
 
 export class ButtonsPanel extends BaseWidget {
   private startButton: HTMLAnchorElement;
 
-  constructor(textContent?: string, className?: string, buttonClassName?: string) {
+  constructor(textContent?: string, className?: string, buttonClassName?: string, public trigger?: Trigger, public optionId?: string, public selectOption?: string) {
     super();
     this.element = document.createElement('div');
     this.element.className = className ?? 'buttons';
@@ -22,6 +27,21 @@ export class ButtonsPanel extends BaseWidget {
   }
 
   addItem(event: Node & ParentNode): void {
-    console.log(event);
+    console.log(this.optionId)
+    if (this.optionId) {
+      const selectItem = new SelectWidget(null, null, 'editor-select-box-item').selectItem(this.trigger[this.optionId], this.selectOption);
+      this.createItem(event, this.optionId, this.selectOption);
+    }
+  }
+
+  createItem(event: Node & ParentNode, optionId: string, selectValue?: string): void {
+    const newDivClass = 'items-section-workspace';
+    const selectItem = new SelectWidget(null, null, 'editor-select-box-item').selectItem(this.trigger[optionId], selectValue);
+    const selectItemOp = new EditItem('Items', selectItem, 'option-workspace-id', 'inner-editItem');
+    event.lastChild.remove();
+    event.appendChild(createDiv(newDivClass));
+    event.lastChild.appendChild(selectItemOp.getElement());
+    event.lastChild.appendChild(new InputWidget('Enter a path').getElement());
+    event.appendChild(new ButtonsPanel('Add items', 'elementButtons', 'addItemButtons', this.trigger, optionId, selectValue).getElement());
   }
 }
