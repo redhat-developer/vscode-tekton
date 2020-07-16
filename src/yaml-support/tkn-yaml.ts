@@ -21,7 +21,8 @@ export enum TektonYamlType {
   EventListener = 'EventListener',
   TriggerBinding = 'TriggerBinding',
   TriggerTemplate = 'TriggerTemplate',
-  PipelineResource = 'PipelineResource'
+  PipelineResource = 'PipelineResource',
+  ClusterTriggerBinding = 'ClusterTriggerBinding',
 }
 
 export interface DeclaredResource {
@@ -131,6 +132,24 @@ export class TektonYaml {
       const metadata = this.getMetadata(rootMap);
       if (metadata) {
         return this.getName(metadata);
+      }
+    }
+
+    return undefined;
+  }
+
+  getApiVersionAndTypePath(vsDocument: vscode.TextDocument): string | undefined {
+    const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
+    if (!yamlDocuments) {
+      return undefined;
+    }
+
+    for (const doc of yamlDocuments) {
+      const rootMap = this.getRootMap(doc);
+      if (rootMap) {
+        const apiVersion = getYamlMappingValue(rootMap, 'apiVersion');
+        const kind = getYamlMappingValue(rootMap, 'kind');
+        return `${apiVersion}_${kind}.json`;
       }
     }
 

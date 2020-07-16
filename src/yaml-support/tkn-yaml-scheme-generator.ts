@@ -12,10 +12,10 @@ import { Snippet } from './snippet';
 import { getTknConditionsSnippets } from './tkn-conditions-provider';
 
 let context: vscode.ExtensionContext;
-export function generateScheme(extContext: vscode.ExtensionContext, vsDocument: vscode.TextDocument): Promise<string> {
+export function generateScheme(extContext: vscode.ExtensionContext, vsDocument: vscode.TextDocument, schemaPath: string): Promise<string> {
   context = extContext;
 
-  return schemeStorage.getScheme(vsDocument, generate);
+  return schemeStorage.getScheme(vsDocument, doc => generate(doc, schemaPath));
 }
 
 
@@ -54,19 +54,24 @@ function injectConditionRefs(templateObj: any, conditions: string[]): {} {
   return templateObj;
 }
 
-async function generate(doc: vscode.TextDocument): Promise<string> {
-  const template = await readFile(path.join(context.extensionPath, 'scheme', 'pipeline.json'), 'UTF8');
-  const snippets = await getTknTasksSnippets();
-  const conditions = await getTknConditionsSnippets();
-  const definedTasks = pipelineYaml.getPipelineTasksName(doc);
-  const declaredResources = pipelineYaml.getDeclaredResources(doc);
+async function generate(doc: vscode.TextDocument, schemaPath: string): Promise<string> {
 
-  const resNames = declaredResources.map(item => item.name);
-  const templateObj = JSON.parse(template);
-  let templateWithSnippets = injectTaskSnippets(templateObj, snippets);
-  const tasksRef = snippets.map(value => value.body.taskRef.name);
-  templateWithSnippets = injectTasksName(templateWithSnippets, definedTasks, tasksRef);
-  templateWithSnippets = injectResourceName(templateWithSnippets, resNames);
-  templateWithSnippets = injectConditionRefs(templateWithSnippets, conditions);
-  return JSON.stringify(templateWithSnippets);
+  const template = await readFile(schemaPath, 'UTF8');
+  if (schemaPath.endsWith('tekton.dev/v1beta1_Pipeline.json')) {
+    const snippets = await getTknTasksSnippets();
+    const conditions = await getTknConditionsSnippets();
+    const definedTasks = pipelineYaml.getPipelineTasksName(doc);
+    const declaredResources = pipelineYaml.getDeclaredResources(doc);
+
+    const resNames = declaredResources.map(item => item.name);
+    const templateObj = JSON.parse(template);
+    let templateWithSnippets = injectTaskSnippets(templateObj, snippets);
+    const tasksRef = snippets.map(value => value.body.taskRef.name);
+    templateWithSnippets = injectTasksName(templateWithSnippets, definedTasks, tasksRef);
+    templateWithSnippets = injectResourceName(templateWithSnippets, resNames);
+    templateWithSnippets = injectConditionRefs(templateWithSnippets, conditions);
+    return JSON.stringify(templateWithSnippets);
+  }
+
+  return template;
 }

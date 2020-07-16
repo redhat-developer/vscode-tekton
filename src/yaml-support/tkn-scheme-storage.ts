@@ -29,9 +29,14 @@ export class TknSchemeStorage {
     }
 
     if (this.cache[key].version !== doc.version) {
-      const scheme = await generator(doc);
-      this.cache[key].scheme = scheme;
-      this.cache[key].version = doc.version;
+      try {
+        const scheme = await generator(doc);
+        this.cache[key].scheme = scheme;
+        this.cache[key].version = doc.version;
+      } catch (err) {
+        console.error(err);
+      }
+
     }
   }
 }
