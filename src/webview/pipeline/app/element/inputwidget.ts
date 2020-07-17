@@ -5,20 +5,43 @@
 
 import { createDiv } from '../utils/util';
 import { BaseWidget } from '../common/widget';
+import { PipelineStart } from '../common/types';
 
 export class InputWidget extends BaseWidget {
-  constructor(text?: string, className?: string) {
+  public input: HTMLInputElement;
+  constructor(text?: string, className?: string, public initialValue?: PipelineStart) {
     super();
     const editorInput = createDiv(className ?? 'editor-input-box');
-    const input = document.createElement('input');
-    input.classList.add('input');
-    input.autocapitalize = 'off';
-    input.spellcheck = false;
-    input.placeholder = text ?? '';
-    input.type = text;
+    this.input = document.createElement('input');
+    this.input.classList.add('input');
+    this.input.autocapitalize = 'off';
+    this.input.spellcheck = false;
+    this.input.placeholder = text ?? '';
+    this.input.type = text;
     this.element = editorInput;
     const wrapper = createDiv('wrapper');
-    wrapper.appendChild(input);
+    wrapper.appendChild(this.input);
+    this.input.oninput = () => this.getValue(this.input);
+    // this.input.onblur = () => this.getValue(this.input);
     editorInput.appendChild(wrapper);
+  }
+
+  getValue(input: HTMLInputElement): void {
+    if (input.parentNode.parentNode.parentNode.parentElement.id === 'Parameters') {
+      this.parameter(input.parentNode.parentNode.parentElement.id, this.input.value);
+    }
+  }
+
+  parameter(paramName: string, defaultValue: string): void {
+    if (this.initialValue.params.length === 0) {
+      this.initialValue.params.push({name: paramName, default: defaultValue})
+    } else {
+      this.initialValue.params.map(val => {
+        if (val.name === paramName) {
+          val.default = defaultValue;
+        }
+      })
+    }
+    console.log(this.initialValue.params);
   }
 }

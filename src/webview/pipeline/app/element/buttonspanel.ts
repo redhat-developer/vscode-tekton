@@ -29,7 +29,6 @@ export class ButtonsPanel extends BaseWidget {
   addItem(event: Node & ParentNode): void {
     console.log(this.optionId)
     if (this.optionId) {
-      const selectItem = new SelectWidget(null, null, 'editor-select-box-item').selectItem(this.trigger[this.optionId], this.selectOption);
       this.createItem(event, this.optionId, this.selectOption);
     }
   }

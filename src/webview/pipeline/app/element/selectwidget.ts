@@ -109,6 +109,8 @@ export class SelectWidget extends BaseWidget {
         this.select.appendChild(op);
       }
     });
+    console.log(this.select.value);
+    console.log('jfkldjfkdsjfkdjdksjkfldsjksdjksdfjksjdfklsjklsdjfdfsj');
     return this;
   }
 

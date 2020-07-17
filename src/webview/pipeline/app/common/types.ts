@@ -39,3 +39,10 @@ export interface Trigger {
   serviceAcct: string | undefined;
   pipelineResource?: string[];
 }
+
+export interface PipelineStart {
+  name: string;
+  resources: NameType[];
+  params?: Params[];
+  workspaces?: Workspaces[];
+}

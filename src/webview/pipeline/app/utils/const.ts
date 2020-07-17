@@ -10,3 +10,10 @@ export enum VolumeTypes {
   Secret = 'Secret',
   PersistentVolumeClaim = 'PVC',
 }
+
+export const initialResourceFormValues = {
+  name: undefined,
+  params: [],
+  resources: [],
+  workspaces: []
+}

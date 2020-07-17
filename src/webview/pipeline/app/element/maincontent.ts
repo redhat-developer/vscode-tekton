@@ -27,11 +27,14 @@ export class EditItem extends BaseWidget {
 }
 
 export class GroupItem extends BaseWidget {
-
+  public label: HTMLLabelElement;
   constructor(private title: string) {
     super();
     this.element = createDiv('editorGroup');
-    this.element.innerText = title;
+    this.label = document.createElement('label');
+    this.label.innerText = title;
+    this.element.id = title ?? '';
+    this.element.appendChild(this.label);
   }
 
   addEditItem(item: EditItem): void {
