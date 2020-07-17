@@ -6,6 +6,8 @@ import * as vscode from 'vscode';
 import * as semver from 'semver';
 import { tektonYaml, TektonYamlType } from './tkn-yaml';
 import { generateScheme } from './tkn-yaml-scheme-generator';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 enum MODIFICATION_ACTIONS {
   'delete',
@@ -29,12 +31,13 @@ interface SchemaDeletions {
 }
 
 interface YamlExtensionAPI {
-  registerContributor(schema: string, requestSchema: (resource: string) => string, requestSchemaContent: (uri: string) => Promise<string>): boolean;
+  registerContributor(schema: string, requestSchema: (resource: string) => string, requestSchemaContent: (uri: string) => Promise<string>, label?: string): boolean;
   modifySchemaContent(schemaModifications: SchemaAdditions | SchemaDeletions): Promise<void>;
 }
 const VSCODE_YAML_EXTENSION_ID = 'redhat.vscode-yaml';
 let extContext: vscode.ExtensionContext;
 const tektonUriCache = new Map<string, string>();
+let schemaPaths: string[];
 
 export async function registerYamlSchemaSupport(context: vscode.ExtensionContext): Promise<void> {
   extContext = context;
@@ -44,30 +47,10 @@ export async function registerYamlSchemaSupport(context: vscode.ExtensionContext
     return;
   }
 
-  yamlPlugin.registerContributor('tekton', requestYamlSchemaUriCallback, requestYamlSchemaContentCallback);
+  schemaPaths = (await fs.readFile(context.asAbsolutePath('scheme/index.properties'))).toString().split('\n');
 
-  //TODO: This is temporary, until 'vscode-yaml' not fixed 'modifySchemaContent' for contributed schema
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const rcs = (yamlPlugin as any).requestCustomSchema.bind(yamlPlugin);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (yamlPlugin as any).requestCustomSchema = async (resource: string): Promise<string[]> => {
-    const result: string[] = await rcs(resource);
-    if (result.includes('kubernetes://schema/tekton.dev/v1alpha1@pipeline')) {
-      const index = result.indexOf('kubernetes://schema/tekton.dev/v1alpha1@pipeline');
-      if (index > -1) {
-        result.splice(index, 1);
-      }
-    }
-    if (result.includes('kubernetes://schema/tekton.dev/v1beta1@pipeline')) {
-      const index = result.indexOf('kubernetes://schema/tekton.dev/v1beta1@pipeline');
-      if (index > -1) {
-        result.splice(index, 1);
-      }
-    }
-
-    return result;
-  }
+  yamlPlugin.registerContributor('tekton', requestYamlSchemaUriCallback, requestYamlSchemaContentCallback, 'apiVersion:tekton.dev/v1beta1');
+  yamlPlugin.registerContributor('triggers-tekton', requestYamlSchemaUriCallback, requestYamlSchemaContentCallback, 'apiVersion:triggers.tekton.dev/v1alpha1');
 }
 
 async function activateYamlExtension(): Promise<YamlExtensionAPI | undefined> {
@@ -93,15 +76,25 @@ async function activateYamlExtension(): Promise<YamlExtensionAPI | undefined> {
   return yamlPlugin;
 }
 
+
 function requestYamlSchemaUriCallback(resource: string): string | undefined {
   const textEditor = vscode.window.visibleTextEditors.find((editor) => editor.document.uri.toString() === resource);
   if (textEditor) {
-    const tektonYamlType = tektonYaml.isTektonYaml(textEditor.document);
-    if (tektonYamlType && tektonYamlType === TektonYamlType.Pipeline) {
-      let resourceUrl = vscode.Uri.parse(resource);
-      resourceUrl = resourceUrl.with({ scheme: 'tekton' });
-      tektonUriCache.set(resourceUrl.toString(), textEditor.document.uri.toString());
-      return resourceUrl.toString();
+    const schemaPath = tektonYaml.getApiVersionAndTypePath(textEditor.document);
+    if (schemaPath) {
+      if (schemaPaths.includes(schemaPath)) {
+        let resourceUrl = vscode.Uri.parse(resource);
+        let scheme: string;
+        if (schemaPath.startsWith('triggers.tekton.dev')) {
+          scheme = 'triggers-tekton'
+        } else {
+          scheme = 'tekton';
+        }
+        resourceUrl = resourceUrl.with({ scheme });
+        tektonUriCache.set(resourceUrl.toString(), textEditor.document.uri.toString());
+        return resourceUrl.toString();
+      }
+
     }
   }
 
@@ -113,7 +106,14 @@ async function requestYamlSchemaContentCallback(uri: string): Promise<string> {
   try {
     const doc = getDocument(uri);
     if (doc) {
-      return generateScheme(extContext, doc);
+      const schemaPath = tektonYaml.getApiVersionAndTypePath(doc);
+      if (schemaPath) {
+        const absPath = extContext.asAbsolutePath(path.join('scheme', schemaPath));
+        if (await fs.pathExists(absPath)) {
+          return generateScheme(extContext, doc, absPath);
+        }
+      }
+
     }
 
   } catch (err) {
