@@ -7,14 +7,15 @@ import { Widget, BaseWidget } from '../common/widget';
 import { createDiv } from '../utils/util';
 import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
-import { NameType, Trigger } from '../common/types';
+import { NameType, Trigger, PipelineStart } from '../common/types';
 import { VolumeTypes } from '../utils/const';
 import { selectText } from '../index';
 import { ButtonsPanel } from './buttonspanel';
+import { createResourceJson } from '../common/resource';
 
 export class SelectWidget extends BaseWidget {
   public select: HTMLSelectElement;
-  constructor(id?: string, public trigger?: Trigger, classList?: string) {
+  constructor(id?: string, public trigger?: Trigger, classList?: string, public initialValue?: PipelineStart) {
     super();
     this.element = createDiv('select-container');
     this.element.id = id ?? '';
@@ -27,9 +28,9 @@ export class SelectWidget extends BaseWidget {
 
   addElement(event: Node & ParentNode, select: HTMLSelectElement): void {
     if (select.value.trim() === 'Create Pipeline Resource' && event.lastElementChild.id.trim() !== 'input-resource') {
-      const input = new EditItem('URL', new InputWidget('Please provide Name/URL'), 'input-resource', 'inner-editItem');
+      const input = new EditItem('URL', new InputWidget('Please provide Name/URL', null, this.initialValue), 'input-resource', 'inner-editItem');
       event.appendChild(input.getElement());
-    } else if (event.lastElementChild.id.trim() === 'input-resource') {
+    } else if (event.lastElementChild.firstElementChild.id.trim() === 'input-resource') {
       event.lastElementChild.remove();
     }
     try {
@@ -109,8 +110,7 @@ export class SelectWidget extends BaseWidget {
         this.select.appendChild(op);
       }
     });
-    console.log(this.select.value);
-    console.log('jfkldjfkdsjfkdjdksjkfldsjksdjksdfjksjdfklsjklsdjfdfsj');
+    createResourceJson(resource.name, this.select.value, this.initialValue);
     return this;
   }
 

@@ -8,9 +8,10 @@ import { debounce } from 'debounce';
 import { Listener, BaseWidget, Widget } from '../common/widget';
 
 export class LabelItem extends BaseWidget {
-  constructor(title: string) {
+  constructor(title: string, id?: string) {
     super();
     this.element = createDiv('editorLabel');
+    this.element.id = id ?? '';
     this.element.innerText = title;
   }
 }
@@ -20,8 +21,7 @@ export class EditItem extends BaseWidget {
   constructor(title: string, input: Widget, id?: string, className?: string) {
     super();
     this.element = createDiv(className ?? 'editItem');
-    this.element.id = id ?? '';
-    this.element.appendChild(new LabelItem(title).getElement());
+    this.element.appendChild(new LabelItem(title, id).getElement());
     this.element.appendChild(input.getElement());
   }
 }

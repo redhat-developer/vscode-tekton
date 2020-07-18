@@ -7,7 +7,7 @@ import { Trigger, Params, Workspaces, PipelineStart } from './common/types';
 import { NavigationList, NavigationItem } from './utils/navigation';
 import { Widget } from './common/widget';
 import { Editor, GroupItem, EditItem } from './element/maincontent';
-import { VolumeTypes, initialResourceFormValues } from './utils/const';
+import { VolumeTypes, initialResourceFormValues, TknResourceType } from './utils/const';
 import { ButtonsPanel } from './element/buttonspanel';
 import { SelectWidget } from './element/selectwidget';
 import { InputWidget } from './element/inputwidget';
@@ -47,7 +47,7 @@ export class PipelineRunEditor implements Widget {
       } else if (title === 'Workspaces') {
         element = new SelectWidget('Workspaces-volume', this.trigger).workspaces(VolumeTypes)
       } else {
-        element = new SelectWidget('Resources').pipelineResource(this.trigger.pipelineResource, resource);
+        element = new SelectWidget('Resources', null, null, this.initialValue).pipelineResource(this.trigger.pipelineResource, resource);
       }
       resourceGroup.addEditItem(new EditItem(resource.name, element, resource.name));
       //TODO: complete this
@@ -61,7 +61,7 @@ export class PipelineRunEditor implements Widget {
   private update(): void {
 
     if (this.trigger.params) {
-      this.createElement('Parameters', this.trigger.params);
+      this.createElement(TknResourceType.Params, this.trigger.params);
     }
 
     const gitResource = [];
@@ -76,16 +76,16 @@ export class PipelineRunEditor implements Widget {
         }
       });
       if (gitResource.length !== 0) {
-        this.createElement('Git Resource', gitResource);
+        this.createElement(TknResourceType.GitResource, gitResource);
       }
 
       if (imageResource.length !== 0) {
-        this.createElement('Image Resource', imageResource);
+        this.createElement(TknResourceType.ImageResource, imageResource);
       }
     }
 
     if (this.trigger.workspaces) {
-      this.createElement('Workspaces', this.trigger.workspaces);
+      this.createElement(TknResourceType.Workspaces, this.trigger.workspaces);
     }
   }
 

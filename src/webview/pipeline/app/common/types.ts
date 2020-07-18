@@ -42,7 +42,7 @@ export interface Trigger {
 
 export interface PipelineStart {
   name: string;
-  resources: NameType[];
+  resources: Resources[];
   params?: Params[];
   workspaces?: Workspaces[];
 }

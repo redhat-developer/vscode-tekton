@@ -17,3 +17,10 @@ export const initialResourceFormValues = {
   resources: [],
   workspaces: []
 }
+
+export enum TknResourceType {
+  Params = 'Parameters',
+  GitResource = 'Git Resource',
+  ImageResource = 'Image Resource',
+  Workspaces = 'Workspaces',
+}

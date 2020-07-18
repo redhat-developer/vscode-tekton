@@ -6,6 +6,8 @@
 import { createDiv } from '../utils/util';
 import { BaseWidget } from '../common/widget';
 import { PipelineStart } from '../common/types';
+import { TknResourceType } from '../utils/const';
+import { parameter, createResourceJson } from '../common/resource';
 
 export class InputWidget extends BaseWidget {
   public input: HTMLInputElement;
@@ -27,21 +29,15 @@ export class InputWidget extends BaseWidget {
   }
 
   getValue(input: HTMLInputElement): void {
+    const initialValue = this.initialValue;
     if (input.parentNode.parentNode.parentNode.parentElement.id === 'Parameters') {
-      this.parameter(input.parentNode.parentNode.parentElement.id, this.input.value);
+      parameter(input.parentNode.parentNode.parentNode.firstElementChild.id, this.input.value, initialValue);
     }
-  }
-
-  parameter(paramName: string, defaultValue: string): void {
-    if (this.initialValue.params.length === 0) {
-      this.initialValue.params.push({name: paramName, default: defaultValue})
-    } else {
-      this.initialValue.params.map(val => {
-        if (val.name === paramName) {
-          val.default = defaultValue;
-        }
-      })
+    const resource = input.parentNode.parentNode.parentNode.parentNode.parentElement.id.trim();
+    if (resource === TknResourceType.GitResource || resource === TknResourceType.ImageResource) {
+      const name = input.parentNode.parentNode.parentNode.parentNode.firstElementChild.id;
+      const resourceRef = this.input.value;
+      createResourceJson(name, resourceRef, this.initialValue);
     }
-    console.log(this.initialValue.params);
   }
 }
