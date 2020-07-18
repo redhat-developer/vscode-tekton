@@ -7,11 +7,11 @@ import { Widget, BaseWidget } from '../common/widget';
 import { createDiv } from '../utils/util';
 import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
-import { NameType, Trigger, PipelineStart } from '../common/types';
-import { VolumeTypes } from '../utils/const';
+import { NameType, Trigger, PipelineStart, Workspaces } from '../common/types';
+import { VolumeTypes, TknResourceType } from '../utils/const';
 import { selectText } from '../index';
 import { ButtonsPanel } from './buttonspanel';
-import { createResourceJson } from '../common/resource';
+import { createResourceJson, createWorkspaceJson } from '../common/resource';
 
 export class SelectWidget extends BaseWidget {
   public select: HTMLSelectElement;
@@ -21,7 +21,6 @@ export class SelectWidget extends BaseWidget {
     this.element.id = id ?? '';
     this.select = document.createElement('select');
     this.select.classList.add(classList ?? 'editor-select-box');
-    // this.select.onclick = () => this.selectText(this.select.parentNode);
     this.select.onchange = () => this.addElement(this.select.parentNode.parentNode, this.select);
     this.element.appendChild(this.select);
   }
@@ -33,10 +32,26 @@ export class SelectWidget extends BaseWidget {
     } else if (event.lastElementChild.firstElementChild.id.trim() === 'input-resource') {
       event.lastElementChild.remove();
     }
+    if (event.parentNode.firstElementChild.textContent === TknResourceType.Workspaces || event.parentNode.parentNode.firstElementChild.textContent === TknResourceType.Workspaces) {
+      this.clickEvent(event);
+    }
+    this.createWorkspaceElement(event, select);
+  }
+
+  createWorkspaceElement(event: Node & ParentNode, select: HTMLSelectElement): void {
     try {
       const sectionId = `${select.value}-Workspaces`;
       const editId = 'Workspaces-Edit';
       const optionId = select[select.selectedIndex].id;
+      if (this.trigger[select.value]) {
+        if (event.lastElementChild.firstElementChild.id.trim() === editId) event.lastElementChild.remove();
+        const workspacesType = new SelectWidget(sectionId, this.trigger, null, this.initialValue).workspacesResource(this.trigger[select.value], select.value);
+        const workspacesOp = new EditItem(VolumeTypes[select.value], workspacesType, editId, 'inner-editItem');
+        event.appendChild(workspacesOp.getElement());
+        selectText(event.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[select.value]}`, true, 'select-workspace-option');
+      } else if (event.lastElementChild.firstElementChild.id.trim() === editId) {
+        event.lastElementChild.remove();
+      }
       if (optionId) {
         const selectedItem = event.querySelectorAll('.items-section-workspace');
         const buttonItem = event.querySelectorAll('.elementButtons');
@@ -52,15 +67,6 @@ export class SelectWidget extends BaseWidget {
           this.createItem(event, optionId, select.value);
         }
       }
-      if (this.trigger[select.value]) {
-        if (event.lastElementChild.id.trim() === editId) event.lastElementChild.remove();
-        const workspacesType = new SelectWidget(sectionId, this.trigger).workspacesResource(this.trigger[select.value], select.value);
-        const workspacesOp = new EditItem(VolumeTypes[select.value], workspacesType, editId, 'inner-editItem');
-        event.appendChild(workspacesOp.getElement());
-        selectText(event.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[select.value]}`, true, 'select-workspace-option');
-      } else if (event.lastElementChild.id.trim() === editId) {
-        event.lastElementChild.remove();
-      }
     } catch (err) {
       // ignores
     }
@@ -68,11 +74,11 @@ export class SelectWidget extends BaseWidget {
 
   createItem(event: Node & ParentNode, optionId: string, selectValue?: string): void {
     const newDivClass = 'items-section-workspace';
-    const selectItem = new SelectWidget(null, null, 'editor-select-box-item').selectItem(this.trigger[optionId], selectValue);
+    const selectItem = new SelectWidget(null, null, 'editor-select-box-item', this.initialValue).selectItem(this.trigger[optionId], selectValue);
     const selectItemOp = new EditItem('Items', selectItem, 'option-workspace-id', 'inner-editItem');
     event.appendChild(createDiv(newDivClass));
     event.lastChild.appendChild(selectItemOp.getElement());
-    event.lastChild.appendChild(new InputWidget('Enter a path').getElement());
+    event.lastChild.appendChild(new InputWidget('Enter a path', null, this.initialValue).getElement());
     event.appendChild(new ButtonsPanel('Add items', 'elementButtons', 'addItemButtons', this.trigger, optionId, selectValue).getElement());
   }
 
@@ -114,13 +120,28 @@ export class SelectWidget extends BaseWidget {
     return this;
   }
 
-  workspaces(type: unknown): Widget {
+  workspaces(type: unknown, resource: Workspaces): Widget {
     Object.keys(type).forEach(val => {
       const op = document.createElement('option');
       op.value = val;
       op.text = val;
       this.select.appendChild(op);
     });
+    createWorkspaceJson(resource.name, this.select.value, this.initialValue);
     return this;
+  }
+
+  clickEvent(event: Node & ParentNode): void {
+    if (event.parentNode.firstElementChild.textContent === TknResourceType.Workspaces) {
+      const name = event.firstElementChild.id;
+      const workspaceType = this.select.value;
+      createWorkspaceJson(name, workspaceType, this.initialValue);
+    }
+    if (event.parentNode.parentNode.firstElementChild.textContent === TknResourceType.Workspaces) {
+      const name = event.parentNode.firstElementChild.id;
+      const workspaceResourceName = this.select.value;
+      console.log(this.initialValue);
+      createWorkspaceJson(name, undefined, this.initialValue, workspaceResourceName)
+    }
   }
 }

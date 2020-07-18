@@ -35,6 +35,35 @@ export function createResourceJson(resourceName: string, resourceReference: stri
     if (!found) {
       initialValue.resources.push({name: resourceName, resourceRef: resourceReference});
     }
-  }  
+  }
 }
 
+export function createWorkspaceJson(resourceName: string, workspaceResourceType: string, initialValue: PipelineStart, workspaceResourceName?: string, keyName?: string, valueName?: string): void {
+  const itemData = [];
+  if (initialValue.workspaces.length === 0) {
+    initialValue.workspaces.push({
+      name: resourceName,
+      workspaceType: workspaceResourceType,
+      workspaceName: workspaceResourceName,
+      item: itemData
+    });
+  } else {
+    const found = initialValue.workspaces.some(value => {
+      if (value.name === resourceName) {
+        if (!workspaceResourceName) value.workspaceType = workspaceResourceType;
+        value.workspaceName = workspaceResourceName;
+        value.item = itemData;
+        return true;
+      }
+    });
+    if (!found) {
+      initialValue.workspaces.push({
+        name: resourceName,
+        workspaceType: workspaceResourceType,
+        workspaceName: workspaceResourceName,
+        item: itemData
+      });
+    }
+  }
+  console.log(initialValue);
+}

@@ -45,7 +45,7 @@ export class PipelineRunEditor implements Widget {
       if (title === 'Parameters') {
         element = new InputWidget('Name', null, this.initialValue);
       } else if (title === 'Workspaces') {
-        element = new SelectWidget('Workspaces-volume', this.trigger).workspaces(VolumeTypes)
+        element = new SelectWidget('Workspaces-volume', this.trigger, null, this.initialValue).workspaces(VolumeTypes, resource)
       } else {
         element = new SelectWidget('Resources', null, null, this.initialValue).pipelineResource(this.trigger.pipelineResource, resource);
       }

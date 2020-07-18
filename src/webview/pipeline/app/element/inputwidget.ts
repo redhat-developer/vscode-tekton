@@ -30,7 +30,7 @@ export class InputWidget extends BaseWidget {
 
   getValue(input: HTMLInputElement): void {
     const initialValue = this.initialValue;
-    if (input.parentNode.parentNode.parentNode.parentElement.id === 'Parameters') {
+    if (input.parentNode.parentNode.parentNode.parentElement.id === TknResourceType.Params) {
       parameter(input.parentNode.parentNode.parentNode.firstElementChild.id, this.input.value, initialValue);
     }
     const resource = input.parentNode.parentNode.parentNode.parentNode.parentElement.id.trim();

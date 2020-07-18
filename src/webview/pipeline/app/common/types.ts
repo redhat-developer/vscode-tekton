@@ -8,12 +8,16 @@ export interface NameType {
   type?: string;
 }
 
+export interface ItemValue {
+  key?: string;
+  value?: string;
+}
+
 export interface Workspaces {
   name: string;
   workspaceName?: string;
   workspaceType?: string;
-  key?: string;
-  value?: string;
+  item?: ItemValue[];
   subPath?: string;
   emptyDir?: string;
 }

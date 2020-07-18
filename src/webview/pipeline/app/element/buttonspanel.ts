@@ -27,7 +27,6 @@ export class ButtonsPanel extends BaseWidget {
   }
 
   addItem(event: Node & ParentNode): void {
-    console.log(this.optionId)
     if (this.optionId) {
       this.createItem(event, this.optionId, this.selectOption);
     }
