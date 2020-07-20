@@ -27,7 +27,29 @@ export class InputWidget extends BaseWidget {
     const wrapper = createDiv('wrapper');
     wrapper.appendChild(this.input);
     this.input.oninput = () => this.getValue(this.input);
+    this.input.onblur = () => this.validator();
+    this.input.onfocus = () => this.removeError();
     editorInput.appendChild(wrapper);
+  }
+
+  removeError(): void {
+    if (this.input.parentNode.parentNode.parentElement.lastElementChild.id === 'label-text-id') {
+      this.input.parentNode.parentNode.parentElement.lastElementChild.remove();
+    }
+  }
+
+  validator(): void {
+    if (!this.input.value) {
+      const createLabel = document.createElement('label');
+      createLabel.innerText = 'Required';
+      createLabel.className = 'label-text';
+      createLabel.id = 'label-text-id';
+      this.input.parentNode.parentElement.className = 'editor-input-box-error';
+      this.input.parentNode.parentNode.parentElement.appendChild(createLabel);
+    } else {
+      this.removeError();
+      this.input.parentNode.parentElement.className = 'editor-input-box';
+    }
   }
 
   getValue(input: HTMLInputElement): void {
