@@ -48,10 +48,44 @@ body {
   width: auto;
   padding: 2px 14px;
   cursor: pointer;
+  border-color: var(--vscode-button-background);
 }
 
 .elementButtons {
   padding-top: 12px;
+}
+
+.close-button {
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: -32px;
+}
+
+.close-button-div {
+  font-size: 0;
+  position: relative;
+}
+
+.close-button::after{
+  content: "\ea76";
+  font-family: codicon;
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  position: relative;
+  top: -1px;
+  bottom: 0;
+  right: 0px;
+  margin: auto;
+  pointer-events: none;
+  color: var(--vscode-settings-headerForeground);
+  opacity: 1;
+}
+
+.close-button:active {
+  transform: scale(1.5);
 }
 
 .addItemButtons {
@@ -61,6 +95,7 @@ body {
   padding: 2px 14px;
   cursor: pointer;
   font-size: var(--vscode-font-size);
+  border-color: var(--vscode-button-background);
 }
 
 .addItemButtons:hover {

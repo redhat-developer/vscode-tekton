@@ -28,7 +28,7 @@ export class PipelineRunEditor implements Widget {
 
     this.navigation = new NavigationList();
     this.editor = new Editor();
-    this.buttonsPanel = new ButtonsPanel();
+    this.buttonsPanel = new ButtonsPanel('start', 'buttons', 'startButton');
 
     this.element.appendChild(this.navigation.getElement());
     this.element.appendChild(this.editor.getElement());

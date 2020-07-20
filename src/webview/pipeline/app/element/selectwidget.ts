@@ -15,7 +15,11 @@ import { createResourceJson, createWorkspaceJson } from '../common/resource';
 
 export class SelectWidget extends BaseWidget {
   public select: HTMLSelectElement;
-  constructor(id?: string, public trigger?: Trigger, classList?: string, public initialValue?: PipelineStart) {
+  constructor(id?: string,
+    public trigger?: Trigger,
+    classList?: string,
+    public initialValue?: PipelineStart
+  ) {
     super();
     this.element = createDiv('select-container');
     this.element.id = id ?? '';
@@ -76,9 +80,10 @@ export class SelectWidget extends BaseWidget {
     const newDivClass = 'items-section-workspace';
     const selectItem = new SelectWidget(null, null, 'editor-select-box-item', this.initialValue).selectItem(this.trigger[optionId], selectValue);
     const selectItemOp = new EditItem('Items', selectItem, 'option-workspace-id', 'inner-editItem');
-    event.appendChild(createDiv(newDivClass));
+    event.appendChild(createDiv(newDivClass, newDivClass));
     event.lastChild.appendChild(selectItemOp.getElement());
     event.lastChild.appendChild(new InputWidget('Enter a path', null, this.initialValue).getElement());
+    event.lastChild.appendChild(new ButtonsPanel(null, 'close-button-div', 'close-button', null, null, null, 'a').getElement());
     event.appendChild(new ButtonsPanel('Add items', 'elementButtons', 'addItemButtons', this.trigger, optionId, selectValue).getElement());
   }
 

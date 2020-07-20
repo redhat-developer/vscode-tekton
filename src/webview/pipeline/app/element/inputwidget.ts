@@ -11,7 +11,10 @@ import { parameter, createResourceJson } from '../common/resource';
 
 export class InputWidget extends BaseWidget {
   public input: HTMLInputElement;
-  constructor(text?: string, className?: string, public initialValue?: PipelineStart) {
+  constructor(text?: string,
+    className?: string,
+    public initialValue?: PipelineStart
+  ) {
     super();
     const editorInput = createDiv(className ?? 'editor-input-box');
     this.input = document.createElement('input');
@@ -24,7 +27,6 @@ export class InputWidget extends BaseWidget {
     const wrapper = createDiv('wrapper');
     wrapper.appendChild(this.input);
     this.input.oninput = () => this.getValue(this.input);
-    // this.input.onblur = () => this.getValue(this.input);
     editorInput.appendChild(wrapper);
   }
 
