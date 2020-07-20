@@ -1,0 +1,23 @@
+/*-----------------------------------------------------------------------------------------------
+ *  Copyright (c) Red Hat, Inc. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE file in the project root for license information.
+ *-----------------------------------------------------------------------------------------------*/
+
+import { SelectWidget } from '../element/selectwidget';
+import { EditItem } from '../element/maincontent';
+import { createDiv } from '../utils/util';
+import { InputWidget } from '../element/inputwidget';
+import { ButtonsPanel } from '../element/buttonspanel';
+import { PipelineStart, Trigger } from './types';
+
+export function createItem(event: Node & ParentNode, optionId: string, selectValue?: string, initialValue?: PipelineStart, trigger?: Trigger): void {
+  const newDivClass = 'items-section-workspace';
+  const selectItem = new SelectWidget(null, null, 'editor-select-box-item', initialValue).selectItem(trigger[optionId], selectValue);
+  const selectItemOp = new EditItem('Items', selectItem, 'option-workspace-id', 'inner-editItem');
+  if (event.lastElementChild.id === 'Add-New-Items') event.lastChild.remove();
+  event.appendChild(createDiv(newDivClass, newDivClass));
+  event.lastChild.appendChild(selectItemOp.getElement());
+  event.lastChild.appendChild(new InputWidget('Enter a path', null, initialValue).getElement());
+  event.lastChild.appendChild(new ButtonsPanel(null, 'close-button-div', 'close-button', null, null, null, 'a', null, initialValue).getElement());
+  event.appendChild(new ButtonsPanel('Add items', 'elementButtons', 'addItemButtons', trigger, optionId, selectValue, null, 'Add-New-Items', initialValue).getElement());
+}

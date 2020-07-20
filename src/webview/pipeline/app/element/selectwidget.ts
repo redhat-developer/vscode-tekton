@@ -10,8 +10,8 @@ import { InputWidget } from './inputwidget';
 import { NameType, Trigger, PipelineStart, Workspaces } from '../common/types';
 import { VolumeTypes, TknResourceType } from '../utils/const';
 import { selectText } from '../index';
-import { ButtonsPanel } from './buttonspanel';
 import { createResourceJson, createWorkspaceJson } from '../common/resource';
+import { createItem } from '../common/item';
 
 export class SelectWidget extends BaseWidget {
   public select: HTMLSelectElement;
@@ -66,25 +66,14 @@ export class SelectWidget extends BaseWidget {
         if (selectedItem.length) {
           selectedItem.forEach(element => element.remove());
           buttonItem.forEach(element => element.remove());
-          this.createItem(event, optionId, select.value);
+          createItem(event, optionId, select.value, this.initialValue, this.trigger);
         } else {
-          this.createItem(event, optionId, select.value);
+          createItem(event, optionId, select.value, this.initialValue, this.trigger);
         }
       }
     } catch (err) {
       // ignores
     }
-  }
-
-  createItem(event: Node & ParentNode, optionId: string, selectValue?: string): void {
-    const newDivClass = 'items-section-workspace';
-    const selectItem = new SelectWidget(null, null, 'editor-select-box-item', this.initialValue).selectItem(this.trigger[optionId], selectValue);
-    const selectItemOp = new EditItem('Items', selectItem, 'option-workspace-id', 'inner-editItem');
-    event.appendChild(createDiv(newDivClass, newDivClass));
-    event.lastChild.appendChild(selectItemOp.getElement());
-    event.lastChild.appendChild(new InputWidget('Enter a path', null, this.initialValue).getElement());
-    event.lastChild.appendChild(new ButtonsPanel(null, 'close-button-div', 'close-button', null, null, null, 'a').getElement());
-    event.appendChild(new ButtonsPanel('Add items', 'elementButtons', 'addItemButtons', this.trigger, optionId, selectValue).getElement());
   }
 
   selectItem(items: string[], name?: string): Widget {

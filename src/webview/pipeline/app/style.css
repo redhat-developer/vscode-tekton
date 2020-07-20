@@ -140,6 +140,7 @@ body {
   padding-bottom: 18px;
   white-space: normal;
   width: 500px;
+  position: relative;
 }
 
 .inner-editItem {
