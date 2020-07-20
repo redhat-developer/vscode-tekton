@@ -11,11 +11,11 @@ import { ButtonsPanel } from '../element/buttonspanel';
 import { PipelineStart, Trigger } from './types';
 
 export function createItem(event: Node & ParentNode, optionId: string, selectValue?: string, initialValue?: PipelineStart, trigger?: Trigger): void {
-  const newDivClass = 'items-section-workspace';
+  const newDivClass = 'items-section-workspace-new-item';
   const selectItem = new SelectWidget(null, null, 'editor-select-box-item', initialValue).selectItem(trigger[optionId], selectValue);
   const selectItemOp = new EditItem('Items', selectItem, 'option-workspace-id', 'inner-editItem');
   if (event.lastElementChild.id === 'Add-New-Items') event.lastChild.remove();
-  event.appendChild(createDiv(newDivClass, newDivClass));
+  event.appendChild(createDiv(null, newDivClass));
   event.lastChild.appendChild(selectItemOp.getElement());
   event.lastChild.appendChild(new InputWidget('Enter a path', null, initialValue).getElement());
   event.lastChild.appendChild(new ButtonsPanel(null, 'close-button-div', 'close-button', null, null, null, 'a', null, initialValue).getElement());

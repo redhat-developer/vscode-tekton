@@ -176,6 +176,10 @@ body {
   color: #be1100;
 }
 
+.items-section-workspace {
+  padding-bottom: 11px;
+}
+
 .editor-input-box {
   position: relative;
   display: block;

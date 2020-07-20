@@ -18,7 +18,10 @@ export class LabelItem extends BaseWidget {
 
 export class EditItem extends BaseWidget {
 
-  constructor(title: string, input: Widget, id?: string, className?: string) {
+  constructor(title: string,
+    input: Widget,
+    id?: string,
+    className?: string) {
     super();
     this.element = createDiv(className ?? 'editItem');
     this.element.appendChild(new LabelItem(title, id).getElement());

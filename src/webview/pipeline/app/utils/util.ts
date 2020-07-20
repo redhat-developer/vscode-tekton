@@ -5,7 +5,7 @@
 
 export function createDiv(className: string, id?: string): HTMLDivElement {
   const element = document.createElement('div');
-  element.classList.add(className);
+  if (className) element.classList.add(className);
   element.id = id ?? '';
   return element;
 }

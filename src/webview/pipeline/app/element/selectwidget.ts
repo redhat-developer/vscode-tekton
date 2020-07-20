@@ -57,7 +57,7 @@ export class SelectWidget extends BaseWidget {
         event.lastElementChild.remove();
       }
       if (optionId) {
-        const selectedItem = event.querySelectorAll('.items-section-workspace');
+        const selectedItem = event.querySelectorAll('[id^=items-section-workspace-new-item]');
         const buttonItem = event.querySelectorAll('.elementButtons');
         if (optionId === 'select-workspace-option') {
           selectedItem.forEach(element => element.remove());

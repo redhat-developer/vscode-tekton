@@ -33,13 +33,21 @@ export class InputWidget extends BaseWidget {
   }
 
   removeError(): void {
+    this.addSpaceInItem(this.input.parentNode.parentNode.parentElement);
     if (this.input.parentNode.parentNode.parentElement.lastElementChild.id === 'label-text-id') {
       this.input.parentNode.parentNode.parentElement.lastElementChild.remove();
     }
   }
 
+  addSpaceInItem(addItemContent: HTMLElement, className?: string): void {
+    if (addItemContent.id === 'items-section-workspace-new-item') {
+      this.input.parentNode.parentNode.parentElement.className = className ?? '';
+    }
+  }
+
   validator(): void {
     if (!this.input.value) {
+      this.addSpaceInItem(this.input.parentNode.parentNode.parentElement, 'items-section-workspace');
       const createLabel = document.createElement('label');
       createLabel.innerText = 'Required';
       createLabel.className = 'label-text';
