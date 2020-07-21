@@ -9,6 +9,7 @@ import { createDiv } from '../utils/util';
 import { InputWidget } from '../element/inputwidget';
 import { ButtonsPanel } from '../element/buttonspanel';
 import { PipelineStart, Trigger } from './types';
+import { disableButton } from '..';
 
 export function disableRemoveButton(event: Node & ParentNode): void {
   const selectedItem = event.querySelectorAll('[id^=items-section-workspace-new-item]');
@@ -27,7 +28,8 @@ export function createItem(event: Node & ParentNode, optionId: string, selectVal
   event.appendChild(createDiv(null, newDivClass));
   event.lastChild.appendChild(selectItemOp.getElement());
   event.lastChild.appendChild(new InputWidget('Enter a path', null, initialValue).getElement());
-  event.lastChild.appendChild(new ButtonsPanel(null, 'close-button-div', 'close-button', null, null, null, 'a', null, initialValue).getElement());
-  event.appendChild(new ButtonsPanel('Add items', 'elementButtons', 'addItemButtons', trigger, optionId, selectValue, null, 'Add-New-Items', initialValue).getElement());
+  event.lastChild.appendChild(new ButtonsPanel(null, 'close-button-div', 'close-button', null, null, null, null, initialValue).getElement());
+  event.appendChild(new ButtonsPanel('Add items', 'elementButtons', 'addItemButtons', trigger, optionId, selectValue, 'Add-New-Items', initialValue).getElement());
   disableRemoveButton(event);
+  disableButton(document.getElementsByTagName('input'));
 }

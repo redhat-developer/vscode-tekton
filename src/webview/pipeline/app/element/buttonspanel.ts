@@ -17,14 +17,13 @@ export class ButtonsPanel extends BaseWidget {
     public trigger?: Trigger,
     public optionId?: string,
     public selectOption?: string,
-    elementType?: string,
     id?: string,
     public initialValue?: PipelineStart
   ) {
     super();
     this.element = document.createElement('div');
     this.element.className = className ?? '';
-    this.startButton = document.createElement(elementType ?? 'button');
+    this.startButton = document.createElement('a');
     this.startButton.textContent = textContent ?? '';
     this.startButton.id = id ?? '';
     this.startButton.setAttribute('role', 'button');

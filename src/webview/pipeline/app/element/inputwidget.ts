@@ -8,6 +8,7 @@ import { BaseWidget } from '../common/widget';
 import { PipelineStart } from '../common/types';
 import { TknResourceType } from '../utils/const';
 import { parameter, createResourceJson } from '../common/resource';
+import { disableButton } from '..';
 
 export class InputWidget extends BaseWidget {
   public input: HTMLInputElement;
@@ -61,6 +62,7 @@ export class InputWidget extends BaseWidget {
   }
 
   getValue(input: HTMLInputElement): void {
+    disableButton(document.getElementsByTagName('input'));
     const initialValue = this.initialValue;
     if (input.parentNode.parentNode.parentNode.parentElement.id === TknResourceType.Params) {
       parameter(input.parentNode.parentNode.parentNode.firstElementChild.id, this.input.value, initialValue);

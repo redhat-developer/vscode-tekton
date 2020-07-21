@@ -17,6 +17,7 @@ window.addEventListener('message', event => {
   switch (event.data.type) {
     case 'trigger':
       rootElement.appendChild(new PipelineRunEditor(event.data.data).getElement());
+      disableButton(document.getElementsByTagName('input'));
       selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource');
       vscode.setState(event.data.data); // TODO: fix this, store real state
       break;
@@ -43,7 +44,26 @@ export function selectText(nodeList: NodeListOf<Element>, text?: string, selecte
   })
 }
 
+export function disableButton(nodeList: HTMLCollectionOf<HTMLInputElement>): boolean {
+  console.log(nodeList);
+  console.log('klklklkklkl;klkl;k;k;lkl;k;');
+  let startButton = document.querySelector('.startButton');
+  if (!startButton) {
+    startButton = document.querySelector('.startButton-disable')
+  }
+  console.log(document);
+  for (let element = 0; element < nodeList.length; element++) {
+    if (nodeList[element].type == 'text' && nodeList[element].value == '') {
+      startButton.className = 'startButton-disable';    // Disable the button.
+      return false;
+    } else {
+      startButton.className = 'startButton';    // Enable the button.
+    }
+  }
+}
+
 function restore(state: Trigger): void {
   rootElement.appendChild(new PipelineRunEditor(state).getElement());
+  disableButton(document.getElementsByTagName('input'));
   selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource');
 }

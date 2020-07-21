@@ -38,13 +38,15 @@ body {
 .buttons { grid-area: buttons; }
 
 .startButton-disable {
-  height: 21px;
-  width: 77px;
+  height:22px;
   margin: -20px -50px;
-  position: relative;
-  top: 33%;
-  left: 50%;
+  position:relative;
+  top:33%;
+  left:50%;
   background: #848484;
+  color: var(--vscode-button-foreground);
+  width: auto;
+  padding: 2px 14px;
   border-color: #848484;
 }
 

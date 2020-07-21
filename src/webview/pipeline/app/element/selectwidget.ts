@@ -9,7 +9,7 @@ import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
 import { NameType, Trigger, PipelineStart, Workspaces } from '../common/types';
 import { VolumeTypes, TknResourceType } from '../utils/const';
-import { selectText } from '../index';
+import { selectText, disableButton } from '../index';
 import { createResourceJson, createWorkspaceJson } from '../common/resource';
 import { createItem } from '../common/item';
 
@@ -33,6 +33,7 @@ export class SelectWidget extends BaseWidget {
     if (select.value.trim() === 'Create Pipeline Resource' && event.lastElementChild.id.trim() !== 'input-resource') {
       const input = new EditItem('URL', new InputWidget('Please provide Name/URL', null, this.initialValue), 'input-resource', 'inner-editItem');
       event.appendChild(input.getElement());
+      disableButton(document.getElementsByTagName('input'));
     } else if (event.lastElementChild.firstElementChild.id.trim() === 'input-resource') {
       event.lastElementChild.remove();
     }
