@@ -5,11 +5,7 @@
 
 import { BaseWidget } from '../common/widget';
 import { Trigger, PipelineStart } from '../common/types';
-import { SelectWidget } from './selectwidget';
-import { EditItem } from './maincontent';
-import { createDiv } from '../utils/util';
-import { InputWidget } from './inputwidget';
-import { createItem } from '../common/item';
+import { createItem, disableRemoveButton } from '../common/item';
 
 export class ButtonsPanel extends BaseWidget {
   private startButton: HTMLElement;
@@ -39,7 +35,14 @@ export class ButtonsPanel extends BaseWidget {
   }
 
   addItem(event: Node & ParentNode): void {
-    if (event.lastChild.parentElement.id === 'items-section-workspace') event.lastChild.parentElement.remove();
+    const itemData = event.parentNode;
+    if (event.lastChild.parentElement.id === 'items-section-workspace-new-item') {
+      const selectedItem = itemData.querySelectorAll('[id^=items-section-workspace-new-item]');
+      if (selectedItem.length !== 1) {
+        event.lastChild.parentElement.remove();
+        disableRemoveButton(itemData);
+      }
+    }
     if (this.optionId) {
       createItem(event, this.optionId, this.selectOption, this.initialValue, this.trigger);
     }

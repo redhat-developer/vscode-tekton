@@ -10,6 +10,15 @@ import { InputWidget } from '../element/inputwidget';
 import { ButtonsPanel } from '../element/buttonspanel';
 import { PipelineStart, Trigger } from './types';
 
+export function disableRemoveButton(event: Node & ParentNode): void {
+  const selectedItem = event.querySelectorAll('[id^=items-section-workspace-new-item]');
+  if (selectedItem.length === 1) {
+    selectedItem[0].lastElementChild.firstElementChild.className = 'close-button-disable';
+  } else {
+    selectedItem[0].lastElementChild.firstElementChild.className = 'close-button';
+  }
+}
+
 export function createItem(event: Node & ParentNode, optionId: string, selectValue?: string, initialValue?: PipelineStart, trigger?: Trigger): void {
   const newDivClass = 'items-section-workspace-new-item';
   const selectItem = new SelectWidget(null, null, 'editor-select-box-item', initialValue).selectItem(trigger[optionId], selectValue);
@@ -20,4 +29,5 @@ export function createItem(event: Node & ParentNode, optionId: string, selectVal
   event.lastChild.appendChild(new InputWidget('Enter a path', null, initialValue).getElement());
   event.lastChild.appendChild(new ButtonsPanel(null, 'close-button-div', 'close-button', null, null, null, 'a', null, initialValue).getElement());
   event.appendChild(new ButtonsPanel('Add items', 'elementButtons', 'addItemButtons', trigger, optionId, selectValue, null, 'Add-New-Items', initialValue).getElement());
+  disableRemoveButton(event);
 }

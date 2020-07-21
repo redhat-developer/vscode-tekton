@@ -37,6 +37,18 @@ body {
 
 .buttons { grid-area: buttons; }
 
+.startButton-disable {
+  height: 21px;
+  width: 77px;
+  margin: -20px -50px;
+  position: relative;
+  top: 33%;
+  left: 50%;
+  background: #848484;
+  border-color: #848484;
+}
+
+
 .startButton {
   height:22px; 
   margin: -20px -50px; 
@@ -53,6 +65,29 @@ body {
 
 .elementButtons {
   padding-top: 12px;
+}
+
+.close-button-disable {
+  position: absolute;
+  right: 10px;
+  top: -32px;
+}
+
+.close-button-disable::after{
+  content: "\ea76";
+  font-family: codicon;
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  position: relative;
+  top: -1px;
+  bottom: 0;
+  right: 0px;
+  margin: auto;
+  pointer-events: none;
+  color: #848484;
+  opacity: 1;
 }
 
 .close-button {
@@ -178,6 +213,7 @@ body {
 
 .items-section-workspace {
   padding-bottom: 11px;
+  /* #848484 */
 }
 
 .editor-input-box {
