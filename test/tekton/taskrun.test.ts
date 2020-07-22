@@ -142,51 +142,6 @@ suite('Tekton/TaskRun', () => {
       });
 
     });
-
-    suite('delete command', () => {
-      let warnStub: sinon.SinonStub;
-
-      setup(() => {
-        sandbox.stub(pipelineExplorer, 'refresh').resolves();
-        warnStub = sandbox.stub(vscode.window, 'showWarningMessage').resolves();
-      });
-
-      test('calls the appropriate tkn command if confirmed', async () => {
-        warnStub.resolves('Yes');
-
-        await TaskRun.delete(taskRunItem);
-
-        expect(execStub).calledOnceWith(Command.deleteTaskRun(taskRunItem.getName()));
-      });
-
-      test('returns a confirmation message text when successful', async () => {
-        warnStub.resolves('Yes');
-
-        const result = await TaskRun.delete(taskRunItem);
-
-        expect(result).equals(`The TaskRun '${taskRunItem.getName()}' successfully deleted.`);
-      });
-
-      test('returns null when cancelled', async () => {
-        warnStub.resolves('Cancel');
-
-        const result = await TaskRun.delete(taskRunItem);
-
-        expect(result).null;
-      });
-
-      test('throws an error message when command failed', async () => {
-        warnStub.resolves('Yes');
-        execStub.rejects('ERROR');
-        let expectedError;
-        try {
-          await TaskRun.delete(taskRunItem);
-        } catch (err) {
-          expectedError = err;
-        }
-        expect(expectedError).equals(`Failed to delete the TaskRun '${taskRunItem.getName()}': 'ERROR'.`);
-      });
-    });
   });
 
   suite('Open Task Definition', () => {

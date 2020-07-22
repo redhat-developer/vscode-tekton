@@ -159,6 +159,14 @@ export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Dispo
     return false;
   }
 
+  isVisible(): boolean {
+    return this.treeView.visible;
+  }
+
+  getSelection(): TektonNode[] | undefined {
+    return this.treeView.selection;
+  }
+
 
 }
 

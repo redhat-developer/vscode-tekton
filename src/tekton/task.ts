@@ -15,7 +15,7 @@ export class Task extends TektonItem {
 
   static async start(task: TektonNode): Promise<string> {
     if (!task) {
-      task = await window.showQuickPick(await Task.getTaskNames(), {placeHolder: 'Select Task to start', ignoreFocusOut: true});
+      task = await window.showQuickPick(await Task.getTaskNames(), { placeHolder: 'Select Task to start', ignoreFocusOut: true });
     }
     if (!task) return null;
     const result: cliInstance.CliExitData = await Task.tkn.execute(Command.listTasks(), process.cwd(), false);
@@ -61,19 +61,7 @@ export class Task extends TektonItem {
     Task.tkn.executeInTerminal(Command.listTasksInTerminal());
   }
 
-  static async delete(task: TektonNode): Promise<string> {
-    if (!task) {
-      task = await window.showQuickPick(await Task.getTaskNames(), {placeHolder: 'Select Task to delete', ignoreFocusOut: true});
-    }
-    if (!task) return null;
-    const value = await window.showWarningMessage(`Do you want to delete the Task '${task.getName()}'?`, 'Yes', 'Cancel');
-    if (value === 'Yes') {
-      return Progress.execFunctionWithProgress(`Deleting the Task '${task.getName()}'.`, () =>
-        Task.tkn.execute(Command.deleteTask(task.getName())))
-        .then(() => Task.explorer.refresh(task ? task.getParent() : undefined))
-        .then(() => `The Task '${task.getName()}' successfully deleted.`)
-        .catch((err) => Promise.reject(`Failed to delete the Task '${task.getName()}': '${err}'.`));
-    }
-    return null;
+  static getDeleteCommand(item: TektonNode): cliInstance.CliCommand {
+    return Command.deleteTask(item.getName());
   }
 }

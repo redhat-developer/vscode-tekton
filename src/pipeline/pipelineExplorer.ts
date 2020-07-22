@@ -67,6 +67,9 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     return this.treeView.selection;
   }
 
+  isVisible(): boolean {
+    return this.treeView.visible;
+  }
 
   static async reportIssue(): Promise<void> {
     let body = '';

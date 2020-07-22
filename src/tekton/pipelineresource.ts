@@ -7,6 +7,7 @@ import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
 import { Progress } from '../util/progress';
 import { window } from 'vscode';
+import { CliCommand } from '../cli';
 
 export class PipelineResource extends TektonItem {
 
@@ -46,7 +47,7 @@ export class PipelineResource extends TektonItem {
 
   static async describe(pipelineResource: TektonNode): Promise<void> {
     if (!pipelineResource) {
-      pipelineResource = await window.showQuickPick(await PipelineResource.getPipelineResourceNames(), {placeHolder: 'Select Pipeline Resource to describe', ignoreFocusOut: true});
+      pipelineResource = await window.showQuickPick(await PipelineResource.getPipelineResourceNames(), { placeHolder: 'Select Pipeline Resource to describe', ignoreFocusOut: true });
     }
     if (!pipelineResource) return null;
     PipelineResource.tkn.executeInTerminal(Command.describePipelineResource(pipelineResource.getName()));
@@ -54,25 +55,13 @@ export class PipelineResource extends TektonItem {
 
   static async list(pipelineResource: TektonNode): Promise<void> {
     if (!pipelineResource) {
-      pipelineResource = await window.showQuickPick(await PipelineResource.getPipelineResourceNames(), {placeHolder: 'Select Pipeline Resource to list', ignoreFocusOut: true});
+      pipelineResource = await window.showQuickPick(await PipelineResource.getPipelineResourceNames(), { placeHolder: 'Select Pipeline Resource to list', ignoreFocusOut: true });
     }
     if (!pipelineResource) return null;
     PipelineResource.tkn.executeInTerminal(Command.listPipelineResourcesInTerminal(pipelineResource.getName()));
   }
 
-  static async delete(pipelineResource: TektonNode): Promise<string> {
-    if (!pipelineResource) {
-      pipelineResource = await window.showQuickPick(await PipelineResource.getPipelineResourceNames(), {placeHolder: 'Select Pipeline Resource to delete', ignoreFocusOut: true});
-    }
-    if (!pipelineResource) return null;
-    const value = await window.showWarningMessage(`Do you want to delete the Resource '${pipelineResource.getName()}'?`, 'Yes', 'Cancel');
-    if (value === 'Yes') {
-      return Progress.execFunctionWithProgress(`Deleting the Resource '${pipelineResource.getName()}'.`, () =>
-        PipelineResource.tkn.execute(Command.deletePipelineResource(pipelineResource.getName())))
-        .then(() => PipelineResource.explorer.refresh(pipelineResource.getParent() ? pipelineResource.getParent() : undefined))
-        .then(() => `The Resource '${pipelineResource.getName()}' successfully deleted.`)
-        .catch((err) => Promise.reject(`Failed to delete the Resource '${pipelineResource.getName()}': '${err}'.`));
-    }
-    return null;
+  static getDeleteCommand(item: TektonNode): CliCommand {
+    return Command.deletePipelineResource(item.getName())
   }
 }

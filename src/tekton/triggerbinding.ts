@@ -6,24 +6,11 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
-import { window } from 'vscode';
-import { Progress } from '../util/progress';
+import { CliCommand } from '../cli';
 
 export class TriggerBinding extends TektonItem {
 
-  static async delete(triggerBinding: TektonNode): Promise<string> {
-    if (!triggerBinding) {
-      triggerBinding = await window.showQuickPick(await TriggerBinding.getTriggerBindingNames(), {placeHolder: 'Select TriggerBinding to delete', ignoreFocusOut: true});
-    }
-    if (!triggerBinding) return null;
-    const value = await window.showWarningMessage(`Do you want to delete the TriggerBinding '${triggerBinding.getName()}'?`, 'Yes', 'Cancel');
-    if (value === 'Yes') {
-      return Progress.execFunctionWithProgress(`Deleting the TriggerBinding '${triggerBinding.getName()}'.`, () =>
-        TriggerBinding.tkn.execute(Command.deleteTriggerBinding(triggerBinding.getName())))
-        .then(() => TriggerBinding.explorer.refresh(triggerBinding ? triggerBinding.getParent() : undefined))
-        .then(() => `The TriggerBinding '${triggerBinding.getName()}' successfully deleted.`)
-        .catch((err) => Promise.reject(`Failed to delete the TriggerBinding '${triggerBinding.getName()}': '${err}'.`));
-    }
-    return null;
+  static getDeleteCommand(item: TektonNode): CliCommand {
+    return Command.deleteTriggerBinding(item.getName())
   }
 }

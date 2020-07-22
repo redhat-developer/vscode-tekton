@@ -69,48 +69,4 @@ suite('Tekton/Clustertask', () => {
 
   });
 
-  suite('delete command', () => {
-    let warnStub: sinon.SinonStub;
-
-    setup(() => {
-      warnStub = sandbox.stub(vscode.window, 'showWarningMessage').resolves();
-    });
-
-    test('calls the appropriate tkn command if confirmed', async () => {
-      warnStub.resolves('Yes');
-
-      await ClusterTask.delete(clustertaskItem);
-
-      expect(execStub).calledOnceWith(Command.deleteClusterTask(clustertaskItem.getName()));
-    });
-
-    test('returns a confirmation message text when successful', async () => {
-      warnStub.resolves('Yes');
-
-      const result = await ClusterTask.delete(clustertaskItem);
-
-      expect(result).equals(`The ClusterTask '${clustertaskItem.getName()}' successfully deleted.`);
-    });
-
-    test('returns null when cancelled', async() => {
-      warnStub.resolves('Cancel');
-
-      const result = await ClusterTask.delete(clustertaskItem);
-
-      expect(result).null;
-    });
-
-    test('throws an error message when command failed', async () => {
-      warnStub.resolves('Yes');
-      execStub.rejects('ERROR');
-      let expectedError;
-      try {
-        await ClusterTask.delete(clustertaskItem);
-      } catch (err) {
-        expectedError = err;
-      }
-      expect(expectedError).equals(`Failed to delete the ClusterTask '${clustertaskItem.getName()}': 'ERROR'.`);
-    });
-  });
-
 });

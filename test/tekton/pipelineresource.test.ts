@@ -188,49 +188,5 @@ suite('Tekton/PipelineResource', () => {
 
     });
 
-    suite('delete command', () => {
-      let warnStub: sinon.SinonStub;
-
-      setup(() => {
-        warnStub = sandbox.stub(window, 'showWarningMessage').resolves();
-      });
-
-      test('calls the appropriate tkn command if confirmed', async () => {
-        warnStub.resolves('Yes');
-
-        await PipelineResource.delete(pipelineResourceItem);
-
-        expect(execStub).calledOnceWith(Command.deletePipelineResource(pipelineResourceItem.getName()));
-      });
-
-      test('returns a confirmation message text when successful', async () => {
-        warnStub.resolves('Yes');
-
-        const result = await PipelineResource.delete(pipelineResourceItem);
-
-        expect(result).equals(`The Resource '${pipelineResourceItem.getName()}' successfully deleted.`);
-      });
-
-      test('returns null when cancelled', async () => {
-        warnStub.resolves('Cancel');
-
-        const result = await PipelineResource.delete(pipelineResourceItem);
-
-        expect(result).null;
-      });
-
-      test('throws an error message when command failed', async () => {
-        warnStub.resolves('Yes');
-        execStub.rejects('ERROR');
-        let expectedError: Error;
-        try {
-          await PipelineResource.delete(pipelineResourceItem);
-        } catch (err) {
-          expectedError = err;
-        }
-        expect(expectedError).equals(`Failed to delete the Resource '${pipelineResourceItem.getName()}': 'ERROR'.`);
-      });
-    });
-
   });
 });
