@@ -65,5 +65,4 @@ export function createWorkspaceJson(resourceName: string, workspaceResourceType:
       });
     }
   }
-  console.log(initialValue);
 }

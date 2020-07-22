@@ -33,14 +33,19 @@ export class SelectWidget extends BaseWidget {
     if (select.value.trim() === 'Create Pipeline Resource' && event.lastElementChild.id.trim() !== 'input-resource') {
       const input = new EditItem('URL', new InputWidget('Please provide Name/URL', null, this.initialValue), 'input-resource', 'inner-editItem');
       event.appendChild(input.getElement());
-      disableButton(document.getElementsByTagName('input'));
     } else if (event.lastElementChild.firstElementChild.id.trim() === 'input-resource') {
       event.lastElementChild.remove();
-      disableButton(document.getElementsByTagName('input'));
+    }
+    if (event.parentNode.firstElementChild.textContent === TknResourceType.GitResource || event.parentNode.firstElementChild.textContent === TknResourceType.ImageResource) {
+      if (select.value.trim() !== 'Create Pipeline Resource') {
+        console.log(event.firstElementChild.id);
+        createResourceJson(event.firstElementChild.id, select.value, this.initialValue);
+      }
     }
     if (event.parentNode.firstElementChild.textContent === TknResourceType.Workspaces || event.parentNode.parentNode.firstElementChild.textContent === TknResourceType.Workspaces) {
       this.clickEvent(event);
     }
+    disableButton(document.getElementsByTagName('input'));
     this.createWorkspaceElement(event, select);
   }
 
