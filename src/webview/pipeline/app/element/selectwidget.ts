@@ -11,7 +11,7 @@ import { NameType, Trigger, PipelineStart, Workspaces } from '../common/types';
 import { VolumeTypes, TknResourceType } from '../utils/const';
 import { selectText, disableButton } from '../index';
 import { createResourceJson, createWorkspaceJson } from '../common/resource';
-import { createItem } from '../common/item';
+import { createItem, disableSelection } from '../common/item';
 
 export class SelectWidget extends BaseWidget {
   public select: HTMLSelectElement;
@@ -36,6 +36,7 @@ export class SelectWidget extends BaseWidget {
       disableButton(document.getElementsByTagName('input'));
     } else if (event.lastElementChild.firstElementChild.id.trim() === 'input-resource') {
       event.lastElementChild.remove();
+      disableButton(document.getElementsByTagName('input'));
     }
     if (event.parentNode.firstElementChild.textContent === TknResourceType.Workspaces || event.parentNode.parentNode.firstElementChild.textContent === TknResourceType.Workspaces) {
       this.clickEvent(event);
@@ -54,8 +55,10 @@ export class SelectWidget extends BaseWidget {
         const workspacesOp = new EditItem(VolumeTypes[select.value], workspacesType, editId, 'inner-editItem');
         event.appendChild(workspacesOp.getElement());
         selectText(event.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[select.value]}`, true, 'select-workspace-option');
+        disableSelection(document.getElementsByTagName('select'));
       } else if (event.lastElementChild.firstElementChild.id.trim() === editId) {
         event.lastElementChild.remove();
+        disableSelection(document.getElementsByTagName('select'));
       }
       if (optionId) {
         const selectedItem = event.querySelectorAll('[id^=items-section-workspace-new-item]');
@@ -135,7 +138,6 @@ export class SelectWidget extends BaseWidget {
     if (event.parentNode.parentNode.firstElementChild.textContent === TknResourceType.Workspaces) {
       const name = event.parentNode.firstElementChild.id;
       const workspaceResourceName = this.select.value;
-      console.log(this.initialValue);
       createWorkspaceJson(name, undefined, this.initialValue, workspaceResourceName)
     }
   }

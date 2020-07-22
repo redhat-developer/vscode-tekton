@@ -6,6 +6,7 @@
 import { BaseWidget } from '../common/widget';
 import { Trigger, PipelineStart } from '../common/types';
 import { createItem, disableRemoveButton } from '../common/item';
+import { disableButton } from '..';
 
 export class ButtonsPanel extends BaseWidget {
   private startButton: HTMLElement;
@@ -45,5 +46,6 @@ export class ButtonsPanel extends BaseWidget {
     if (this.optionId) {
       createItem(event, this.optionId, this.selectOption, this.initialValue, this.trigger);
     }
+    disableButton(document.getElementsByTagName('input'));
   }
 }

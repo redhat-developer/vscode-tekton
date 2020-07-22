@@ -13,29 +13,65 @@ body {
 }
 .grid-container {
   display: grid;
-  grid-template-columns: 160px 1fr;
-  grid-template-rows: 200px 1fr 40px;
-
-  grid-template-areas: "navigation main" "navigation main" "buttons buttons";
-  height: calc(100vh - 11px);
+  grid-template-rows: 734px 1fr 40px;
+  grid-template-areas: "navigation main" "navigation main" "navigation buttons";
   overflow: hidden;
   font-family: var(--vscode-font-family);
   font-size: var(--vscode-font-size);
   font-weight: var(--vscode-font-weight);
+  height: 100vh;
+}
+
+@media screen and (min-width: 600px) {
+  .grid-container {
+    grid-template-columns: 160px 1fr;
+    grid-template-rows: 356px 0.92fr 14px;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  .grid-container {
+    grid-template-columns: 160px 1fr;
+    grid-template-rows: 200px 1fr 61px;
+  }
 }
 
 .navigation {
+  display: flex;
+  flex-direction: column;
   grid-area: navigation;
-  overflow-y: auto;
 }
 
-.main { 
-  grid-area: main; 
+.main {
   overflow-y: auto;
   padding-left: 26px;
 }
 
-.buttons { grid-area: buttons; }
+@media screen and (min-width: 600px) {
+  .main {
+    grid-area: main;
+    flex-direction: column;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  .main {
+    grid-area: main;
+    flex-direction: column;
+  }
+}
+
+@media screen and (min-width: 600px) {
+  .buttons {
+    grid-area: buttons;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  .buttons {
+    grid-area: buttons;
+  }
+}
 
 .startButton-disable {
   height:22px;

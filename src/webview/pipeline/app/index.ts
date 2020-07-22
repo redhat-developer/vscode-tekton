@@ -45,13 +45,10 @@ export function selectText(nodeList: NodeListOf<Element>, text?: string, selecte
 }
 
 export function disableButton(nodeList: HTMLCollectionOf<HTMLInputElement>): boolean {
-  console.log(nodeList);
-  console.log('klklklkklkl;klkl;k;k;lkl;k;');
   let startButton = document.querySelector('.startButton');
   if (!startButton) {
     startButton = document.querySelector('.startButton-disable')
   }
-  console.log(document);
   for (let element = 0; element < nodeList.length; element++) {
     if (nodeList[element].type == 'text' && nodeList[element].value == '') {
       startButton.className = 'startButton-disable';    // Disable the button.
