@@ -27,27 +27,27 @@ interface Refreshable {
   refresh(): void;
 }
 
-export function deleteFromExplorer(): Promise<void | string> {
+export function deleteFromExplorer(node: TektonNode): Promise<void | string> {
 
   const selection = pipelineExplorer.getSelection();
-
-  if (selection) {
-    return doDelete(selection, pipelineExplorer);
-  }
-
-  return Promise.resolve();
-
+  return doDelete(getItemToDelete(node, selection), pipelineExplorer);
 }
 
-export function deleteFromCustom(): Promise<void | string> {
+export function deleteFromCustom(node: TektonNode): Promise<void | string> {
 
   const selection = customTektonExplorer.getSelection();
+  return doDelete(getItemToDelete(node, selection), customTektonExplorer);
+}
 
-  if (selection) {
-    return doDelete(selection, customTektonExplorer);
+function getItemToDelete(contextItem: TektonNode, selectedItems: TektonNode[]): TektonNode[] {
+  if (contextItem) {
+    if (selectedItems) {
+      if (selectedItems.includes(contextItem)) {
+        return selectedItems;
+      }
+    }
+    return [contextItem];
   }
-
-  return Promise.resolve();
 }
 
 async function doDelete(items: TektonNode[], toRefresh: Refreshable): Promise<void | string> {
