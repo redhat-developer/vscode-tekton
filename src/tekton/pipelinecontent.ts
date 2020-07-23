@@ -18,9 +18,15 @@ export interface NameType {
   name: string;
   type: string;
 }
+
+export interface ItemValue {
+  key?: string;
+  value?: string;
+}
   
 export interface Workspaces {
   name: string;
+  item?: ItemValue[];
   workspaceName?: string;
   workspaceType?: string;
   key?: string;

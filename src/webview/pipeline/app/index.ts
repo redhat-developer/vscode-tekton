@@ -9,7 +9,7 @@ import { PipelineRunEditor } from './editor';
 import { Trigger } from './common/types';
 
 declare let acquireVsCodeApi: any;
-const vscode = acquireVsCodeApi();
+export const vscode = acquireVsCodeApi();
 
 const rootElement = document.getElementById('root');
 

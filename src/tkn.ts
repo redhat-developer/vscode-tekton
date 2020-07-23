@@ -105,15 +105,34 @@ function verbose(_target: any, key: string, descriptor: any): void {
 function tknWorkspace(pipelineData: StartObject): string[] {
   const workspace: string[] = [];
   pipelineData.workspaces.forEach(element => {
-    workspace.push('-w');
     if (element.workspaceType === 'PersistentVolumeClaim') {
-      workspace.push(`name=${element.name},claimName=${element.workspaceName},subPath=${element.subPath}`);
+      if (element.item && element.item.length === 0) {
+        workspace.push(`-w name=${element.name},claimName=${element.workspaceName}`);
+      } else {
+        workspace.push(`-w name=${element.name},claimName=${element.workspaceName},subPath=${element.subPath}`);
+      }
     } else if (element.workspaceType === 'ConfigMap') {
-      workspace.push(`name=${element.name},config=${element.workspaceName},item=${element.key}=${element.value}`);
+      if (element.item && element.item.length !== 0) {
+        let configMap = `-w name=${element.name},config=${element.workspaceName}`;
+        element.item.forEach(value => {
+          configMap = configMap.concat(`,item=${value.key}=${value.value}`);
+        });
+        workspace.push(configMap);
+      } else {
+        workspace.push(`-w name=${element.name},config=${element.workspaceName},item=${element.key}=${element.value}`);
+      }
     } else if (element.workspaceType === 'Secret') {
-      workspace.push(`name=${element.name},secret=${element.workspaceName}`);
+      if (element.item && element.item.length !== 0) {
+        let secret = `-w name=${element.name},secret=${element.workspaceName}`;
+        element.item.forEach(value => {
+          secret = secret.concat(`,item=${value.key}=${value.value}`);
+        });
+        workspace.push(secret);
+      } else {
+        workspace.push(`-w name=${element.name},secret=${element.workspaceName}`);
+      }
     } else if (element.workspaceType === 'EmptyDir') {
-      workspace.push(`name=${element.name},emptyDir=${element.emptyDir}`);
+      workspace.push(`-w name=${element.name},emptyDir=${element.emptyDir}`);
     }
   });
   return workspace;

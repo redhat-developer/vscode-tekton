@@ -28,7 +28,7 @@ export class PipelineRunEditor implements Widget {
 
     this.navigation = new NavigationList();
     this.editor = new Editor();
-    this.buttonsPanel = new ButtonsPanel('start', 'buttons', 'startButton');
+    this.buttonsPanel = new ButtonsPanel('start', 'buttons', 'startButton', null, null, null, null, this.initialValue);
 
     this.element.appendChild(this.navigation.getElement());
     this.element.appendChild(this.editor.getElement());
@@ -40,6 +40,7 @@ export class PipelineRunEditor implements Widget {
 
   createElement(title: string, resourceType: Params[] | Workspaces[]): void {
     const resourceGroup = new GroupItem(title);
+    this.initialValue.name = this.trigger.name;
     for (const resource of resourceType) {
       let element: Widget;
       if (title === 'Parameters') {

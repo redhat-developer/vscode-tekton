@@ -38,7 +38,6 @@ export class SelectWidget extends BaseWidget {
     }
     if (event.parentNode.firstElementChild.textContent === TknResourceType.GitResource || event.parentNode.firstElementChild.textContent === TknResourceType.ImageResource) {
       if (select.value.trim() !== 'Create Pipeline Resource') {
-        console.log(event.firstElementChild.id);
         createResourceJson(event.firstElementChild.id, select.value, this.initialValue);
       }
     }
