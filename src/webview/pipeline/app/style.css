@@ -7,14 +7,11 @@ body {
   padding: 0;
   padding-left: 31px;
 }
-#root {
-  padding-top: 11px;
-  display: inline-table;
-}
+
 .grid-container {
   display: grid;
   grid-template-rows: 734px 1fr 40px;
-  grid-template-areas: "navigation main" "navigation main" "navigation buttons";
+  grid-template-areas: "main main" "main main" "buttons buttons";
   overflow: hidden;
   font-family: var(--vscode-font-family);
   font-size: var(--vscode-font-size);
@@ -24,15 +21,17 @@ body {
 
 @media screen and (min-width: 600px) {
   .grid-container {
+    grid-template-areas: "navigation main" "navigation main" "navigation buttons";
     grid-template-columns: 160px 1fr;
-    grid-template-rows: 356px 0.92fr 14px;
+    grid-template-rows: 356px 0.92fr 2px;
   }
 }
 
 @media screen and (min-width: 1000px) {
   .grid-container {
+    grid-template-areas: "navigation main" "navigation main" "navigation buttons";
     grid-template-columns: 160px 1fr;
-    grid-template-rows: 200px 1fr 61px;
+    grid-template-rows: 200px 1fr 49px;
   }
 }
 
@@ -43,34 +42,13 @@ body {
 }
 
 .main {
-  overflow-y: auto;
   padding-left: 26px;
+  grid-area: main;
+  flex-direction: column;
 }
 
-@media screen and (min-width: 600px) {
-  .main {
-    grid-area: main;
-    flex-direction: column;
-  }
-}
-
-@media screen and (min-width: 1000px) {
-  .main {
-    grid-area: main;
-    flex-direction: column;
-  }
-}
-
-@media screen and (min-width: 600px) {
-  .buttons {
-    grid-area: buttons;
-  }
-}
-
-@media screen and (min-width: 1000px) {
-  .buttons {
-    grid-area: buttons;
-  }
+.buttons {
+  grid-area: buttons;
 }
 
 .startButton-disable {
