@@ -50,7 +50,7 @@ export class PipelineWizard extends Disposable {
 
     this.register(this.editor.webview.onDidReceiveMessage(e => {
       switch (e.type) {
-        case 'onDidClick':
+        case 'startPipeline':
           // eslint-disable-next-line no-case-declarations
           const inputStartPipeline = e.body;
           this.dispose();

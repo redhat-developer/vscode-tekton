@@ -39,7 +39,7 @@ export class ButtonsPanel extends BaseWidget {
     if (event.lastElementChild.firstElementChild.className === 'startButton') {
       this.storeItemData(event.querySelectorAll('[id^=items-section-workspace-new-item]'));
       vscode.postMessage({
-        type: 'onDidClick',
+        type: 'startPipeline',
         body: this.initialValue
       });
     }

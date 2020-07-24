@@ -775,7 +775,7 @@
   "scripts": {
     "verify": "node ./out/build/verify-tools.js",
     "vscode:prepublish": "npm run build",
-    "compile": "tsc -p ./ && npm run build-preview",
+    "compile": "tsc -p ./ && npm run build-preview && npm run build:webview",
     "watch": "tsc -watch -p ./",
     "clean": "rimraf out && rimraf preview",
     "test": "npm run clean && npm run compile && npm run verify && node ./out/build/install-vscode.js && node ./out/build/unit-tests.js",
