@@ -8,10 +8,14 @@ body {
   padding-left: 31px;
 }
 
+@media screen and (max-width: 357px) {
+  body {
+    padding-left: 0px;
+  }
+}
+
 .grid-container {
   display: grid;
-  grid-template-rows: 734px 1fr 40px;
-  grid-template-areas: "main main" "main main" "buttons buttons";
   overflow: hidden;
   font-family: var(--vscode-font-family);
   font-size: var(--vscode-font-size);
@@ -19,7 +23,21 @@ body {
   height: 100vh;
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (max-width: 550px) {
+  .grid-container {
+    grid-template-areas: "main main" "main main" "buttons buttons";
+    grid-template-rows: 734px 1fr 40px;
+  }
+}
+
+@media screen and (max-width: 550px) and (min-height: 905px) {
+  .grid-container {
+    grid-template-areas: "main main" "main main" "buttons buttons";
+    grid-template-rows: 734px 121px;
+  }
+}
+
+@media screen and (min-width: 550px) {
   .grid-container {
     grid-template-areas: "navigation main" "navigation main" "navigation buttons";
     grid-template-columns: 160px 1fr;
@@ -51,6 +69,14 @@ body {
   grid-area: buttons;
 }
 
+@media screen and (max-width: 357px) {
+  .buttons {
+    position: relative;
+    right: 73px;
+    bottom: -2px;
+  }
+}
+
 .startButton-disable {
   height:22px;
   margin: -20px -50px;
@@ -64,6 +90,10 @@ body {
   border-color: #848484;
 }
 
+
+.startButton-disable:hover {
+  color: white;
+}
 
 .startButton {
   height:22px; 
@@ -239,12 +269,30 @@ body {
   box-sizing: border-box;
   font-size: var(--vscode-font-size);
   position: relative;
-  width: 465px;
+  width: 300px;
   height: 26px;
   background-color: var(--vscode-settings-textInputBackground);
   color: var(--vscode-settings-textInputForeground);
   line-height: 1.4em!important;
   left: 0.5px;
+}
+
+@media screen and (max-width: 357px) {
+  .editor-input-box {
+    width: 184px;
+  }
+}
+
+@media screen and (min-width: 550px) {
+  .editor-input-box {
+    width: 307px;
+  }
+}
+
+@media screen and (min-width: 700px) {
+  .editor-input-box {
+    width: 465px;
+  }
 }
 
 .wrapper {
@@ -276,12 +324,30 @@ body {
   padding: 0;
   box-sizing: border-box;
   font-size: var(--vscode-font-size);
-  width: 465px;
+  width: 300px;
   height: 26px;
   background-color: var(--vscode-settings-textInputBackground);
   color: var(--vscode-settings-textInputForeground);
   line-height: 1.4em!important;
   left: 0.5px;
+}
+
+@media screen and (max-width: 357px) {
+  .editor-input-box-error {
+    width: 184px;
+  }
+}
+
+@media screen and (min-width: 550px) {
+  .editor-input-box-error {
+    width: 307px;
+  }
+}
+
+@media screen and (min-width: 700px) {
+  .editor-input-box-error {
+    width: 465px;
+  }
 }
 
 .editor-input-box-error>.wrapper>.input {
@@ -361,7 +427,7 @@ body {
 }
 
 .editor-select-box {
-  width: 466px;
+  width: 300px;
   font-family: inherit;
   font-size: var(--vscode-font-size);
   border: 1px solid;
@@ -372,6 +438,24 @@ body {
   padding: 2px 8px;
   align-items: center;
   -webkit-appearance: none;
+}
+
+@media screen and (max-width: 357px) {
+  .editor-select-box {
+    width: 184px;
+  }
+}
+
+@media screen and (min-width: 550px) {
+  .editor-select-box {
+    width: 307px;
+  }
+}
+
+@media screen and (min-width: 700px) {
+  .editor-select-box {
+    width: 465px;
+  }
 }
 
 .editor-select-box:focus {
