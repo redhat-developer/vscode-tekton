@@ -608,7 +608,7 @@
         },
         {
           "command": "tekton.explorerView.delete",
-          "when": "view =~ /^tekton(PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|task|pipelineresource|triggertemplates|triggerbinding|clustertriggerbinding|eventlistener|conditions)$/",
+          "when": "view =~ /^tekton(PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|clustertask|task|taskrun|pipelineresource|triggertemplates|triggerbinding|clustertriggerbinding|eventlistener|conditions)$/",
           "group": "c2"
         },
         {

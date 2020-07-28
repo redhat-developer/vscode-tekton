@@ -20,6 +20,7 @@ import { ClusterTask } from '../tekton/clustertask';
 import { TaskRun } from '../tekton/taskrun';
 import { window } from 'vscode';
 import { Progress } from '../util/progress';
+import { ClusterTriggerBinding } from '../tekton/clustertriggerbunding';
 
 type deleteFn = (node: TektonItem) => Promise<string | undefined>;
 
@@ -115,6 +116,8 @@ function getDeleteCommand(item: TektonNode): CliCommand | undefined {
       return ClusterTask.getDeleteCommand(item);
     case ContextType.TASKRUN:
       return TaskRun.getDeleteCommand(item);
+    case ContextType.CLUSTERTRIGGERBINDING:
+      return ClusterTriggerBinding.getDeleteCommand(item);
   }
 
   return undefined;

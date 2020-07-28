@@ -221,6 +221,10 @@ export class Command {
   static listClusterTriggerBinding(): CliCommand {
     return newK8sCommand('get', 'clustertriggerbinding', '-o', 'json');
   }
+
+  static deleteClusterTriggerBinding(name: string): CliCommand {
+    return newTknCommand('clustertriggerbinding', 'delete', name, '-f');
+  }
   @verbose
   static listEventListener(): CliCommand {
     return newK8sCommand('get', 'eventlistener', '-o', 'json');
