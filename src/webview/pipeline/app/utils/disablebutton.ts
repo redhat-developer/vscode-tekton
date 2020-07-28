@@ -7,9 +7,13 @@
 export function disableRemoveButton(event: Node & ParentNode): void {
   const selectedItem = event.querySelectorAll('[id^=items-section-workspace-new-item]');
   if (selectedItem.length === 1) {
-    selectedItem[0].lastElementChild.firstElementChild.className = 'close-button-disable';
+    const disableButton = event.querySelectorAll('.close-button');
+    disableButton[0].className = 'close-button-disable';
   } else {
-    selectedItem[0].lastElementChild.firstElementChild.className = 'close-button';
+    const disableButton = event.querySelectorAll('.close-button-disable');
+    if (disableButton[0]) {
+      disableButton[0].className = 'close-button';
+    }
   }
 }
 

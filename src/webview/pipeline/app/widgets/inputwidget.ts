@@ -14,7 +14,11 @@ export class InputWidget extends BaseWidget {
   public input: HTMLInputElement;
   constructor(text?: string,
     className?: string,
-    public initialValue?: PipelineStart
+    public initialValue?: PipelineStart,
+    disabledType?: boolean,
+    wrapperId?: string,
+    inputId?: string,
+    inputTitle?: string
   ) {
     super();
     const editorInput = createDiv(className ?? 'editor-input-box');
@@ -23,9 +27,12 @@ export class InputWidget extends BaseWidget {
     this.input.autocapitalize = 'off';
     this.input.spellcheck = false;
     this.input.placeholder = text ?? '';
-    this.input.type = text;
+    this.input.type = 'text';
+    this.input.id = inputId ?? '';
+    this.input.disabled = disabledType ?? false;
+    this.input.title = inputTitle ?? '';
     this.element = editorInput;
-    const wrapper = createDiv('wrapper');
+    const wrapper = createDiv('wrapper', wrapperId);
     wrapper.appendChild(this.input);
     this.input.oninput = () => this.getValue(this.input);
     this.input.onblur = () => this.validator();

@@ -65,7 +65,6 @@ export function collectWorkspaceData(resourceName: string, workspaceResourceType
       });
     }
   }
-  console.log(initialValue);
 }
 
 export function addItemInWorkspace(resourceName: string, keyValue: string, path: string, initialValue: PipelineStart): void {

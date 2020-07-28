@@ -31,6 +31,7 @@ export class SelectWidget extends BaseWidget {
   }
 
   addElement(event: Node & ParentNode, select: HTMLSelectElement): void {
+    this.enableInputBox(event.parentNode.querySelector('[id^=enable-input-box-workspace]'), event.parentElement);
     if (select.value.trim() === 'Create Pipeline Resource' && event.lastElementChild.id.trim() !== 'input-resource') {
       const input = new EditItem('URL', new InputWidget('Please provide Name/URL', null, this.initialValue), 'input-resource', 'inner-editItem');
       event.appendChild(input.getElement());
@@ -47,6 +48,19 @@ export class SelectWidget extends BaseWidget {
     }
     disableButton(document.getElementsByTagName('input'));
     this.createWorkspaceElement(event, select);
+  }
+
+  enableInputBox(event: Node & ParentNode, parentElement: HTMLElement): void {
+    if (event && parentElement.id !== TknResourceType.Workspaces) {
+      console.log(event);
+      const input = event.querySelector('input');
+      input.removeAttribute('disabled');
+      input.id = 'enabled';
+      input.title = '';
+      if (event.parentNode.parentNode.querySelector('select').firstElementChild.innerHTML === 'Select a key') {
+        event.parentNode.parentNode.querySelector('select').firstElementChild.remove();
+      }
+    }
   }
 
   createWorkspaceElement(event: Node & ParentNode, select: HTMLSelectElement): void {

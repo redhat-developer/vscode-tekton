@@ -39,7 +39,7 @@ export function selectText(nodeList: NodeListOf<Element>, text?: string, selecte
     op.id = id ?? '';
     op.selected = selected ?? false;
     resourceSelectList.forEach(selectElement => {
-      selectElement.insertBefore(op, selectElement.firstChild)
+      selectElement.insertBefore(op, selectElement.firstChild);
     });
   })
 }
@@ -50,7 +50,7 @@ export function disableButton(nodeList: HTMLCollectionOf<HTMLInputElement>): boo
     startButton = document.querySelector('.startButton-disable')
   }
   for (let element = 0; element < nodeList.length; element++) {
-    if (nodeList[element].type == 'text' && nodeList[element].value == '') {
+    if (nodeList[element].type === 'text' && nodeList[element].value === '' && nodeList[element].id.trim() !== 'disabled') {
       startButton.className = 'startButton-disable';    // Disable the button.
       return false;
     } else {

@@ -37,12 +37,16 @@ export class ButtonsPanel extends BaseWidget {
   }
 
   addItem(event: Node & ParentNode): void {
-    if (event.lastElementChild.firstElementChild.className === 'startButton') {
-      this.storeItemData(event.querySelectorAll('[id^=items-section-workspace-new-item]'));
-      vscode.postMessage({
-        type: 'startPipeline',
-        body: this.initialValue
-      });
+    try {
+      if (event.lastElementChild.firstElementChild.className === 'startButton') {
+        this.storeItemData(event.querySelectorAll('[id^=items-section-workspace-new-item]'));
+        vscode.postMessage({
+          type: 'startPipeline',
+          body: this.initialValue
+        });
+      }
+    } catch (err) {
+      // ignore if fails to find statButton
     }
     const itemData = event.parentNode;
     if (event.lastChild.parentElement.id === 'items-section-workspace-new-item') {
@@ -64,8 +68,7 @@ export class ButtonsPanel extends BaseWidget {
         const resourceName = val.parentNode.parentElement.firstElementChild.id;
         const key = val.getElementsByTagName('select')[0].value;
         const value = val.getElementsByTagName('input')[0].value;
-        console.log(resourceName);
-        addItemInWorkspace(resourceName, key, value, this.initialValue);
+        if (value) addItemInWorkspace(resourceName, key, value, this.initialValue);
       });
     }
   }
