@@ -6,6 +6,7 @@ import { TextDocument, ViewColumn } from 'vscode';
 import { PipelinePreview } from './preview';
 import { Disposable } from '../util/disposable';
 import { GraphProvider } from './pipeline-graph';
+import { VirtualDocument } from '../yaml-support/yaml-locator';
 
 
 export interface PreviewSettings {
@@ -37,7 +38,7 @@ export class PreviewManager extends Disposable {
     preview.update(document);
   }
 
-  createPipelinePreview(document: TextDocument, settings: PreviewSettings): PipelinePreview {
+  createPipelinePreview(document: TextDocument | VirtualDocument, settings: PreviewSettings): PipelinePreview {
     const preview = PipelinePreview.create(
       {
         document,

@@ -15,7 +15,7 @@ import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
 const pipelineRunTaskCache = new Map<string, DeclaredTask[]>();
 
 export interface GraphProvider {
-  (document: vscode.TextDocument, pipelineRun?: PipelineRunData): Promise<NodeOrEdge[]>;
+  (document: vscode.TextDocument | VirtualDocument, pipelineRun?: PipelineRunData): Promise<NodeOrEdge[]>;
   getElementBySelection?(document: vscode.TextDocument, selection: vscode.Selection): string | undefined;
 }
 
@@ -36,7 +36,7 @@ calculatePipelineGraph.getElementBySelection = function (document: vscode.TextDo
   return pipelineYaml.findTask(document, selection.start);
 }
 
-export async function calculatePipelineRunGraph(document: vscode.TextDocument, pipelineRun?: PipelineRunData): Promise<NodeOrEdge[]> {
+export async function calculatePipelineRunGraph(document: VirtualDocument, pipelineRun?: PipelineRunData): Promise<NodeOrEdge[]> {
   const doc: YamlDocument = await getPipelineDocument(document, TektonYamlType.PipelineRun);
   if (!doc) {
     return []; // TODO: throw error there
