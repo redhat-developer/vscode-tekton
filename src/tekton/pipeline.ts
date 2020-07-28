@@ -96,6 +96,7 @@ export class Pipeline extends TektonItem {
   }
 
   static async startWizard(pipeline: TektonNode): Promise<void> {
+    if (!pipeline) return null;
     const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.getPipeline(pipeline.getName()), process.cwd(), false);
     let data: TknPipelineTrigger;
     if (result.error) {
@@ -107,6 +108,15 @@ export class Pipeline extends TektonItem {
       //show no pipelines if output is not correct json
     }
     const trigger = await pipelineData(data);
-    PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active);
+    if (!trigger.workspaces && !trigger.resources && !trigger.params) {
+      Progress.execFunctionWithProgress(`Starting Pipeline '${trigger.name}'.`, () =>
+        TektonItem.tkn.startPipeline(trigger)
+          .then(() => TektonItem.explorer.refresh())
+          .then(() => `Pipeline '${trigger.name}' successfully started`)
+          .catch((error) => Promise.reject(`Failed to start Pipeline with error '${error}'`))
+      );
+    } else {
+      PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active);
+    }
   }
 }

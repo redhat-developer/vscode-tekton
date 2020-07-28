@@ -28,7 +28,8 @@ export class PipelineWizard extends Disposable {
       {
         enableFindWidget: true,
         ...getWebviewOptions()
-      });
+      }
+    );
     return new PipelineWizard(webview, input);
   }
 
@@ -147,13 +148,6 @@ export class PipelineWizard extends Disposable {
 				nonce="${nonce}"
 				charset="UTF-8"></script>`);
     return out.join('\n');
-  }
-
-  private getImagesUri(): { [key: string]: string } {
-    const result: { [key: string]: string } = Object.create(null);
-    result['task'] = this.editor.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, 'images', 'T.svg'))).toString();
-    result['clustertask'] = this.editor.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, 'images', 'CT.svg'))).toString();
-    return result;
   }
 
   private getFontPath(): string {

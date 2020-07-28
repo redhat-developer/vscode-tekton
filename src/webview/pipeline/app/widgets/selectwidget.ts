@@ -3,15 +3,16 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Widget, BaseWidget } from '../common/widget';
+import { Widget, BaseWidget } from './widget';
 import { createDiv } from '../utils/util';
 import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
-import { NameType, Trigger, PipelineStart, Workspaces } from '../common/types';
+import { NameType, Trigger, PipelineStart, Workspaces } from '../utils/types';
 import { VolumeTypes, TknResourceType } from '../utils/const';
 import { selectText, disableButton } from '../index';
-import { createResourceJson, createWorkspaceJson } from '../common/resource';
-import { createItem, disableSelection } from '../common/item';
+import { collectResourceData, collectWorkspaceData } from '../utils/resource';
+import { createItem } from '../utils/item';
+import { disableSelection } from '../utils/disablebutton';
 
 export class SelectWidget extends BaseWidget {
   public select: HTMLSelectElement;
@@ -38,7 +39,7 @@ export class SelectWidget extends BaseWidget {
     }
     if (event.parentNode.firstElementChild.textContent === TknResourceType.GitResource || event.parentNode.firstElementChild.textContent === TknResourceType.ImageResource) {
       if (select.value.trim() !== 'Create Pipeline Resource') {
-        createResourceJson(event.firstElementChild.id, select.value, this.initialValue);
+        collectResourceData(event.firstElementChild.id, select.value, this.initialValue);
       }
     }
     if (event.parentNode.firstElementChild.textContent === TknResourceType.Workspaces || event.parentNode.parentNode.firstElementChild.textContent === TknResourceType.Workspaces) {
@@ -118,7 +119,7 @@ export class SelectWidget extends BaseWidget {
         this.select.appendChild(op);
       }
     });
-    createResourceJson(resource.name, this.select.value, this.initialValue);
+    collectResourceData(resource.name, this.select.value, this.initialValue);
     return this;
   }
 
@@ -129,7 +130,7 @@ export class SelectWidget extends BaseWidget {
       op.text = val;
       this.select.appendChild(op);
     });
-    createWorkspaceJson(resource.name, this.select.value, this.initialValue);
+    collectWorkspaceData(resource.name, this.select.value, this.initialValue);
     return this;
   }
 
@@ -137,12 +138,12 @@ export class SelectWidget extends BaseWidget {
     if (event.parentNode.firstElementChild.textContent === TknResourceType.Workspaces) {
       const name = event.firstElementChild.id;
       const workspaceType = this.select.value;
-      createWorkspaceJson(name, workspaceType, this.initialValue);
+      collectWorkspaceData(name, workspaceType, this.initialValue);
     }
     if (event.parentNode.parentNode.firstElementChild.textContent === TknResourceType.Workspaces) {
       const name = event.parentNode.firstElementChild.id;
       const workspaceResourceName = this.select.value;
-      createWorkspaceJson(name, undefined, this.initialValue, workspaceResourceName)
+      collectWorkspaceData(name, undefined, this.initialValue, workspaceResourceName)
     }
   }
 }

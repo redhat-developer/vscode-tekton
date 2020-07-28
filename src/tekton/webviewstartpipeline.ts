@@ -12,19 +12,19 @@ interface KubectlMetadata {
   name: string;
 }
 
-interface Secret {
+export interface Secret {
   data: string[];
   kind: string;
   metadata: KubectlMetadata;
 }
 
-interface ConfigMap {
+export interface ConfigMap {
   data: string[];
   kind: string;
   metadata: KubectlMetadata;
 }
 
-interface PVC {
+export interface PVC {
   metadata: KubectlMetadata;
 }
 
@@ -33,7 +33,7 @@ export interface TknResourceItem {
   resources: TknResource[];
   params: TknParams[];
   workspaces: TknWorkspaces[];
-  serviceAcct: string;
+  serviceAccount: string;
   pipelineResource: TknPipelineResource;
   Secret: Secret[];
   ConfigMap: ConfigMap[];
@@ -46,7 +46,7 @@ export async function pipelineData(pipeline: TknPipelineTrigger): Promise<TknRes
     resources: pipeline.spec.resources,
     params: pipeline.spec.params,
     workspaces: pipeline.spec.workspaces,
-    serviceAcct: pipeline.spec.serviceAccount,
+    serviceAccount: pipeline.spec.serviceAccount,
     pipelineResource: undefined,
     Secret: undefined,
     ConfigMap: undefined,

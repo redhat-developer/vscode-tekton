@@ -4,10 +4,10 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { createDiv } from '../utils/util';
-import { BaseWidget } from '../common/widget';
-import { PipelineStart } from '../common/types';
+import { BaseWidget } from './widget';
+import { PipelineStart } from '../utils/types';
 import { TknResourceType } from '../utils/const';
-import { parameter, createResourceJson } from '../common/resource';
+import { collectParameterData, collectResourceData } from '../utils/resource';
 import { disableButton } from '..';
 
 export class InputWidget extends BaseWidget {
@@ -65,13 +65,13 @@ export class InputWidget extends BaseWidget {
     disableButton(document.getElementsByTagName('input'));
     const initialValue = this.initialValue;
     if (input.parentNode.parentNode.parentNode.parentElement.id === TknResourceType.Params) {
-      parameter(input.parentNode.parentNode.parentNode.firstElementChild.id, this.input.value, initialValue);
+      collectParameterData(input.parentNode.parentNode.parentNode.firstElementChild.id, this.input.value, initialValue);
     }
     const resource = input.parentNode.parentNode.parentNode.parentNode.parentElement.id.trim();
     if (resource === TknResourceType.GitResource || resource === TknResourceType.ImageResource) {
       const name = input.parentNode.parentNode.parentNode.parentNode.firstElementChild.id;
       const resourceRef = this.input.value;
-      createResourceJson(name, resourceRef, this.initialValue);
+      collectResourceData(name, resourceRef, this.initialValue);
     }
   }
 }

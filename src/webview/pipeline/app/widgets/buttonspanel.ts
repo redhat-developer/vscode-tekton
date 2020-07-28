@@ -3,11 +3,12 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { BaseWidget } from '../common/widget';
-import { Trigger, PipelineStart } from '../common/types';
-import { createItem, disableRemoveButton } from '../common/item';
+import { BaseWidget } from './widget';
+import { Trigger, PipelineStart } from '../utils/types';
+import { createItem } from '../utils/item';
 import { disableButton, vscode } from '..';
-import { addItemInWorkspace } from '../common/resource';
+import { addItemInWorkspace } from '../utils/resource';
+import { disableRemoveButton } from '../utils/disablebutton';
 
 export class ButtonsPanel extends BaseWidget {
   private startButton: HTMLElement;

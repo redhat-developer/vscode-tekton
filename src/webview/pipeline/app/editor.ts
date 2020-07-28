@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Trigger, Params, Workspaces, PipelineStart } from './common/types';
-import { NavigationList, NavigationItem } from './utils/navigation';
-import { Widget } from './common/widget';
-import { Editor, GroupItem, EditItem } from './element/maincontent';
+import { Trigger, Params, Workspaces, PipelineStart } from './utils/types';
+import { NavigationList, NavigationItem } from './widgets/navigation';
+import { Widget } from './widgets/widget';
 import { VolumeTypes, initialResourceFormValues, TknResourceType } from './utils/const';
-import { ButtonsPanel } from './element/buttonspanel';
-import { SelectWidget } from './element/selectwidget';
-import { InputWidget } from './element/inputwidget';
+import { ButtonsPanel } from './widgets/buttonspanel';
+import { Editor, GroupItem, EditItem } from './widgets/maincontent';
+import { InputWidget } from './widgets/inputwidget';
+import { SelectWidget } from './widgets/selectwidget';
 
 export class PipelineRunEditor implements Widget {
   private element: HTMLElement;

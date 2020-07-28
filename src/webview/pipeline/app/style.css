@@ -26,16 +26,18 @@ body {
 @media screen and (max-width: 550px) {
   .grid-container {
     grid-template-areas: "main main" "main main" "buttons buttons";
-    grid-template-rows: 734px 1fr 40px;
+    grid-template-columns: 160px 358px;
+    grid-template-rows: 634px 0.92fr 2px;
   }
 }
 
-@media screen and (max-width: 550px) and (min-height: 905px) {
+/* @media screen and (max-width: 550px) and (min-height: 905px) {
   .grid-container {
     grid-template-areas: "main main" "main main" "buttons buttons";
+    grid-template-columns: 160px 365px;
     grid-template-rows: 734px 121px;
   }
-}
+} */
 
 @media screen and (min-width: 550px) {
   .grid-container {
@@ -49,7 +51,7 @@ body {
   .grid-container {
     grid-template-areas: "navigation main" "navigation main" "navigation buttons";
     grid-template-columns: 160px 1fr;
-    grid-template-rows: 200px 1fr 49px;
+    grid-template-rows: 200px 0.92fr 2px;
   }
 }
 
@@ -62,6 +64,8 @@ body {
 .main {
   padding-left: 26px;
   grid-area: main;
+  overflow-y: auto;
+  overflow-x: hidden;
   flex-direction: column;
 }
 
@@ -78,11 +82,12 @@ body {
 }
 
 .startButton-disable {
-  height:22px;
+  height: 16px;
   margin: -20px -50px;
-  position:relative;
-  top:33%;
-  left:50%;
+  position: fixed;
+  /* top:33%; */
+  bottom: 40px;
+  left: 50%;
   background: #848484;
   color: var(--vscode-button-foreground);
   width: auto;
@@ -96,11 +101,12 @@ body {
 }
 
 .startButton {
-  height:22px; 
-  margin: -20px -50px; 
-  position:relative;
-  top:33%; 
-  left:50%;
+  height: 16px;
+  margin: -20px -50px;
+  position: fixed;
+  /* top:33%; */
+  bottom: 40px;
+  left: 50%;
   background: var(--vscode-button-background);
   color: var(--vscode-button-foreground);
   width: auto;
@@ -115,8 +121,26 @@ body {
 
 .close-button-disable {
   position: absolute;
-  right: 10px;
+  right: 291px;
   top: -32px;
+}
+
+@media screen and (min-width: 357px) {
+  .close-button-disable {
+    right: 179px;
+  }
+}
+
+@media screen and (min-width: 550px) {
+  .close-button-disable {
+    right: 167px;
+  }
+}
+
+@media screen and (min-width: 700px) {
+  .close-button-disable {
+    right: 10px;
+  }
 }
 
 .close-button-disable::after{
@@ -390,7 +414,7 @@ body {
 }
 
 .editor-select-box-item {
-  width: 466px;
+  width: 301px;
   font-family: inherit;
   font-size: var(--vscode-font-size);
   border: 1px solid;
@@ -402,6 +426,24 @@ body {
   align-items: center;
   -webkit-appearance: none;
   -webkit-border-radius: 0px;
+}
+
+@media screen and (max-width: 357px) {
+  .editor-select-box-item {
+    width: 186px;
+  }
+}
+
+@media screen and (min-width: 550px) {
+  .editor-select-box-item {
+    width: 308px;
+  }
+}
+
+@media screen and (min-width: 700px) {
+  .editor-select-box-item {
+    width: 466px;
+  }
 }
 
 .editor-select-box-item:focus {

@@ -164,6 +164,9 @@ export class Command {
   @verbose
   static startPipeline(pipelineData: StartObject): CliCommand {
     const resources: string[] = [];
+    if (!pipelineData.workspaces && !pipelineData.resources && !pipelineData.params) {
+      return newTknCommand('pipeline', 'start', pipelineData.name);
+    }
     const svcAcct: string[] = pipelineData.serviceAccount ? ['-s ', pipelineData.serviceAccount] : ['-s', 'pipeline'];
     pipelineData.resources.forEach(element => {
       resources.push('--resource');

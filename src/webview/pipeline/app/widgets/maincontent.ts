@@ -5,7 +5,7 @@
 
 import { createDiv } from '../utils/util';
 import { debounce } from 'debounce';
-import { Listener, BaseWidget, Widget } from '../common/widget';
+import { Listener, BaseWidget, Widget } from './widget';
 
 export class LabelItem extends BaseWidget {
   constructor(title: string, id?: string) {

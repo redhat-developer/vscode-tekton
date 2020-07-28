@@ -8,6 +8,7 @@ import { Command } from '../tkn';
 import { TektonItem } from './tektonitem';
 import { TknPipelineResource } from '../tekton';
 import { QuickPickItem } from 'vscode';
+import { Secret, ConfigMap, PVC } from './webviewstartpipeline';
 
 export interface Ref {
   name: string;
@@ -37,7 +38,7 @@ export interface Workspaces {
   
 export interface Resources {
   name: string;
-  resourceRef: string;
+  resourceRef?: string;
   resourceType?: string;
 }
   
@@ -53,6 +54,10 @@ export interface StartObject {
   params: Params[] | undefined;
   workspaces: Workspaces[];
   serviceAccount: string | undefined;
+  pipelineResource?: TknPipelineResource;
+  Secret?: Secret[];
+  ConfigMap?: ConfigMap[];
+  PersistentVolumeClaim?: PVC[];
 }
   
 export interface Trigger {

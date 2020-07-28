@@ -6,7 +6,7 @@
 import { PipelineStart } from './types';
 
 
-export function parameter(paramName: string, defaultValue: string, initialValue: PipelineStart): void {
+export function collectParameterData(paramName: string, defaultValue: string, initialValue: PipelineStart): void {
   if (initialValue.params.length === 0) {
     initialValue.params.push({name: paramName, default: defaultValue});
   } else {
@@ -22,7 +22,7 @@ export function parameter(paramName: string, defaultValue: string, initialValue:
   }
 }
 
-export function createResourceJson(resourceName: string, resourceReference: string, initialValue: PipelineStart): void {
+export function collectResourceData(resourceName: string, resourceReference: string, initialValue: PipelineStart): void {
   if (initialValue.resources.length === 0) {
     initialValue.resources.push({name: resourceName, resourceRef: resourceReference});
   } else {
@@ -38,7 +38,7 @@ export function createResourceJson(resourceName: string, resourceReference: stri
   }
 }
 
-export function createWorkspaceJson(resourceName: string, workspaceResourceType: string, initialValue: PipelineStart, workspaceResourceName?: string, keyName?: string, valueName?: string): void {
+export function collectWorkspaceData(resourceName: string, workspaceResourceType: string, initialValue: PipelineStart, workspaceResourceName?: string): void {
   const itemData = [];
   if (initialValue.workspaces.length === 0) {
     initialValue.workspaces.push({
@@ -65,6 +65,7 @@ export function createWorkspaceJson(resourceName: string, workspaceResourceType:
       });
     }
   }
+  console.log(initialValue);
 }
 
 export function addItemInWorkspace(resourceName: string, keyValue: string, path: string, initialValue: PipelineStart): void {
