@@ -6,24 +6,11 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
-import { window } from 'vscode';
-import { Progress } from '../util/progress';
+import { CliCommand } from '../cli';
 
 export class TriggerTemplate extends TektonItem {
 
-  static async delete(triggerTemplate: TektonNode): Promise<string> {
-    if (!triggerTemplate) {
-      triggerTemplate = await window.showQuickPick(await TriggerTemplate.getTriggerTemplateNames(), {placeHolder: 'Select TriggerTemplate to delete', ignoreFocusOut: true});
-    }
-    if (!triggerTemplate) return null;
-    const value = await window.showWarningMessage(`Do you want to delete the TriggerTemplate '${triggerTemplate.getName()}'?`, 'Yes', 'Cancel');
-    if (value === 'Yes') {
-      return Progress.execFunctionWithProgress(`Deleting the TriggerTemplate '${triggerTemplate.getName()}'.`, () =>
-        TriggerTemplate.tkn.execute(Command.deleteTriggerTemplate(triggerTemplate.getName())))
-        .then(() => TriggerTemplate.explorer.refresh(triggerTemplate ? triggerTemplate.getParent() : undefined))
-        .then(() => `The TriggerTemplate '${triggerTemplate.getName()}' successfully deleted.`)
-        .catch((err) => Promise.reject(`Failed to delete the TriggerTemplate '${triggerTemplate.getName()}': '${err}'.`));
-    }
-    return null;
+  static getDeleteCommand(item: TektonNode): CliCommand {
+    return Command.deleteTriggerTemplate(item.getName());
   }
 }

@@ -5,8 +5,7 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
-import { Progress } from '../util/progress';
-import { window } from 'vscode';
+import { CliCommand } from '../cli';
 
 export class ClusterTask extends TektonItem {
 
@@ -14,19 +13,7 @@ export class ClusterTask extends TektonItem {
     ClusterTask.tkn.executeInTerminal(Command.listClusterTasksInTerminal());
   }
 
-  static async delete(clusterTask: TektonNode): Promise<string> {
-    if (!clusterTask) {
-      clusterTask = await window.showQuickPick(await ClusterTask.getClusterTaskNames(), {placeHolder: 'Select ClusterTask to delete', ignoreFocusOut: true});
-    }
-    if (!clusterTask) return null;
-    const value = await window.showWarningMessage(`Do you want to delete the ClusterTask '${clusterTask.getName()}'?`, 'Yes', 'Cancel');
-    if (value === 'Yes') {
-      return Progress.execFunctionWithProgress(`Deleting the ClusterTask '${clusterTask.getName()}'.`, () =>
-        ClusterTask.tkn.execute(Command.deleteClusterTask(clusterTask.getName())))
-        .then(() => ClusterTask.explorer.refresh(clusterTask.getParent() ? clusterTask.getParent() : undefined))
-        .then(() => `The ClusterTask '${clusterTask.getName()}' successfully deleted.`)
-        .catch((err) => Promise.reject(`Failed to delete the ClusterTask '${clusterTask.getName()}': '${err}'.`));
-    }
-    return null;
+  static getDeleteCommand(item: TektonNode): CliCommand {
+    return Command.deleteClusterTask(item.getName());
   }
 }

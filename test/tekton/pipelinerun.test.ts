@@ -147,50 +147,5 @@ suite('Tekton/PipelineRun', () => {
       });
 
     });
-
-    suite('delete command', () => {
-      let warnStub: sinon.SinonStub;
-
-      setup(() => {
-        sandbox.stub(pipelineExplorer, 'refresh').resolves();
-        warnStub = sandbox.stub(vscode.window, 'showWarningMessage').resolves();
-      });
-
-      test('calls the appropriate tkn command if confirmed', async () => {
-        warnStub.resolves('Yes');
-
-        await PipelineRun.delete(pipelineRunItem);
-
-        expect(execStub).calledOnceWith(Command.deletePipelineRun(pipelineRunItem.getName()));
-      });
-
-      test('returns a confirmation message text when successful', async () => {
-        warnStub.resolves('Yes');
-
-        const result = await PipelineRun.delete(pipelineRunItem);
-
-        expect(result).equals(`The PipelineRun '${pipelineRunItem.getName()}' successfully deleted.`);
-      });
-
-      test('returns null when cancelled', async () => {
-        warnStub.resolves('Cancel');
-
-        const result = await PipelineRun.delete(pipelineRunItem);
-
-        expect(result).equals(null);
-      });
-
-      test('throws an error message when command failed', async () => {
-        warnStub.resolves('Yes');
-        execStub.rejects('ERROR');
-        let expectedError;
-        try {
-          await PipelineRun.delete(pipelineRunItem);
-        } catch (err) {
-          expectedError = err;
-        }
-        expect(expectedError).equals(`Failed to delete the PipelineRun '${pipelineRunItem.getName()}': 'ERROR'.`);
-      });
-    });
   });
 });
