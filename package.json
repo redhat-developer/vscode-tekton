@@ -186,6 +186,11 @@
         "enablement": "tekton:tkn"
       },
       {
+        "command": "tekton.pipeline.wizard.start",
+        "title": "Start Wizard",
+        "category": "Tekton"
+      },
+      {
         "command": "tekton.explorerView.delete",
         "title": "Delete",
         "category": "Tekton",
