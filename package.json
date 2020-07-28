@@ -444,6 +444,15 @@
           "dark": "images/dark/icon-delete.svg",
           "light": "images/light/icon-delete.svg"
         }
+      },
+      {
+        "command": "tekton.view.pipelinerun.diagram",
+        "title": "Open Diagram",
+        "category": "Tekton",
+        "icon": {
+          "dark": "images/dark/icon-diagram.svg",
+          "light": "images/light/icon-diagram.svg"
+        }
       }
     ],
     "viewsContainers": {
@@ -709,6 +718,11 @@
         {
           "command": "tekton.open.task",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == taskrun",
+          "group": "inline@1"
+        },
+        {
+          "command": "tekton.view.pipelinerun.diagram",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelinerun",
           "group": "inline@1"
         },
         {

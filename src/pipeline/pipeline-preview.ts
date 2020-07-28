@@ -7,6 +7,8 @@ import { TektonYamlType, tektonYaml, pipelineRunYaml } from '../yaml-support/tkn
 import { previewManager, PreviewSettings } from './preview-manager';
 import { CommandContext, setCommandContext } from '../commands';
 import { calculatePipelineGraph, calculatePipelineRunGraph, askToSelectPipeline } from './pipeline-graph';
+import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
+import { ContextType } from '../tkn';
 
 export async function showPipelinePreview(): Promise<void> {
   const document = vscode.window.activeTextEditor?.document;
@@ -40,6 +42,23 @@ export async function showPipelinePreview(): Promise<void> {
     }
 
   }
+}
+
+export async function showPipelineRunPreview(name: string): Promise<void> {
+  if (!name) {
+    return;
+  }
+  const uri = tektonFSUri(ContextType.PIPELINERUN, name, 'yaml');
+  const pipelineRunDoc = await tektonVfsProvider.loadTektonDocument(uri);
+  const pipelineRun = tektonYaml.getTektonDocuments(pipelineRunDoc, TektonYamlType.PipelineRun);
+
+  previewManager.createPipelinePreview(pipelineRunDoc, {
+    resourceColumn: vscode.ViewColumn.Active,
+    previewColumn: vscode.ViewColumn.Active,
+    graphProvider: calculatePipelineRunGraph,
+    pipelineRunName: name,
+    pipelineRunStatus: pipelineRunYaml.getPipelineRunStatus(pipelineRun[0])
+  } as PreviewSettings);
 }
 
 export function registerPipelinePreviewContext(): void {

@@ -7,6 +7,7 @@ import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
 import { window } from 'vscode';
 import { CliCommand } from '../cli';
+import { showPipelineRunPreview } from '../pipeline/pipeline-preview';
 
 export class PipelineRun extends TektonItem {
 
@@ -52,5 +53,9 @@ export class PipelineRun extends TektonItem {
 
   static getDeleteCommand(item: TektonNode): CliCommand {
     return Command.deletePipelineRun(item.getName())
+  }
+
+  static async showDiagram(item: TektonNode): Promise<void> {
+    await showPipelineRunPreview(item.getName());
   }
 }

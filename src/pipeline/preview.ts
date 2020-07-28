@@ -12,9 +12,10 @@ import { debounce } from 'debounce';
 import { kubectl } from '../kubectl';
 import { PipelineRunData } from '../tekton';
 import { NodeData } from '../../preview-src/model';
+import { VirtualDocument } from '../yaml-support/yaml-locator';
 
 export interface PipelinePreviewInput {
-  readonly document: vscode.TextDocument;
+  readonly document: vscode.TextDocument | VirtualDocument;
   readonly resourceColumn: vscode.ViewColumn;
   readonly line?: number;
   readonly graphProvider: GraphProvider;
@@ -31,7 +32,7 @@ export class PipelinePreview extends Disposable {
     previewColumn: vscode.ViewColumn): PipelinePreview {
     const webview = vscode.window.createWebviewPanel(
       PipelinePreview.viewType,
-      `Preview ${path.basename(input.document.fileName)}`,
+      `Preview ${path.basename(input.document.uri.fsPath)}`,
       previewColumn,
       {
         enableFindWidget: true,
@@ -43,7 +44,7 @@ export class PipelinePreview extends Disposable {
   }
 
   private editor: vscode.WebviewPanel;
-  private document: vscode.TextDocument;
+  private document: vscode.TextDocument | VirtualDocument;
   private updateFunc = debounce(() => this.doUpdate(), 500);
   private graphProvider: GraphProvider;
   private readonly onDisposeEmitter = new vscode.EventEmitter<void>();
@@ -62,7 +63,7 @@ export class PipelinePreview extends Disposable {
     }));
 
     this.register(vscode.workspace.onDidChangeTextDocument(e => {
-      if (e.document.fileName === this.document.fileName) {
+      if (e.document.fileName === this.document.uri.fsPath) {
         this.update(e.document);
       }
     }));
@@ -76,7 +77,7 @@ export class PipelinePreview extends Disposable {
     }));
 
     this.register(vscode.window.onDidChangeTextEditorSelection(e => {
-      if (e.textEditor.document.fileName === this.document.fileName) {
+      if (e.textEditor.document.fileName === this.document.uri.fsPath) {
         this.highlightNode(e.textEditor.document, e.selections);
       }
     }));
@@ -113,7 +114,7 @@ export class PipelinePreview extends Disposable {
   }
 
   update(document: vscode.TextDocument): void {
-    if (this.document.fileName === document.fileName) {
+    if (this.document.uri.fsPath === document.fileName) {
       this.updateFunc();
     }
   }
@@ -130,21 +131,24 @@ export class PipelinePreview extends Disposable {
   }
 
   private async onDidClick(node: NodeData): Promise<void> {
-    const position = this.document.positionAt(node.yamlPosition);
-    for (const visibleEditor of vscode.window.visibleTextEditors) {
-      if (this.isPreviewOf(visibleEditor.document.uri)) {
-        const editor = await vscode.window.showTextDocument(visibleEditor.document, visibleEditor.viewColumn);
-        editor.selection = new vscode.Selection(position, position);
-        editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
-        return;
+    if ((this.document as vscode.TextDocument).positionAt) {
+      const position = (this.document as vscode.TextDocument).positionAt(node.yamlPosition);
+      for (const visibleEditor of vscode.window.visibleTextEditors) {
+        if (this.isPreviewOf(visibleEditor.document.uri)) {
+          const editor = await vscode.window.showTextDocument(visibleEditor.document, visibleEditor.viewColumn);
+          editor.selection = new vscode.Selection(position, position);
+          editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+          return;
+        }
       }
+
+      vscode.workspace.openTextDocument(this.document.uri)
+        .then(vscode.window.showTextDocument)
+        .then(undefined, () => {
+          vscode.window.showErrorMessage(`Could not open ${this.document.uri.toString()}`);
+        });
     }
 
-    vscode.workspace.openTextDocument(this.document.uri)
-      .then(vscode.window.showTextDocument)
-      .then(undefined, () => {
-        vscode.window.showErrorMessage(`Could not open ${this.document.uri.toString()}`);
-      });
   }
 
   private isPreviewOf(resource: vscode.Uri): boolean {
@@ -182,7 +186,7 @@ export class PipelinePreview extends Disposable {
   }
 
   private setContent(html: string): void {
-    const fileName = path.basename(this.document.fileName);
+    const fileName = path.basename(this.document.uri.fsPath);
     this.editor.title = `Preview ${fileName}`;
     // this.editor.iconPath = this.iconPath; //TODO: implement
     this.editor.webview.options = getWebviewOptions();
