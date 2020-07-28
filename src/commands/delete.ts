@@ -22,8 +22,6 @@ import { window } from 'vscode';
 import { Progress } from '../util/progress';
 import { ClusterTriggerBinding } from '../tekton/clustertriggerbunding';
 
-type deleteFn = (node: TektonItem) => Promise<string | undefined>;
-
 interface Refreshable {
   refresh(): void;
 }
