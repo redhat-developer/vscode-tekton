@@ -52,12 +52,12 @@ export class SelectWidget extends BaseWidget {
 
   enableInputBox(event: Node & ParentNode, parentElement: HTMLElement): void {
     if (event && parentElement.id !== TknResourceType.Workspaces) {
-      console.log(event);
-      const input = event.querySelector('input');
-      input.removeAttribute('disabled');
-      input.id = 'enabled';
-      input.title = '';
       if (event.parentNode.parentNode.querySelector('select').firstElementChild.innerHTML === 'Select a key') {
+        const input = event.querySelector('input');
+        input.removeAttribute('disabled');
+        input.id = 'enabled';
+        input.title = '';
+        input.parentNode.parentElement.className = 'editor-input-box';
         event.parentNode.parentNode.querySelector('select').firstElementChild.remove();
       }
     }

@@ -23,7 +23,7 @@ export function addItem(event: Node & ParentNode, optionId: string, newDivClass:
   if (event.lastElementChild.id === 'Add-New-Items') event.lastChild.remove();
   event.appendChild(createDiv(null, newDivClass));
   event.lastChild.appendChild(selectItemOp.getElement());
-  event.lastChild.appendChild(new InputWidget('Enter a path', null, initialValue, true, 'enable-input-box-workspace', 'disabled', 'disabled').getElement());
+  event.lastChild.appendChild(new InputWidget('Enter a path', 'editor-input-box-disable', initialValue, true, 'enable-input-box-workspace', 'disabled', 'disabled').getElement());
   event.lastChild.appendChild(new ButtonsPanel(null, 'close-button-div', 'close-button', null, null, null, null, initialValue).getElement());
   event.appendChild(new ButtonsPanel('Add items', 'elementButtons', 'addItemButtons', trigger, optionId, selectValue, 'Add-New-Items', initialValue).getElement());
   selectText(selectItemOp.getElement().querySelectorAll('[id^=editor-select-box-item-select-a-key]'), 'Select a key', true);

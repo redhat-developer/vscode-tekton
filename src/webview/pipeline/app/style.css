@@ -307,6 +307,63 @@ body {
   /* #848484 */
 }
 
+.editor-input-box-disable {
+  position: relative;
+  display: block;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: var(--vscode-font-size);
+  position: relative;
+  width: 300px;
+  height: 26px;
+  background-color: #d2cfcf;
+  color: var(--vscode-settings-textInputForeground);
+  line-height: 1.4em!important;
+  left: 0.5px;
+}
+
+@media screen and (max-width: 357px) {
+  .editor-input-box-disable {
+    width: 184px;
+  }
+}
+
+@media screen and (min-width: 550px) {
+  .editor-input-box-disable {
+    width: 307px;
+  }
+}
+
+@media screen and (min-width: 700px) {
+  .editor-input-box-disable {
+    width: 465px;
+  }
+}
+
+.editor-input-box-disable > .wrapper > .input {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  line-height: inherit;
+  border: none;
+  font-family: inherit;
+  font-size: var(--vscode-font-size);
+  resize: none;
+  background-color: inherit;
+  color: inherit;
+  outline-color: var(--vscode-sideBarSectionHeader-border);
+  outline-width: 1px;
+  outline-style: solid;
+}
+
+.editor-input-box-disable > .wrapper > .input:focus {
+  outline-color: var(--vscode-focusBorder);
+  outline-width: 1px;
+  outline-style: solid;
+  opacity: 1!important;
+}
+
 .editor-input-box {
   position: relative;
   display: block;
