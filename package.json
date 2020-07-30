@@ -80,13 +80,13 @@
           "Title": "Start Pipeline",
           "type": "boolean",
           "default": false,
-          "description": "Start pipeline from QuickPick"
+          "description": "Start pipeline from Command Palette."
         },
         "vs-tekton.pipelineRun": {
           "Title": "Show PipelineRun on staring Pipeline",
           "type": "boolean",
           "default": true,
-          "description": "Show PipelineRun on staring Pipeline from webview"
+          "description": "Show PipelineRun after starting pipeline."
         },
         "vs-tekton.showChannelOutput": {
           "title": "Show channel on output",

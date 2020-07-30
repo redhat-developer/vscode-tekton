@@ -8,7 +8,7 @@ import { BaseWidget } from './widget';
 import { PipelineStart } from '../utils/types';
 import { TknResourceType } from '../utils/const';
 import { collectParameterData, collectResourceData } from '../utils/resource';
-import { disableButton } from '..';
+import { disableButton } from '../index';
 
 export class InputWidget extends BaseWidget {
   public input: HTMLInputElement;

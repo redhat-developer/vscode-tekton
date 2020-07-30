@@ -902,7 +902,7 @@ export interface Tkn {
   getPipelineRunsList(pipelineRun?: TektonNode): Promise<TektonNode[]>;
   getTaskRunList(taskRun?: TektonNode): Promise<TektonNode[]>;
   getRawPipelineRun(name: string): Promise<PipelineRunData | undefined>;
-  _getPipelineRuns(pipeline: TektonNode, pipelineName?: string): Promise<TektonNode[]> | undefined;
+  getLatestPipelineRun(pipelineName: string): Promise<TektonNode[]> | undefined;
   clearCache?(): void;
 }
 
@@ -1047,6 +1047,10 @@ export class TknImpl implements Tkn {
 
     this.getPipelineStatus(pipelineRuns);
     return this.limitView(pipeline, pipelineRuns);
+  }
+
+  async getLatestPipelineRun(pipelineName: string): Promise<TektonNode[]> {
+    return await this._getPipelineRuns(null, pipelineName);
   }
 
   async _getPipelineRuns(pipeline: TektonNode, pipelineName?: string): Promise<TektonNode[]> | undefined {
