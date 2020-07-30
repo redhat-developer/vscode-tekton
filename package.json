@@ -76,6 +76,18 @@
           "default": "yaml",
           "description": "Output format for Tekton specs. One of 'json' or 'yaml' (default)."
         },
+        "vs-tekton.start": {
+          "Title": "Start Pipeline",
+          "type": "boolean",
+          "default": false,
+          "description": "Start pipeline from QuickPick"
+        },
+        "vs-tekton.pipelineRun": {
+          "Title": "Show PipelineRun on staring Pipeline",
+          "type": "boolean",
+          "default": true,
+          "description": "Show PipelineRun on staring Pipeline from webview"
+        },
         "vs-tekton.showChannelOutput": {
           "title": "Show channel on output",
           "type": "boolean",
@@ -184,11 +196,6 @@
         "title": "Start",
         "category": "Tekton",
         "enablement": "tekton:tkn"
-      },
-      {
-        "command": "tekton.pipeline.wizard.start",
-        "title": "Start Wizard",
-        "category": "Tekton"
       },
       {
         "command": "tekton.explorerView.delete",
@@ -489,10 +496,6 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
-          "command": "tekton.pipeline.wizard.start",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
-        },
-        {
           "command": "tekton.openInEditor",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -613,11 +616,6 @@
           "command": "tekton.pipeline.start",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
           "group": "c1@2"
-        },
-        {
-          "command": "tekton.pipeline.wizard.start",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
-          "group": "c1@3"
         },
         {
           "command": "tekton.pipeline.list",

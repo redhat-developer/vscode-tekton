@@ -902,6 +902,7 @@ export interface Tkn {
   getPipelineRunsList(pipelineRun?: TektonNode): Promise<TektonNode[]>;
   getTaskRunList(taskRun?: TektonNode): Promise<TektonNode[]>;
   getRawPipelineRun(name: string): Promise<PipelineRunData | undefined>;
+  _getPipelineRuns(pipeline: TektonNode, pipelineName?: string): Promise<TektonNode[]> | undefined;
   clearCache?(): void;
 }
 
@@ -1048,11 +1049,11 @@ export class TknImpl implements Tkn {
     return this.limitView(pipeline, pipelineRuns);
   }
 
-  async _getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> | undefined {
-    const result = await this.execute(Command.listPipelineRuns(pipeline.getName()));
+  async _getPipelineRuns(pipeline: TektonNode, pipelineName?: string): Promise<TektonNode[]> | undefined {
+    const result = await this.execute(Command.listPipelineRuns(pipelineName ?? pipeline.getName()));
     if (result.error) {
       console.log(result + ' Std.err when processing pipelines');
-      return [new TektonNodeImpl(pipeline, getStderrString(result.error), ContextType.PIPELINERUN, this, TreeItemCollapsibleState.None)];
+      if (!pipelineName) return [new TektonNodeImpl(pipeline, getStderrString(result.error), ContextType.PIPELINERUN, this, TreeItemCollapsibleState.None)];
     }
 
     let data: PipelineRunData[] = [];

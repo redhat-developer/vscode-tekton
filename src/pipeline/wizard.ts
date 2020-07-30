@@ -9,7 +9,6 @@ import * as path from 'path';
 import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
 import { TknResourceItem } from '../tekton/webviewstartpipeline';
-import { Progress } from '../util/progress';
 import { TektonItem } from '../tekton/tektonitem';
 
 export interface PipelineWizardInput {
@@ -40,7 +39,6 @@ export class PipelineWizard extends Disposable {
   private readonly onDidChangeViewStateEmitter = new vscode.EventEmitter<vscode.WebviewPanelOnDidChangeViewStateEvent>();
   public readonly onDidChangeViewState = this.onDidChangeViewStateEmitter.event;
 
-
   constructor(webview: vscode.WebviewPanel, private input: PipelineWizardInput) {
     super();
     this.editor = webview;
@@ -49,21 +47,15 @@ export class PipelineWizard extends Disposable {
     }));
 
 
-    this.register(this.editor.webview.onDidReceiveMessage(e => {
+    this.register(this.editor.webview.onDidReceiveMessage(async e => {
       switch (e.type) {
         case 'startPipeline':
           // eslint-disable-next-line no-case-declarations
           const inputStartPipeline = e.body;
           this.dispose();
-          return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
-            TektonItem.tkn.startPipeline(inputStartPipeline)
-              .then(() => TektonItem.explorer.refresh())
-              .then(() => `Pipeline '${inputStartPipeline.name}' successfully started`)
-              .catch((error) => Promise.reject(`Failed to start Pipeline with error '${error}'`))
-          );
+          return await TektonItem.startPipeline(inputStartPipeline);
       }
     }));
-
 
     this.updateFunc();
   }

@@ -7,6 +7,10 @@ import { Tkn, tkn as tknImpl, TektonNode, ContextType } from '../tkn';
 import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { workspace, window } from 'vscode';
 import { tektonFSUri } from '../util/tekton-vfs';
+import { Progress } from '../util/progress';
+import { PipelineWizard } from '../pipeline/wizard';
+import { showPipelineRunPreview } from '../pipeline/pipeline-preview';
+import { StartObject } from './pipelinecontent';
 
 const errorMessage = {
   Pipeline: 'You need at least one Pipeline available. Please create new Tekton Pipeline and try again.',
@@ -125,5 +129,28 @@ export abstract class TektonItem {
 
   static getOutputFormat(): string {
     return workspace.getConfiguration('vs-tekton')['outputFormat'];
+  }
+
+  static startQuickPick(): boolean {
+    return workspace
+      .getConfiguration('vs-tekton')
+      .get<boolean>('start');
+  }
+
+  static ShowPipelineRun(): boolean {
+    return workspace
+      .getConfiguration('vs-tekton')
+      .get<boolean>('pipelineRun');
+  }
+
+  static startPipeline(inputStartPipeline: StartObject): Promise<string> {
+    return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
+      TektonItem.tkn.startPipeline(inputStartPipeline)
+        .then(() => TektonItem.explorer.refresh())
+        .then(() => !TektonItem.startQuickPick() ? TektonItem.ShowPipelineRun() ? this.tkn._getPipelineRuns(undefined ,inputStartPipeline.name) : undefined : undefined)
+        .then((value) => !TektonItem.startQuickPick() ? TektonItem.ShowPipelineRun() ? showPipelineRunPreview(value[0].getName()) : undefined : undefined)
+        .then(() => `Pipeline '${inputStartPipeline.name}' successfully started`)
+        .catch((error) => Promise.reject(`Failed to start Pipeline with error '${error}'`))
+    );
   }
 }
