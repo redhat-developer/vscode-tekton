@@ -13,6 +13,7 @@ import { TknPipelineTrigger } from '../tekton';
 import { Trigger, PipelineContent } from './pipelinecontent';
 import { PipelineWizard } from '../pipeline/wizard';
 import { pipelineData } from './webviewstartpipeline';
+import { startPipeline } from './startpipeline';
 
 export class Pipeline extends TektonItem {
 
@@ -42,7 +43,7 @@ export class Pipeline extends TektonItem {
       })).filter((obj) => obj.name === pipeline.getName());
       const inputStartPipeline = await PipelineContent.startObject(pipelineTrigger, 'Pipeline');
 
-      return await Pipeline.startPipeline(inputStartPipeline);
+      return await startPipeline(inputStartPipeline);
     } else {
       Pipeline.startWizard(pipeline);
     }
@@ -108,7 +109,7 @@ export class Pipeline extends TektonItem {
     }
     const trigger = await pipelineData(data);
     if (!trigger.workspaces && !trigger.resources && !trigger.params) {
-      await Pipeline.startPipeline(trigger);
+      await startPipeline(trigger);
     } else {
       PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active);
     }

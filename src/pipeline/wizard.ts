@@ -9,7 +9,7 @@ import * as path from 'path';
 import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
 import { TknResourceItem } from '../tekton/webviewstartpipeline';
-import { TektonItem } from '../tekton/tektonitem';
+import { startPipeline } from '../tekton/startpipeline';
 
 export interface PipelineWizardInput {
   readonly resourceColumn: vscode.ViewColumn;
@@ -53,7 +53,7 @@ export class PipelineWizard extends Disposable {
           // eslint-disable-next-line no-case-declarations
           const inputStartPipeline = e.body;
           this.dispose();
-          return await TektonItem.startPipeline(inputStartPipeline);
+          return await startPipeline(inputStartPipeline);
       }
     }));
 
