@@ -68,13 +68,10 @@ export class SelectWidget extends BaseWidget {
       const sectionId = `${select.value}-Workspaces`;
       const editId = 'Workspaces-Edit';
       const optionId = select[select.selectedIndex].id;
+      if (select.value === 'Select a PVC') disableSelection(document.getElementsByTagName('select'));
+      if (optionId === 'PersistentVolumeClaim') disableSelection(document.getElementsByTagName('select'));
       if (this.trigger[select.value]) {
-        if (event.lastElementChild.firstElementChild.id.trim() === editId) event.lastElementChild.remove();
-        const workspacesType = new SelectWidget(sectionId, this.trigger, null, this.initialValue).workspacesResource(this.trigger[select.value], select.value);
-        const workspacesOp = new EditItem(VolumeTypes[select.value], workspacesType, editId, 'inner-editItem');
-        event.appendChild(workspacesOp.getElement());
-        selectText(event.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[select.value]}`, true, 'select-workspace-option');
-        disableSelection(document.getElementsByTagName('select'));
+        this.dropdownForWorkspaceType(event, editId, sectionId, select);
       } else if (event.lastElementChild.firstElementChild.id.trim() === editId) {
         event.lastElementChild.remove();
         disableSelection(document.getElementsByTagName('select'));
@@ -86,16 +83,29 @@ export class SelectWidget extends BaseWidget {
           selectedItem.forEach(element => element.remove());
           buttonItem.forEach(element => element.remove());
         }
-        if (selectedItem.length) {
-          selectedItem.forEach(element => element.remove());
-          buttonItem.forEach(element => element.remove());
-          createItem(event, optionId, select.value, this.initialValue, this.trigger);
-        } else {
-          createItem(event, optionId, select.value, this.initialValue, this.trigger);
-        }
+        this.createElementForKeyAndPath(selectedItem, buttonItem, event, optionId, select);
       }
     } catch (err) {
       // ignores
+    }
+  }
+
+  dropdownForWorkspaceType(event: Node & ParentNode, editId: string, sectionId: string, select: HTMLSelectElement): void {
+    if (event.lastElementChild.firstElementChild.id.trim() === editId) event.lastElementChild.remove();
+    const workspacesType = new SelectWidget(sectionId, this.trigger, null, this.initialValue).workspacesResource(this.trigger[select.value], select.value);
+    const workspacesOp = new EditItem(VolumeTypes[select.value], workspacesType, editId, 'inner-editItem');
+    event.appendChild(workspacesOp.getElement());
+    selectText(event.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[select.value]}`, true, 'select-workspace-option');
+    disableSelection(document.getElementsByTagName('select'));
+  }
+
+  createElementForKeyAndPath(selectedItem: unknown[] | NodeListOf<Element>, buttonItem: unknown[] | NodeListOf<Element>, event: Node & ParentNode, optionId: string, select: HTMLSelectElement): void {
+    if (selectedItem.length) {
+      selectedItem.forEach((element: { remove: () => unknown }) => element.remove());
+      buttonItem.forEach((element: { remove: () => unknown }) => element.remove());
+      createItem(event, optionId, select.value, this.initialValue, this.trigger);
+    } else {
+      createItem(event, optionId, select.value, this.initialValue, this.trigger);
     }
   }
 

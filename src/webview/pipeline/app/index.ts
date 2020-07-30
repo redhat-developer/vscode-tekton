@@ -8,7 +8,7 @@ import 'vscode-codicons/dist/codicon.ttf'
 import { PipelineRunEditor } from './editor';
 import { Trigger } from './utils/types';
 
-declare let acquireVsCodeApi: any;
+declare const acquireVsCodeApi: () => ({ getState(): Trigger; setState(data: Trigger): void; postMessage: (msg: unknown) => void });
 export const vscode = acquireVsCodeApi();
 
 const rootElement = document.getElementById('root');

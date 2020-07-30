@@ -34,13 +34,16 @@ export class Pipeline extends TektonItem {
         //show no pipelines if output is not correct json
       }
 
-      const pipelineTrigger = data.map<Trigger>(value => ({
+      const pipelineTrigger = data.filter((value) => {
+        return value.metadata.name === pipeline.getName()
+      }).map<Trigger>(value => ({
         name: value.metadata.name,
         resources: value.spec.resources,
         params: value.spec.params ? value.spec.params : undefined,
         workspaces: value.spec['workspaces'] ? value.spec['workspaces'] : undefined,
         serviceAcct: value.spec.serviceAccount ? value.spec.serviceAccount : undefined
-      })).filter((obj) => obj.name === pipeline.getName());
+      }));
+
       const inputStartPipeline = await PipelineContent.startObject(pipelineTrigger, 'Pipeline');
 
       return await startPipeline(inputStartPipeline);
