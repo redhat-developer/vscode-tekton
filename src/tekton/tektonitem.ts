@@ -22,8 +22,8 @@ const errorMessage = {
 };
 
 export abstract class TektonItem {
-  protected static readonly tkn: Tkn = tknImpl;
-  protected static readonly explorer: PipelineExplorer = pipelineExplorer;
+  static readonly tkn: Tkn = tknImpl;
+  static readonly explorer: PipelineExplorer = pipelineExplorer;
 
   static validateUniqueName(data: Array<TektonNode>, value: string): string {
     const tektonNode = data.find((tektonNode) => tektonNode.getName() === value);
@@ -125,5 +125,17 @@ export abstract class TektonItem {
 
   static getOutputFormat(): string {
     return workspace.getConfiguration('vs-tekton')['outputFormat'];
+  }
+
+  static startQuickPick(): boolean {
+    return workspace
+      .getConfiguration('vs-tekton')
+      .get<boolean>('start');
+  }
+
+  static ShowPipelineRun(): boolean {
+    return workspace
+      .getConfiguration('vs-tekton')
+      .get<boolean>('pipelineRun');
   }
 }

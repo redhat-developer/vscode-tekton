@@ -89,6 +89,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.open.task', (context) => execute(TaskRun.openDefinition, context)),
     vscode.commands.registerCommand('tekton.open.task.palette', (context) => execute(TaskRun.openDefinition, context)),
     vscode.commands.registerCommand('tekton.view.pipelinerun.diagram', (context) => execute(PipelineRun.showDiagram, context)),
+    vscode.commands.registerCommand('tekton.pipeline.wizard.start', (context) => execute(Pipeline.startWizard, context)),
 
     pipelineExplorer,
     // Temporarily loaded resource providers

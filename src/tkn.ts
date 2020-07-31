@@ -105,15 +105,34 @@ function verbose(_target: any, key: string, descriptor: any): void {
 function tknWorkspace(pipelineData: StartObject): string[] {
   const workspace: string[] = [];
   pipelineData.workspaces.forEach(element => {
-    workspace.push('-w');
     if (element.workspaceType === 'PersistentVolumeClaim') {
-      workspace.push(`name=${element.name},claimName=${element.workspaceName},subPath=${element.subPath}`);
+      if (element.item && element.item.length === 0) {
+        workspace.push(`-w name=${element.name},claimName=${element.workspaceName}`);
+      } else {
+        workspace.push(`-w name=${element.name},claimName=${element.workspaceName},subPath=${element.subPath}`);
+      }
     } else if (element.workspaceType === 'ConfigMap') {
-      workspace.push(`name=${element.name},config=${element.workspaceName},item=${element.key}=${element.value}`);
+      if (element.item && element.item.length !== 0) {
+        let configMap = `-w name=${element.name},config=${element.workspaceName}`;
+        element.item.forEach(value => {
+          configMap = configMap.concat(`,item=${value.key}=${value.value}`);
+        });
+        workspace.push(configMap);
+      } else {
+        workspace.push(`-w name=${element.name},config=${element.workspaceName},item=${element.key}=${element.value}`);
+      }
     } else if (element.workspaceType === 'Secret') {
-      workspace.push(`name=${element.name},secret=${element.workspaceName}`);
+      if (element.item && element.item.length !== 0) {
+        let secret = `-w name=${element.name},secret=${element.workspaceName}`;
+        element.item.forEach(value => {
+          secret = secret.concat(`,item=${value.key}=${value.value}`);
+        });
+        workspace.push(secret);
+      } else {
+        workspace.push(`-w name=${element.name},secret=${element.workspaceName}`);
+      }
     } else if (element.workspaceType === 'EmptyDir') {
-      workspace.push(`name=${element.name},emptyDir=${element.emptyDir}`);
+      workspace.push(`-w name=${element.name},emptyDir=${element.emptyDir}`);
     }
   });
   return workspace;
@@ -145,6 +164,9 @@ export class Command {
   @verbose
   static startPipeline(pipelineData: StartObject): CliCommand {
     const resources: string[] = [];
+    if (!pipelineData.workspaces && !pipelineData.resources && !pipelineData.params) {
+      return newTknCommand('pipeline', 'start', pipelineData.name);
+    }
     const svcAcct: string[] = pipelineData.serviceAccount ? ['-s ', pipelineData.serviceAccount] : ['-s', 'pipeline'];
     pipelineData.resources.forEach(element => {
       resources.push('--resource');
@@ -369,6 +391,10 @@ export class Command {
 
   static getPipelineRun(name: string): CliCommand {
     return newK8sCommand('get', 'pipelinerun', name, '-o', 'json');
+  }
+
+  static getPipeline(name: string): CliCommand {
+    return newK8sCommand('get', 'pipeline', name, '-o', 'json');
   }
 
   static create(file: string): CliCommand {
@@ -876,6 +902,7 @@ export interface Tkn {
   getPipelineRunsList(pipelineRun?: TektonNode): Promise<TektonNode[]>;
   getTaskRunList(taskRun?: TektonNode): Promise<TektonNode[]>;
   getRawPipelineRun(name: string): Promise<PipelineRunData | undefined>;
+  getLatestPipelineRun(pipelineName: string): Promise<TektonNode[]> | undefined;
   clearCache?(): void;
 }
 
@@ -1022,11 +1049,15 @@ export class TknImpl implements Tkn {
     return this.limitView(pipeline, pipelineRuns);
   }
 
-  async _getPipelineRuns(pipeline: TektonNode): Promise<TektonNode[]> | undefined {
-    const result = await this.execute(Command.listPipelineRuns(pipeline.getName()));
+  async getLatestPipelineRun(pipelineName: string): Promise<TektonNode[]> {
+    return await this._getPipelineRuns(null, pipelineName);
+  }
+
+  async _getPipelineRuns(pipeline: TektonNode, pipelineName?: string): Promise<TektonNode[]> | undefined {
+    const result = await this.execute(Command.listPipelineRuns(pipelineName ?? pipeline.getName()));
     if (result.error) {
       console.log(result + ' Std.err when processing pipelines');
-      return [new TektonNodeImpl(pipeline, getStderrString(result.error), ContextType.PIPELINERUN, this, TreeItemCollapsibleState.None)];
+      if (!pipelineName) return [new TektonNodeImpl(pipeline, getStderrString(result.error), ContextType.PIPELINERUN, this, TreeItemCollapsibleState.None)];
     }
 
     let data: PipelineRunData[] = [];

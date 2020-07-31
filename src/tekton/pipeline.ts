@@ -6,45 +6,50 @@
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
 import { Progress } from '../util/progress';
-import { window } from 'vscode';
+import { window, ViewColumn } from 'vscode';
 import * as cliInstance from '../cli';
 import { cli } from '../cli';
 import { TknPipelineTrigger } from '../tekton';
 import { Trigger, PipelineContent } from './pipelinecontent';
+import { PipelineWizard } from '../pipeline/wizard';
+import { pipelineData } from './webviewstartpipeline';
+import { startPipeline } from './startpipeline';
 
 export class Pipeline extends TektonItem {
 
   static async start(pipeline: TektonNode): Promise<string> {
-    if (!pipeline) {
-      pipeline = await window.showQuickPick(await Pipeline.getPipelineNames(), { placeHolder: 'Select Pipeline to start', ignoreFocusOut: true });
-    }
-    if (!pipeline) return null;
-    const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.listPipelines(), process.cwd(), false);
-    let data: TknPipelineTrigger[] = [];
-    if (result.error) {
-      console.log(result + ' Std.err when processing pipelines');
-    }
-    try {
-      data = JSON.parse(result.stdout).items;
-    } catch (ignore) {
-      //show no pipelines if output is not correct json
-    }
+    if (Pipeline.startQuickPick()) {
+      if (!pipeline) {
+        pipeline = await window.showQuickPick(await Pipeline.getPipelineNames(), { placeHolder: 'Select Pipeline to start', ignoreFocusOut: true });
+      }
+      if (!pipeline) return null;
+      const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.listPipelines(), process.cwd(), false);
+      let data: TknPipelineTrigger[] = [];
+      if (result.error) {
+        console.log(result + ' Std.err when processing pipelines');
+      }
+      try {
+        data = JSON.parse(result.stdout).items;
+      } catch (ignore) {
+        //show no pipelines if output is not correct json
+      }
 
-    const pipelineTrigger = data.map<Trigger>(value => ({
-      name: value.metadata.name,
-      resources: value.spec.resources,
-      params: value.spec.params ? value.spec.params : undefined,
-      workspaces: value.spec['workspaces'] ? value.spec['workspaces'] : undefined,
-      serviceAcct: value.spec.serviceAccount ? value.spec.serviceAccount : undefined
-    })).filter((obj) => obj.name === pipeline.getName());
-    const inputStartPipeline = await PipelineContent.startObject(pipelineTrigger, 'Pipeline');
+      const pipelineTrigger = data.filter((value) => {
+        return value.metadata.name === pipeline.getName()
+      }).map<Trigger>(value => ({
+        name: value.metadata.name,
+        resources: value.spec.resources,
+        params: value.spec.params ? value.spec.params : undefined,
+        workspaces: value.spec['workspaces'] ? value.spec['workspaces'] : undefined,
+        serviceAcct: value.spec.serviceAccount ? value.spec.serviceAccount : undefined
+      }));
 
-    return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
-      Pipeline.tkn.startPipeline(inputStartPipeline)
-        .then(() => Pipeline.explorer.refresh())
-        .then(() => `Pipeline '${inputStartPipeline.name}' successfully started`)
-        .catch((error) => Promise.reject(`Failed to start Pipeline with error '${error}'`))
-    );
+      const inputStartPipeline = await PipelineContent.startObject(pipelineTrigger, 'Pipeline');
+
+      return await startPipeline(inputStartPipeline);
+    } else {
+      Pipeline.startWizard(pipeline);
+    }
   }
 
   static async restart(pipeline: TektonNode): Promise<string> {
@@ -91,5 +96,25 @@ export class Pipeline extends TektonItem {
 
   static getDeleteCommand(pipeline: TektonNode): cliInstance.CliCommand {
     return Command.deletePipeline(pipeline.getName());
+  }
+
+  static async startWizard(pipeline: TektonNode): Promise<void> {
+    if (!pipeline) return null;
+    const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.getPipeline(pipeline.getName()), process.cwd(), false);
+    let data: TknPipelineTrigger;
+    if (result.error) {
+      console.log(result + ' Std.err when processing pipelines');
+    }
+    try {
+      data = JSON.parse(result.stdout);
+    } catch (ignore) {
+      //show no pipelines if output is not correct json
+    }
+    const trigger = await pipelineData(data);
+    if (!trigger.workspaces && !trigger.resources && !trigger.params) {
+      await startPipeline(trigger);
+    } else {
+      PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active);
+    }
   }
 }

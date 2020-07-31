@@ -33,6 +33,23 @@ suite('Tekton/Pipeline', () => {
 
 
   setup(() => {
+    sandbox.stub(vscode.workspace, 'getConfiguration').returns({
+      get<T>(): Promise<T|undefined> {
+        return Promise.resolve(undefined);
+      },
+      update(): Promise<void> {
+        return Promise.resolve();
+      },
+      inspect(): {
+          key: string;
+          } {
+        return undefined;
+      },
+      has(): boolean {
+        return true;
+      },
+      start: true
+    });
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     showQuickPickStub = sandbox.stub(vscode.window, 'showQuickPick').resolves(undefined);
     sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
