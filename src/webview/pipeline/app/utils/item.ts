@@ -5,7 +5,7 @@
 
 import { createDiv } from './util';
 import { PipelineStart, Trigger } from './types';
-import { disableButton, selectText } from '..';
+import { disableButton, selectText } from '../index';
 import { SelectWidget } from '../widgets/selectwidget';
 import { EditItem } from '../widgets/maincontent';
 import { InputWidget } from '../widgets/inputwidget';

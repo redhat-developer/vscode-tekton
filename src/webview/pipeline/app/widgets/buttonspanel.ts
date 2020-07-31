@@ -6,7 +6,7 @@
 import { BaseWidget } from './widget';
 import { Trigger, PipelineStart } from '../utils/types';
 import { createItem } from '../utils/item';
-import { disableButton, vscode } from '..';
+import { disableButton, vscode } from '../index';
 import { addItemInWorkspace } from '../utils/resource';
 import { disableRemoveButton } from '../utils/disablebutton';
 
