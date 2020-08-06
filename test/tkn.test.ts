@@ -173,24 +173,15 @@ suite('tkn', () => {
         serviceAccount: undefined
       };
       execStub.resolves({
-        error: null, stdout: JSON.stringify({
-          'items': [{
-            'kind': 'Pipeline',
-            'apiVersion': 'tekton.dev/v1alpha1',
-            'metadata': {
-              'name': 'pipeline'
-            }
-          }]
-        })
+        error: null,
+        stdout: `
+        PipelineRun started: condition-pipeline-run-svht8\\n\\nIn order to track the PipelineRun progress run:\\ntkn pipelinerun logs condition-pipeline-run-svht8 -f -n pipelines-tutorial\\n
+        `
       });
       const result = await tknCli.startPipeline(startPipelineObj);
 
       expect(execStub).calledOnceWith(tkn.Command.startPipeline(startPipelineObj));
-      expect(result.length).equals(1);
-      for (let i = 1; i < result.length; i++) {
-        expect(result[i].getName()).equals(startPipelineObj.name);
-      }
-
+      expect(result).equals('condition-pipeline-run-svht8');
     });
 
     test('getPipelines returns items from tkn pipeline list command', async () => {

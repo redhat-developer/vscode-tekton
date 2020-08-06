@@ -881,7 +881,7 @@ export class MoreNode extends TreeItem implements TektonNode {
 
 export interface Tkn {
   getPipelineNodes(): Promise<TektonNode[]>;
-  startPipeline(pipeline: StartObject): Promise<TektonNode[]>;
+  startPipeline(pipeline: StartObject): Promise<string>;
   startTask(task: StartObject): Promise<TektonNode[]>;
   restartPipeline(pipeline: TektonNode): Promise<void>;
   getPipelines(pipeline?: TektonNode): Promise<TektonNode[]>;
@@ -1305,19 +1305,20 @@ export class TknImpl implements Tkn {
     return data;
   }
 
-  async startPipeline(pipeline: StartObject): Promise<TektonNode[]> {
+  async startPipeline(pipeline: StartObject): Promise<string> {
     const result = await this.execute(Command.startPipeline(pipeline));
-    let data: TknTask[] = [];
-    try {
-      data = JSON.parse(result.stdout).items;
-      // eslint-disable-next-line no-empty
-    } catch (ignore) {
+    // let data = [];
+    // try {
+    //   data = JSON.parse(result.stdout).items;
+    //   // eslint-disable-next-line no-empty
+    // } catch (ignore) {
 
-    }
-    let pipelines: string[] = data.map((value) => value.metadata.name);
-    pipelines = [...new Set(pipelines)];
-    const treeState = pipelines.length > 0 ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
-    return pipelines.map<TektonNode>((value) => new TektonNodeImpl(undefined, value, ContextType.PIPELINE, this, treeState)).sort(compareNodes);
+    // }
+    return result.stdout.match(/Pipelinerun|PipelineRun started:\s+([a-z0-9A-Z-]+)/)[1];
+    // let pipelines: string[] = data.map((value) => value.metadata.name);
+    // pipelines = [...new Set(pipelines)];
+    // const treeState = pipelines.length > 0 ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
+    // return pipelines.map<TektonNode>((value) => new TektonNodeImpl(undefined, value, ContextType.PIPELINE, this, treeState)).sort(compareNodes);
   }
 
   async startTask(task: StartObject): Promise<TektonNode[]> {
