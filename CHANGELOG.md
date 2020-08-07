@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.4.0 (August 7, 2020)
+
+This release brings to you:
+
+* [#309](https://github.com/redhat-developer/vscode-tekton/issues/309) Start task forces value for all parameters
+* [#244](https://github.com/redhat-developer/vscode-tekton/issues/244) Add completion for 'conditionRef' in Pipeline conditions
+* [#258](https://github.com/redhat-developer/vscode-tekton/issues/258) Provide JSON Scheme for all Tekton resources
+* [#213](https://github.com/redhat-developer/vscode-tekton/issues/213) Delete multiple resources at once
+* [#371](https://github.com/redhat-developer/vscode-tekton/issues/371) Add action to show pipelinerun diagram from the tree
+* [#310](https://github.com/redhat-developer/vscode-tekton/issues/310) New Wizard for PipelineRun
+* [#376](https://github.com/redhat-developer/vscode-tekton/issues/376) Update tkn version to `0.11.0`
+
 ## 0.3.0 (July 3, 2020)
 
 This release brings to you:

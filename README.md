@@ -20,6 +20,13 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 ## New and Noteworthy
 
+### New Wizard for Pipeline Start
+
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_wizard_0.4.0.gif" width="600" height="338" /></div>
+
+Pipeline with Workspace:
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_wizard_ws_0.4.0.gif" width="600" height="375" /></div>
+
 ### Deploy resource on save
 >Note: This is experimental feature, you need to enable it in preferences
 
