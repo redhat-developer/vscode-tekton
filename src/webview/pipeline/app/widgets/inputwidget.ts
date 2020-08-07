@@ -7,7 +7,7 @@ import { createDiv } from '../utils/util';
 import { BaseWidget } from './widget';
 import { PipelineStart } from '../utils/types';
 import { TknResourceType } from '../utils/const';
-import { collectParameterData, collectResourceData } from '../utils/resource';
+import { collectResourceData } from '../utils/resource';
 import { disableButton } from '../index';
 
 export class InputWidget extends BaseWidget {
@@ -18,7 +18,8 @@ export class InputWidget extends BaseWidget {
     disabledType?: boolean,
     wrapperId?: string,
     inputId?: string,
-    inputTitle?: string
+    inputTitle?: string,
+    inputValue?: string
   ) {
     super();
     const editorInput = createDiv(className ?? 'editor-input-box');
@@ -27,6 +28,7 @@ export class InputWidget extends BaseWidget {
     this.input.autocapitalize = 'off';
     this.input.spellcheck = false;
     this.input.placeholder = text ?? '';
+    this.input.value = inputValue ?? '';
     this.input.type = 'text';
     this.input.id = inputId ?? '';
     this.input.disabled = disabledType ?? false;
@@ -70,12 +72,8 @@ export class InputWidget extends BaseWidget {
 
   getValue(input: HTMLInputElement): void {
     disableButton(document.getElementsByTagName('input'));
-    const initialValue = this.initialValue;
-    if (input.parentNode.parentNode.parentNode.parentElement.id === TknResourceType.Params) {
-      collectParameterData(input.parentNode.parentNode.parentNode.firstElementChild.id, this.input.value, initialValue);
-    }
     const resource = input.parentNode.parentNode.parentNode.parentNode.parentElement.id.trim();
-    if (resource === TknResourceType.GitResource || resource === TknResourceType.ImageResource) {
+    if (resource === `${TknResourceType.GitResource}-vscode-webview-pipeline` || resource === `${TknResourceType.ImageResource}-vscode-webview-pipeline`) {
       const name = input.parentNode.parentNode.parentNode.parentNode.firstElementChild.id;
       const resourceRef = this.input.value;
       collectResourceData(name, resourceRef, this.initialValue);

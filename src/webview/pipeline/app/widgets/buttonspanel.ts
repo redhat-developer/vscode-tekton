@@ -6,9 +6,10 @@
 import { BaseWidget } from './widget';
 import { Trigger, PipelineStart } from '../utils/types';
 import { createItem } from '../utils/item';
-import { disableButton, vscode } from '..';
-import { addItemInWorkspace } from '../utils/resource';
+import { disableButton, vscode } from '../index';
+import { addItemInWorkspace, collectParameterData } from '../utils/resource';
 import { disableRemoveButton } from '../utils/disablebutton';
+import { TknResourceType } from '../utils/const';
 
 export class ButtonsPanel extends BaseWidget {
   private startButton: HTMLElement;
@@ -40,6 +41,7 @@ export class ButtonsPanel extends BaseWidget {
     try {
       if (event.lastElementChild.firstElementChild.className === 'startButton') {
         this.storeItemData(event.querySelectorAll('[id^=items-section-workspace-new-item]'));
+        this.storeParamData(event.querySelectorAll(`[id^=${TknResourceType.Params}-input-field-content-data]`));
         vscode.postMessage({
           type: 'startPipeline',
           body: this.initialValue
@@ -60,6 +62,16 @@ export class ButtonsPanel extends BaseWidget {
       createItem(event, this.optionId, this.selectOption, this.initialValue, this.trigger);
     }
     disableButton(document.getElementsByTagName('input'));
+  }
+
+  storeParamData(data: unknown[] | NodeListOf<Element>): void {
+    if (data.length !== 0) {
+      data.forEach(val => {
+        const name = val.firstElementChild.innerText;
+        const defaultValue = val.getElementsByTagName('input')[0].value;
+        collectParameterData(name, defaultValue, this.initialValue);
+      });
+    }
   }
 
   storeItemData(data: NodeListOf<Element>): void {
