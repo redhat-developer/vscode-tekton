@@ -22,10 +22,10 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 ### New Wizard for Pipeline Start
 
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_wizard_0.4.0.gif" width="600" height="338" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_wizard_0.4.0.gif" width="800" height="450" /></div>
 
 Pipeline with Workspace:
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_wizard_ws_0.4.0.gif" width="600" height="375" /></div>
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_wizard_ws_0.4.0.gif" width="800" height="450" /></div>
 
 ### Deploy resource on save
 >Note: This is experimental feature, you need to enable it in preferences
@@ -161,6 +161,7 @@ Feedback & Questions
 ====================
 If you discover an issue please file a bug and we will fix it as soon as possible.
 * File a bug in [GitHub Issues](https://github.com/redhat-developer/vscode-tekton/issues).
+* Or contact us in [Tekton Slack](https://github.com/tektoncd/community/blob/master/contact.md#slack) `#ide-integration` channel
 
 License
 =======
