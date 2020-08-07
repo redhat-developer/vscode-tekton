@@ -63,13 +63,22 @@ export class SelectWidget extends BaseWidget {
     }
   }
 
+  blockStartButton(): void {
+    disableSelection(document.getElementsByTagName('select'));
+    disableButton(document.getElementsByTagName('input'));
+  }
+
   createWorkspaceElement(event: Node & ParentNode, select: HTMLSelectElement): void {
     try {
       const sectionId = `${select.value}-Workspaces`;
       const editId = 'Workspaces-Edit';
       const optionId = select[select.selectedIndex].id;
-      if (select.value === 'Select a PVC') disableSelection(document.getElementsByTagName('select'));
-      if (optionId === 'PersistentVolumeClaim') disableSelection(document.getElementsByTagName('select'));
+      if (select.value === 'Select a PVC') {
+        this.blockStartButton();
+      }
+      if (optionId === 'PersistentVolumeClaim') {
+        this.blockStartButton();
+      }
       if (this.trigger[select.value]) {
         this.dropdownForWorkspaceType(event, editId, sectionId, select);
       } else if (event.lastElementChild.firstElementChild.id.trim() === editId) {
