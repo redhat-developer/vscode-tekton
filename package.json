@@ -608,12 +608,12 @@
           "group": "c1@2"
         },
         {
-          "command": "tekton.pipeline.restart",
+          "command": "tekton.pipeline.start",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
           "group": "c1@1"
         },
         {
-          "command": "tekton.pipeline.start",
+          "command": "tekton.pipeline.restart",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
           "group": "c1@2"
         },
