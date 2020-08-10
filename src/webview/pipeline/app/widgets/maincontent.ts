@@ -21,9 +21,11 @@ export class EditItem extends BaseWidget {
   constructor(title: string,
     input: Widget,
     id?: string,
-    className?: string) {
+    className?: string,
+    elementId?: string) {
     super();
     this.element = createDiv(className ?? 'editItem');
+    this.element.id = elementId ?? '';
     this.element.appendChild(new LabelItem(title, id).getElement());
     this.element.appendChild(input.getElement());
   }
@@ -31,12 +33,12 @@ export class EditItem extends BaseWidget {
 
 export class GroupItem extends BaseWidget {
   public label: HTMLLabelElement;
-  constructor(private title: string) {
+  constructor(private title: string, idName?: string) {
     super();
     this.element = createDiv('editorGroup');
     this.label = document.createElement('label');
     this.label.innerText = title;
-    this.element.id = title ?? '';
+    this.element.id = idName ?? '';
     this.element.appendChild(this.label);
   }
 

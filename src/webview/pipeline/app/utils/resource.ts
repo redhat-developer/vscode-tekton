@@ -5,21 +5,8 @@
 
 import { PipelineStart } from './types';
 
-
 export function collectParameterData(paramName: string, defaultValue: string, initialValue: PipelineStart): void {
-  if (initialValue.params.length === 0) {
-    initialValue.params.push({name: paramName, default: defaultValue});
-  } else {
-    const found = initialValue.params.some(value => {
-      if (value.name === paramName) {
-        value.default = defaultValue;
-        return true;
-      }
-    });
-    if (!found) {
-      initialValue.params.push({name: paramName, default: defaultValue});
-    }
-  }
+  initialValue.params.push({name: paramName, default: defaultValue});
 }
 
 export function collectResourceData(resourceName: string, resourceReference: string, initialValue: PipelineStart): void {

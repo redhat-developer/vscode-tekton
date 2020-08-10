@@ -39,18 +39,20 @@ export class PipelineRunEditor implements Widget {
   }
 
   createElement(title: string, resourceType: Params[] | Workspaces[]): void {
-    const resourceGroup = new GroupItem(title);
+    const resourceGroup = new GroupItem(title, `${title}-vscode-webview-pipeline`);
     this.initialValue.name = this.trigger.name;
     for (const resource of resourceType) {
       let element: Widget;
-      if (title === 'Parameters') {
-        element = new InputWidget('Name', null, this.initialValue);
-      } else if (title === 'Workspaces') {
+      let elementId: string;
+      if (title === TknResourceType.Params) {
+        elementId = `${TknResourceType.Params}-input-field-content-data`;
+        element = new InputWidget('Name', null, this.initialValue, null, null, null, null, resource['default']);
+      } else if (title === TknResourceType.Workspaces) {
         element = new SelectWidget('Workspaces-volume', this.trigger, null, this.initialValue).workspaces(VolumeTypes, resource)
       } else {
         element = new SelectWidget('Resources', null, null, this.initialValue).pipelineResource(this.trigger.pipelineResource, resource);
       }
-      resourceGroup.addEditItem(new EditItem(resource.name, element, resource.name));
+      resourceGroup.addEditItem(new EditItem(resource.name, element, resource.name, null, elementId));
       //TODO: complete this
     }
     this.editor.addGroup(resourceGroup);
