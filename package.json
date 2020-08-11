@@ -198,6 +198,12 @@
         "enablement": "tekton:tkn"
       },
       {
+        "command": "k8s.tekton.pipeline.start",
+        "title": "Start",
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
+      },
+      {
         "command": "tekton.explorerView.delete",
         "title": "Delete",
         "category": "Tekton",
@@ -325,6 +331,12 @@
       {
         "command": "tekton.pipelinerun.cancel.palette",
         "title": "Cancel Pipeline Run",
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
+      },
+      {
+        "command": "k8s.tekton.task.start",
+        "title": "Start",
         "category": "Tekton",
         "enablement": "tekton:tkn"
       },
@@ -496,6 +508,10 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
+          "command": "k8s.tekton.pipeline.start",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
           "command": "tekton.openInEditor",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -545,6 +561,10 @@
         },
         {
           "command": "tekton.task.start",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
+          "command": "k8s.tekton.task.start",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
@@ -606,6 +626,11 @@
           "command": "k8s.tekton.run.followLogs",
           "when": "viewItem =~ /vsKubernetes\\.resource\\.(pipelinerun|taskrun)/i",
           "group": "c1@2"
+        },
+        {
+          "command": "k8s.tekton.pipeline.start",
+          "group": "2@0",
+          "when": "view == extension.vsKubernetesExplorer && viewItem == vsKubernetes.resource.pipelines"
         },
         {
           "command": "tekton.pipeline.start",
@@ -686,6 +711,11 @@
           "command": "tekton.pipelinerun.cancel",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelinerun",
           "group": "c2@2"
+        },
+        {
+          "command": "k8s.tekton.task.start",
+          "group": "2@0",
+          "when": "view == extension.vsKubernetesExplorer && viewItem == vsKubernetes.resource.task"
         },
         {
           "command": "tekton.task.start",
