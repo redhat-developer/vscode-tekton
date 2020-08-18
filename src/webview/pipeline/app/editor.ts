@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Trigger, Params, Workspaces, PipelineStart, NameType } from './utils/types';
+import { Trigger, Params, Workspaces, PipelineStart, NameType, PipelineRunWorkspaces } from './utils/types';
 import { NavigationList, NavigationItem } from './widgets/navigation';
 import { Widget } from './widgets/widget';
 import { VolumeTypes, initialResourceFormValues, TknResourceType, typeOfResource } from './utils/const';
@@ -38,7 +38,7 @@ export class PipelineRunEditor implements Widget {
     this.update();
   }
 
-  createElement(title: string, resourceType: Params[] | Workspaces[]): void {
+  createElement(title: string, resourceType: Params[] | PipelineRunWorkspaces[] | Workspaces[]): void {
     const resourceGroup = new GroupItem(title, `${title}-vscode-webview-pipeline`);
     this.initialValue.name = this.trigger.name;
     for (const resource of resourceType) {
@@ -62,7 +62,6 @@ export class PipelineRunEditor implements Widget {
   }
 
   private update(): void {
-
     if (this.trigger.params) {
       this.createElement(TknResourceType.Params, this.trigger.params);
     }
@@ -81,6 +80,23 @@ export class PipelineRunEditor implements Widget {
   }
 
   startPipelineRun(): void {
+    this.paramPipelineRun();
+    this.resourcePipelineRun();
+    this.workspacePipelineRun();
+  }
+
+  paramPipelineRun(): void {
+    if (this.trigger.pipelineRun.params) {
+      this.trigger.pipelineRun.params.forEach(val => {
+        if (val.value) {
+          val.default = val.value;
+        }
+      });
+      this.createElement(TknResourceType.Params, this.trigger.pipelineRun.params);
+    }
+  }
+
+  resourcePipelineRun(): void {
     const gitResource = [];
     const imageResource = [];
     const pipelineRunResourceRef = {};
@@ -107,9 +123,12 @@ export class PipelineRunEditor implements Widget {
         this.createElement(TknResourceType.ImageResource, imageResource);
       }
     }
-    console.log(gitResource);
-    console.log(imageResource);
-    console.log(pipelineRunResourceRef);
+  }
+
+  workspacePipelineRun(): void {
+    if (this.trigger.pipelineRun.workspaces) {
+      this.createElement(TknResourceType.Workspaces, this.trigger.pipelineRun.workspaces);
+    }
   }
 
   startPipeline(gitResource: NameType[], imageResource: NameType[]): void {
@@ -127,7 +146,6 @@ export class PipelineRunEditor implements Widget {
     if (imageResource.length !== 0) {
       this.createElement(TknResourceType.ImageResource, imageResource);
     }
-    console.log(this.trigger);
   }
 
   getElement(): HTMLElement {

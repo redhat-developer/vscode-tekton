@@ -43,6 +43,7 @@ export interface Params {
 export interface PipelineRunParam {
   name: string;
   value: string;
+  default?: string;
 }
 
 export interface PipelineRunResources {
@@ -72,7 +73,7 @@ export interface PipelineRunWorkspacesPVC {
 }
 
 export interface PipelineRunWorkspaces {
-  name?: string;
+  name: string;
   configMap?: PipelineRunWorkspacesConfigMap[];
   secret?: PipelineRunWorkspacesSecret[];
   persistentVolumeClaim?: PipelineRunWorkspacesPVC[];
@@ -118,7 +119,7 @@ export interface Trigger {
   pipelineRun?: {
     params: PipelineRunParam[];
     resources: PipelineRunResources[];
-    workspaces: PipelineRunWorkspaces;
+    workspaces: PipelineRunWorkspaces[];
   };
 }
 
