@@ -3,9 +3,14 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
+export interface ResourceRef {
+  name: string;
+}
+
 export interface NameType {
   name: string;
   type?: string;
+  resourceRef?: ResourceRef;
 }
 
 export interface ItemValue {
@@ -35,13 +40,86 @@ export interface Params {
   type?: string;
 }
 
+export interface PipelineRunParam {
+  name: string;
+  value: string;
+}
+
+export interface PipelineRunResources {
+  name: string;
+  resourceRef: {
+    name: string;
+  };
+}
+
+export interface PipelineRunWorkspacesItem {
+  key: string;
+  item: string;
+}
+
+export interface PipelineRunWorkspacesSecret {
+  item: PipelineRunWorkspacesItem[];
+  secretName: string;
+}
+
+export interface PipelineRunWorkspacesConfigMap {
+  item: PipelineRunWorkspacesItem[];
+  name: string;
+}
+
+export interface PipelineRunWorkspacesPVC {
+  claimName: string;
+}
+
+export interface PipelineRunWorkspaces {
+  name?: string;
+  configMap?: PipelineRunWorkspacesConfigMap[];
+  secret?: PipelineRunWorkspacesSecret[];
+  persistentVolumeClaim?: PipelineRunWorkspacesPVC[];
+}
+
+export interface TknMetadata {
+  name: string;
+  generation?: number;
+  namespace?: string;
+  uid?: string;
+  resourceVersion?: string;
+}
+
+export interface TknResource {
+  name: string;
+  type: string;
+}
+
+export interface TknWorkspaces {
+  name: string;
+}
+
+export interface TknSpec {
+  type: string;
+  resources?: NameType[];
+  params?: Params[];
+  serviceAccount?: string;
+  workspaces?: TknWorkspaces[];
+}
+
+export interface TknPipelineResource {
+  metadata: TknMetadata;
+  spec: TknSpec;
+}
+
 export interface Trigger {
   name: string;
   resources: NameType[];
   params?: Params[];
   workspaces?: Workspaces[];
   serviceAcct: string | undefined;
-  pipelineResource?: string[];
+  pipelineResource?: TknPipelineResource[];
+  pipelineRun?: {
+    params: PipelineRunParam[];
+    resources: PipelineRunResources[];
+    workspaces: PipelineRunWorkspaces;
+  };
 }
 
 export interface PipelineStart {

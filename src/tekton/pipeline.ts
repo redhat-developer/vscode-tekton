@@ -114,7 +114,7 @@ export class Pipeline extends TektonItem {
     if (!trigger.workspaces && !trigger.resources && !trigger.params) {
       await startPipeline(trigger);
     } else {
-      PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active);
+      PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, 'Start Pipeline');
     }
   }
 }

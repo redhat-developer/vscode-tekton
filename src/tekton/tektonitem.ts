@@ -3,10 +3,11 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Tkn, tkn as tknImpl, TektonNode, ContextType } from '../tkn';
+import { Tkn, tkn as tknImpl, TektonNode, ContextType, Command } from '../tkn';
 import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { workspace, window } from 'vscode';
 import { tektonFSUri } from '../util/tekton-vfs';
+import { TknResourceItem } from './webviewstartpipeline';
 
 const errorMessage = {
   Pipeline: 'You need at least one Pipeline available. Please create new Tekton Pipeline and try again.',
@@ -137,5 +138,19 @@ export abstract class TektonItem {
     return workspace
       .getConfiguration('vs-tekton')
       .get<boolean>('pipelineRun');
+  }
+
+  static async workspaceData(pipelineData: TknResourceItem): Promise<void> {
+    const secret = await TektonItem.tkn.execute(Command.workspace('Secret'), process.cwd(), false);
+    pipelineData.Secret = JSON.parse(secret.stdout).items;
+    const configMap = await TektonItem.tkn.execute(Command.workspace('ConfigMap'), process.cwd(), false);
+    pipelineData.ConfigMap = JSON.parse(configMap.stdout).items;
+    const pvc = await TektonItem.tkn.execute(Command.workspace('PersistentVolumeClaim'), process.cwd(), false);
+    pipelineData.PersistentVolumeClaim = JSON.parse(pvc.stdout).items;
+  }
+
+  static async pipelineResourcesList(pipelineData: TknResourceItem ): Promise<void> {
+    const resource = await TektonItem.tkn.execute(Command.getPipelineResource(), process.cwd(), false);
+    pipelineData.pipelineResource = JSON.parse(resource.stdout).items;
   }
 }

@@ -5,11 +5,19 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
-import { window } from 'vscode';
+import { window, ViewColumn } from 'vscode';
 import { CliCommand } from '../cli';
 import { showPipelineRunPreview } from '../pipeline/pipeline-preview';
+import { pipelineRunData } from './restartpipelinerundata';
+import { PipelineWizard } from '../pipeline/wizard';
 
 export class PipelineRun extends TektonItem {
+
+  static async restart(pipelineRun: TektonNode): Promise<void> {
+    if (!pipelineRun) return null;
+    const trigger = await pipelineRunData(pipelineRun);
+    PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, 'Restart PipelineRun');
+  }
 
   static async describe(pipelineRun: TektonNode): Promise<void> {
     if (!pipelineRun) {

@@ -7,7 +7,7 @@ import { Widget, BaseWidget } from './widget';
 import { createDiv } from '../utils/util';
 import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
-import { NameType, Trigger, PipelineStart, Workspaces } from '../utils/types';
+import { NameType, Trigger, PipelineStart, Workspaces, TknPipelineResource } from '../utils/types';
 import { VolumeTypes, TknResourceType } from '../utils/const';
 import { selectText, disableButton } from '../index';
 import { collectResourceData, collectWorkspaceData } from '../utils/resource';
@@ -143,12 +143,12 @@ export class SelectWidget extends BaseWidget {
     return this;
   }
 
-  pipelineResource(items: string[], resource: NameType): Widget {
+  pipelineResource(items: TknPipelineResource[], resource: NameType): Widget {
     items.forEach(val => {
-      if (val['spec'].type === resource.type) {
+      if (val.spec.type === resource.type) {
         const op = document.createElement('option');
-        op.value = val['metadata'].name;
-        op.text = val['metadata'].name;
+        op.value = val.metadata.name;
+        op.text = val.metadata.name;
         this.select.appendChild(op);
       }
     });
