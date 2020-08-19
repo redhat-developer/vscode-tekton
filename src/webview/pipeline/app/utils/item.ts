@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { createDiv } from './util';
+import { createDiv, selectText } from './util';
 import { PipelineStart, Trigger } from './types';
-import { disableButton, selectText } from '../index';
+import { disableButton } from '../index';
 import { SelectWidget } from '../widgets/selectwidget';
 import { EditItem } from '../widgets/maincontent';
 import { InputWidget } from '../widgets/inputwidget';

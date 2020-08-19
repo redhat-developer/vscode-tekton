@@ -29,3 +29,15 @@ export enum typeOfResource {
   git = 'git',
   image = 'image'
 }
+
+export enum workspaceResource {
+  Secret = 'secret',
+  ConfigMap = 'configMap',
+  PersistentVolumeClaim = 'persistentVolumeClaim'
+}
+
+export enum workspaceResourceTypeName {
+  Secret = 'secretName',
+  ConfigMap = 'name',
+  PersistentVolumeClaim = 'claimName'
+}

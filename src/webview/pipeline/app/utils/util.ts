@@ -9,3 +9,18 @@ export function createDiv(className: string, id?: string): HTMLDivElement {
   element.id = id ?? '';
   return element;
 }
+
+
+export function selectText(nodeList: NodeListOf<Element>, text?: string, selected?: boolean, id?: string): void {
+  nodeList.forEach(element => {
+    const resourceSelectList = element.childNodes;
+    const op = document.createElement('option');
+    op.value = text;
+    op.text = text;
+    op.id = id ?? '';
+    op.selected = selected ?? false;
+    resourceSelectList.forEach(selectElement => {
+      selectElement.insertBefore(op, selectElement.firstChild);
+    });
+  })
+}

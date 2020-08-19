@@ -48,7 +48,7 @@ export class PipelineRunEditor implements Widget {
         elementId = `${TknResourceType.Params}-input-field-content-data`;
         element = new InputWidget('Name', null, this.initialValue, null, null, null, null, resource['default']);
       } else if (title === TknResourceType.Workspaces) {
-        element = new SelectWidget('Workspaces-volume', this.trigger, null, this.initialValue).workspaces(VolumeTypes, resource)
+        element = new SelectWidget('Workspaces-volume', this.trigger, null, this.initialValue).workspaces(VolumeTypes, resource);
       } else {
         element = new SelectWidget('Resources', null, null, this.initialValue).pipelineResource(this.trigger.pipelineResource, resource);
       }
@@ -142,7 +142,6 @@ export class PipelineRunEditor implements Widget {
     if (gitResource.length !== 0) {
       this.createElement(TknResourceType.GitResource, gitResource);
     }
-
     if (imageResource.length !== 0) {
       this.createElement(TknResourceType.ImageResource, imageResource);
     }
