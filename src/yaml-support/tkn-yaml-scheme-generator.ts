@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { readFile } from 'fs-extra'
 import { getTknTasksSnippets } from './tkn-tasks-provider';
 import { schemeStorage } from './tkn-scheme-storage'
@@ -83,7 +84,7 @@ function injectMarkdownDescription(templateObj: any): {} {
 async function generate(doc: vscode.TextDocument, schemaPath: string): Promise<string> {
 
   const template = await readFile(schemaPath, 'UTF8');
-  if (schemaPath.endsWith('tekton.dev/v1beta1_Pipeline.json')) {
+  if (schemaPath.endsWith(path.join('tekton.dev', 'v1beta1_Pipeline.json'))) {
     const snippets = await getTknTasksSnippets();
     const conditions = await getTknConditionsSnippets();
     const definedTasks = pipelineYaml.getPipelineTasksName(doc);
