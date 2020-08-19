@@ -30,7 +30,7 @@ suite('Pipeline scheme generator', () => {
   });
 
   test('Generator should add markdown description', async () => {
-    const doc = new TestTextDocument(vscode.Uri.file('/foo/PipelineSchemeGenerator.yaml'), 'Foo: bar');
+    const doc = new TestTextDocument(vscode.Uri.file(path.join('foo', 'PipelineSchemeGenerator.yaml')), 'Foo: bar');
     const result = await generateScheme(doc, path.resolve(__dirname, '..', '..', '..', 'scheme', 'tekton.dev', 'v1beta1_Pipeline.json'));
     const scheme = JSON.parse(result);
     expect(scheme.definitions.Pipeline.properties.apiVersion.markdownDescription).equal('Specifies the API version, for example `tekton.dev/v1beta1`. [more](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/#required-fields)');
