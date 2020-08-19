@@ -110,7 +110,7 @@ async function requestYamlSchemaContentCallback(uri: string): Promise<string> {
       if (schemaPath) {
         const absPath = extContext.asAbsolutePath(path.join('scheme', schemaPath));
         if (await fs.pathExists(absPath)) {
-          return generateScheme(extContext, doc, absPath);
+          return generateScheme(doc, absPath);
         }
       }
 

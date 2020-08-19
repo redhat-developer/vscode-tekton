@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
-import * as path from 'path';
 import { readFile } from 'fs-extra'
 import { getTknTasksSnippets } from './tkn-tasks-provider';
 import { schemeStorage } from './tkn-scheme-storage'
@@ -11,9 +10,7 @@ import { pipelineYaml } from './tkn-yaml';
 import { Snippet } from './snippet';
 import { getTknConditionsSnippets } from './tkn-conditions-provider';
 
-let context: vscode.ExtensionContext;
-export function generateScheme(extContext: vscode.ExtensionContext, vsDocument: vscode.TextDocument, schemaPath: string): Promise<string> {
-  context = extContext;
+export function generateScheme(vsDocument: vscode.TextDocument, schemaPath: string): Promise<string> {
 
   return schemeStorage.getScheme(vsDocument, doc => generate(doc, schemaPath));
 }
