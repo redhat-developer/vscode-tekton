@@ -6,9 +6,9 @@
 import { BaseWidget } from './widget';
 import { Trigger, PipelineStart } from '../utils/types';
 import { createItem } from '../utils/item';
-import { disableButton, vscode } from '../index';
+import { vscode } from '../index';
 import { addItemInWorkspace, collectParameterData } from '../utils/resource';
-import { disableRemoveButton } from '../utils/disablebutton';
+import { disableRemoveButton, blockStartButton } from '../utils/disablebutton';
 import { TknResourceType } from '../utils/const';
 
 export class ButtonsPanel extends BaseWidget {
@@ -61,7 +61,7 @@ export class ButtonsPanel extends BaseWidget {
     if (this.optionId) {
       createItem(event, this.optionId, this.selectOption, this.initialValue, this.trigger);
     }
-    disableButton(document.getElementsByTagName('input'));
+    blockStartButton();
   }
 
   storeParamData(data: unknown[] | NodeListOf<Element>): void {

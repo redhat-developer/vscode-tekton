@@ -5,12 +5,11 @@
 
 import { createDiv, selectText } from './util';
 import { PipelineStart, Trigger, Item } from './types';
-import { disableButton } from '../index';
 import { SelectWidget } from '../widgets/selectwidget';
 import { EditItem } from '../widgets/maincontent';
 import { InputWidget } from '../widgets/inputwidget';
 import { ButtonsPanel } from '../widgets/buttonspanel';
-import { disableRemoveButton, disableSelection } from './disablebutton';
+import { disableRemoveButton, blockStartButton } from './disablebutton';
 
 export function createItem(event: Node & ParentNode, optionId: string, selectValue?: string, initialValue?: PipelineStart, trigger?: Trigger, item?: Item): void {
   const newDivClass = 'items-section-workspace-new-item';
@@ -28,6 +27,5 @@ export function addItem(event: Node & ParentNode, optionId: string, newDivClass:
   event.appendChild(new ButtonsPanel('Add items', 'elementButtons', 'addItemButtons', trigger, optionId, selectValue, 'Add-New-Items', initialValue).getElement());
   if (!item) selectText(selectItemOp.getElement().querySelectorAll('[id^=editor-select-box-item-select-a-key]'), 'Select a key', true);
   disableRemoveButton(event);
-  // disableSelection(document.getElementsByTagName('select'));
-  // disableButton(document.getElementsByTagName('input'));
+  if (!item) blockStartButton();
 }

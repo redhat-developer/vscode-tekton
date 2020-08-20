@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { disableSelection } from './disablebutton';
 import { SelectWidget } from '../widgets/selectwidget';
 import { EditItem } from '../widgets/maincontent';
 import { VolumeTypes } from './const';
@@ -19,7 +18,6 @@ export function triggerSelectedWorkspaceType(select: HTMLSelectElement, event: N
     dropdownForWorkspaceType(event, editId, sectionId, select, trigger, initialValue, index);
   } else if (event.lastElementChild.firstElementChild.id.trim() === editId) {
     event.lastElementChild.remove();
-    disableSelection(document.getElementsByTagName('select'));
   }
 }
 
@@ -30,7 +28,6 @@ function dropdownForWorkspaceType(event: Node & ParentNode, editId: string, sect
   const workspacesOp = new EditItem(VolumeTypes[select.value], workspacesType, editId, 'inner-editItem');
   event.appendChild(workspacesOp.getElement());
   selectText(event.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[select.value]}`, (index === undefined) ?? true, 'select-workspace-option');
-  disableSelection(document.getElementsByTagName('select'));
 }
 
 export function createElementForKeyAndPath(event: Node & ParentNode, optionId: string, select: HTMLSelectElement, initialValue: PipelineStart, trigger: Trigger): void {

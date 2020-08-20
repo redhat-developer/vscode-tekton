@@ -9,10 +9,9 @@ import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
 import { NameType, Trigger, PipelineStart, Workspaces, TknPipelineResource, Item } from '../utils/types';
 import { TknResourceType, workspaceResource, workspaceResourceTypeName } from '../utils/const';
-import { disableButton } from '../index';
 import { collectResourceData, collectWorkspaceData } from '../utils/resource';
-import { disableSelection } from '../utils/disablebutton';
 import { triggerSelectedWorkspaceType, createElementForKeyAndPath } from '../utils/displayworkspaceresource';
+import { blockStartButton } from '../utils/disablebutton';
 
 export class SelectWidget extends BaseWidget {
   public select: HTMLSelectElement;
@@ -46,8 +45,8 @@ export class SelectWidget extends BaseWidget {
     if (event.parentNode.firstElementChild.textContent === TknResourceType.Workspaces || event.parentNode.parentNode.firstElementChild.textContent === TknResourceType.Workspaces) {
       this.clickEvent(event);
     }
-    disableButton(document.getElementsByTagName('input'));
     this.createWorkspaceElement(event, select);
+    blockStartButton();
   }
 
   enableInputBox(event: Node & ParentNode, parentElement: HTMLElement): void {
@@ -63,20 +62,9 @@ export class SelectWidget extends BaseWidget {
     }
   }
 
-  blockStartButton(): void {
-    disableSelection(document.getElementsByTagName('select'));
-    disableButton(document.getElementsByTagName('input'));
-  }
-
   createWorkspaceElement(event: Node & ParentNode, select: HTMLSelectElement): void {
     try {
       const optionId = select[select.selectedIndex].id;
-      if (select.value === 'Select a PVC') {
-        this.blockStartButton();
-      }
-      if (optionId === 'PersistentVolumeClaim') {
-        this.blockStartButton();
-      }
       triggerSelectedWorkspaceType(select, event, this.trigger, this.initialValue);
       if (optionId) {
         createElementForKeyAndPath(event, optionId, select, this.initialValue, this.trigger);

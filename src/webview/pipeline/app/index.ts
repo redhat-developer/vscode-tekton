@@ -21,7 +21,7 @@ window.addEventListener('message', event => {
   switch (event.data.type) {
     case 'trigger':
       rootElement.appendChild(new PipelineRunEditor(event.data.data).getElement());
-      disableButton(document.getElementsByTagName('input'));
+      disableButtonInput(document.getElementsByTagName('input'));
       selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource');
       displayWorkspaceContent(document.querySelectorAll('[id^=Workspaces-volume]'), event.data.data);
       vscode.setState(event.data.data); // TODO: fix this, store real state
@@ -37,12 +37,12 @@ if (previousState) {
 
 function restore(state: Trigger): void {
   rootElement.appendChild(new PipelineRunEditor(state).getElement());
-  disableButton(document.getElementsByTagName('input'));
+  disableButtonInput(document.getElementsByTagName('input'));
   selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource');
   displayWorkspaceContent(document.querySelectorAll('[id^=Workspaces-volume]'), state);
 }
 
-export function disableButton(nodeList: HTMLCollectionOf<HTMLInputElement>): boolean {
+export function disableButtonInput(nodeList: HTMLCollectionOf<HTMLInputElement>): boolean {
   let startButton = document.querySelector('.startButton');
   if (!startButton) {
     startButton = document.querySelector('.startButton-disable')
