@@ -264,6 +264,14 @@
           },
           "type": "array"
         },
+        "annotations": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "podName": {
           "type": "string"
         },
@@ -582,11 +590,6 @@
           "type": "integer"
         }
       },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "Duration": {
-      "properties": {},
       "additionalProperties": false,
       "type": "object"
     },
@@ -1577,6 +1580,9 @@
         "value": {
           "type": "string"
         },
+        "resourceName": {
+          "type": "string"
+        },
         "resourceRef": {
           "$ref": "#/definitions/PipelineResourceRef"
         },
@@ -1727,7 +1733,8 @@
           "type": "string"
         },
         "timeout": {
-          "$ref": "#/definitions/Duration"
+          "pattern": "^[-+]?([0-9]*(\\.[0-9]*)?(ns|us|µs|μs|ms|s|m|h))+$",
+          "type": "string"
         },
         "podTemplate": {
           "$schema": "http://json-schema.org/draft-04/schema#",
@@ -1774,6 +1781,14 @@
             "$ref": "#/definitions/Condition"
           },
           "type": "array"
+        },
+        "annotations": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
         },
         "startTime": {
           "$ref": "#/definitions/Time"
@@ -1916,8 +1931,8 @@
           "type": "array"
         },
         "timeout": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/Duration"
+          "pattern": "^[-+]?([0-9]*(\\.[0-9]*)?(ns|us|µs|μs|ms|s|m|h))+$",
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -2905,6 +2920,14 @@
           },
           "type": "array"
         },
+        "annotations": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "podName": {
           "type": "string"
         },
@@ -3029,11 +3052,6 @@
       "type": "object"
     },
     "Template": {
-      "required": [
-        "schedulerName",
-        "ImagePullSecrets",
-        "hostNetwork"
-      ],
       "properties": {
         "nodeSelector": {
           "patternProperties": {
@@ -3086,7 +3104,7 @@
         "schedulerName": {
           "type": "string"
         },
-        "ImagePullSecrets": {
+        "imagePullSecrets": {
           "items": {
             "$ref": "#/definitions/LocalObjectReference"
           },

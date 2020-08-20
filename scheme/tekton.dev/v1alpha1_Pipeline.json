@@ -406,11 +406,6 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "Duration": {
-      "properties": {},
-      "additionalProperties": false,
-      "type": "object"
-    },
     "EmptyDirVolumeSource": {
       "properties": {
         "medium": {
@@ -1258,8 +1253,8 @@
           "type": "array"
         },
         "timeout": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/Duration"
+          "pattern": "^[-+]?([0-9]*(\\.[0-9]*)?(ns|us|µs|μs|ms|s|m|h))+$",
+          "type": "string"
         }
       },
       "additionalProperties": false,
