@@ -109,9 +109,9 @@ export class PipelineRunEditor implements Widget {
       this.trigger.pipelineResource.forEach(val => {
         if (pipelineRunResourceRef[val.metadata.name]) {
           if (val.spec.type === typeOfResource.git) {
-            gitResource.push({name: pipelineRunResourceRef[val.metadata.name].resource, type: val.spec.type});
+            gitResource.push({name: pipelineRunResourceRef[val.metadata.name].resource, type: val.spec.type, resourceRef: {name: val.metadata.name}});
           } else if (val.spec.type === typeOfResource.image) {
-            imageResource.push({name: pipelineRunResourceRef[val.metadata.name].resource, type: val.spec.type});
+            imageResource.push({name: pipelineRunResourceRef[val.metadata.name].resource, type: val.spec.type, resourceRef: {name: val.metadata.name}});
           }
         }
       });

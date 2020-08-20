@@ -127,6 +127,9 @@ export class SelectWidget extends BaseWidget {
         const op = document.createElement('option');
         op.value = val.metadata.name;
         op.text = val.metadata.name;
+        if (val.metadata.name === resource.resourceRef.name) {
+          op.selected = true;
+        }
         this.select.appendChild(op);
       }
     });
