@@ -8,8 +8,9 @@ import 'vscode-codicons/dist/codicon.ttf'
 import { PipelineRunEditor } from './editor';
 import { Trigger, PipelineStart } from './utils/types';
 import { selectText } from './utils/util';
-import { initialResourceFormValues } from './utils/const';
+import { initialResourceFormValues, workspaceResource } from './utils/const';
 import { triggerSelectedWorkspaceType } from './utils/displayworkspaceresource';
+import { createItem } from './utils/item';
 
 declare const acquireVsCodeApi: () => ({ getState(): Trigger; setState(data: Trigger): void; postMessage: (msg: unknown) => void });
 export const vscode = acquireVsCodeApi();
@@ -34,6 +35,13 @@ if (previousState) {
   restore(previousState);
 }
 
+function restore(state: Trigger): void {
+  rootElement.appendChild(new PipelineRunEditor(state).getElement());
+  disableButton(document.getElementsByTagName('input'));
+  selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource');
+  displayWorkspaceContent(document.querySelectorAll('[id^=Workspaces-volume]'), state);
+}
+
 export function disableButton(nodeList: HTMLCollectionOf<HTMLInputElement>): boolean {
   let startButton = document.querySelector('.startButton');
   if (!startButton) {
@@ -49,18 +57,28 @@ export function disableButton(nodeList: HTMLCollectionOf<HTMLInputElement>): boo
   }
 }
 
-function restore(state: Trigger): void {
-  rootElement.appendChild(new PipelineRunEditor(state).getElement());
-  disableButton(document.getElementsByTagName('input'));
-  selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource');
-  displayWorkspaceContent(document.querySelectorAll('[id^=Workspaces-volume]'), state);
-}
-
 function displayWorkspaceContent(event: NodeListOf<Element>, trigger: Trigger): void {
   const initialValue: PipelineStart = initialResourceFormValues;
   if (event) {
     event.forEach((val, index) => {
       triggerSelectedWorkspaceType(val.getElementsByTagName('select')[0], val.parentNode, trigger, initialValue, index);
-    })
+      try {
+        const selectedWorkspaceValue = val.getElementsByTagName('select')[0].value;
+        const selectedWorkspaceItem = document.querySelectorAll(`[id^=${selectedWorkspaceValue}-Workspaces]`)[0];
+        const valueWorkspaceItem = selectedWorkspaceItem.getElementsByTagName('select')[0].value;
+        const objectWorkspace = trigger.pipelineRun.workspaces[index];
+        const items = objectWorkspace[workspaceResource[selectedWorkspaceValue]].items;
+        if (items) {
+          console.log(items);
+          items.map(val => {
+            createItem(selectedWorkspaceItem.parentNode, selectedWorkspaceValue, valueWorkspaceItem, initialValue, trigger, val);
+          })
+        } else {
+          createItem(selectedWorkspaceItem.parentNode, selectedWorkspaceValue, valueWorkspaceItem, initialValue, trigger);
+        }
+      } catch (err) {
+        // fail to find workspace element.
+      }
+    });
   }
 }

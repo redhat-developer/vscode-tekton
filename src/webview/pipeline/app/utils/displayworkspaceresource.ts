@@ -33,7 +33,9 @@ function dropdownForWorkspaceType(event: Node & ParentNode, editId: string, sect
   disableSelection(document.getElementsByTagName('select'));
 }
 
-export function createElementForKeyAndPath(selectedItem: unknown[] | NodeListOf<Element>, buttonItem: unknown[] | NodeListOf<Element>, event: Node & ParentNode, optionId: string, select: HTMLSelectElement, initialValue: PipelineStart, trigger: Trigger): void {
+export function createElementForKeyAndPath(event: Node & ParentNode, optionId: string, select: HTMLSelectElement, initialValue: PipelineStart, trigger: Trigger): void {
+  const selectedItem = event.querySelectorAll('[id^=items-section-workspace-new-item]');
+  const buttonItem = event.querySelectorAll('.elementButtons');
   if (selectedItem.length) {
     selectedItem.forEach((element: { remove: () => unknown }) => element.remove());
     buttonItem.forEach((element: { remove: () => unknown }) => element.remove());

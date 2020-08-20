@@ -7,7 +7,7 @@ import { Widget, BaseWidget } from './widget';
 import { createDiv } from '../utils/util';
 import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
-import { NameType, Trigger, PipelineStart, Workspaces, TknPipelineResource } from '../utils/types';
+import { NameType, Trigger, PipelineStart, Workspaces, TknPipelineResource, Item } from '../utils/types';
 import { TknResourceType, workspaceResource, workspaceResourceTypeName } from '../utils/const';
 import { disableButton } from '../index';
 import { collectResourceData, collectWorkspaceData } from '../utils/resource';
@@ -79,26 +79,23 @@ export class SelectWidget extends BaseWidget {
       }
       triggerSelectedWorkspaceType(select, event, this.trigger, this.initialValue);
       if (optionId) {
-        const selectedItem = event.querySelectorAll('[id^=items-section-workspace-new-item]');
-        const buttonItem = event.querySelectorAll('.elementButtons');
-        if (optionId === 'select-workspace-option') {
-          selectedItem.forEach(element => element.remove());
-          buttonItem.forEach(element => element.remove());
-        }
-        createElementForKeyAndPath(selectedItem, buttonItem, event, optionId, select, this.initialValue, this.trigger);
+        createElementForKeyAndPath(event, optionId, select, this.initialValue, this.trigger);
       }
     } catch (err) {
       // ignores
     }
   }
 
-  selectItem(items: string[], name?: string): Widget {
+  selectItem(items: string[], name?: string, keyPath?: Item): Widget {
     items.forEach(val => {
       if (val['metadata'].name === name) {
         Object.keys(val['data']).forEach(value => {
           const op = document.createElement('option');
           op.value = value;
           op.text = value;
+          if (keyPath && value === keyPath.key) {
+            op.selected = true;
+          }
           this.select.appendChild(op);
         });
       }

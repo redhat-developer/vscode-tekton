@@ -129,3 +129,8 @@ export interface PipelineStart {
   params?: Params[];
   workspaces?: Workspaces[];
 }
+
+export interface Item {
+  key: string;
+  path: string;
+}
