@@ -6,10 +6,8 @@
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
 import { window } from 'vscode';
-import { Progress } from '../util/progress';
 import * as cliInstance from '../cli';
-import { TknPipelineTrigger } from '../tekton';
-import { Trigger, PipelineContent } from './pipelinecontent';
+import { startTask } from './starttask';
 
 export class Task extends TektonItem {
 
@@ -18,43 +16,7 @@ export class Task extends TektonItem {
       task = await window.showQuickPick(await Task.getTaskNames(), { placeHolder: 'Select Task to start', ignoreFocusOut: true });
     }
     if (!task) return null;
-    const result: cliInstance.CliExitData = await Task.tkn.execute(Command.listTasks(), process.cwd(), false);
-    let data: TknPipelineTrigger[] = [];
-    if (result.error) {
-      console.log(result + ' Std.err when processing task');
-    }
-    try {
-      data = JSON.parse(result.stdout).items;
-    } catch (ignore) {
-      // ignore
-    }
-
-    const taskTrigger = data.map<Trigger>(value => ({
-      name: value.metadata.name,
-      resources: value.spec.resources,
-      params: value.spec.params ? value.spec.params : undefined,
-      serviceAcct: value.spec.serviceAccount ? value.spec.serviceAccount : undefined
-    })).filter(function (obj) {
-      return obj.name === task.getName();
-    });
-    if (taskTrigger[0].resources) {
-      const resource = [];
-      Object.keys(taskTrigger[0].resources).map(label => {
-        taskTrigger[0].resources[label].map((value) => {
-          value.resourceType = label;
-          resource.push(value);
-        });
-      });
-      taskTrigger[0].resources = resource;
-    }
-    const inputStartTask = await PipelineContent.startObject(taskTrigger, 'Task');
-
-    return Progress.execFunctionWithProgress(`Starting Task '${inputStartTask.name}'.`, () =>
-      Task.tkn.startTask(inputStartTask)
-        .then(() => Task.explorer.refresh())
-        .then(() => `Task '${inputStartTask.name}' successfully started`)
-        .catch((error) => Promise.reject(`Failed to start Task with error '${error}'`))
-    );
+    return await startTask(task.getName());
   }
 
   static async list(): Promise<void> {

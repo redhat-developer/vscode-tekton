@@ -4,6 +4,14 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { Command, tkn as tkn } from './tkn';
+import * as cliInstance from './cli';
+import { TektonItem } from './tekton/tektonitem';
+import { TknPipelineTrigger } from './tekton';
+import { pipelineData } from './tekton/webviewstartpipeline';
+import { startPipeline } from './tekton/startpipeline';
+import { PipelineWizard } from './pipeline/wizard';
+import { ViewColumn } from 'vscode';
+import { startTask } from './tekton/starttask';
 
 interface K8sClusterExplorerItem {
   nodeType: 'resource';
@@ -20,7 +28,7 @@ interface K8sClusterExplorerItemKind {
   abbreviation?: string;
 }
 
-class K8sCommands {
+class K8sCommands extends TektonItem {
   showLogs(context: K8sClusterExplorerItem): void {
     if (context?.kind?.abbreviation === 'taskruns') {
       tkn.executeInTerminal(Command.showTaskRunLogs(context.name));
@@ -39,6 +47,30 @@ class K8sCommands {
     } else {
       throw new Error(`Can't handle log request for ${context.name}`);
     }
+  }
+
+  async startPipeline(context: K8sClusterExplorerItem): Promise<void> {
+    if (!context) return null;
+    const result: cliInstance.CliExitData = await K8sCommands.tkn.execute(Command.getPipeline(context.name), process.cwd(), false);
+    let data: TknPipelineTrigger;
+    if (result.error) {
+      console.log(result + ' Std.err when processing pipelines');
+    }
+    try {
+      data = JSON.parse(result.stdout);
+    } catch (ignore) {
+      //show no pipelines if output is not correct json
+    }
+    const trigger = await pipelineData(data);
+    if (!trigger.workspaces && !trigger.resources && !trigger.params) {
+      await startPipeline(trigger);
+    } else {
+      PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active);
+    }
+  }
+
+  async startTask(context: K8sClusterExplorerItem): Promise<string> {
+    return await startTask(context.name);
   }
 }
 
