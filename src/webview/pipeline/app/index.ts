@@ -69,7 +69,6 @@ function displayWorkspaceContent(event: NodeListOf<Element>, trigger: Trigger): 
         const objectWorkspace = trigger.pipelineRun.workspaces[index];
         const items = objectWorkspace[workspaceResource[selectedWorkspaceValue]].items;
         if (items) {
-          console.log(items);
           items.map(val => {
             createItem(selectedWorkspaceItem.parentNode, selectedWorkspaceValue, valueWorkspaceItem, initialValue, trigger, val);
           })

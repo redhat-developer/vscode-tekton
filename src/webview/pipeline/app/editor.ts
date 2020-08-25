@@ -65,7 +65,6 @@ export class PipelineRunEditor implements Widget {
     if (this.trigger.params) {
       this.createElement(TknResourceType.Params, this.trigger.params);
     }
-
     const gitResource = [];
     const imageResource = [];
     if (this.trigger.resources) {
@@ -86,7 +85,7 @@ export class PipelineRunEditor implements Widget {
   }
 
   paramPipelineRun(): void {
-    if (this.trigger.pipelineRun.params) {
+    if (this.trigger.pipelineRun.params.length !== 0) {
       this.trigger.pipelineRun.params.forEach(val => {
         if (val.value) {
           val.default = val.value;
@@ -102,9 +101,17 @@ export class PipelineRunEditor implements Widget {
     const pipelineRunResourceRef = {};
     if (this.trigger.pipelineRun.resources) {
       this.trigger.pipelineRun.resources.forEach(val => {
-        pipelineRunResourceRef[val.resourceRef.name] = {
-          resource: val.name
-        };
+        try {
+          pipelineRunResourceRef[val.resourceRef.name] = {
+            resource: val.name
+          };
+        } catch (err) {
+          if (val.type === typeOfResource.git) {
+            gitResource.push(val);
+          } else if (val.type === typeOfResource.image) {
+            imageResource.push(val);
+          }
+        }
       });
       this.trigger.pipelineResource.forEach(val => {
         if (pipelineRunResourceRef[val.metadata.name]) {
@@ -126,24 +133,26 @@ export class PipelineRunEditor implements Widget {
   }
 
   workspacePipelineRun(): void {
-    if (this.trigger.pipelineRun.workspaces) {
+    if (this.trigger.pipelineRun.workspaces.length !== 0) {
       this.createElement(TknResourceType.Workspaces, this.trigger.pipelineRun.workspaces);
     }
   }
 
   startPipeline(gitResource: NameType[], imageResource: NameType[]): void {
-    this.trigger.resources.filter(val => {
-      if (val.type === typeOfResource.git) {
-        gitResource.push(val);
-      } else if (val.type === typeOfResource.image) {
-        imageResource.push(val)
+    if (this.trigger.resources && this.trigger.resources.length !== 0) {
+      this.trigger.resources.filter(val => {
+        if (val.type === typeOfResource.git) {
+          gitResource.push(val);
+        } else if (val.type === typeOfResource.image) {
+          imageResource.push(val)
+        }
+      });
+      if (gitResource.length !== 0) {
+        this.createElement(TknResourceType.GitResource, gitResource);
       }
-    });
-    if (gitResource.length !== 0) {
-      this.createElement(TknResourceType.GitResource, gitResource);
-    }
-    if (imageResource.length !== 0) {
-      this.createElement(TknResourceType.ImageResource, imageResource);
+      if (imageResource.length !== 0) {
+        this.createElement(TknResourceType.ImageResource, imageResource);
+      }
     }
   }
 

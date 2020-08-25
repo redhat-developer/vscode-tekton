@@ -115,8 +115,12 @@ export class SelectWidget extends BaseWidget {
         const op = document.createElement('option');
         op.value = val.metadata.name;
         op.text = val.metadata.name;
-        if (val.metadata.name === resource.resourceRef.name) {
-          op.selected = true;
+        try {
+          if (val.metadata.name === resource.resourceRef.name) {
+            op.selected = true;
+          }
+        } catch (err) {
+          // ignore if pipelineRun not found.
         }
         this.select.appendChild(op);
       }

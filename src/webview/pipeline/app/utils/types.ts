@@ -48,6 +48,7 @@ export interface PipelineRunParam {
 
 export interface PipelineRunResources {
   name: string;
+  type?: string;
   resourceRef: {
     name: string;
   };

@@ -20,11 +20,11 @@ export class PipelineWizard extends Disposable {
   static viewType = 'tekton.pipeline.start.wizard';
   static title: string;
 
-  public static create(input: PipelineWizardInput, previewColumn: vscode.ViewColumn, pipeline: string): PipelineWizard {
-    PipelineWizard.title = `${pipeline}: ${path.basename(input.trigger.name)}`;
+  public static create(input: PipelineWizardInput, previewColumn: vscode.ViewColumn, pipeline: string, name: string): PipelineWizard {
+    PipelineWizard.title = `${pipeline}: ${path.basename(name)}`;
     const webview = vscode.window.createWebviewPanel(
       PipelineWizard.viewType,
-      `${pipeline}: ${path.basename(input.trigger.name)}`,
+      `${pipeline}: ${path.basename(name)}`,
       previewColumn,
       {
         enableFindWidget: true,

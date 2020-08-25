@@ -10,13 +10,18 @@ import { CliCommand } from '../cli';
 import { showPipelineRunPreview } from '../pipeline/pipeline-preview';
 import { pipelineRunData } from './restartpipelinerundata';
 import { PipelineWizard } from '../pipeline/wizard';
+import { startPipeline } from './startpipeline';
 
 export class PipelineRun extends TektonItem {
 
   static async restart(pipelineRun: TektonNode): Promise<void> {
     if (!pipelineRun) return null;
     const trigger = await pipelineRunData(pipelineRun);
-    PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, 'Restart PipelineRun');
+    if (trigger.pipelineRun.workspaces.length === 0 && trigger.pipelineRun.resources.length === 0 && trigger.pipelineRun.params.length === 0) {
+      await startPipeline(trigger);
+    } else {
+      PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, 'Restart PipelineRun', trigger.PipelineRunName);
+    }
   }
 
   static async describe(pipelineRun: TektonNode): Promise<void> {

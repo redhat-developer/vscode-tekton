@@ -3,8 +3,6 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-
-import { Command } from '../tkn';
 import { TektonItem } from './tektonitem';
 import { TknPipelineTrigger, TknResource, TknParams, TknPipelineResource, TknWorkspaces } from '../tekton';
 
@@ -28,6 +26,12 @@ export interface PVC {
   metadata: KubectlMetadata;
 }
 
+export interface TknPipelineRun {
+  params: TknParams[];
+  resources: TknResource[];
+  workspaces: TknWorkspaces[];
+}
+
 export interface TknResourceItem {
   name: string;
   resources?: TknResource[];
@@ -38,11 +42,8 @@ export interface TknResourceItem {
   Secret: Secret[];
   ConfigMap: ConfigMap[];
   PersistentVolumeClaim: PVC[];
-  pipelineRun?: {
-    params: TknParams[];
-    resources: TknResource[];
-    workspaces: TknWorkspaces[];
-  };
+  PipelineRunName?: string;
+  pipelineRun?: TknPipelineRun;
 }
 
 export async function pipelineData(pipeline: TknPipelineTrigger): Promise<TknResourceItem> {

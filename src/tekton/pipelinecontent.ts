@@ -44,7 +44,7 @@ export interface Resources {
   
 export interface Params {
   default?: string;
-  description: string;
+  description?: string;
   name: string;
 }
   
