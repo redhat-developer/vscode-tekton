@@ -10,7 +10,7 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { Pipeline } from '../../src/tekton/pipeline';
-import { PipelineExplorer, pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
+import { PipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
@@ -94,34 +94,6 @@ suite('Tekton/Pipeline', () => {
 
   });
 
-  suite('restart', () => {
-
-    test('restart returns expected error string with pipeline restart', async () => {
-      getPipelineStub.restore();
-      sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([]);
-      try {
-        await Pipeline.restart(null);
-      } catch (err) {
-        expect(err.message).equals('Failed to create Pipeline with error \'${err}\'');
-        return;
-      }
-    });
-
-    test('restart returns expected string with pipeline restart', async () => {
-      sandbox.stub(pipelineExplorer, 'refresh').resolves();
-      getPipelineStub.restore();
-      sandbox.stub(TknImpl.prototype, 'restartPipeline').resolves();
-      const result = await Pipeline.restart(pipelineItem);
-      expect(result).equals('Pipeline \'pipeline\' successfully created');
-
-    });
-
-    test('start returns null when no pipeline', async () => {
-      const result = await Pipeline.restart(null);
-      expect(result).null;
-    });
-  });
-
   suite('describe', () => {
 
     test('describe calls the correct tkn command in terminal', async () => {
@@ -130,20 +102,6 @@ suite('Tekton/Pipeline', () => {
     });
 
   });
-
-  suite('restart', () => {
-    test('restarts a pipeline with appropriate resources', async () => {
-      sandbox.stub(Pipeline, 'restart').withArgs(pipelineItem).resolves('Pipeline \'pipeline\' successfully created');
-      const result = await Pipeline.restart(pipelineItem);
-      expect(result).equals('Pipeline \'pipeline\' successfully created');
-    });
-
-    test('returns null if no pipeline selected', async () => {
-      const result = await Pipeline.restart(undefined);
-      expect(result).equals(null);
-    });
-  });
-
 
   suite('start', () => {
 

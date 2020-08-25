@@ -52,19 +52,6 @@ export class Pipeline extends TektonItem {
     }
   }
 
-  static async restart(pipeline: TektonNode): Promise<string> {
-    if (!pipeline) {
-      pipeline = await window.showQuickPick(await Pipeline.getPipelineNames(), { placeHolder: 'Select Pipeline to restart', ignoreFocusOut: true });
-    }
-    if (!pipeline) return null;
-    return Progress.execFunctionWithProgress(`Creating the Pipeline '${pipeline.getName()}'.`, () =>
-      Pipeline.tkn.restartPipeline(pipeline)
-        .then(() => Pipeline.explorer.refresh())
-        .then(() => `Pipeline '${pipeline.getName()}' successfully created`)
-        .catch((error) => Promise.reject(`Failed to create Pipeline with error '${error}'`))
-    );
-  }
-
   static refresh(): void {
     Pipeline.explorer.refresh();
   }
