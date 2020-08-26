@@ -125,7 +125,7 @@ function filterPipelineRunResourceContent(getPipelineRunContent: TknPipelineRun,
   }
 }
 
-function filterPipelineRunWorkspaceContent(getPipelineRunContent, pipelineData: PipelineData, pipelineRunData: TknResourceItem): void {
+function filterPipelineRunWorkspaceContent(getPipelineRunContent: TknPipelineRun, pipelineData: PipelineData, pipelineRunData: TknResourceItem): void {
   if (getPipelineRunContent.workspaces && getPipelineRunContent.workspaces.length !== 0) {
     getPipelineRunContent.workspaces.forEach(val => {
       if (pipelineData.workspaces[val.name]) {
