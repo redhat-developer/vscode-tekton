@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { commands, Disposable } from 'vscode';
+import { commands } from 'vscode';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
 
 export enum VSCodeCommands {

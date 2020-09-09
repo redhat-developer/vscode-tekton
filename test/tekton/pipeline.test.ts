@@ -22,7 +22,6 @@ chai.use(sinonChai);
 
 suite('Tekton/Pipeline', () => {
   const sandbox = sinon.createSandbox();
-  let execStub: sinon.SinonStub;
   let getPipelineStub: sinon.SinonStub;
   let termStub: sinon.SinonStub;
   let pipeTrigger: Trigger[];
@@ -50,7 +49,7 @@ suite('Tekton/Pipeline', () => {
       },
       start: true
     });
-    execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
+    sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     showQuickPickStub = sandbox.stub(vscode.window, 'showQuickPick').resolves(undefined);
     sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
     getPipelineStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);

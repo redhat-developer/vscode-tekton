@@ -5,7 +5,6 @@
 
 import { customTektonExplorer } from '../pipeline/customTektonExplorer'
 import { pipelineExplorer } from '../pipeline/pipelineExplorer'
-import { TektonItem } from '../tekton/tektonitem';
 import { Pipeline } from '../tekton/pipeline';
 import { CliCommand } from '../cli';
 import { TektonNode, tkn, ContextType } from '../tkn';

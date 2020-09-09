@@ -79,12 +79,11 @@ suite('tool configuration', () => {
   suite('detectOrDownload()', () => {
     let withProgress;
     let getVersionStub;
-    let warningMessageStub;
 
     setup(() => {
       withProgress = sb.stub(vscode.window, 'withProgress').resolves();
       getVersionStub = sb.stub(ToolsConfig, 'getVersion').resolves();
-      warningMessageStub = sb.stub(vscode.window, 'showWarningMessage').resolves();
+      sb.stub(vscode.window, 'showWarningMessage').resolves();
     });
 
     test('returns path to tool detected form PATH locations if detected version is correct', async () => {

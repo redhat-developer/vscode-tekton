@@ -13,21 +13,19 @@ import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { PipelineRun } from '../../src/tekton/pipelinerun';
 import { TestItem } from './testTektonitem';
 import { TektonItem } from '../../src/tekton/tektonitem';
-import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 
 const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton/PipelineRun', () => {
   const sandbox = sinon.createSandbox();
-  let execStub: sinon.SinonStub;
   let getPipelineNamesStub: sinon.SinonStub;
   let showQuickPickStub: sinon.SinonStub<unknown[], unknown>;
   const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
   const pipelineRunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
 
   setup(() => {
-    execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
+    sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     sandbox.stub(TknImpl.prototype, 'getPipelineRuns').resolves([pipelineRunItem]);
     sandbox.stub(TknImpl.prototype, 'getPipelineRunsList').resolves([pipelineRunItem]);
     showQuickPickStub = sandbox.stub(vscode.window, 'showQuickPick').resolves(undefined);
