@@ -30,6 +30,7 @@
   "activationEvents": [
     "onView:tektonPipelineExplorerView",
     "onView:extension.vsKubernetesExplorer",
+    "onCommand:tekton.pipeline.restart",
     "onCommand:tekton.pipeline.start",
     "onCommand:tekton.openInEditor",
     "onCommand:tekton.pipeline.list",
@@ -224,6 +225,12 @@
         "command": "tekton.openInEditor",
         "title": "Open In Editor",
         "category": "Tekton"
+      },
+      {
+        "command": "tekton.pipeline.restart",
+        "title": "Start Last Run",
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
       },
       {
         "command": "tekton.pipeline.list",
@@ -628,6 +635,11 @@
         {
           "command": "k8s.tekton.run.followLogs",
           "when": "viewItem =~ /vsKubernetes\\.resource\\.(pipelinerun|taskrun)/i",
+          "group": "c1@2"
+        },
+        {
+          "command": "tekton.pipeline.restart",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
           "group": "c1@2"
         },
         {
