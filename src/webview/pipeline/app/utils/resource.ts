@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { PipelineStart } from './types';
+import { PipelineStart, Trigger } from './types';
 
 export function collectParameterData(paramName: string, defaultValue: string, initialValue: PipelineStart): void {
   initialValue.params.push({name: paramName, default: defaultValue});
@@ -60,4 +60,8 @@ export function addItemInWorkspace(resourceName: string, keyValue: string, path:
       resource.item.push({key: keyValue, value: path});
     }
   });
+}
+
+export function collectTriggerData(triggerName: string, initialValue: PipelineStart, trigger: Trigger): void {
+  initialValue.trigger = {name: triggerName, resource: trigger.triggerContent[triggerName].resource};
 }

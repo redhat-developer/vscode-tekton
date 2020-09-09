@@ -20,7 +20,7 @@ export function disableRemoveButton(event: Node & ParentNode): void {
 
 // Disable button if section are not selected for workspace
 export function disableSelection(nodeList: HTMLCollectionOf<HTMLSelectElement>): boolean {
-  const selectOption = ['Select a Config Map', 'Select a Secret', 'Select a PVC'];
+  const selectOption = ['Select a Config Map', 'Select a Secret', 'Select a PVC', 'Select Git Provider Type'];
   let startButton = document.querySelector('.startButton');
   if (!startButton) {
     startButton = document.querySelector('.startButton-disable')

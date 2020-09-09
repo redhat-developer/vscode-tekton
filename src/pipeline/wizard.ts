@@ -10,6 +10,7 @@ import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
 import { TknResourceItem } from '../tekton/webviewstartpipeline';
 import { startPipeline } from '../tekton/startpipeline';
+import { addTrigger } from '../tekton/addtrigger';
 
 export interface PipelineWizardInput {
   readonly resourceColumn: vscode.ViewColumn;
@@ -56,6 +57,11 @@ export class PipelineWizard extends Disposable {
           const inputStartPipeline = e.body;
           this.dispose();
           return await startPipeline(inputStartPipeline);
+        case 'Add Trigger':
+          // eslint-disable-next-line no-case-declarations
+          const inputAddTrigger = e.body;
+          this.dispose();
+          return await addTrigger(inputAddTrigger);
       }
     }));
 

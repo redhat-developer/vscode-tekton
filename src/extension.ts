@@ -27,6 +27,7 @@ import { ToolsConfig } from './tools';
 import { TKN_RESOURCE_SCHEME, TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider } from './util/tekton-vfs';
 import { updateTektonResource } from './tekton/deploy';
 import { deleteFromExplorer, deleteFromCustom } from './commands/delete';
+import { addTrigger } from './tekton/trigger';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -44,6 +45,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('k8s.tekton.pipeline.start', (context) => execute(k8sCommands.startPipeline, context)),
     vscode.commands.registerCommand('k8s.tekton.task.start', (context) => execute(k8sCommands.startTask, context)),
     vscode.commands.registerCommand('tekton.pipeline.start', (context) => execute(Pipeline.start, context)),
+    vscode.commands.registerCommand('tekton.addTrigger', (context) => execute(addTrigger, context)),
     vscode.commands.registerCommand('tekton.pipeline.start.palette', (context) => execute(Pipeline.start, context)),
     vscode.commands.registerCommand('tekton.openInEditor', (context) => execute(TektonItem.openInEditor, context)),
     vscode.commands.registerCommand('tekton.edit', (context) => execute(TektonItem.openInEditor, context)),

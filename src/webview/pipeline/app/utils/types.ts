@@ -129,6 +129,10 @@ export interface PipelineStart {
   resources: Resources[];
   params?: Params[];
   workspaces?: Workspaces[];
+  trigger?: {
+    name: string;
+    resource: TriggerBindingKind;
+  };
 }
 
 export interface Item {

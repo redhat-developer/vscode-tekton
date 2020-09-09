@@ -28,7 +28,7 @@ export class PipelineRunEditor implements Widget {
 
     this.navigation = new NavigationList();
     this.editor = new Editor();
-    this.buttonsPanel = new ButtonsPanel('start', 'buttons', 'startButton', null, null, null, null, this.initialValue);
+    this.buttonsPanel = new ButtonsPanel(!this.trigger.trigger ? 'start' : 'Add', 'buttons', 'startButton', this.trigger, null, null, null, this.initialValue);
 
     this.element.appendChild(this.navigation.getElement());
     this.element.appendChild(this.editor.getElement());
@@ -44,7 +44,10 @@ export class PipelineRunEditor implements Widget {
     for (const resource of resourceType) {
       let element: Widget;
       let elementId: string;
-      if (title === TknResourceType.Params) {
+      if (title === TknResourceType.Trigger) {
+        elementId = `${TknResourceType.Trigger}-add-trigger-webhook`;
+        element = new SelectWidget('Add-Trigger-WebHook', null, null, this.initialValue).triggerOption(this.trigger.trigger);
+      } else if (title === TknResourceType.Params) {
         elementId = `${TknResourceType.Params}-input-field-content-data`;
         element = new InputWidget('Name', null, this.initialValue, null, null, null, null, resource['default']);
       } else if (title === TknResourceType.Workspaces) {

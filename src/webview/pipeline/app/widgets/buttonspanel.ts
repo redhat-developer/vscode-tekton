@@ -42,10 +42,18 @@ export class ButtonsPanel extends BaseWidget {
       if (event.lastElementChild.firstElementChild.className === 'startButton') {
         this.storeItemData(event.querySelectorAll('[id^=items-section-workspace-new-item]'));
         this.storeParamData(event.querySelectorAll(`[id^=${TknResourceType.Params}-input-field-content-data]`));
-        vscode.postMessage({
-          type: 'startPipeline',
-          body: this.initialValue
-        });
+        this.storeTriggerData(event.querySelectorAll('[id^=Webhook-add-trigger-webhook]'));
+        if (!this.trigger.trigger) {
+          vscode.postMessage({
+            type: 'startPipeline',
+            body: this.initialValue
+          });
+        } else {
+          vscode.postMessage({
+            type: 'Add Trigger',
+            body: this.initialValue
+          });
+        }
       }
     } catch (err) {
       // ignore if fails to find statButton
@@ -62,6 +70,15 @@ export class ButtonsPanel extends BaseWidget {
       createItem(event, this.optionId, this.selectOption, this.initialValue, this.trigger);
     }
     blockStartButton();
+  }
+
+  storeTriggerData(data: unknown[] | NodeListOf<Element>): void {
+    if (data.length !== 0) {
+      data.forEach(val => {
+        const selectValue = val.getElementsByTagName('select')[0].value;        
+        collectTriggerData(selectValue, this.initialValue, this.trigger);
+      });
+    }
   }
 
   storeParamData(data: unknown[] | NodeListOf<Element>): void {

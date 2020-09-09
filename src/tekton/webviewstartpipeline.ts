@@ -46,12 +46,12 @@ export interface TknResourceItem {
   pipelineRun?: TknPipelineRun;
 }
 
-export async function pipelineData(pipeline: TknPipelineTrigger): Promise<TknResourceItem> {
+export async function pipelineData(pipeline: TknPipelineTrigger, trigger?: boolean | undefined): Promise<TknResourceItem> {
   const pipelineData: TknResourceItem = {
     name: pipeline.metadata.name,
     resources: pipeline.spec.resources,
     params: pipeline.spec.params,
-    workspaces: pipeline.spec.workspaces,
+    workspaces: trigger ? undefined : pipeline.spec.workspaces,
     serviceAccount: pipeline.spec.serviceAccount,
     pipelineResource: undefined,
     Secret: undefined,
@@ -62,4 +62,31 @@ export async function pipelineData(pipeline: TknPipelineTrigger): Promise<TknRes
   if (pipeline.spec.workspaces) await TektonItem.workspaceData(pipelineData);
   await TektonItem.pipelineResourcesList(pipelineData);
   return pipelineData;
+}
+
+async function addTrigger(pipelineData: TknResourceItem): Promise<void> {
+  const binding = {};
+  const webHook = [];
+  const triggerBinding = await TektonItem.tkn.execute(Command.listTriggerBinding(), process.cwd(), false);
+  const listTriggerBinding = JSON.parse(triggerBinding.stdout).items;
+  const clusterTriggerBinding = await TektonItem.tkn.execute(Command.listClusterTriggerBinding(), process.cwd(), false);
+  const listClusterTriggerBinding = JSON.parse(clusterTriggerBinding.stdout).items;
+  if (listTriggerBinding.length !== 0) {
+    listTriggerBinding.forEach(element => {
+      if (!binding[element.metadata.name]) {
+        binding[element.metadata.name] = { resource: element };
+        webHook.push({name: element.metadata.name, resource: element});
+      }
+    });
+  }
+  if (listClusterTriggerBinding.length !== 0) {
+    listClusterTriggerBinding.forEach(element => {
+      if (!binding[element.metadata.name]) {
+        binding[element.metadata.name] = { resource: element };
+        webHook.push({name: element.metadata.name});
+      }
+    });
+  }
+  pipelineData.triggerContent = binding;
+  pipelineData.trigger = webHook;
 }

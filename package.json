@@ -32,6 +32,7 @@
     "onView:extension.vsKubernetesExplorer",
     "onCommand:tekton.pipeline.restart",
     "onCommand:tekton.pipeline.start",
+    "onCommand:tekton.addTrigger",
     "onCommand:tekton.openInEditor",
     "onCommand:tekton.pipeline.list",
     "onCommand:tekton.pipeline.describe",
@@ -194,6 +195,12 @@
       {
         "command": "tekton.pipeline.start",
         "title": "Start",
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
+      },
+      {
+        "command": "tekton.addTrigger",
+        "title": "Add Trigger",
         "category": "Tekton",
         "enablement": "tekton:tkn"
       },
@@ -511,6 +518,10 @@
       "commandPalette": [
         {
           "command": "tekton.pipeline.start",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
+          "command": "tekton.addTrigger",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {

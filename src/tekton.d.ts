@@ -88,20 +88,84 @@ export interface TknTask {
 
 // JSON types
 
+export interface Param {
+  name: string;
+}
+
+export type VolumeTypeSecret = {
+  secretName: string;
+  items?: {
+    key: string;
+    path: string;
+  }[];
+};
+
+export type VolumeTypeConfigMaps = {
+  name: string;
+  items?: {
+    key: string;
+    path: string;
+  }[];
+};
+
+export interface PipelineRunParam extends Param {
+  value?: string | string[];
+  input?: string;
+  output?: string;
+  resource?: object;
+  default?: string;
+}
+
+export type VolumeTypePVC = {
+  claimName: string;
+};
+
+type PipelineRunResourceCommonProperties = {
+  name: string;
+};
+
+export interface PipelineRunWorkspace extends Param {
+  [volumeType: string]: VolumeTypeSecret | VolumeTypeConfigMaps | VolumeTypePVC | {};
+}
+
+export type PipelineRunReferenceResource = PipelineRunResourceCommonProperties & {
+  name?: string;
+  resourceRef?: string;
+};
+
+export type PipelineRunInlineResourceParam = { name: string; value: string };
+
+export type PipelineRunInlineResource = PipelineRunResourceCommonProperties & {
+  resourceSpec: {
+    params: PipelineRunInlineResourceParam[];
+    type: string;
+  };
+};
+
+export type PipelineRunResource = PipelineRunReferenceResource | PipelineRunInlineResource;
+
 export type PipelineRunData = {
-  metadata: {
+  metadata?: {
     creationTimestamp: string;
     name: string;
     generateName: string;
   };
-  spec: {
+  spec?: {
     pipelineRef: {
       name: string;
     };
+    params?: PipelineRunParam[];
+    workspaces?: PipelineRunWorkspace[];
+    resources?: PipelineRunResource[];
+    serviceAccountName?: string;
   };
   status?: {
-    completionTime: string;
-    conditions: PipelineRunConditions[];
+    succeededCondition?: string;
+    creationTimestamp?: string;
+    completionTime?: string;
+    conditions?: PipelineRunConditions[];
+    startTime?: string;
+    completionTime?: string;
     taskRuns?: TaskRuns;
   };
 };

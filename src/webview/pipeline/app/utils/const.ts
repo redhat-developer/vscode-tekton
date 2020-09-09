@@ -15,10 +15,12 @@ export const initialResourceFormValues = {
   name: undefined,
   params: [],
   resources: [],
-  workspaces: []
+  workspaces: [],
+  trigger: undefined
 }
 
 export enum TknResourceType {
+  Trigger = 'Webhook',
   Params = 'Parameters',
   GitResource = 'Git Resource',
   ImageResource = 'Image Resource',
