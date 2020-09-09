@@ -44,20 +44,25 @@ export interface Resources {
   
 export interface Params {
   default?: string;
-  description: string;
+  description?: string;
   name: string;
 }
   
 export interface StartObject {
   name: string;
-  resources: Resources[];
-  params: Params[] | undefined;
-  workspaces: Workspaces[];
+  resources?: Resources[];
+  params?: Params[] | undefined;
+  workspaces?: Workspaces[];
   serviceAccount: string | undefined;
-  pipelineResource?: TknPipelineResource;
+  pipelineResource?: TknPipelineResource[];
   Secret?: Secret[];
   ConfigMap?: ConfigMap[];
   PersistentVolumeClaim?: PVC[];
+  pipelineRun?: {
+    params: Params[] | undefined;
+    resources: Resources[];
+    workspaces: Workspaces[];
+  };
 }
   
 export interface Trigger {

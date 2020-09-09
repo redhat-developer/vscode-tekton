@@ -18,11 +18,13 @@ export interface PipelineWizardInput {
 
 export class PipelineWizard extends Disposable {
   static viewType = 'tekton.pipeline.start.wizard';
+  static title: string;
 
-  public static create(input: PipelineWizardInput, previewColumn: vscode.ViewColumn): PipelineWizard {
+  public static create(input: PipelineWizardInput, previewColumn: vscode.ViewColumn, pipeline: string, name: string): PipelineWizard {
+    PipelineWizard.title = `${pipeline}: ${path.basename(name)}`;
     const webview = vscode.window.createWebviewPanel(
       PipelineWizard.viewType,
-      `Start Pipeline: ${path.basename(input.trigger.name)}`,
+      `${pipeline}: ${path.basename(name)}`,
       previewColumn,
       {
         enableFindWidget: true,
@@ -103,7 +105,7 @@ export class PipelineWizard extends Disposable {
   }
 
   private setContent(html: string): void {
-    this.editor.title = 'Start Pipeline';
+    this.editor.title = PipelineWizard.title;
     // this.editor.iconPath = this.iconPath; //TODO: implement
     this.editor.webview.options = getWebviewOptions();
     this.editor.webview.html = html;

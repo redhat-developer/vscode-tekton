@@ -7,12 +7,11 @@ import { Widget, BaseWidget } from './widget';
 import { createDiv } from '../utils/util';
 import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
-import { NameType, Trigger, PipelineStart, Workspaces } from '../utils/types';
-import { VolumeTypes, TknResourceType } from '../utils/const';
-import { selectText, disableButton } from '../index';
+import { NameType, Trigger, PipelineStart, Workspaces, TknPipelineResource, Item } from '../utils/types';
+import { TknResourceType, workspaceResource, workspaceResourceTypeName } from '../utils/const';
 import { collectResourceData, collectWorkspaceData } from '../utils/resource';
-import { createItem } from '../utils/item';
-import { disableSelection } from '../utils/disablebutton';
+import { triggerSelectedWorkspaceType, createElementForKeyAndPath } from '../utils/displayworkspaceresource';
+import { blockStartButton } from '../utils/disablebutton';
 
 export class SelectWidget extends BaseWidget {
   public select: HTMLSelectElement;
@@ -46,8 +45,8 @@ export class SelectWidget extends BaseWidget {
     if (event.parentNode.firstElementChild.textContent === TknResourceType.Workspaces || event.parentNode.parentNode.firstElementChild.textContent === TknResourceType.Workspaces) {
       this.clickEvent(event);
     }
-    disableButton(document.getElementsByTagName('input'));
     this.createWorkspaceElement(event, select);
+    blockStartButton();
   }
 
   enableInputBox(event: Node & ParentNode, parentElement: HTMLElement): void {
@@ -63,68 +62,28 @@ export class SelectWidget extends BaseWidget {
     }
   }
 
-  blockStartButton(): void {
-    disableSelection(document.getElementsByTagName('select'));
-    disableButton(document.getElementsByTagName('input'));
-  }
-
   createWorkspaceElement(event: Node & ParentNode, select: HTMLSelectElement): void {
     try {
-      const sectionId = `${select.value}-Workspaces`;
-      const editId = 'Workspaces-Edit';
       const optionId = select[select.selectedIndex].id;
-      if (select.value === 'Select a PVC') {
-        this.blockStartButton();
-      }
-      if (optionId === 'PersistentVolumeClaim') {
-        this.blockStartButton();
-      }
-      if (this.trigger[select.value]) {
-        this.dropdownForWorkspaceType(event, editId, sectionId, select);
-      } else if (event.lastElementChild.firstElementChild.id.trim() === editId) {
-        event.lastElementChild.remove();
-        disableSelection(document.getElementsByTagName('select'));
-      }
+      triggerSelectedWorkspaceType(select, event, this.trigger, this.initialValue);
       if (optionId) {
-        const selectedItem = event.querySelectorAll('[id^=items-section-workspace-new-item]');
-        const buttonItem = event.querySelectorAll('.elementButtons');
-        if (optionId === 'select-workspace-option') {
-          selectedItem.forEach(element => element.remove());
-          buttonItem.forEach(element => element.remove());
-        }
-        this.createElementForKeyAndPath(selectedItem, buttonItem, event, optionId, select);
+        createElementForKeyAndPath(event, optionId, select, this.initialValue, this.trigger);
       }
     } catch (err) {
       // ignores
     }
   }
 
-  dropdownForWorkspaceType(event: Node & ParentNode, editId: string, sectionId: string, select: HTMLSelectElement): void {
-    if (event.lastElementChild.firstElementChild.id.trim() === editId) event.lastElementChild.remove();
-    const workspacesType = new SelectWidget(sectionId, this.trigger, null, this.initialValue).workspacesResource(this.trigger[select.value], select.value);
-    const workspacesOp = new EditItem(VolumeTypes[select.value], workspacesType, editId, 'inner-editItem');
-    event.appendChild(workspacesOp.getElement());
-    selectText(event.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[select.value]}`, true, 'select-workspace-option');
-    disableSelection(document.getElementsByTagName('select'));
-  }
-
-  createElementForKeyAndPath(selectedItem: unknown[] | NodeListOf<Element>, buttonItem: unknown[] | NodeListOf<Element>, event: Node & ParentNode, optionId: string, select: HTMLSelectElement): void {
-    if (selectedItem.length) {
-      selectedItem.forEach((element: { remove: () => unknown }) => element.remove());
-      buttonItem.forEach((element: { remove: () => unknown }) => element.remove());
-      createItem(event, optionId, select.value, this.initialValue, this.trigger);
-    } else {
-      createItem(event, optionId, select.value, this.initialValue, this.trigger);
-    }
-  }
-
-  selectItem(items: string[], name?: string): Widget {
+  selectItem(items: string[], name?: string, keyPath?: Item): Widget {
     items.forEach(val => {
       if (val['metadata'].name === name) {
         Object.keys(val['data']).forEach(value => {
           const op = document.createElement('option');
           op.value = value;
           op.text = value;
+          if (keyPath && value === keyPath.key) {
+            op.selected = true;
+          }
           this.select.appendChild(op);
         });
       }
@@ -132,23 +91,37 @@ export class SelectWidget extends BaseWidget {
     return this;
   }
 
-  workspacesResource(items: string[], id?: string): Widget {
+  workspacesResource(items: TknPipelineResource[], id?: string, index?: number): Widget {
     items.forEach(val => {
       const op = document.createElement('option');
-      op.value = val['metadata'].name;
-      op.text = val['metadata'].name;
+      op.value = val.metadata.name;
+      op.text = val.metadata.name;
       op.id = id ?? '';
+      try {
+        if (this.trigger.pipelineRun.workspaces[index][workspaceResource[id]][workspaceResourceTypeName[id]] === val.metadata.name) {
+          op.selected = true;
+        }
+      } catch (err) {
+        // ignore if fails to find pipelineRun
+      }
       this.select.appendChild(op);
     });
     return this;
   }
 
-  pipelineResource(items: string[], resource: NameType): Widget {
+  pipelineResource(items: TknPipelineResource[], resource: NameType): Widget {
     items.forEach(val => {
-      if (val['spec'].type === resource.type) {
+      if (val.spec.type === resource.type) {
         const op = document.createElement('option');
-        op.value = val['metadata'].name;
-        op.text = val['metadata'].name;
+        op.value = val.metadata.name;
+        op.text = val.metadata.name;
+        try {
+          if (val.metadata.name === resource.resourceRef.name) {
+            op.selected = true;
+          }
+        } catch (err) {
+          // ignore if pipelineRun not found.
+        }
         this.select.appendChild(op);
       }
     });
@@ -161,6 +134,9 @@ export class SelectWidget extends BaseWidget {
       const op = document.createElement('option');
       op.value = val;
       op.text = val;
+      if (resource[workspaceResource[val]]) {
+        op.selected = true;
+      }
       this.select.appendChild(op);
     });
     collectWorkspaceData(resource.name, this.select.value, this.initialValue);

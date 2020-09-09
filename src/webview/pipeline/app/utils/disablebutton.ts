@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
+import { disableButtonInput } from '../index';
 
 export function disableRemoveButton(event: Node & ParentNode): void {
   const selectedItem = event.querySelectorAll('[id^=items-section-workspace-new-item]');
@@ -33,4 +34,10 @@ export function disableSelection(nodeList: HTMLCollectionOf<HTMLSelectElement>):
       startButton.className = 'startButton';
     }
   }
+  return true;
+}
+
+export function blockStartButton(): void {
+  const disableButtonSection = disableSelection(document.getElementsByTagName('select'));
+  if (disableButtonSection) disableButtonInput(document.getElementsByTagName('input'));
 }

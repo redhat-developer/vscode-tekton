@@ -305,6 +305,12 @@
         "enablement": "tekton:tkn"
       },
       {
+        "command": "tekton.pipelinerun.restart",
+        "title": "Restart",
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
+      },
+      {
         "command": "tekton.pipelinerun.logs.palette",
         "title": "Show Pipeline Run Logs",
         "category": "Tekton",
@@ -552,6 +558,10 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
+          "command": "tekton.pipelinerun.restart",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
           "command": "tekton.pipelinerun.followLogs",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -628,6 +638,11 @@
           "group": "c1@2"
         },
         {
+          "command": "tekton.pipeline.restart",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
+          "group": "c1@2"
+        },
+        {
           "command": "k8s.tekton.pipeline.start",
           "group": "2@0",
           "when": "view == extension.vsKubernetesExplorer && viewItem == vsKubernetes.resource.pipelines"
@@ -636,11 +651,6 @@
           "command": "tekton.pipeline.start",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
           "group": "c1@1"
-        },
-        {
-          "command": "tekton.pipeline.restart",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
-          "group": "c1@2"
         },
         {
           "command": "tekton.pipeline.list",
@@ -693,19 +703,24 @@
           "group": "c1@4"
         },
         {
-          "command": "tekton.pipelinerun.describe",
+          "command": "tekton.pipelinerun.restart",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelinerun",
           "group": "c1@2"
         },
         {
-          "command": "tekton.pipelinerun.logs",
+          "command": "tekton.pipelinerun.describe",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelinerun",
           "group": "c1@3"
         },
         {
-          "command": "tekton.pipelinerun.followLogs",
+          "command": "tekton.pipelinerun.logs",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelinerun",
           "group": "c1@4"
+        },
+        {
+          "command": "tekton.pipelinerun.followLogs",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelinerun",
+          "group": "c1@5"
         },
         {
           "command": "tekton.pipelinerun.cancel",

@@ -3,8 +3,6 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-
-import { Command } from '../tkn';
 import { TektonItem } from './tektonitem';
 import { TknPipelineTrigger, TknResource, TknParams, TknPipelineResource, TknWorkspaces } from '../tekton';
 
@@ -28,16 +26,24 @@ export interface PVC {
   metadata: KubectlMetadata;
 }
 
+export interface TknPipelineRun {
+  params: TknParams[];
+  resources: TknResource[];
+  workspaces: TknWorkspaces[];
+}
+
 export interface TknResourceItem {
   name: string;
-  resources: TknResource[];
-  params: TknParams[];
-  workspaces: TknWorkspaces[];
+  resources?: TknResource[];
+  params?: TknParams[];
+  workspaces?: TknWorkspaces[];
   serviceAccount: string;
-  pipelineResource: TknPipelineResource;
+  pipelineResource: TknPipelineResource[];
   Secret: Secret[];
   ConfigMap: ConfigMap[];
   PersistentVolumeClaim: PVC[];
+  PipelineRunName?: string;
+  pipelineRun?: TknPipelineRun;
 }
 
 export async function pipelineData(pipeline: TknPipelineTrigger): Promise<TknResourceItem> {
@@ -50,17 +56,10 @@ export async function pipelineData(pipeline: TknPipelineTrigger): Promise<TknRes
     pipelineResource: undefined,
     Secret: undefined,
     ConfigMap: undefined,
-    PersistentVolumeClaim: undefined
+    PersistentVolumeClaim: undefined,
+    pipelineRun: undefined
   };
-  if (pipeline.spec.workspaces) {
-    const secret = await TektonItem.tkn.execute(Command.workspace('Secret'), process.cwd(), false);
-    pipelineData.Secret = JSON.parse(secret.stdout).items;
-    const configMap = await TektonItem.tkn.execute(Command.workspace('ConfigMap'), process.cwd(), false);
-    pipelineData.ConfigMap = JSON.parse(configMap.stdout).items;
-    const pvc = await TektonItem.tkn.execute(Command.workspace('PersistentVolumeClaim'), process.cwd(), false);
-    pipelineData.PersistentVolumeClaim = JSON.parse(pvc.stdout).items;
-  }
-  const resource = await TektonItem.tkn.execute(Command.getPipelineResource(), process.cwd(), false);
-  pipelineData.pipelineResource = JSON.parse(resource.stdout).items;
+  if (pipeline.spec.workspaces) await TektonItem.workspaceData(pipelineData);
+  await TektonItem.pipelineResourcesList(pipelineData);
   return pipelineData;
 }

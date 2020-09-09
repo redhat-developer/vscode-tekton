@@ -8,7 +8,7 @@ import { BaseWidget } from './widget';
 import { PipelineStart } from '../utils/types';
 import { TknResourceType } from '../utils/const';
 import { collectResourceData } from '../utils/resource';
-import { disableButton } from '../index';
+import { blockStartButton } from '../utils/disablebutton';
 
 export class InputWidget extends BaseWidget {
   public input: HTMLInputElement;
@@ -71,7 +71,7 @@ export class InputWidget extends BaseWidget {
   }
 
   getValue(input: HTMLInputElement): void {
-    disableButton(document.getElementsByTagName('input'));
+    blockStartButton();
     const resource = input.parentNode.parentNode.parentNode.parentNode.parentElement.id.trim();
     if (resource === `${TknResourceType.GitResource}-vscode-webview-pipeline` || resource === `${TknResourceType.ImageResource}-vscode-webview-pipeline`) {
       const name = input.parentNode.parentNode.parentNode.parentNode.firstElementChild.id;

@@ -17,9 +17,9 @@ export interface TknMetadata {
 
 export interface TknParams {
   name: string;
-  value: string;
-  default: string;
-  description: string;
+  value?: string;
+  default?: string;
+  description?: string;
 }
 
 export interface TknResource {
