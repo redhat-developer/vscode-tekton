@@ -19,14 +19,13 @@ chai.use(sinonChai);
 
 suite('Tekton/Task', () => {
   const sandbox = sinon.createSandbox();
-  let execStub: sinon.SinonStub;
   let getTaskStub: sinon.SinonStub;
   const taskNode = new TestItem(TknImpl.ROOT, 'test-task', ContextType.TASKNODE, null);
   const taskItem = new TestItem(taskNode, 'task', ContextType.TASK, null);
 
 
   setup(() => {
-    execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
+    sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskItem]);
     getTaskStub = sandbox.stub(TektonItem, 'getTaskNames').resolves([taskItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();

@@ -23,6 +23,7 @@ export abstract class Command implements Disposable {
   private readonly disposable: Disposable;
   constructor(id: string) {
     if (id) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.disposable = commands.registerCommand(id, (...args: any[]) => this.execute(...args))
     }
   }

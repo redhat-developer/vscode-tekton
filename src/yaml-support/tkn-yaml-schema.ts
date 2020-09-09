@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import * as semver from 'semver';
-import { tektonYaml, TektonYamlType } from './tkn-yaml';
+import { tektonYaml } from './tkn-yaml';
 import { generateScheme } from './tkn-yaml-scheme-generator';
 import * as fs from 'fs-extra';
 import * as path from 'path';

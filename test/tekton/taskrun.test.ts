@@ -13,7 +13,6 @@ import { TestItem } from './testTektonitem';
 import { TaskRun } from '../../src/tekton/taskrun';
 import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { TektonItem } from '../../src/tekton/tektonitem';
-import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { CliExitData } from '../../src/cli';
 
 const expect = chai.expect;

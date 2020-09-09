@@ -45,6 +45,7 @@ function injectResourceName(templateObj: any, resNames: string[]): {} {
   return templateObj;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function injectConditionRefs(templateObj: any, conditions: string[]): {} {
   if (conditions && conditions.length > 0) {
     templateObj.definitions.PipelineTaskCondition.properties.conditionRef.enum = conditions;
@@ -53,6 +54,7 @@ function injectConditionRefs(templateObj: any, conditions: string[]): {} {
 }
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function injectMarkdownDescription(templateObj: any): {} {
   templateObj.definitions.Pipeline.properties.apiVersion.markdownDescription = 'Specifies the API version, for example `tekton.dev/v1beta1`. [more](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/#required-fields)';
   templateObj.definitions.Pipeline.properties.kind.markdownDescription = 'Identifies this resource object as a `Pipeline` object. [more](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/#required-fields)';
