@@ -25,5 +25,5 @@ export async function addTrigger(pipeline: TektonNode): Promise<string> {
     //show no pipelines if output is not correct json
   }
   const trigger = await pipelineData(data, true);
-  PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active);
+  PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, 'Add Trigger', trigger.name);
 }

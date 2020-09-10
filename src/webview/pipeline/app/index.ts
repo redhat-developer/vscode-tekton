@@ -11,6 +11,7 @@ import { selectText } from './utils/util';
 import { initialResourceFormValues, workspaceResource } from './utils/const';
 import { triggerSelectedWorkspaceType } from './utils/displayworkspaceresource';
 import { createItem } from './utils/item';
+import { blockStartButton } from './utils/disablebutton';
 
 declare const acquireVsCodeApi: () => ({ getState(): Trigger; setState(data: Trigger): void; postMessage: (msg: unknown) => void });
 export const vscode = acquireVsCodeApi();
@@ -21,9 +22,11 @@ window.addEventListener('message', event => {
   switch (event.data.type) {
     case 'trigger':
       rootElement.appendChild(new PipelineRunEditor(event.data.data).getElement());
-      disableButtonInput(document.getElementsByTagName('input'));
+      // disableButtonInput(document.getElementsByTagName('input'));
       selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource');
       displayWorkspaceContent(document.querySelectorAll('[id^=Workspaces-volume]'), event.data.data);
+      selectText(document.querySelectorAll('[id^=Add-Trigger-WebHook]'), 'Select Git Provider Type', true);
+      blockStartButton();
       vscode.setState(event.data.data); // TODO: fix this, store real state
       break;
   }
@@ -37,9 +40,11 @@ if (previousState) {
 
 function restore(state: Trigger): void {
   rootElement.appendChild(new PipelineRunEditor(state).getElement());
-  disableButtonInput(document.getElementsByTagName('input'));
+  // disableButtonInput(document.getElementsByTagName('input'));
   selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource');
   displayWorkspaceContent(document.querySelectorAll('[id^=Workspaces-volume]'), state);
+  selectText(document.querySelectorAll('[id^=Add-Trigger-WebHook]'), 'Select Git Provider Type', true);
+  blockStartButton();
 }
 
 export function disableButtonInput(nodeList: HTMLCollectionOf<HTMLInputElement>): boolean {

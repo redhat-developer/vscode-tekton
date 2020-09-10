@@ -84,12 +84,11 @@ export interface PipelineWorkspace extends Param {
   };
 }
 
-export interface Pipeline extends K8sResourceKind {
+export interface Pipeline {
   spec: {
     params?: PipelineParam[];
     resources?: PipelineResource[];
     workspaces?: PipelineWorkspace[];
-    tasks: PipelineTask[];
     serviceAccountName?: string;
   };
 }

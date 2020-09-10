@@ -5,6 +5,7 @@
 
 import { TektonItem } from './tektonitem';
 import { TknPipelineTrigger, TknResource, TknParams, TknPipelineResource, TknWorkspaces } from '../tekton';
+import { Command } from '../tkn';
 
 interface KubectlMetadata {
   name: string;
@@ -26,6 +27,10 @@ export interface PVC {
   metadata: KubectlMetadata;
 }
 
+export interface Trigger {
+  name: string;
+}
+
 export interface TknPipelineRun {
   params: TknParams[];
   resources: TknResource[];
@@ -42,6 +47,9 @@ export interface TknResourceItem {
   Secret: Secret[];
   ConfigMap: ConfigMap[];
   PersistentVolumeClaim: PVC[];
+  trigger: Trigger[];
+  triggerLabel: Trigger[];
+  triggerContent: object;
   PipelineRunName?: string;
   pipelineRun?: TknPipelineRun;
 }
@@ -57,9 +65,17 @@ export async function pipelineData(pipeline: TknPipelineTrigger, trigger?: boole
     Secret: undefined,
     ConfigMap: undefined,
     PersistentVolumeClaim: undefined,
-    pipelineRun: undefined
+    pipelineRun: undefined,
+    trigger: undefined,
+    triggerLabel: [{
+      name: 'Git Provider Type'
+    }],
+    triggerContent: undefined
   };
-  if (pipeline.spec.workspaces) await TektonItem.workspaceData(pipelineData);
+  if (pipeline.spec.workspaces && !trigger) await TektonItem.workspaceData(pipelineData);
+  if (trigger) {
+    await addTrigger(pipelineData);
+  }
   await TektonItem.pipelineResourcesList(pipelineData);
   return pipelineData;
 }

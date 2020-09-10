@@ -7,7 +7,7 @@ import { Widget, BaseWidget } from './widget';
 import { createDiv } from '../utils/util';
 import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
-import { NameType, Trigger, PipelineStart, Workspaces, TknPipelineResource, Item } from '../utils/types';
+import { NameType, Trigger, PipelineStart, Workspaces, TknPipelineResource, Item, TriggerType } from '../utils/types';
 import { TknResourceType, workspaceResource, workspaceResourceTypeName } from '../utils/const';
 import { collectResourceData, collectWorkspaceData } from '../utils/resource';
 import { triggerSelectedWorkspaceType, createElementForKeyAndPath } from '../utils/displayworkspaceresource';

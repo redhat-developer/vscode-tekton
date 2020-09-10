@@ -27,6 +27,10 @@ export interface Workspaces {
   emptyDir?: string;
 }
 
+export interface TriggerType {
+  name: string;
+}
+
 export interface Resources {
   name: string;
   resourceRef: string;
@@ -121,6 +125,20 @@ export interface Trigger {
     params: PipelineRunParam[];
     resources: PipelineRunResources[];
     workspaces: PipelineRunWorkspaces[];
+  };
+  trigger?: TriggerType[];
+  triggerLabel?: Trigger[];
+  triggerContent?: object;
+}
+
+export type TriggerBindingParam = {
+  name: string;
+  value: string;
+};
+
+export interface TriggerBindingKind {
+  spec: {
+    params: TriggerBindingParam[];
   };
 }
 

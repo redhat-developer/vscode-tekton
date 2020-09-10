@@ -7,7 +7,7 @@ import { BaseWidget } from './widget';
 import { Trigger, PipelineStart } from '../utils/types';
 import { createItem } from '../utils/item';
 import { vscode } from '../index';
-import { addItemInWorkspace, collectParameterData } from '../utils/resource';
+import { addItemInWorkspace, collectParameterData, collectTriggerData } from '../utils/resource';
 import { disableRemoveButton, blockStartButton } from '../utils/disablebutton';
 import { TknResourceType } from '../utils/const';
 

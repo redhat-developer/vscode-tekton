@@ -65,11 +65,18 @@ export class PipelineRunEditor implements Widget {
   }
 
   private update(): void {
+
+    if (this.trigger.trigger) {
+      this.createElement(TknResourceType.Trigger, this.trigger.triggerLabel);
+    }
+
     if (this.trigger.params) {
       this.createElement(TknResourceType.Params, this.trigger.params);
     }
+
     const gitResource = [];
     const imageResource = [];
+
     if (this.trigger.resources) {
       this.startPipeline(gitResource, imageResource);
     }
