@@ -21,8 +21,7 @@ export class WindowUtil {
     const options: TerminalOptions = {
       cwd: cwd,
       name: name,
-      env: finalEnv,
-      shellPath: process.platform === 'win32' ? undefined : '/bin/bash'
+      env: finalEnv
     };
     return window.createTerminal(options);
   }
