@@ -42,7 +42,6 @@ suite('Window Utility', () => {
     const options: TerminalOptions = {
       cwd: process.cwd(),
       name: 'terminal',
-      shellPath: process.platform === 'win32' ? undefined : '/bin/bash',
       env: env
     };
     WindowUtil.createTerminal('terminal', process.cwd(), toolLocationDir);
