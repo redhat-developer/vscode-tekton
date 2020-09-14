@@ -4,6 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { V1ContainerState as ContainerState } from '@kubernetes/client-node';
+import { ObjectMetadata } from './tekton/triggertype';
 
 //Contains set JSON representation of tkn JSON objects
 
@@ -145,13 +146,9 @@ export type PipelineRunInlineResource = PipelineRunResourceCommonProperties & {
 export type PipelineRunResource = PipelineRunReferenceResource | PipelineRunInlineResource;
 
 export type PipelineRunData = {
-  metadata?: {
-    creationTimestamp: string;
-    name: string;
-    generateName: string;
-  };
+  metadata?: ObjectMetadata;
   spec?: {
-    pipelineRef: {
+    pipelineRef?: {
       name: string;
     };
     params?: PipelineRunParam[];
@@ -214,3 +211,35 @@ export interface TaskRunSteps extends ContainerState {
   name: string;
   container: string;
 }
+
+
+export type TriggerTemplateKindParam = {
+  name: string;
+  description?: string;
+  default?: string;
+}
+
+export type K8sResourceCommon = {
+  apiVersion?: string;
+  kind?: string;
+  metadata?: ObjectMetadata;
+};
+
+export type TriggerTemplateKind = K8sResourceCommon & {
+  spec: {
+    params: TriggerTemplateKindParam[];
+    resourcetemplates: TriggerTemplateKindResource[];
+  };
+};
+
+export type EventListenerKind = K8sResourceCommon & {
+  spec: {
+    serviceAccountName: string;
+    triggers: EventListenerKindTrigger[];
+  };
+  status?: {
+    configuration: {
+      generatedName: string;
+    };
+  };
+};

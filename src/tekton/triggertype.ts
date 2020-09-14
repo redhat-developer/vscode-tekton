@@ -32,6 +32,14 @@ export type TriggerBindingParam = {
   value: string;
 };
 
+export interface Resources {
+  name: string;
+  resourceRef: string | {
+    name: string;
+  };
+  resourceType?: string;
+}
+
 export type K8sResourceCommon = {
   apiVersion?: string;
   kind?: string;
@@ -84,7 +92,13 @@ export interface PipelineWorkspace extends Param {
   };
 }
 
-export interface Pipeline {
+export type K8sResourceKind = K8sResourceCommon & {
+  status?: { [key: string]: unknown };
+  type?: { [key: string]: unknown };
+  data?: { [key: string]: unknown };
+};
+
+export interface Pipeline extends K8sResourceKind {
   spec: {
     params?: PipelineParam[];
     resources?: PipelineResource[];

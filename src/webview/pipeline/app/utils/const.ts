@@ -26,7 +26,7 @@ export enum TknResourceType {
   ImageResource = 'Image Resource',
   Workspaces = 'Workspaces',
 }
-
+  
 export enum typeOfResource {
   git = 'git',
   image = 'image'
