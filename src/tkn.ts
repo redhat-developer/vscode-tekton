@@ -397,9 +397,18 @@ export class Command {
     return newK8sCommand('get', 'pipeline', name, '-o', 'json');
   }
 
+  static getEventListener(name: string): CliCommand {
+    return newK8sCommand('get', 'el', name, '-o', 'json');
+  }
+
+  static getService(name: string): CliCommand {
+    return newK8sCommand('get', 'Service', name, '-o', 'json');
+  }
+
   static create(file: string): CliCommand {
     return newK8sCommand('create', '--save-config', '-f', file);
   }
+
   static apply(file: string): CliCommand {
     return newK8sCommand('apply', '-f', file);
   }

@@ -3,52 +3,87 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
+//copy from https://github.com/openshift/console/blob/master/frontend/packages/dev-console/src/components/pipelines/modals/triggers/submit-utils.ts 
+
 import * as _ from 'lodash';
+import * as os from 'os';
+import * as path from 'path';
+import * as vscode from 'vscode';
+import * as fs from 'fs-extra';
 import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind, EventListenerKind } from '../tekton';
 import { TektonItem } from './tektonitem';
-import { Command } from '../tkn';
-import { AddTriggerFormValues, Pipeline, TriggerBindingKind, Resources } from './triggertype';
-import { K8sKind } from './k8s-type';
+import { Command, getStderrString } from '../tkn';
+import { AddTriggerFormValues, Pipeline, TriggerBindingKind, Resources, Param } from './triggertype';
+import { K8sKind, RouteKind } from './k8s-type';
+import * as yaml from 'js-yaml';
+import { Platform } from '../util/platform';
+import { cli } from '../cli';
+import { exposeRoute } from './expose';
 
 export const TriggerTemplateModel = {
   apiGroup: 'triggers.tekton.dev',
   apiVersion: 'v1alpha1',
-  label: 'Trigger Template',
   kind: 'TriggerTemplate',
-  id: 'triggertemplate',
-  labelPlural: 'Trigger Templates',
 };
 
 export const EventListenerModel: K8sKind = {
   apiGroup: 'triggers.tekton.dev',
   apiVersion: 'v1alpha1',
-  label: 'Event Listener',
   kind: 'EventListener',
-  id: 'eventlistener',
-  labelPlural: 'Event Listeners',
+};
+
+export const PipelineRunModel: K8sKind = {
+  apiGroup: 'tekton.dev',
+  apiVersion: 'v1beta1',
+  kind: 'PipelineRun',
 };
 
 export const PIPELINE_SERVICE_ACCOUNT = 'pipeline';
 
-export async function addTrigger(inputAddTrigger: AddTriggerFormValues): Promise<string> {
+export async function addTrigger(inputAddTrigger: AddTriggerFormValues): Promise<void> {
   if (inputAddTrigger.resources.length !== 0) {
     restoreResource(inputAddTrigger.resources);
   }
+  if (inputAddTrigger.params.length !== 0) {
+    newParam(inputAddTrigger.params);
+  }
   const triggerBinding = inputAddTrigger.trigger;
-  const pipelineRun: PipelineRunData = await getPipelineRunFrom(inputAddTrigger);
+  const pipelineRun: PipelineRunData = await getPipelineRunFrom(inputAddTrigger, { generateName: true }, {}); //
   const triggerTemplateParams: TriggerTemplateKindParam[] = triggerBinding.resource.spec.params.map(
     ({ name }) => ({ name } as TriggerTemplateKindParam),
   );
   const triggerTemplate: TriggerTemplateKind = createTriggerTemplate(
     pipelineRun,
     triggerTemplateParams,
+    inputAddTrigger.name
   );
+  await k8sCreate(triggerTemplate);
   const eventListener: EventListenerKind = createEventListener(
     [triggerBinding.resource],
     triggerTemplate,
   );
-  console.log(eventListener);
-  return await '';
+  await k8sCreate(eventListener);
+  await exposeRoute(eventListener.metadata.name);
+}
+
+export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind | RouteKind): Promise<void> {
+  const quote = Platform.OS === 'win32' ? '"' : '\'';
+  const triggerYaml = yaml.safeDump(trigger, {skipInvalid: true});
+  const tempPath = os.tmpdir();
+  if (!tempPath) {
+    return;
+  }
+  const fsPath = path.join(tempPath, trigger.metadata.name);
+  await fs.writeFile(fsPath, triggerYaml, 'utf8');
+  const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
+  if (result.error) vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(result.error)}`);
+}
+
+function newParam(params: Param[]): void {
+  params.map(val => {
+    val.value = val.default
+    delete val.default
+  })
 }
 
 function restoreResource(resource: Resources[]): void {
@@ -60,8 +95,11 @@ function restoreResource(resource: Resources[]): void {
   })
 }
 
-async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues): Promise<PipelineRunData> {
+async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues, options?: { generateName: boolean }, labels?: { [key: string]: string },): Promise<PipelineRunData> {
   const pipelineRunData: PipelineRunData = {
+    metadata: {
+      labels,
+    },
     spec: {
       pipelineRef: {
         name: inputAddTrigger.name,
@@ -70,7 +108,7 @@ async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues): Promis
       resources: inputAddTrigger.resources
     },
   };
-  return await getPipelineRunData(pipelineRunData);
+  return await getPipelineRunData(pipelineRunData, options);
 }
 
 function getRandomChars(len = 6): string {
@@ -80,19 +118,25 @@ function getRandomChars(len = 6): string {
     .substr(1, len);
 }
 
-async function getPipelineRunData(latestRun: PipelineRunData): Promise<PipelineRunData> {
+async function getPipelineRunData(latestRun: PipelineRunData, options?: { generateName: boolean }): Promise<PipelineRunData> {
   const pipelineData = await TektonItem.tkn.execute(Command.getPipeline(latestRun.spec.pipelineRef.name), process.cwd(), false);
   const pipeline: Pipeline = JSON.parse(pipelineData.stdout);
   const resources = latestRun?.spec.resources;
-  const pipelineName = pipeline ? pipeline.metadata.name : undefined;
+  const pipelineName = pipeline ? pipeline.metadata.name : latestRun.spec.pipelineRef.name;
   const workspaces = latestRun?.spec.workspaces;
   const latestRunParams = latestRun?.spec.params;
   const params = latestRunParams;
   const newPipelineRun = {
-    apiVersion: pipeline ? pipeline.apiVersion : undefined,
-    kind: 'PipelineRun',
+    apiVersion: pipeline ? pipeline.apiVersion : latestRun.apiVersion,
+    kind: PipelineRunModel.kind,
     metadata: {
-      name: `${pipelineName}-${getRandomChars(6)}`,
+      ...(options?.generateName
+        ? {
+          generateName: `${pipelineName}-`,
+        }
+        : {
+          name: `${pipelineName}-${getRandomChars()}`,
+        }),
       // namespace: pipeline ? pipeline.metadata.namespace : latestRun.metadata.namespace,
       labels: _.merge({}, pipeline?.metadata?.labels, latestRun?.metadata?.labels, {
         'tekton.dev/pipeline': pipelineName,
@@ -131,12 +175,12 @@ function migratePipelineRun(pipelineRun: PipelineRunData): PipelineRunData {
   return newPipelineRun;
 }
 
-function createTriggerTemplate(pipelineRun: PipelineRunData, params: TriggerTemplateKindParam[]): TriggerTemplateKind {
+function createTriggerTemplate(pipelineRun: PipelineRunData, params: TriggerTemplateKindParam[], pipelineName?: string): TriggerTemplateKind {
   return {
     apiVersion: apiVersionForModel(TriggerTemplateModel),
     kind: TriggerTemplateModel.kind,
     metadata: {
-      name: `trigger-template-${pipelineRun.metadata.name}`,
+      name: `trigger-template-${pipelineName}-${getRandomChars()}`,
     },
     spec: {
       params,
@@ -145,7 +189,7 @@ function createTriggerTemplate(pipelineRun: PipelineRunData, params: TriggerTemp
   };
 }
 
-function apiVersionForModel(model: K8sKind): string {
+export function apiVersionForModel(model: K8sKind): string {
   return _.isEmpty(model.apiGroup) ? model.apiVersion : `${model.apiGroup}/${model.apiVersion}`;
 }
 

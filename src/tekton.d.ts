@@ -5,6 +5,7 @@
 
 import { V1ContainerState as ContainerState } from '@kubernetes/client-node';
 import { ObjectMetadata } from './tekton/triggertype';
+import { K8sResourceKind } from './tekton/triggertype';
 
 //Contains set JSON representation of tkn JSON objects
 
@@ -145,7 +146,7 @@ export type PipelineRunInlineResource = PipelineRunResourceCommonProperties & {
 
 export type PipelineRunResource = PipelineRunReferenceResource | PipelineRunInlineResource;
 
-export type PipelineRunData = {
+export interface PipelineRunData extends K8sResourceKind {
   metadata?: ObjectMetadata;
   spec?: {
     pipelineRef?: {
@@ -165,7 +166,7 @@ export type PipelineRunData = {
     completionTime?: string;
     taskRuns?: TaskRuns;
   };
-};
+}
 
 export interface TaskRuns {
   [key: string]: TaskRun;

@@ -54,7 +54,8 @@ export type TriggerBindingKind = K8sResourceCommon & {
 
 export interface Param {
   name: string;
-  default?: string | string[];
+  default?: string;
+  value?: string;
 }
 
 export interface PipelineParam extends Param {
