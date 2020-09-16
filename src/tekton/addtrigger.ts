@@ -44,7 +44,7 @@ export const PIPELINE_SERVICE_ACCOUNT = 'pipeline';
 export function addTriggerToPipeline(inputAddTrigger: AddTriggerFormValues): Promise<string> {
   return Progress.execFunctionWithProgress('Adding Trigger.', () =>
     addTrigger(inputAddTrigger)
-      // .then(() => TektonItem.explorer.refresh())
+      .then(() => TektonItem.explorer.refresh())
       .catch((error) => Promise.reject(`Failed to Add Trigger '${error}'`))
   );
 }

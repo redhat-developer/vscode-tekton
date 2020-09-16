@@ -7,9 +7,11 @@ import { TektonNode, Command } from '../tkn';
 import * as cliInstance from '../cli';
 import { PipelineWizard } from '../pipeline/wizard';
 import { ViewColumn } from 'vscode';
-import { pipelineData } from './webviewstartpipeline';
+import { pipelineData, TknResourceItem } from './webviewstartpipeline';
 import { TknPipelineTrigger } from '../tekton';
 import { TektonItem } from './tektonitem';
+import { multiStepInput } from '../util/MultiStepInput';
+import { addTriggerToPipeline } from './addtrigger';
 
 
 export async function addTrigger(pipeline: TektonNode): Promise<string> {
@@ -25,5 +27,27 @@ export async function addTrigger(pipeline: TektonNode): Promise<string> {
     //show no pipelines if output is not correct json
   }
   const trigger = await pipelineData(data, true);
-  PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, 'Add Trigger', trigger.name);
+  if (!trigger.params && !trigger.resources && !trigger.workspaces) {
+    selectTrigger(trigger);
+  } else {
+    PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, 'Add Trigger', trigger.name);
+  }
+}
+
+async function selectTrigger(trigger: TknResourceItem): Promise<string> {
+  const initialResourceFormValues = {
+    name: undefined,
+    params: [],
+    resources: [],
+    workspaces: [],
+    trigger: undefined
+  }
+  const pick = await multiStepInput.showQuickPick({
+    title: 'Webhook: Git Provider Type',
+    placeholder: 'Select Git Provider Type',
+    items: trigger.trigger,
+  });
+  initialResourceFormValues.name = trigger.name;
+  initialResourceFormValues.trigger = pick;
+  return await addTriggerToPipeline(initialResourceFormValues);
 }

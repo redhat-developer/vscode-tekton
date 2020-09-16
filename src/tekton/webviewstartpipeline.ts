@@ -29,6 +29,11 @@ export interface PVC {
 
 export interface Trigger {
   name: string;
+  label: string;
+}
+
+export interface TriggerLabel {
+  name: string;
 }
 
 export interface TknPipelineRun {
@@ -48,7 +53,7 @@ export interface TknResourceItem {
   ConfigMap: ConfigMap[];
   PersistentVolumeClaim: PVC[];
   trigger: Trigger[];
-  triggerLabel: Trigger[];
+  triggerLabel: TriggerLabel[];
   triggerContent: object;
   PipelineRunName?: string;
   pipelineRun?: TknPipelineRun;
@@ -91,7 +96,7 @@ async function addTrigger(pipelineData: TknResourceItem): Promise<void> {
     listTriggerBinding.forEach(element => {
       if (!binding[element.metadata.name]) {
         binding[element.metadata.name] = { resource: element };
-        webHook.push({name: element.metadata.name, resource: element});
+        webHook.push({name: element.metadata.name, label: element.metadata.name, resource: element});
       }
     });
   }
@@ -99,7 +104,7 @@ async function addTrigger(pipelineData: TknResourceItem): Promise<void> {
     listClusterTriggerBinding.forEach(element => {
       if (!binding[element.metadata.name]) {
         binding[element.metadata.name] = { resource: element };
-        webHook.push({name: element.metadata.name});
+        webHook.push({name: element.metadata.name, label: element.metadata.name, resource: element});
       }
     });
   }
