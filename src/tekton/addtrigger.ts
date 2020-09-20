@@ -17,7 +17,6 @@ import { AddTriggerFormValues, Pipeline, TriggerBindingKind, Resources, Param } 
 import { K8sKind, RouteKind } from './k8s-type';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
-import { cli } from '../cli';
 import { exposeRoute, RouteModel } from './expose';
 import { Progress } from '../util/progress';
 
@@ -84,7 +83,7 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
   }
   const fsPath = path.join(tempPath, `${trigger.metadata.name}.yaml`);
   await fs.writeFile(fsPath, triggerYaml, 'utf8');
-  const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
+  const result = await TektonItem.tkn.execute(Command.create(`${quote}${fsPath}${quote}`));
   if (result.error) vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(result.error)}`);
   if (trigger.kind === RouteModel.kind && !result.error) vscode.window.showInformationMessage('Trigger successfully created.');
   await fs.unlink(fsPath);
