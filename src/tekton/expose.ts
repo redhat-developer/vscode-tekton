@@ -32,7 +32,7 @@ export async function exposeRoute(elName: string): Promise<void> {
   await k8sCreate(route);
 }
 
-function createEventListenerRoute(eventListener: EventListenerKind, generatedName?: string, targetPort = 8080): RouteKind {
+export function createEventListenerRoute(eventListener: EventListenerKind, generatedName?: string, targetPort = 8080): RouteKind {
   const eventListenerName = eventListener.metadata.name;
   const referenceName = generatedName || `el-${eventListenerName}`;
   return {
