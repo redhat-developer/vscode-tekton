@@ -105,7 +105,7 @@ function restoreResource(resource: Resources[]): void {
   })
 }
 
-async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues, options?: { generateName: boolean }, labels?: { [key: string]: string },): Promise<PipelineRunData> {
+export async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues, options?: { generateName: boolean }, labels?: { [key: string]: string },): Promise<PipelineRunData> {
   const pipelineRunData: PipelineRunData = {
     metadata: {
       labels,
@@ -185,7 +185,7 @@ function migratePipelineRun(pipelineRun: PipelineRunData): PipelineRunData {
   return newPipelineRun;
 }
 
-function createTriggerTemplate(pipelineRun: PipelineRunData, params: TriggerTemplateKindParam[], pipelineName?: string): TriggerTemplateKind {
+export function createTriggerTemplate(pipelineRun: PipelineRunData, params: TriggerTemplateKindParam[], pipelineName?: string): TriggerTemplateKind {
   return {
     apiVersion: apiVersionForModel(TriggerTemplateModel),
     kind: TriggerTemplateModel.kind,
@@ -203,7 +203,7 @@ export function apiVersionForModel(model: K8sKind): string {
   return _.isEmpty(model.apiGroup) ? model.apiVersion : `${model.apiGroup}/${model.apiVersion}`;
 }
 
-function createEventListener(triggerBindings: TriggerBindingKind[], triggerTemplate: TriggerTemplateKind): EventListenerKind {
+export function createEventListener(triggerBindings: TriggerBindingKind[], triggerTemplate: TriggerTemplateKind): EventListenerKind {
   return {
     apiVersion: apiVersionForModel(EventListenerModel),
     kind: EventListenerModel.kind,
