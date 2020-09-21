@@ -140,6 +140,30 @@ suite('Tekton yaml', () => {
 
     });
 
+    test('"getPipelineTasks" should return tasks runAfter with array', () => {
+      const yaml = `
+      apiVersion: tekton.dev/v1alpha1
+      kind: Pipeline
+      metadata:
+        name: pipeline-with-parameters
+      spec:
+        tasks:
+          - name: build-skaffold-web
+            taskRef:
+              name: build-push
+            runAfter: ["git-clone"]
+      `
+      const docs = tektonYaml.getTektonDocuments({ getText: () => yaml, version: 1, uri: vscode.Uri.parse('file:///tasks/pipeline.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = pipelineYaml.getPipelineTasks(docs[0]);
+      expect(tasks).is.not.empty;
+      const task = tasks[0];
+      expect(task.kind).to.equal('Task');
+      expect(task.name).equal('build-skaffold-web');
+      expect(task.taskRef).equal('build-push');
+      expect(task.runAfter[0]).to.equal('fooTask');
+
+    });
+
     test('"getPipelineTasks" should return "from" statement', async () => {
       const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/pipeline-ordering.yaml'));
       const docs = tektonYaml.getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///ordering/multitype.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);

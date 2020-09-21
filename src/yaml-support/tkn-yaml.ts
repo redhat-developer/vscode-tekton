@@ -409,7 +409,7 @@ function getRunAfter(taskNode: YamlMap): string[] {
   if (runAfter) {
     for (const run of runAfter.items) {
       if (run.kind === 'SCALAR') {
-        result.push(run.raw);
+        result.push(_.trim(run.raw, '"'));
       }
     }
   }
