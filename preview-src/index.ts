@@ -193,6 +193,12 @@ function getStyle(style: CyTheme): cytoscape.Stylesheet[] {
       },
     },
     {
+      selector: 'node[?final]',
+      style: {
+        'shape': 'diamond',
+      },
+    },
+    {
       selector: 'node[state = "Started"]',
       style: {
         'background-color': '#1471f4',

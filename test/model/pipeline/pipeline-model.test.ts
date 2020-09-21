@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import { yamlLocator } from '../../../src/yaml-support/yaml-locator';
 import { TknElementType } from '../../../src/model/common';
 import { TektonYamlType } from '../../../src/yaml-support/tkn-yaml';
-import { Pipeline, PipelineTaskRef } from '../../../src/model/pipeline/pipeline-model';
+import { Pipeline, PipelineTask, PipelineTaskRef } from '../../../src/model/pipeline/pipeline-model';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -96,6 +96,16 @@ suite('Pipeline Model', () => {
       expect(tknEl).not.undefined;
       expect(tknEl.type).eq(TknElementType.PIPELINE_TASK_REF);
       expect((tknEl as PipelineTaskRef).name.value).eq('build-docker-image-from-git-source');
+    });
+
+    test('findElementAt should return finally task', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', '..', 'test', 'model', 'pipeline', 'pipeline-with-finally.yaml'));
+      const docs = yamlLocator.getTknDocuments({ getText: () => yaml.toString(), version: 1, uri: vscode.Uri.parse('file:///model/pipeline/pipeline-with-finally.yaml') } as vscode.TextDocument);
+      const tknDoc = docs[0];
+      const tknEl = tknDoc.findElementAt(new vscode.Position(26, 12));
+      expect(tknEl).not.undefined;
+      expect(tknEl.type).eq(TknElementType.PIPELINE_TASK);
+      expect((tknEl as PipelineTask).name.value).eq('cleanup');
     });
   });
 

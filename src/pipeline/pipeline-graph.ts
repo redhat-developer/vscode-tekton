@@ -107,8 +107,8 @@ function convertTasksToNode(tasks: PipelineRunTask[], includePositions = true): 
   tasks.forEach((task: DeclaredTask) => tasksMap.set(task.name, task));
 
   for (const task of tasks) {
-    result.push({ data: { id: task.name, label: getLabel(task), type: task.kind, taskRef: task.taskRef, state: task.state, yamlPosition: includePositions ? task.position : undefined } as NodeData });
-    for (const after of task.runAfter) {
+    result.push({ data: { id: task.name, label: getLabel(task), type: task.kind, taskRef: task.taskRef, state: task.state, yamlPosition: includePositions ? task.position : undefined, final: task.final } as NodeData });
+    for (const after of task.runAfter ?? []) {
       if (tasksMap.has(after)) {
         result.push({ data: { source: after, target: task.name, id: `${after}-${task.name}`, state: tasksMap.get(after).state } as EdgeData });
       }

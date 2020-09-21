@@ -306,7 +306,6 @@ suite('Tekton yaml', () => {
 
   suite('PipelineRun', () => {
 
-
     test('should return pipelinerun name', async () => {
       const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', '/yaml-support/pipelinerun.yaml'));
       const docs = tektonYaml.getTektonDocuments({ getText: () => yaml.toString(), version: 1, uri: vscode.Uri.parse('file:///pipelinerun/pipelinerun.yaml') } as vscode.TextDocument, TektonYamlType.PipelineRun);
@@ -322,5 +321,30 @@ suite('Tekton yaml', () => {
       const result = pipelineRunYaml.getPipelineRunStatus(docs[0]);
       expect(result).eql('Failed');
     });
+  });
+
+  suite('Finally tasks', () => {
+    test('Should return finally tasks', () => {
+      const yaml = `
+      apiVersion: tekton.dev/v1alpha1
+      kind: Pipeline
+      metadata:
+        name: pipeline-with-parameters
+      spec:
+        tasks:
+          - name: build-skaffold-web
+            taskRef:
+              name: build-push
+        finally: 
+          - name: final-ask
+            taskRef:
+              name: build-push
+      `
+      const docs = tektonYaml.getTektonDocuments({ getText: () => yaml, version: 1, uri: vscode.Uri.parse('file:///foo/pipeline/finally/tasks.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const pipelineTasks = pipelineYaml.getPipelineTasks(docs[0]);
+      expect(pipelineTasks).is.not.empty;
+      expect(pipelineTasks[1].name).equal('final-ask');
+      expect(pipelineTasks[1].runAfter).eql(['build-skaffold-web']);
+    })
   });
 });
