@@ -27,7 +27,10 @@ export async function pipelineRunData(pipelineRunContent: TektonNode): Promise<T
       params: [],
       resources: [],
       workspaces: []
-    }
+    },
+    trigger: undefined,
+    triggerLabel: undefined,
+    triggerContent: undefined
   };
   const pipelineData = {
     params: {},

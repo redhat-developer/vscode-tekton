@@ -7,7 +7,7 @@ import { Widget, BaseWidget } from './widget';
 import { createDiv } from '../utils/util';
 import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
-import { NameType, Trigger, PipelineStart, Workspaces, TknPipelineResource, Item } from '../utils/types';
+import { NameType, Trigger, PipelineStart, Workspaces, TknPipelineResource, Item, TriggerType } from '../utils/types';
 import { TknResourceType, workspaceResource, workspaceResourceTypeName } from '../utils/const';
 import { collectResourceData, collectWorkspaceData } from '../utils/resource';
 import { triggerSelectedWorkspaceType, createElementForKeyAndPath } from '../utils/displayworkspaceresource';
@@ -30,6 +30,7 @@ export class SelectWidget extends BaseWidget {
   }
 
   addElement(event: Node & ParentNode, select: HTMLSelectElement): void {
+    this.triggerWebhook(event.querySelector('[id^=Add-Trigger-WebHook]'))
     this.enableInputBox(event.parentNode.querySelector('[id^=enable-input-box-workspace]'), event.parentElement);
     if (select.value.trim() === 'Create Pipeline Resource' && event.lastElementChild.id.trim() !== 'input-resource') {
       const input = new EditItem('URL', new InputWidget('Please provide Name/URL', null, this.initialValue), 'input-resource', 'inner-editItem');
@@ -47,6 +48,14 @@ export class SelectWidget extends BaseWidget {
     }
     this.createWorkspaceElement(event, select);
     blockStartButton();
+  }
+
+  triggerWebhook(event: Node & ParentNode): void {
+    if (event) {
+      if (event.querySelector('select').firstElementChild.innerHTML === 'Select Git Provider Type') {
+        event.querySelector('select').firstElementChild.remove();
+      }
+    }
   }
 
   enableInputBox(event: Node & ParentNode, parentElement: HTMLElement): void {
@@ -126,6 +135,16 @@ export class SelectWidget extends BaseWidget {
       }
     });
     collectResourceData(resource.name, this.select.value, this.initialValue);
+    return this;
+  }
+
+  triggerOption(items: TriggerType[]): Widget {
+    items.forEach(val => {
+      const op = document.createElement('option');
+      op.value = val.name;
+      op.text = val.name;
+      this.select.appendChild(op);
+    });
     return this;
   }
 

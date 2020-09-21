@@ -4,6 +4,8 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { V1ContainerState as ContainerState } from '@kubernetes/client-node';
+import { ObjectMetadata } from './tekton/triggertype';
+import { K8sResourceKind } from './tekton/triggertype';
 
 //Contains set JSON representation of tkn JSON objects
 
@@ -88,23 +90,83 @@ export interface TknTask {
 
 // JSON types
 
-export type PipelineRunData = {
-  metadata: {
-    creationTimestamp: string;
-    name: string;
-    generateName: string;
-  };
-  spec: {
-    pipelineRef: {
-      name: string;
-    };
-  };
-  status?: {
-    completionTime: string;
-    conditions: PipelineRunConditions[];
-    taskRuns?: TaskRuns;
+export interface Param {
+  name: string;
+}
+
+export type VolumeTypeSecret = {
+  secretName: string;
+  items?: {
+    key: string;
+    path: string;
+  }[];
+};
+
+export type VolumeTypeConfigMaps = {
+  name: string;
+  items?: {
+    key: string;
+    path: string;
+  }[];
+};
+
+export interface PipelineRunParam extends Param {
+  value?: string | string[];
+  input?: string;
+  output?: string;
+  resource?: object;
+  default?: string;
+}
+
+export type VolumeTypePVC = {
+  claimName: string;
+};
+
+type PipelineRunResourceCommonProperties = {
+  name: string;
+};
+
+export interface PipelineRunWorkspace extends Param {
+  [volumeType: string]: VolumeTypeSecret | VolumeTypeConfigMaps | VolumeTypePVC | {};
+}
+
+export type PipelineRunReferenceResource = PipelineRunResourceCommonProperties & {
+  name?: string;
+  resourceRef?: string;
+};
+
+export type PipelineRunInlineResourceParam = { name: string; value: string };
+
+export type PipelineRunInlineResource = PipelineRunResourceCommonProperties & {
+  resourceSpec: {
+    params: PipelineRunInlineResourceParam[];
+    type: string;
   };
 };
+
+export type PipelineRunResource = PipelineRunReferenceResource | PipelineRunInlineResource;
+
+export interface PipelineRunData extends K8sResourceKind {
+  metadata?: ObjectMetadata;
+  spec?: {
+    pipelineRef?: {
+      name: string;
+    };
+    params?: PipelineRunParam[];
+    workspaces?: PipelineRunWorkspace[];
+    resources?: PipelineRunResource[];
+    serviceAccountName?: string;
+  };
+  status?: {
+    succeededCondition?: string;
+    creationTimestamp?: string;
+    completionTime?: string;
+    conditions?: PipelineRunConditions[];
+    startTime?: string;
+    completionTime?: string;
+    taskRuns?: TaskRuns;
+  };
+}
 
 export interface TaskRuns {
   [key: string]: TaskRun;
@@ -150,3 +212,35 @@ export interface TaskRunSteps extends ContainerState {
   name: string;
   container: string;
 }
+
+
+export type TriggerTemplateKindParam = {
+  name: string;
+  description?: string;
+  default?: string;
+}
+
+export type K8sResourceCommon = {
+  apiVersion?: string;
+  kind?: string;
+  metadata?: ObjectMetadata;
+};
+
+export type TriggerTemplateKind = K8sResourceCommon & {
+  spec: {
+    params: TriggerTemplateKindParam[];
+    resourcetemplates: TriggerTemplateKindResource[];
+  };
+};
+
+export type EventListenerKind = K8sResourceCommon & {
+  spec: {
+    serviceAccountName: string;
+    triggers: EventListenerKindTrigger[];
+  };
+  status?: {
+    configuration: {
+      generatedName: string;
+    };
+  };
+};

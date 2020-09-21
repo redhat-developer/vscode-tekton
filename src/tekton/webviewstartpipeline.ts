@@ -5,6 +5,7 @@
 
 import { TektonItem } from './tektonitem';
 import { TknPipelineTrigger, TknResource, TknParams, TknPipelineResource, TknWorkspaces } from '../tekton';
+import { Command } from '../tkn';
 
 interface KubectlMetadata {
   name: string;
@@ -26,6 +27,15 @@ export interface PVC {
   metadata: KubectlMetadata;
 }
 
+export interface Trigger {
+  name: string;
+  label: string;
+}
+
+export interface TriggerLabel {
+  name: string;
+}
+
 export interface TknPipelineRun {
   params: TknParams[];
   resources: TknResource[];
@@ -42,24 +52,62 @@ export interface TknResourceItem {
   Secret: Secret[];
   ConfigMap: ConfigMap[];
   PersistentVolumeClaim: PVC[];
+  trigger: Trigger[];
+  triggerLabel: TriggerLabel[];
+  triggerContent: object;
   PipelineRunName?: string;
   pipelineRun?: TknPipelineRun;
 }
 
-export async function pipelineData(pipeline: TknPipelineTrigger): Promise<TknResourceItem> {
+export async function pipelineData(pipeline: TknPipelineTrigger, trigger?: boolean | undefined): Promise<TknResourceItem> {
   const pipelineData: TknResourceItem = {
     name: pipeline.metadata.name,
     resources: pipeline.spec.resources,
     params: pipeline.spec.params,
-    workspaces: pipeline.spec.workspaces,
+    workspaces: trigger ? undefined : pipeline.spec.workspaces,
     serviceAccount: pipeline.spec.serviceAccount,
     pipelineResource: undefined,
     Secret: undefined,
     ConfigMap: undefined,
     PersistentVolumeClaim: undefined,
-    pipelineRun: undefined
+    pipelineRun: undefined,
+    trigger: undefined,
+    triggerLabel: [{
+      name: 'Git Provider Type'
+    }],
+    triggerContent: undefined
   };
-  if (pipeline.spec.workspaces) await TektonItem.workspaceData(pipelineData);
+  if (pipeline.spec.workspaces && !trigger) await TektonItem.workspaceData(pipelineData);
+  if (trigger) {
+    await addTrigger(pipelineData);
+  }
   await TektonItem.pipelineResourcesList(pipelineData);
   return pipelineData;
+}
+
+async function addTrigger(pipelineData: TknResourceItem): Promise<void> {
+  const binding = {};
+  const webHook = [];
+  const triggerBinding = await TektonItem.tkn.execute(Command.listTriggerBinding(), process.cwd(), false);
+  const listTriggerBinding = JSON.parse(triggerBinding.stdout).items;
+  const clusterTriggerBinding = await TektonItem.tkn.execute(Command.listClusterTriggerBinding(), process.cwd(), false);
+  const listClusterTriggerBinding = JSON.parse(clusterTriggerBinding.stdout).items;
+  if (listTriggerBinding.length !== 0) {
+    listTriggerBinding.forEach(element => {
+      if (!binding[element.metadata.name]) {
+        binding[element.metadata.name] = { resource: element };
+        webHook.push({name: element.metadata.name, label: element.metadata.name, resource: element});
+      }
+    });
+  }
+  if (listClusterTriggerBinding.length !== 0) {
+    listClusterTriggerBinding.forEach(element => {
+      if (!binding[element.metadata.name]) {
+        binding[element.metadata.name] = { resource: element };
+        webHook.push({name: element.metadata.name, label: element.metadata.name, resource: element});
+      }
+    });
+  }
+  pipelineData.triggerContent = binding;
+  pipelineData.trigger = webHook;
 }
