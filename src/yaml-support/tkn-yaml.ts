@@ -36,6 +36,7 @@ export interface DeclaredTask {
   runAfter: string[];
   kind: 'Task' | 'ClusterTask' | 'Condition' | string;
   position?: number;
+  final?: boolean;
 }
 
 export type RunState = 'Cancelled' | 'Finished' | 'Started' | 'Failed' | 'Unknown';
@@ -332,39 +333,61 @@ export const pipelineRunYaml = new PipelineRunYaml();
 
 function collectTasks(specMap: YamlMap): DeclaredTask[] {
   const result: DeclaredTask[] = [];
+  const lastTasks: string[] = [];
   if (specMap) {
     const tasksSeq = getTasksSeq(specMap);
     if (tasksSeq) {
       for (const taskNode of tasksSeq.items) {
         if (taskNode.kind === 'MAPPING') {
-          const decTask = {} as DeclaredTask;
-          const nameValue = findNodeByKey<YamlNode>('name', taskNode as YamlMap);
-          if (nameValue) {
-            decTask.name = nameValue.raw;
-            decTask.position = nameValue.startPosition;
-          }
-
-          const taskRef = pipelineYaml.getTaskRef(taskNode as YamlMap);
-          if (taskRef) {
-            const taskRefName = findNodeByKey<YamlNode>('name', taskRef);
-            decTask.taskRef = taskRefName.raw;
-            const kindName = findNodeByKey<YamlNode>('kind', taskRef);
-            if (kindName) {
-              decTask.kind = kindName.raw;
-            } else {
-              decTask.kind = 'Task';
-            }
-          }
-
+          const decTask = toDeclaredTask(taskNode as YamlMap);
           decTask.runAfter = getRunAfter(taskNode as YamlMap);
+          if (decTask.runAfter.length === 0){
+            lastTasks.push(decTask.name);
+          }
           collectConditions(taskNode as YamlMap, result);
           result.push(decTask);
+        }
+      }
+    }
+
+
+    // collect finally tasks
+    const finallyTasks = findNodeByKey<YamlSequence>('finally', specMap);
+    if (finallyTasks) {
+      for (const finalTask of finallyTasks.items) {
+        if (finalTask.kind === 'MAPPING') {
+          const fTask = toDeclaredTask(finalTask as YamlMap);
+          fTask.runAfter = lastTasks;
+          fTask.final = true;
+          result.push(fTask);
         }
       }
     }
   }
 
   return result;
+}
+
+function toDeclaredTask(taskNode: YamlMap): DeclaredTask {
+  const decTask = {} as DeclaredTask;
+  const nameValue = findNodeByKey<YamlNode>('name', taskNode);
+  if (nameValue) {
+    decTask.name = nameValue.raw;
+    decTask.position = nameValue.startPosition;
+  }
+
+  const taskRef = pipelineYaml.getTaskRef(taskNode);
+  if (taskRef) {
+    const taskRefName = findNodeByKey<YamlNode>('name', taskRef);
+    decTask.taskRef = taskRefName.raw;
+    const kindName = findNodeByKey<YamlNode>('kind', taskRef);
+    if (kindName) {
+      decTask.kind = kindName.raw;
+    } else {
+      decTask.kind = 'Task';
+    }
+  }
+  return decTask;
 }
 
 function collectConditions(taskNode: YamlMap, tasks: DeclaredTask[]): void {

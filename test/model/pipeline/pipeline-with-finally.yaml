@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: clone-cleanup-workspace
+spec:
+  workspaces:
+    # common workspace where git repo is cloned and needs to be cleanup after done
+    - name: git-source
+  tasks:
+    # Clone app repo to workspace
+    - name: clone-app-repo
+      taskRef:
+        name: git-clone-from-catalog
+      params:
+        - name: url
+          value: https://github.com/tektoncd/community.git
+        - name: subdirectory
+          value: application
+      workspaces:
+        - name: output
+          workspace: git-source
+  finally:
+    # Cleanup workspace
+    - name: cleanup
+      taskRef:
+        name: cleanup-workspace
+      workspaces:
+        - name: source
+          workspace: git-source

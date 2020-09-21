@@ -49,6 +49,7 @@ export class PipelineSpec extends NodeTknElement {
   private _description: TknStringElement;
   private _params: TknArray<ParamSpec>;
   private _workspaces: TknArray<WorkspacePipelineDeclaration>;
+  private _finally: TknArray<PipelineTask>;
 
   constructor(parent: Pipeline, node: YamlMap) {
     super(parent, node);
@@ -99,8 +100,18 @@ export class PipelineSpec extends NodeTknElement {
     return this._workspaces;
   }
 
+  get finally(): TknArray<PipelineTask> {
+    if (!this._finally) {
+      const finallyNode = findNodeByKey<YamlSequence>('finally', this.node as YamlMap);
+      if (finallyNode) {
+        this._finally = new TknArray(TknElementType.PIPELINE_TASKS, PipelineTask, this, finallyNode);
+      }
+    }
+    return this._finally;
+  }
+
   collectChildren(): TknElement[] {
-    return [this.tasks, this.description, this.resources, this.params, this.workspaces];
+    return [this.tasks, this.description, this.resources, this.params, this.workspaces, this.finally];
   }
 }
 
