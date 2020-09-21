@@ -1,5 +1,20 @@
 # Change Log
 
+## 0.5.0 (September 21, 2020)
+
+This release brings to you:
+
+* [#280](https://github.com/redhat-developer/vscode-tekton/issues/280) Start pipeline/Task from k8's tree
+* [#347](https://github.com/redhat-developer/vscode-tekton/issues/347) Add trigger to pipeline
+* [#348](https://github.com/redhat-developer/vscode-tekton/issues/348) Links to Tekton documentation
+* [#351](https://github.com/redhat-developer/vscode-tekton/issues/351) Allow opening start pipeline wizard with params from previous pipelineRun
+* [#363](https://github.com/redhat-developer/vscode-tekton/issues/363) Use default shell
+* [#383](https://github.com/redhat-developer/vscode-tekton/pull/383) Disable button when input are empty
+* [#385](https://github.com/redhat-developer/vscode-tekton/issues/385) Display Start as first action
+* [#386](https://github.com/redhat-developer/vscode-tekton/issues/386) Default param values missing in start
+* [#392](https://github.com/redhat-developer/vscode-tekton/pull/392) Update schemas to Pipeline 0.15.1
+* [#398](https://github.com/redhat-developer/vscode-tekton/issues/398) Update tkn version to `0.12.1`
+
 ## 0.4.0 (August 7, 2020)
 
 This release brings to you:

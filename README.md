@@ -20,6 +20,14 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 ## New and Noteworthy
 
+### Add Trigger support
+
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/add_trigger.gif" width="800" height="450" /></div>
+
+### Restart pipeline with previous pipelineRun content
+
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/restart_pipeline_run.gif" width="800" height="450" /></div>
+
 ### New Wizard for Pipeline Start
 
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_wizard_0.4.0.gif" width="800" height="450" /></div>
