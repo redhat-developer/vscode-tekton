@@ -209,8 +209,9 @@ suite('Tekton/Pipeline', () => {
     });
 
     test('create object for EventListener', async () => {
+      execStub.onFirstCall().resolves({ error: null, stdout: 'Client version: 0.12.1\nPipeline version: v0.16.3\nTriggers version: v0.5.0\n', stderr: '' });
       sandbox.stub(Math, 'random').returns(1);
-      const result = createEventListener(triggerBindings, triggerTemplate);
+      const result = await createEventListener(triggerBindings, triggerTemplate);
       expect(result).deep.equals({
         apiVersion:'triggers.tekton.dev/v1alpha1',
         kind:'EventListener',
