@@ -28,6 +28,7 @@ import { TKN_RESOURCE_SCHEME, TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider } 
 import { updateTektonResource } from './tekton/deploy';
 import { deleteFromExplorer, deleteFromCustom } from './commands/delete';
 import { addTrigger } from './tekton/trigger';
+import { triggerSupport } from './util/triggerversion';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -153,12 +154,16 @@ export function deactivate(): void {
 
 async function detectTknCli(): Promise<void> {
   setCommandContext(CommandContext.TknCli, false);
+  setCommandContext(CommandContext.Trigger, false);
 
   // start detecting 'tkn' on extension start
   const tknPath = await ToolsConfig.detectOrDownload();
-
+  const trigger = await triggerSupport();
   if (tknPath) {
     setCommandContext(CommandContext.TknCli, true);
+  }
+  if (trigger !== 'unknown' && trigger) {
+    setCommandContext(CommandContext.Trigger, true);
   }
 }
 
