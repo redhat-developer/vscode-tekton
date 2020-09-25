@@ -21,6 +21,7 @@ export type ObjectMetadata = {
   labels?: { [key: string]: string };
   managedFields?: unknown[];
   name?: string;
+  Ref?: string;
   namespace?: string;
   resourceVersion?: string;
   selfLink?: string;

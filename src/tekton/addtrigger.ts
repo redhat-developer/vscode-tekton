@@ -19,6 +19,8 @@ import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
 import { exposeRoute, RouteModel } from './expose';
 import { Progress } from '../util/progress';
+import { cli } from '../cli';
+import { newElSupport } from '../util/triggerversion';
 
 export const TriggerTemplateModel = {
   apiGroup: 'triggers.tekton.dev',
@@ -65,28 +67,34 @@ export async function addTrigger(inputAddTrigger: AddTriggerFormValues): Promise
     triggerTemplateParams,
     inputAddTrigger.name
   );
-  await k8sCreate(triggerTemplate);
-  const eventListener: EventListenerKind = createEventListener(
+  const createTt = await k8sCreate(triggerTemplate);
+  if (!createTt) return null;
+  const eventListener: EventListenerKind = await createEventListener(
     [triggerBinding.resource],
     triggerTemplate,
   );
-  await k8sCreate(eventListener);
+  const createEt = await k8sCreate(eventListener);
+  if (!createEt) return null;
   await exposeRoute(eventListener.metadata.name);
 }
 
-export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind | RouteKind): Promise<void> {
+export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind | RouteKind): Promise<boolean> {
   const quote = Platform.OS === 'win32' ? '"' : '\'';
   const triggerYaml = yaml.safeDump(trigger, {skipInvalid: true});
   const tempPath = os.tmpdir();
   if (!tempPath) {
-    return;
+    return false;
   }
   const fsPath = path.join(tempPath, `${trigger.metadata.name}.yaml`);
   await fs.writeFile(fsPath, triggerYaml, 'utf8');
-  const result = await TektonItem.tkn.execute(Command.create(`${quote}${fsPath}${quote}`));
-  if (result.error) vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(result.error)}`);
+  const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
+  if (result.error) {
+    vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(result.error)}`);
+    return false;
+  }
   if (trigger.kind === RouteModel.kind && !result.error) vscode.window.showInformationMessage('Trigger successfully created.');
   await fs.unlink(fsPath);
+  return true;
 }
 
 function newParam(params: Param[]): void {
@@ -203,7 +211,8 @@ export function apiVersionForModel(model: K8sKind): string {
   return _.isEmpty(model.apiGroup) ? model.apiVersion : `${model.apiGroup}/${model.apiVersion}`;
 }
 
-export function createEventListener(triggerBindings: TriggerBindingKind[], triggerTemplate: TriggerTemplateKind): EventListenerKind {
+export async function createEventListener(triggerBindings: TriggerBindingKind[], triggerTemplate: TriggerTemplateKind): Promise<EventListenerKind> {
+  const getNewELSupport: boolean = await newElSupport();
   return {
     apiVersion: apiVersionForModel(EventListenerModel),
     kind: EventListenerModel.kind,
@@ -214,7 +223,14 @@ export function createEventListener(triggerBindings: TriggerBindingKind[], trigg
       serviceAccountName: PIPELINE_SERVICE_ACCOUNT,
       triggers: [
         {
-          bindings: triggerBindings.map(({ kind, metadata: { name } }) => ({ kind, name })),
+          bindings: triggerBindings.map(({ kind, metadata: { name } }) => {
+            if (getNewELSupport) {
+              return ({ kind, name });
+            } else {
+              const Ref = name;
+              return ({ kind, Ref });
+            }
+          }),
           template: { name: triggerTemplate.metadata.name },
         },
       ],
