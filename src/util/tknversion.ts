@@ -28,9 +28,7 @@ export async function version(): Promise<TknVersion> {
   if (result.stdout) {
     result.stdout.trim().split('\n').filter((value) => {
       if (value.match(version)) {
-        console.log(versionType);
         tknVersion[versionType[value.match(version)[1]]] = value.match(version)[2];
-        return value.match(version);
       }
     });
     return tknVersion;
