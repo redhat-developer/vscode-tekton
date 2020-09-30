@@ -15,6 +15,7 @@ export enum CommandContext {
   TreeZenMode = 'tekton:zenMode',
   PipelinePreview = 'tekton:pipelinePreview',
   TknCli = 'tekton:tkn',
+  Trigger = 'tekton:trigger',
 }
 
 

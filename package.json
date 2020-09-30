@@ -202,7 +202,7 @@
         "command": "tekton.addTrigger",
         "title": "Add Trigger",
         "category": "Tekton",
-        "enablement": "tekton:tkn"
+        "enablement": "tekton:trigger"
       },
       {
         "command": "k8s.tekton.pipeline.start",

@@ -20,7 +20,7 @@ import { Platform } from '../util/platform';
 import { exposeRoute, RouteModel } from './expose';
 import { Progress } from '../util/progress';
 import { cli } from '../cli';
-import { newElSupport } from '../util/triggerversion';
+import { TknVersion, version } from '../util/tknversion';
 
 export const TriggerTemplateModel = {
   apiGroup: 'triggers.tekton.dev',
@@ -212,7 +212,7 @@ export function apiVersionForModel(model: K8sKind): string {
 }
 
 export async function createEventListener(triggerBindings: TriggerBindingKind[], triggerTemplate: TriggerTemplateKind): Promise<EventListenerKind> {
-  const getNewELSupport: boolean = await newElSupport();
+  const getNewELSupport: TknVersion = await version();
   return {
     apiVersion: apiVersionForModel(EventListenerModel),
     kind: EventListenerModel.kind,
@@ -224,7 +224,7 @@ export async function createEventListener(triggerBindings: TriggerBindingKind[],
       triggers: [
         {
           bindings: triggerBindings.map(({ kind, metadata: { name } }) => {
-            if (getNewELSupport) {
+            if ('0.5.0' >= getNewELSupport.trigger) {
               return ({ kind, name });
             } else {
               const Ref = name;
