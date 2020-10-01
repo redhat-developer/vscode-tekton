@@ -628,19 +628,17 @@ export type PipelineTaskRunData = {
 export class TaskRun extends TektonNodeImpl {
   private started: string;
   private finished: string;
-  private shortName: string;
   constructor(parent: TektonNode,
     name: string,
     tkn: Tkn,
     item: PipelineTaskRunData) {
     super(parent, name, ContextType.TASKRUN, tkn, TreeItemCollapsibleState.None, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status : '');
     this.started = item.metadata.creationTimestamp;
-    this.shortName = item.metadata.labels['tekton.dev/pipelineTask'];
     this.finished = item.status?.completionTime;
   }
 
   get label(): string {
-    return this.shortName ? this.shortName : this.name;
+    return this.name;
   }
 
   get description(): string {
