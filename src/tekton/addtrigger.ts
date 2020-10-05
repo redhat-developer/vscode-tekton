@@ -13,7 +13,7 @@ import * as fs from 'fs-extra';
 import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind, EventListenerKind } from '../tekton';
 import { TektonItem } from './tektonitem';
 import { Command, getStderrString } from '../tkn';
-import { AddTriggerFormValues, Pipeline, TriggerBindingKind, Resources, Param } from './triggertype';
+import { AddTriggerFormValues, Pipeline, TriggerBindingKind, Resources, Param, Workspaces, PipelineModalFormWorkspace } from './triggertype';
 import { K8sKind, RouteKind } from './k8s-type';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
@@ -39,6 +39,13 @@ export const PipelineRunModel: K8sKind = {
   apiVersion: 'v1beta1',
   kind: 'PipelineRun',
 };
+
+export enum workspaceResource {
+  Secret = 'secret',
+  ConfigMap = 'configMap',
+  PersistentVolumeClaim = 'persistentVolumeClaim',
+  EmptyDirectory = 'emptyDir'
+}
 
 export const PIPELINE_SERVICE_ACCOUNT = 'pipeline';
 
@@ -123,10 +130,36 @@ export async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues, 
         name: inputAddTrigger.name,
       },
       params: inputAddTrigger.params,
-      resources: inputAddTrigger.resources
+      resources: inputAddTrigger.resources,
+      workspaces: getPipelineRunWorkspaces(inputAddTrigger.workspaces),
     },
   };
   return await getPipelineRunData(pipelineRunData, options);
+}
+
+function getPipelineRunWorkspaces(workspaces: Workspaces[]): PipelineModalFormWorkspace[] {
+  const newWorkspace = [];
+  if (workspaces.length === 0) return undefined;
+  workspaces.map((workspaceData: Workspaces) => {
+    const newWorkspaceObject = {};
+    const workspaceResourceObject = {};
+    newWorkspaceObject['name'] = workspaceData.name;
+    if (workspaceResource[workspaceData.workspaceType] === workspaceResource.Secret) {
+      workspaceResourceObject['secretName'] = workspaceData.workspaceName;
+    } else if (workspaceResource[workspaceData.workspaceType] === workspaceResource.ConfigMap) {
+      workspaceResourceObject['name'] = workspaceData.workspaceName;
+    } else if (workspaceResource[workspaceData.workspaceType] === workspaceResource.PersistentVolumeClaim) {
+      workspaceResourceObject['claimName'] = workspaceData.workspaceName;
+    } else if (workspaceResource[workspaceData.workspaceType] === workspaceResource.EmptyDirectory) {
+      workspaceResourceObject['emptyDir']
+    }
+    if (workspaceData.item.length !== 0) {
+      workspaceResourceObject['items'] = workspaceData.item;
+    }
+    newWorkspaceObject[workspaceResource[workspaceData.workspaceType]] = workspaceResourceObject;
+    newWorkspace.push(newWorkspaceObject);
+  })
+  return newWorkspace;
 }
 
 function getRandomChars(len = 6): string {

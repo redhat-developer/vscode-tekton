@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Params } from './pipelinecontent';
+import { ItemValue, Params } from './pipelinecontent';
 import { VolumeTypeSecret, VolumeTypeConfigMaps, VolumeTypePVC } from '../tekton';
 
 export type TriggerFormValues = {
@@ -68,12 +68,30 @@ export type PipelineModalFormResource = {
   resourceRef: string;
 };
 
+export type PipelineModalFormWorkspace = {
+  name: string;
+  type: string;
+  data:
+    | {
+        emptyDir: {};
+      }
+    | {
+        secret: VolumeTypeSecret;
+      }
+    | {
+        configMap: VolumeTypeConfigMaps;
+      }
+    | {
+        persistentVolumeClaim: VolumeTypePVC;
+      };
+};
+
 export type CommonPipelineModalFormikValues = {
   name: string;
   params: Params[] | undefined;
   resources: PipelineModalFormResource[];
+  workspaces?: PipelineModalFormWorkspace[];
 };
-
 
 export type AddTriggerFormValues = CommonPipelineModalFormikValues & {
   trigger: {
@@ -81,6 +99,15 @@ export type AddTriggerFormValues = CommonPipelineModalFormikValues & {
     resource: TriggerBindingKind;
   };
 };
+
+export interface Workspaces {
+  name: string;
+  workspaceName?: string;
+  workspaceType?: string;
+  item?: ItemValue[];
+  subPath?: string;
+  emptyDir?: string;
+}
 
 export interface PipelineResource {
   name: string;

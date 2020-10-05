@@ -54,10 +54,10 @@ export function collectWorkspaceData(resourceName: string, workspaceResourceType
   }
 }
 
-export function addItemInWorkspace(resourceName: string, keyValue: string, path: string, initialValue: PipelineStart): void {
+export function addItemInWorkspace(resourceName: string, keyValue: string, pathName: string, initialValue: PipelineStart): void {
   initialValue.workspaces.some(resource => {
     if (resource.name === resourceName) {
-      resource.item.push({key: keyValue, value: path});
+      resource.item.push({key: keyValue, path: pathName});
     }
   });
 }

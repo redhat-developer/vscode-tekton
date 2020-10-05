@@ -15,7 +15,7 @@ export interface NameType {
 
 export interface ItemValue {
   key?: string;
-  value?: string;
+  path?: string;
 }
 
 export interface Workspaces {
