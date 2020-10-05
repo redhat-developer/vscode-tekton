@@ -10,7 +10,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
 import { TknImpl } from '../../src/tkn';
-import { getPipelineRunFrom, createTriggerTemplate, createEventListener } from '../../src/tekton/addtrigger';
+import { getPipelineRunFrom, createTriggerTemplate, createEventListener, getPipelineRunWorkspaces } from '../../src/tekton/addtrigger';
 import { AddTriggerFormValues, TriggerBindingKind } from '../../src/tekton/triggertype';
 import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind } from '../../src/tekton';
 
@@ -34,6 +34,7 @@ suite('Tekton/Pipeline', () => {
     name:'sample-pipeline-cluster-task-4',
     params: [],
     resources: [],
+    workspaces: [],
     trigger: {
       name:'vote-app',
       resource: {
@@ -129,6 +130,50 @@ suite('Tekton/Pipeline', () => {
 
   suite('Add trigger', () => {
 
+    test('create object for workspace', async () => {
+      const result = getPipelineRunWorkspaces([
+        {
+          item: [],
+          name:'password-vault',
+          workspaceName:'sensitive-recipe-storage',
+          workspaceType:'ConfigMap'
+        },
+        {
+          item: [],
+          name:'recipe-store',
+          workspaceName:'secret-password',
+          workspaceType:'Secret'
+        },
+        {
+          item: [],
+          name:'shared-data',
+          workspaceName:'shared-task-storage',
+          workspaceType:'PersistentVolumeClaim',
+        }
+      ]);
+      expect(result).deep.equals([
+        {
+          configMap: {
+            name:'sensitive-recipe-storage'
+          },
+          name:'password-vault'
+        },
+        {
+          name:'recipe-store',
+          secret: {
+            secretName:'secret-password'
+          }
+        },
+        {
+          name:'shared-data',
+          persistentVolumeClaim: {
+            claimName:'shared-task-storage'
+          }
+        }
+      ]);
+
+    })
+
     test('create object for pipelineRun', async () => {
       execStub.onFirstCall().resolves({ error: null, stdout: JSON.stringify({
         apiVersion:'tekton.dev/v1beta1',
@@ -168,7 +213,7 @@ suite('Tekton/Pipeline', () => {
           },
           resources: [],
           status: null,
-          workspaces: undefined
+          workspaces: []
         }
       });
     });

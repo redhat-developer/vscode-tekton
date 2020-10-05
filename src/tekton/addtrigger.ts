@@ -137,9 +137,9 @@ export async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues, 
   return await getPipelineRunData(pipelineRunData, options);
 }
 
-function getPipelineRunWorkspaces(workspaces: Workspaces[]): PipelineModalFormWorkspace[] {
+export function getPipelineRunWorkspaces(workspaces: Workspaces[]): PipelineModalFormWorkspace[] {
   const newWorkspace = [];
-  if (workspaces.length === 0) return undefined;
+  if (workspaces && workspaces.length === 0) return newWorkspace;
   workspaces.map((workspaceData: Workspaces) => {
     const newWorkspaceObject = {};
     const workspaceResourceObject = {};
@@ -153,7 +153,7 @@ function getPipelineRunWorkspaces(workspaces: Workspaces[]): PipelineModalFormWo
     } else if (workspaceResource[workspaceData.workspaceType] === workspaceResource.EmptyDirectory) {
       workspaceResourceObject['emptyDir']
     }
-    if (workspaceData.item.length !== 0) {
+    if (workspaceData.item && workspaceData.item.length !== 0) {
       workspaceResourceObject['items'] = workspaceData.item;
     }
     newWorkspaceObject[workspaceResource[workspaceData.workspaceType]] = workspaceResourceObject;
