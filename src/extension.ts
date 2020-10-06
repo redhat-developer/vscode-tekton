@@ -104,8 +104,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   ];
   disposables.forEach((e) => context.subscriptions.push(e));
 
-  detectTknCli();
-  triggerDetection();
+  detectTknCli().then(() => {
+    triggerDetection();
+  });
 
   setCommandContext(CommandContext.TreeZenMode, false);
   setCommandContext(CommandContext.PipelinePreview, false);
