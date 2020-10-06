@@ -8,7 +8,7 @@ import { TektonNode, MoreNode, tkn } from '../tkn';
 import { WatchUtil, FileContentChangeNotifier } from '../util/watch';
 import { Platform } from '../util/platform';
 import * as path from 'path';
-import { triggerDetection } from '../extension';
+import { triggerDetection } from '../util/detection';
 
 const kubeConfigFolder: string = path.join(Platform.getUserHomePath(), '.kube');
 

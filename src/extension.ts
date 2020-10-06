@@ -28,7 +28,7 @@ import { TKN_RESOURCE_SCHEME, TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider } 
 import { updateTektonResource } from './tekton/deploy';
 import { deleteFromExplorer, deleteFromCustom } from './commands/delete';
 import { addTrigger } from './tekton/trigger';
-import { TknVersion, version } from './util/tknversion';
+import { triggerDetection } from './util/detection';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -151,14 +151,6 @@ async function isTekton(): Promise<boolean> {
 // this method is called when your extension is deactivated
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export function deactivate(): void {
-}
-
-export async function triggerDetection(): Promise<void> {
-  setCommandContext(CommandContext.Trigger, false);
-  const tknVersionType: TknVersion = await version();
-  if (tknVersionType && tknVersionType.trigger !== 'unknown') {
-    setCommandContext(CommandContext.Trigger, true);
-  }
 }
 
 async function detectTknCli(): Promise<void> {
