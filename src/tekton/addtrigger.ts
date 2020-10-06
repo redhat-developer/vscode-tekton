@@ -10,10 +10,10 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as fs from 'fs-extra';
-import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind, EventListenerKind } from '../tekton';
+import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind, EventListenerKind, PipelineRunWorkspace } from '../tekton';
 import { TektonItem } from './tektonitem';
 import { Command, getStderrString } from '../tkn';
-import { AddTriggerFormValues, Pipeline, TriggerBindingKind, Resources, Param, Workspaces, PipelineModalFormWorkspace } from './triggertype';
+import { AddTriggerFormValues, Pipeline, TriggerBindingKind, Resources, Param, Workspaces } from './triggertype';
 import { K8sKind, RouteKind } from './k8s-type';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
@@ -40,7 +40,7 @@ export const PipelineRunModel: K8sKind = {
   kind: 'PipelineRun',
 };
 
-export enum workspaceResource {
+export enum WorkspaceResource {
   Secret = 'secret',
   ConfigMap = 'configMap',
   PersistentVolumeClaim = 'persistentVolumeClaim',
@@ -137,26 +137,26 @@ export async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues, 
   return await getPipelineRunData(pipelineRunData, options);
 }
 
-export function getPipelineRunWorkspaces(workspaces: Workspaces[]): PipelineModalFormWorkspace[] {
+export function getPipelineRunWorkspaces(workspaces: Workspaces[]): PipelineRunWorkspace[] {
   const newWorkspace = [];
   if (workspaces && workspaces.length === 0) return newWorkspace;
   workspaces.map((workspaceData: Workspaces) => {
     const newWorkspaceObject = {};
     const workspaceResourceObject = {};
     newWorkspaceObject['name'] = workspaceData.name;
-    if (workspaceResource[workspaceData.workspaceType] === workspaceResource.Secret) {
+    if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.Secret) {
       workspaceResourceObject['secretName'] = workspaceData.workspaceName;
-    } else if (workspaceResource[workspaceData.workspaceType] === workspaceResource.ConfigMap) {
+    } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.ConfigMap) {
       workspaceResourceObject['name'] = workspaceData.workspaceName;
-    } else if (workspaceResource[workspaceData.workspaceType] === workspaceResource.PersistentVolumeClaim) {
+    } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.PersistentVolumeClaim) {
       workspaceResourceObject['claimName'] = workspaceData.workspaceName;
-    } else if (workspaceResource[workspaceData.workspaceType] === workspaceResource.EmptyDirectory) {
+    } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.EmptyDirectory) {
       workspaceResourceObject['emptyDir']
     }
     if (workspaceData.item && workspaceData.item.length !== 0) {
       workspaceResourceObject['items'] = workspaceData.item;
     }
-    newWorkspaceObject[workspaceResource[workspaceData.workspaceType]] = workspaceResourceObject;
+    newWorkspaceObject[WorkspaceResource[workspaceData.workspaceType]] = workspaceResourceObject;
     newWorkspace.push(newWorkspaceObject);
   })
   return newWorkspace;

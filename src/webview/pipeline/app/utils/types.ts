@@ -13,7 +13,7 @@ export interface NameType {
   resourceRef?: ResourceRef;
 }
 
-export interface ItemValue {
+export interface ItemPath {
   key?: string;
   path?: string;
 }
@@ -22,7 +22,7 @@ export interface Workspaces {
   name: string;
   workspaceName?: string;
   workspaceType?: string;
-  item?: ItemValue[];
+  item?: ItemPath[];
   subPath?: string;
   emptyDir?: string;
 }

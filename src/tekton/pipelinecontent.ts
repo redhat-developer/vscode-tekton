@@ -20,14 +20,14 @@ export interface NameType {
   type: string;
 }
 
-export interface ItemValue {
+export interface ItemPath {
   key?: string;
   path?: string;
 }
   
 export interface Workspaces {
   name: string;
-  item?: ItemValue[];
+  item?: ItemPath[];
   workspaceName?: string;
   workspaceType?: string;
   key?: string;
