@@ -64,7 +64,7 @@ export async function pipelineData(pipeline: TknPipelineTrigger, trigger?: boole
     name: pipeline.metadata.name,
     resources: pipeline.spec.resources,
     params: pipeline.spec.params,
-    workspaces: trigger ? undefined : pipeline.spec.workspaces,
+    workspaces: pipeline.spec.workspaces,
     serviceAccount: pipeline.spec.serviceAccount,
     pipelineResource: undefined,
     Secret: undefined,
@@ -77,7 +77,7 @@ export async function pipelineData(pipeline: TknPipelineTrigger, trigger?: boole
     }],
     triggerContent: undefined
   };
-  if (pipeline.spec.workspaces && !trigger) await TektonItem.workspaceData(pipelineData);
+  if (pipeline.spec.workspaces) await TektonItem.workspaceData(pipelineData);
   if (trigger) {
     await addTrigger(pipelineData);
   }

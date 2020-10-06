@@ -115,7 +115,7 @@ function tknWorkspace(pipelineData: StartObject): string[] {
       if (element.item && element.item.length !== 0) {
         let configMap = `-w name=${element.name},config=${element.workspaceName}`;
         element.item.forEach(value => {
-          configMap = configMap.concat(`,item=${value.key}=${value.value}`);
+          configMap = configMap.concat(`,item=${value.key}=${value.path}`);
         });
         workspace.push(configMap);
       } else {
@@ -125,7 +125,7 @@ function tknWorkspace(pipelineData: StartObject): string[] {
       if (element.item && element.item.length !== 0) {
         let secret = `-w name=${element.name},secret=${element.workspaceName}`;
         element.item.forEach(value => {
-          secret = secret.concat(`,item=${value.key}=${value.value}`);
+          secret = secret.concat(`,item=${value.key}=${value.path}`);
         });
         workspace.push(secret);
       } else {

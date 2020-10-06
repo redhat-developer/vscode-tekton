@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Params } from './pipelinecontent';
-import { VolumeTypeSecret, VolumeTypeConfigMaps, VolumeTypePVC } from '../tekton';
+import { ItemPath, Params } from './pipelinecontent';
+import { VolumeTypeSecret, VolumeTypeConfigMaps, VolumeTypePVC, PipelineRunWorkspace } from '../tekton';
 
-export type TriggerFormValues = {
+export interface TriggerFormValues {
   selectedTrigger: string;
-};
+}
 
-export type ObjectMetadata = {
+export interface ObjectMetadata {
   annotations?: { [key: string]: string };
   clusterName?: string;
   creationTimestamp?: string;
@@ -26,12 +26,12 @@ export type ObjectMetadata = {
   resourceVersion?: string;
   selfLink?: string;
   uid?: string;
-};
+}
 
-export type TriggerBindingParam = {
+export interface TriggerBindingParam {
   name: string;
   value: string;
-};
+}
 
 export interface Resources {
   name: string;
@@ -41,11 +41,11 @@ export interface Resources {
   resourceType?: string;
 }
 
-export type K8sResourceCommon = {
+export interface K8sResourceCommon {
   apiVersion?: string;
   kind?: string;
   metadata?: ObjectMetadata;
-};
+}
 
 export type TriggerBindingKind = K8sResourceCommon & {
   spec: {
@@ -63,17 +63,17 @@ export interface PipelineParam extends Param {
   description?: string;
 }
 
-export type PipelineModalFormResource = {
+export interface PipelineModalFormResource {
   name: string;
   resourceRef: string;
-};
+}
 
-export type CommonPipelineModalFormikValues = {
+export interface CommonPipelineModalFormikValues {
   name: string;
   params: Params[] | undefined;
   resources: PipelineModalFormResource[];
-};
-
+  workspaces?: PipelineRunWorkspace[];
+}
 
 export type AddTriggerFormValues = CommonPipelineModalFormikValues & {
   trigger: {
@@ -81,6 +81,15 @@ export type AddTriggerFormValues = CommonPipelineModalFormikValues & {
     resource: TriggerBindingKind;
   };
 };
+
+export interface Workspaces {
+  name: string;
+  workspaceName?: string;
+  workspaceType?: string;
+  item?: ItemPath[];
+  subPath?: string;
+  emptyDir?: string;
+}
 
 export interface PipelineResource {
   name: string;
@@ -94,11 +103,11 @@ export interface PipelineWorkspace extends Param {
   };
 }
 
-export type K8sResourceKind = K8sResourceCommon & {
+export interface K8sResourceKind extends K8sResourceCommon {
   status?: { [key: string]: unknown };
   type?: { [key: string]: unknown };
   data?: { [key: string]: unknown };
-};
+}
 
 export interface Pipeline extends K8sResourceKind {
   spec: {
