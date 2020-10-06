@@ -153,7 +153,7 @@ async function isTekton(): Promise<boolean> {
 export function deactivate(): void {
 }
 
-async function triggerDetection(): Promise<void> {
+export async function triggerDetection(): Promise<void> {
   setCommandContext(CommandContext.Trigger, false);
   const tknVersionType: TknVersion = await version();
   if (tknVersionType && tknVersionType.trigger !== 'unknown') {
