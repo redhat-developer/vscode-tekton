@@ -14,6 +14,7 @@ import { Trigger, PipelineContent } from './pipelinecontent';
 import { PipelineWizard } from '../pipeline/wizard';
 import { pipelineData } from './webviewstartpipeline';
 import { startPipeline } from './startpipeline';
+import { triggerDetection } from '../util/detection';
 
 export class Pipeline extends TektonItem {
 
@@ -66,6 +67,7 @@ export class Pipeline extends TektonItem {
   }
 
   static refresh(): void {
+    triggerDetection();
     Pipeline.explorer.refresh();
   }
 

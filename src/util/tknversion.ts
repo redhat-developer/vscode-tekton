@@ -3,8 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Command } from '../tkn';
-import { TektonItem } from '../tekton/tektonitem';
+import { Command, tkn } from '../tkn';
 
 export interface TknVersion {
   trigger?: string;
@@ -20,7 +19,7 @@ export async function version(): Promise<TknVersion> {
     'Client version': 'tkn',
     'Pipeline version': 'pipeline'
   }
-  const result = await TektonItem.tkn.execute(Command.printTknVersion(), process.cwd(), false);
+  const result = await tkn.execute(Command.printTknVersion(), process.cwd(), false);
   if (result.error) {
     return null;
   }
