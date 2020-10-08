@@ -1,5 +1,18 @@
 # Change Log
 
+## 0.6.0 (October 8, 2020)
+
+This release brings to you:
+
+* [#345](https://github.com/redhat-developer/vscode-tekton/issues/345) Support for "finally" tasks
+* [#361](https://github.com/redhat-developer/vscode-tekton/issues/361) Array notation is not recognized by the pipeline diagram
+* [#366](https://github.com/redhat-developer/vscode-tekton/issues/366) Display TaskRun names under Task and TaskRuns
+* [#405](https://github.com/redhat-developer/vscode-tekton/issues/405) Error when clicking the Add Trigger command but triggers are not installed on cluster
+* [#406](https://github.com/redhat-developer/vscode-tekton/issues/406) Error when creating trigger resources with newest Tekton Triggers
+* [#407](https://github.com/redhat-developer/vscode-tekton/issues/407) Add workspace support in trigger.
+* [#411](https://github.com/redhat-developer/vscode-tekton/issues/411) When clicking on TaskRuns tree view it throws an error.
+* [#419](https://github.com/redhat-developer/vscode-tekton/issues/419) Add trigger action disabled when it shouldn't
+
 ## 0.5.0 (September 21, 2020)
 
 This release brings to you:
