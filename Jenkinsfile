@@ -56,10 +56,10 @@ node('rhel8'){
             }
 
             // Open-vsx Marketplace
-	        sh "npm install -g ovsx"
-	        withCredentials([[$class: 'StringBinding', credentialsId: 'open-vsx-access-token', variable: 'OVSX_TOKEN']]) {
-	        	sh 'ovsx publish -p ${OVSX_TOKEN}' + " ${vsix[0].path}"
-	        }
+            sh "npm install -g ovsx"
+            withCredentials([[$class: 'StringBinding', credentialsId: 'open-vsx-access-token', variable: 'OVSX_TOKEN']]) {
+                sh 'ovsx publish -p ${OVSX_TOKEN}' + " ${vsix[0].path}"
+            }
             archive includes:"**.vsix*"
 
             stage ("Promote the build to stable") {
