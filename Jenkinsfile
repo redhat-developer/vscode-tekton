@@ -50,14 +50,19 @@ node('rhel8'){
 
         stage ("Publish to Marketplace") {
             unstash 'vsix';
+            def vsix = findFiles(glob: '**.vsix')
             withCredentials([[$class: 'StringBinding', credentialsId: 'vscode_java_marketplace', variable: 'TOKEN']]) {
-                def vsix = findFiles(glob: '**.vsix')
                 sh 'vsce publish -p ${TOKEN} --packagePath' + " ${vsix[0].path}"
+            }
+
+            // Open-vsx Marketplace
+            sh "npm install -g ovsx"
+            withCredentials([[$class: 'StringBinding', credentialsId: 'open-vsx-access-token', variable: 'OVSX_TOKEN']]) {
+                sh 'ovsx publish -p ${OVSX_TOKEN}' + " ${vsix[0].path}"
             }
             archive includes:"**.vsix*"
 
             stage ("Promote the build to stable") {
-                def vsix = findFiles(glob: '**.vsix')
                 sh "rsync -Pzrlt --rsh=ssh --protocol=28 *.vsix* ${UPLOAD_LOCATION}/stable/vscode-tekton/"
             }
         }
