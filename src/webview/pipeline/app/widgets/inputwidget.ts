@@ -19,7 +19,8 @@ export class InputWidget extends BaseWidget {
     wrapperId?: string,
     inputId?: string,
     inputTitle?: string,
-    inputValue?: string
+    inputValue?: string,
+    number?: string
   ) {
     super();
     const editorInput = createDiv(className ?? 'editor-input-box');
@@ -29,7 +30,7 @@ export class InputWidget extends BaseWidget {
     this.input.spellcheck = false;
     this.input.placeholder = text ?? '';
     this.input.value = inputValue ?? '';
-    this.input.type = 'text';
+    this.input.type = number ?? 'text';
     this.input.id = inputId ?? '';
     this.input.disabled = disabledType ?? false;
     this.input.title = inputTitle ?? '';

@@ -8,7 +8,7 @@ import { createDiv } from '../utils/util';
 import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
 import { NameType, Trigger, PipelineStart, Workspaces, TknPipelineResource, Item, TriggerType } from '../utils/types';
-import { TknResourceType, workspaceResource, workspaceResourceTypeName } from '../utils/const';
+import { accessMode, size, TknResourceType, workspaceResource, workspaceResourceTypeName } from '../utils/const';
 import { collectResourceData, collectWorkspaceData } from '../utils/resource';
 import { triggerSelectedWorkspaceType, createElementForKeyAndPath } from '../utils/displayworkspaceresource';
 import { blockStartButton } from '../utils/disablebutton';
@@ -47,7 +47,51 @@ export class SelectWidget extends BaseWidget {
       this.clickEvent(event);
     }
     this.createWorkspaceElement(event, select);
+    this.createPVC(event, select);
     blockStartButton();
+  }
+
+  createPVC(event: Node & ParentNode, select: HTMLSelectElement): void {
+    if (select[select.selectedIndex].id === 'create-new-PersistentVolumeClaim-entry') {
+      const newDivClass = 'List-new-PVC-items-webview';
+      const input = new EditItem('Persistent Volume Claim Name', new InputWidget('Please provide Name', null, this.initialValue), 'input-resource', 'inner-editItem');
+      const selectAccessMode = new SelectWidget('editor-select-box-item-select-a-key', null, 'editor-select-box-item').selectAccessMode();
+      const selectAccessModeOp = new EditItem('Access Mode', selectAccessMode, 'option-workspace-id', 'inner-editItem');
+      const inputNumber = new EditItem('Size', new InputWidget('', 'number-input-box', this.initialValue, null, null, null, null, null, 'number'), 'input-resource', 'size-input-item');
+      const selectSize = new SelectWidget('editor-select-box-item-select-a-key', null, 'size-select-box-item').selectSize();
+      const selectSizeOp = new EditItem('', selectSize, 'option-workspace-id', 'size-select-item', null, true);   
+      this.addPVCItem(event, input, selectAccessModeOp, selectSizeOp, inputNumber, newDivClass);
+    }
+  }
+
+  addPVCItem(event: Node & ParentNode, input: EditItem, selectAccessModeOp: EditItem, selectSizeOp: EditItem, inputNumber: EditItem, newDivClass: string): void{
+    event.appendChild(createDiv(null, newDivClass));
+    event.lastChild.appendChild(input.getElement());
+    event.lastChild.appendChild(selectAccessModeOp.getElement());
+    event.lastChild.appendChild(inputNumber.getElement());
+    event.lastChild.appendChild(selectSizeOp.getElement());
+    console.log(event);
+    
+  }
+
+  selectSize(): Widget {
+    size.forEach(val => {
+      const op = document.createElement('option');
+      op.value = val;
+      op.text = val;
+      this.select.appendChild(op);
+    })
+    return this;
+  }
+
+  selectAccessMode(): Widget {
+    accessMode.forEach(val => {
+      const op = document.createElement('option');
+      op.value = val.value;
+      op.text = val.name;
+      this.select.appendChild(op);
+    })
+    return this
   }
 
   triggerWebhook(event: Node & ParentNode): void {

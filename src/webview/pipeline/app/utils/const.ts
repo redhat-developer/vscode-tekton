@@ -43,3 +43,20 @@ export enum workspaceResourceTypeName {
   ConfigMap = 'name',
   PersistentVolumeClaim = 'claimName'
 }
+
+export const accessMode = [
+  {
+    name: 'Single User (RWO)',
+    value: 'ReadWriteOnce'
+  },
+  {
+    name: 'Shared Access (RWX)',
+    value: 'ReadWriteMany'
+  },
+  {
+    name: 'Read Only (ROX)',
+    value: 'ReadOnlyMany'
+  }
+]
+
+export const size = ['MiB', 'GiB', 'TiB'];

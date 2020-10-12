@@ -22,11 +22,12 @@ export class EditItem extends BaseWidget {
     input: Widget,
     id?: string,
     className?: string,
-    elementId?: string) {
+    elementId?: string,
+    label?: boolean) {
     super();
     this.element = createDiv(className ?? 'editItem');
     this.element.id = elementId ?? '';
-    this.element.appendChild(new LabelItem(title, id).getElement());
+    !label ? this.element.appendChild(new LabelItem(title, id).getElement()) : undefined;
     this.element.appendChild(input.getElement());
   }
 }
