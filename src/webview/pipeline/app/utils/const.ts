@@ -16,7 +16,8 @@ export const initialResourceFormValues = {
   params: [],
   resources: [],
   workspaces: [],
-  trigger: undefined
+  trigger: undefined,
+  newPvc: []
 }
 
 export enum TknResourceType {
@@ -59,4 +60,17 @@ export const accessMode = [
   }
 ]
 
-export const size = ['MiB', 'GiB', 'TiB'];
+export const size = [
+  {
+    name: 'MiB',
+    value: 'Mi'
+  },
+  {
+    name: 'GiB',
+    value: 'Gi'
+  },
+  {
+    name: 'TiB',
+    value: 'Ti'
+  }
+];

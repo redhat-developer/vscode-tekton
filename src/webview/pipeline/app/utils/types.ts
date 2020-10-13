@@ -142,6 +142,23 @@ export interface TriggerBindingKind {
   };
 }
 
+export interface PVC {
+  apiVersion: string;
+  kind: string;
+  metadata: {
+    name: string;
+  };
+  spec: {
+    accessModes: string[];
+    resources: {
+      requests: {
+        storage: string;
+      };
+    };
+    volumeMode: string;
+  };
+}
+
 export interface PipelineStart {
   name: string;
   resources: Resources[];
@@ -151,6 +168,7 @@ export interface PipelineStart {
     name: string;
     resource: TriggerBindingKind;
   };
+  newPvc?: PVC[];
 }
 
 export interface Item {
