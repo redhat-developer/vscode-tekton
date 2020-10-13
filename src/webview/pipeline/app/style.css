@@ -380,6 +380,62 @@ body {
   opacity: 1!important;
 }
 
+.number-input-box-error {
+  position: relative;
+  display: block;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: var(--vscode-font-size);
+  width: 103px;
+  height: 26px;
+  background-color: var(--vscode-settings-textInputBackground);
+  color: var(--vscode-settings-textInputForeground);
+  line-height: 1.4em!important;
+  left: 0.5px;
+}
+
+@media screen and (max-width: 357px) {
+  .number-input-box-error {
+    width: 103px;
+  }
+}
+
+@media screen and (min-width: 550px) {
+  .number-input-box-error {
+    width: 103px;
+  }
+}
+
+@media screen and (min-width: 700px) {
+  .number-input-box-error {
+    width: 103px;
+  }
+}
+
+.number-input-box-error>.wrapper>.input {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  line-height: inherit;
+  border: none;
+  font-family: inherit;
+  position: relative;
+  font-size: var(--vscode-font-size);
+  resize: none;
+  background-color: inherit;
+  color: inherit;
+  outline-color: #be1100;
+  outline-width: 1px;
+  outline-style: solid;
+}
+
+.number-input-box-error > .wrapper > .input:focus {
+  outline-color: var(--vscode-focusBorder);
+  outline-width: 1px;
+  outline-style: solid;
+  opacity: 1!important;
+}
 
 .number-input-box {
   position: relative;
@@ -388,7 +444,7 @@ body {
   box-sizing: border-box;
   font-size: var(--vscode-font-size);
   position: relative;
-  width: 86px;
+  width: 103px;
   height: 26px;
   background-color: var(--vscode-settings-dropdownBackground);
   color: var(--vscode-settings-textInputForeground);
@@ -398,7 +454,7 @@ body {
 
 @media screen and (max-width: 357px) {
   .number-input-box {
-    width: 184px;
+    width: 103px;
   }
 }
 
@@ -573,7 +629,7 @@ body {
   background-color: var(--vscode-settings-dropdownBackground);
   color: var(--vscode-settings-dropdownForeground);
   border-color: var(--vscode-settings-dropdownBorder);
-  height: 26px;
+  height: 28px;
   padding: 2px 8px;
   align-items: center;
   -webkit-appearance: none;
@@ -582,7 +638,7 @@ body {
 
 @media screen and (max-width: 357px) {
   .size-select-box-item {
-    width: 186px;
+    width: 53px;
     height: 28px;
   }
 }

@@ -57,10 +57,15 @@ export class SelectWidget extends BaseWidget {
       const input = new EditItem('Persistent Volume Claim Name', new InputWidget('Please provide Name', null, this.initialValue), 'input-resource', 'inner-editItem');
       const selectAccessMode = new SelectWidget('editor-select-box-item-select-a-key', null, 'editor-select-box-item').selectAccessMode();
       const selectAccessModeOp = new EditItem('Access Mode', selectAccessMode, 'option-workspace-id', 'inner-editItem');
-      const inputNumber = new EditItem('Size', new InputWidget('', 'number-input-box', this.initialValue, null, null, null, null, null, 'number'), 'input-resource', 'size-input-item');
+      const inputNumber = new EditItem('Size', new InputWidget('', 'number-input-box', this.initialValue, null, null, 'size-for-pvc-create-webview', null, null, 'number'), 'input-resource', 'size-input-item');
       const selectSize = new SelectWidget('editor-select-box-item-select-a-key', null, 'size-select-box-item').selectSize();
       const selectSizeOp = new EditItem('', selectSize, 'option-workspace-id', 'size-select-item', null, true);   
       this.addPVCItem(event, input, selectAccessModeOp, selectSizeOp, inputNumber, newDivClass);
+    }
+    if (select[select.selectedIndex].id === 'PersistentVolumeClaim') {
+      if (event.lastElementChild.id === 'List-new-PVC-items-webview') {
+        event.lastElementChild.remove();
+      }
     }
   }
 
@@ -70,8 +75,6 @@ export class SelectWidget extends BaseWidget {
     event.lastChild.appendChild(selectAccessModeOp.getElement());
     event.lastChild.appendChild(inputNumber.getElement());
     event.lastChild.appendChild(selectSizeOp.getElement());
-    console.log(event);
-    
   }
 
   selectSize(): Widget {

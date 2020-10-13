@@ -63,11 +63,19 @@ export class InputWidget extends BaseWidget {
       createLabel.innerText = 'Required';
       createLabel.className = 'label-text';
       createLabel.id = 'label-text-id';
-      this.input.parentNode.parentElement.className = 'editor-input-box-error';
+      if (this.input.id === 'size-for-pvc-create-webview') {
+        this.input.parentNode.parentElement.className = 'number-input-box-error';
+      } else {
+        this.input.parentNode.parentElement.className = 'editor-input-box-error';
+      }
       this.input.parentNode.parentNode.parentElement.appendChild(createLabel);
     } else {
       this.removeError();
-      this.input.parentNode.parentElement.className = 'editor-input-box';
+      if (this.input.id === 'size-for-pvc-create-webview') {
+        this.input.parentNode.parentElement.className = 'number-input-box';
+      } else {
+        this.input.parentNode.parentElement.className = 'editor-input-box';
+      }
     }
   }
 
