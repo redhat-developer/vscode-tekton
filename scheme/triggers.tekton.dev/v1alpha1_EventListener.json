@@ -15,6 +15,21 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "BitbucketInterceptor": {
+      "properties": {
+        "secretRef": {
+          "$ref": "#/definitions/SecretRef"
+        },
+        "eventTypes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "CELInterceptor": {
       "properties": {
         "filter": {
@@ -72,28 +87,6 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "EventInterceptor": {
-      "properties": {
-        "webhook": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/WebhookInterceptor"
-        },
-        "github": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/GitHubInterceptor"
-        },
-        "gitlab": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/GitLabInterceptor"
-        },
-        "cel": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/CELInterceptor"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
     "EventListener": {
       "required": [
         "spec"
@@ -116,28 +109,6 @@
         "status": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/EventListenerStatus"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "EventListenerBinding": {
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "kind": {
-          "type": "string"
-        },
-        "ref": {
-          "type": "string"
-        },
-        "spec": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/TriggerBindingSpec"
-        },
-        "apiversion": {
-          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -173,6 +144,13 @@
         },
         "serviceType": {
           "type": "string"
+        },
+        "replicas": {
+          "type": "integer"
+        },
+        "podTemplate": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/PodTemplate"
         }
       },
       "additionalProperties": false,
@@ -213,37 +191,21 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "EventListenerTemplate": {
-      "required": [
-        "name"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "apiversion": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
     "EventListenerTrigger": {
-      "required": [
-        "bindings",
-        "template"
-      ],
       "properties": {
         "bindings": {
           "items": {
             "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/EventListenerBinding"
+            "$ref": "#/definitions/TriggerSpecBinding"
           },
           "type": "array"
         },
         "template": {
           "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/EventListenerTemplate"
+          "$ref": "#/definitions/TriggerSpecTemplate"
+        },
+        "triggerRef": {
+          "type": "string"
         },
         "name": {
           "type": "string"
@@ -251,12 +213,12 @@
         "interceptors": {
           "items": {
             "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/EventInterceptor"
+            "$ref": "#/definitions/TriggerInterceptor"
           },
           "type": "array"
         },
-        "serviceAccount": {
-          "$ref": "#/definitions/ObjectReference"
+        "serviceAccountName": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -472,6 +434,27 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "PodTemplate": {
+      "properties": {
+        "tolerations": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/Toleration"
+          },
+          "type": "array"
+        },
+        "nodeSelector": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "SecretRef": {
       "properties": {
         "secretKey": {
@@ -492,6 +475,27 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "Toleration": {
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "operator": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "effect": {
+          "type": "string"
+        },
+        "tolerationSeconds": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "TriggerBindingSpec": {
       "properties": {
         "params": {
@@ -500,6 +504,69 @@
             "$ref": "#/definitions/Param"
           },
           "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TriggerInterceptor": {
+      "properties": {
+        "webhook": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/WebhookInterceptor"
+        },
+        "github": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/GitHubInterceptor"
+        },
+        "gitlab": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/GitLabInterceptor"
+        },
+        "cel": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/CELInterceptor"
+        },
+        "bitbucket": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/BitbucketInterceptor"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TriggerSpecBinding": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "ref": {
+          "type": "string"
+        },
+        "spec": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TriggerBindingSpec"
+        },
+        "apiversion": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TriggerSpecTemplate": {
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "apiversion": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
