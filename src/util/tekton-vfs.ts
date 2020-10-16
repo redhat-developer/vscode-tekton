@@ -10,6 +10,7 @@ import * as os from 'os'
 import * as fsx from 'fs-extra';
 import { VirtualDocument } from '../yaml-support/yaml-locator';
 import { TektonItem } from '../tekton/tektonitem';
+import { newFileName } from './filename';
 
 export const TKN_RESOURCE_SCHEME = 'tekton';
 export const TKN_RESOURCE_SCHEME_READONLY = 'tekton-ro';
@@ -21,7 +22,8 @@ const readonlyRegex = /(taskrun|pipelinerun|tr)/ as RegExp;
  * @param name tekton resource name
  * @param format output format (yaml|json)
  */
-export function tektonFSUri(type: string, name: string, format: string): Uri {
+export async function tektonFSUri(type: string, name: string, format: string): Promise<Uri> {
+  name = await newFileName(type, name);
   const scheme = readonlyRegex.test(type) ? TKN_RESOURCE_SCHEME_READONLY : TKN_RESOURCE_SCHEME;
   return Uri.parse(`${scheme}://kubernetos/${type}/${name}.${format}`);
 }
@@ -90,7 +92,9 @@ export class TektonVFSProvider implements FileSystemProvider {
   }
 
   private loadK8sResource(resource: string, outputFormat: string): Promise<CliExitData> {
-    return cli.execute(newK8sCommand(`-o ${outputFormat} get ${resource}`));
+    const id = new RegExp('-[A-Za-z0-9]+$');
+    const newResourceName = resource.replace(id, '');
+    return cli.execute(newK8sCommand(`-o ${outputFormat} get ${newResourceName}`));
   }
 
   async updateK8sResource(fsPath: string): Promise<CliExitData> {

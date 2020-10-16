@@ -96,7 +96,7 @@ export abstract class TektonItem {
     return pipelineResourceList;
   }
 
-  static openInEditor(context: TektonNode): void {
+  static async openInEditor(context: TektonNode): Promise<void> {
     let name = context.getName();
     if (context.contextValue === ContextType.CONDITIONTASKRUN) {
       for (const conditionName in context.getParent()['rawTaskRun'].conditionChecks) {
@@ -105,12 +105,12 @@ export abstract class TektonItem {
         }
       }
     }
-    TektonItem.loadTektonResource(context.contextValue, name);
+    await TektonItem.loadTektonResource(context.contextValue, name);
   }
 
-  static loadTektonResource(type: string, name: string): void {
+  static async loadTektonResource(type: string, name: string): Promise<void> {
     const outputFormat = TektonItem.getOutputFormat();
-    const uri = tektonFSUri(type, name, outputFormat);
+    const uri = await tektonFSUri(type, name, outputFormat);
     workspace.openTextDocument(uri).then((doc) => {
       if (doc) {
         window.showTextDocument(doc, { preserveFocus: true, preview: true });

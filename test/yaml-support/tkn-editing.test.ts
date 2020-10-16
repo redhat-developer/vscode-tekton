@@ -12,7 +12,7 @@ import * as path from 'path';
 import { initializeTknEditing, TknDefinitionProvider } from '../../src/yaml-support/tkn-editing';
 import { tektonYaml, TektonYamlType } from '../../src/yaml-support/tkn-yaml';
 import { TestTextDocument } from '../text-document-mock';
-import { tektonFSUri } from '../../src/util/tekton-vfs';
+import { TknImpl } from '../../src/tkn';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -23,6 +23,7 @@ suite('Tekton Editing support', () => {
   let onDidOpenTextDocument: sinon.SinonStub;
   let registerDefinitionProvider: sinon.SinonStub;
   let isTektonYamlStub: sinon.SinonStub;
+  let execStub: sinon.SinonStub<unknown[], unknown>;
 
   const extensionContext = { subscriptions: [] } as vscode.ExtensionContext;
 
@@ -31,6 +32,14 @@ suite('Tekton Editing support', () => {
     onDidOpenTextDocument = sandbox.stub(vscode.workspace, 'onDidOpenTextDocument');
     registerDefinitionProvider = sandbox.stub(vscode.languages, 'registerDefinitionProvider');
     isTektonYamlStub = sandbox.stub(tektonYaml, 'isTektonYaml');
+    execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
+    execStub.onFirstCall().resolves({ error: undefined,
+      stdout: JSON.stringify({
+        metadata: {
+          uid: 'c85f064e-fbea-45cc-8e5c-167733cd3198'
+        }
+      })
+    });
   });
 
   teardown(() => {
@@ -115,10 +124,10 @@ suite('Tekton Editing support', () => {
       const doc = new TestTextDocument(vscode.Uri.parse('file:///editing/pipeline/pipeline.yaml'), yaml);
       isTektonYamlStub.returns(TektonYamlType.Pipeline);
 
-      const location = defProvider.provideDefinition(doc, new vscode.Position(15, 15), {} as vscode.CancellationToken) as vscode.Location;
+      const location = await defProvider.provideDefinition(doc, new vscode.Position(15, 15), {} as vscode.CancellationToken) as vscode.Location;
 
       expect(location).not.undefined;
-      expect(location.uri.toString()).eqls(tektonFSUri('task', 'unit-tests', 'yaml').toString());
+      expect(location.uri.toString()).equal('tekton://kubernetos/task/unit-tests-c85f064e.yaml');
     });
 
     test('go to task name from taskRef should return k8s uri to task resource', async () => {
@@ -126,10 +135,10 @@ suite('Tekton Editing support', () => {
       const doc = new TestTextDocument(vscode.Uri.parse('file:///editing/pipeline/pipeline.yaml'), yaml);
       isTektonYamlStub.returns(TektonYamlType.Pipeline);
 
-      const location = defProvider.provideDefinition(doc, new vscode.Position(15, 15), {} as vscode.CancellationToken) as vscode.Location;
+      const location = await defProvider.provideDefinition(doc, new vscode.Position(15, 15), {} as vscode.CancellationToken) as vscode.Location;
 
       expect(location).not.undefined;
-      expect(location.uri.toString()).eqls(tektonFSUri('task', 'unit-tests', 'yaml').toString());
+      expect(location.uri.toString()).equal('tekton://kubernetos/task/unit-tests-c85f064e.yaml');
     });
 
     test('go to task name from conditionRef should return k8s uri to conditions resource', async () => {
@@ -137,10 +146,10 @@ suite('Tekton Editing support', () => {
       const doc = new TestTextDocument(vscode.Uri.parse('file:///editing/pipeline/conditional-pipeline.yaml'), yaml);
       isTektonYamlStub.returns(TektonYamlType.Pipeline);
 
-      const location = defProvider.provideDefinition(doc, new vscode.Position(21, 30), {} as vscode.CancellationToken) as vscode.Location;
+      const location = await defProvider.provideDefinition(doc, new vscode.Position(21, 30), {} as vscode.CancellationToken) as vscode.Location;
 
       expect(location).not.undefined;
-      expect(location.uri.toString()).eqls(tektonFSUri('conditions', 'file-exists', 'yaml').toString());
+      expect(location.uri.toString()).equal('tekton://kubernetos/conditions/file-exists-c85f064e.yaml');
     });
 
   });

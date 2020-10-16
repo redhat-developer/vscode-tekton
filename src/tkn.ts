@@ -412,6 +412,10 @@ export class Command {
   static apply(file: string): CliCommand {
     return newK8sCommand('apply', '-f', file);
   }
+
+  static getResources(resource: string, name: string): CliCommand {
+    return newK8sCommand('get', resource, name, '-o', 'json');
+  }
 }
 
 const IMAGES = '../../images';

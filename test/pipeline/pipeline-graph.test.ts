@@ -10,7 +10,8 @@ import { tektonYaml, pipelineYaml, DeclaredTask, pipelineRunYaml } from '../../s
 import * as graph from '../../src/pipeline/pipeline-graph';
 import { VirtualDocument } from '../../src/yaml-support/yaml-locator';
 import { PipelineRunData } from '../../src/tekton';
-import { tektonFSUri, tektonVfsProvider } from '../../src/util/tekton-vfs';
+import { tektonVfsProvider } from '../../src/util/tekton-vfs';
+import { Command, TknImpl } from '../../src/tkn';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -22,11 +23,13 @@ suite('Tekton graph', () => {
   let metadataName: sinon.SinonStub;
   let showQuickPick: sinon.SinonStub;
   let getPipelineTasks: sinon.SinonStub;
+  let execStub: sinon.SinonStub<unknown[], unknown>;
 
   setup(() => {
     tknDocuments = sandbox.stub(tektonYaml, 'getTektonDocuments');
     metadataName = sandbox.stub(tektonYaml, 'getMetadataName');
     getPipelineTasks = sandbox.stub(pipelineYaml, 'getPipelineTasks');
+    execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     showQuickPick = sandbox.stub(vscode.window, 'showQuickPick');
   });
 
@@ -115,9 +118,24 @@ suite('Tekton graph', () => {
         uri: vscode.Uri.parse('file://some/pipelinerun.yaml'),
 
       } as vscode.TextDocument
+      execStub.onFirstCall().resolves({ error: undefined,
+        stdout: JSON.stringify({
+          metadata: {
+            uid: 'c85f064e-fbea-45cc-8e5c-167733cd3198'
+          }
+        })
+      });
+      execStub.onSecondCall().resolves({ error: undefined,
+        stdout: JSON.stringify({
+          metadata: {
+            uid: 'c85f064e-fbea-45cc-8e5c-167733cd3198'
+          }
+        })
+      });
       await graph.calculatePipelineRunGraph(document);
 
-      expect(loadTektonDocument).calledWith(tektonFSUri('pipeline', 'FooPipeline', 'yaml'));
+      execStub.calledTwice;
+      expect(execStub.getCall(0).args[0]).deep.equals(Command.getResources('pipeline', 'FooPipeline'));
     });
 
     test('uses provided pipeline run', async () => {
