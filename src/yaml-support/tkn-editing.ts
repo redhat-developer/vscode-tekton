@@ -93,18 +93,18 @@ export class PipelineDefinitionProvider implements TknTypeDefinitionProvider {
     return undefined;
   }
 
-  private async getTaskRefLocation(taskRef: PipelineTaskRef): Promise<vscode.Location> {
+  private getTaskRefLocation(taskRef: PipelineTaskRef): vscode.Location {
     const type = taskRef.kind.value;
-    return await generateLinkForTektonResource(type === PipelineTaskKind.Task ? 'task' : 'clustertask', taskRef.name.value);
+    return generateLinkForTektonResource(type === PipelineTaskKind.Task ? 'task' : 'clustertask', taskRef.name.value);
   }
 
-  private async getConditionLocation(taskCondition: PipelineTaskCondition): Promise<vscode.Location> {
-    return await generateLinkForTektonResource('conditions', taskCondition.conditionRef.value);
+  private getConditionLocation(taskCondition: PipelineTaskCondition): vscode.Location {
+    return generateLinkForTektonResource('conditions', taskCondition.conditionRef.value);
   }
 }
 
-async function generateLinkForTektonResource(resourceType: string, name: string): Promise<vscode.Location> {
-  const uri = await tektonFSUri(resourceType, name, 'yaml');
+function generateLinkForTektonResource(resourceType: string, name: string): vscode.Location {
+  const uri = tektonFSUri(resourceType, name, 'yaml');
   return new vscode.Location(uri, new vscode.Position(1, 6)); // just guessing name position
 }
 

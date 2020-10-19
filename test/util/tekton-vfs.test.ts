@@ -12,26 +12,13 @@ import * as fsx from 'fs-extra';
 import * as path from 'path';
 import { cli } from '../../src/cli';
 import { teardown } from 'mocha';
-import { newK8sCommand, TknImpl } from '../../src/tkn';
+import { newK8sCommand } from '../../src/tkn';
 
 const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton VFS Provider', () => {
   const sandbox = sinon.createSandbox();
-  let execStub: sinon.SinonStub<unknown[], unknown>;
-
-
-  setup(() => {
-    execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
-    execStub.onFirstCall().resolves({ error: undefined,
-      stdout: JSON.stringify({
-        metadata: {
-          uid: 'c85f064e-fbea-45cc-8e5c-167733cd3198'
-        }
-      })
-    });
-  });
 
   teardown(() => {
     sandbox.restore();
@@ -39,19 +26,19 @@ suite('Tekton VFS Provider', () => {
 
   suite('Tekton FS Uri', () => {
     test('tektonFSUri should return uri', async () => {
-      const uri = await tektonFSUri('pipeline', 'foo', 'yaml');
+      const uri = tektonFSUri('pipeline', 'foo', 'yaml', 'c85f064e-fbea-45cc-8e5c-167733cd3198');
       expect(uri).is.not.undefined;
       expect(uri.toString()).equal('tekton://kubernetos/pipeline/foo-c85f064e.yaml');
     });
 
     test('tektonFSUri should return uri with readonly scheme for pipelinerun', async () => {
-      const uri = await tektonFSUri('pipelinerun', 'foo', 'yaml');
+      const uri = tektonFSUri('pipelinerun', 'foo', 'yaml', 'c85f064e-fbea-45cc-8e5c-167733cd3198');
       expect(uri).is.not.undefined;
       expect(uri.toString()).equal('tekton-ro://kubernetos/pipelinerun/foo-c85f064e.yaml');
     });
 
     test('tektonFSUri should return uri with readonly scheme for taskrun', async () => {
-      const uri = await tektonFSUri('taskrun', 'foo', 'yaml');
+      const uri = tektonFSUri('taskrun', 'foo', 'yaml', 'c85f064e-fbea-45cc-8e5c-167733cd3198');
       expect(uri).is.not.undefined;
       expect(uri.toString()).equal('tekton-ro://kubernetos/taskrun/foo-c85f064e.yaml');
     })

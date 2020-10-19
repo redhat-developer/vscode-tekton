@@ -49,8 +49,8 @@ export async function calculatePipelineRunGraph(document: VirtualDocument, pipel
     const refOrSpec = pipelineRunYaml.getTektonPipelineRefOrSpec(doc);
     if (typeof refOrSpec === 'string') {
       // get ref pipeline definition
-      const uri = await tektonFSUri(ContextType.PIPELINE, refOrSpec, 'yaml');
-      const pipelineDoc = await tektonVfsProvider.loadTektonDocument(uri);
+      const uri = tektonFSUri(ContextType.PIPELINE, refOrSpec, 'yaml');
+      const pipelineDoc = await tektonVfsProvider.loadTektonDocument(uri, true);
       const pipeDoc = await getPipelineDocument(pipelineDoc, TektonYamlType.Pipeline);
       tasks = pipelineYaml.getPipelineTasks(pipeDoc);
 
@@ -67,8 +67,8 @@ export async function calculatePipelineRunGraph(document: VirtualDocument, pipel
     runTasks = updatePipelineRunTasks(pipelineRun, tasks);
   } else {
     const pipelineRunName = tektonYaml.getMetadataName(doc);
-    const uri = await tektonFSUri(ContextType.PIPELINERUN, pipelineRunName, 'json');
-    const pipelineDoc = await tektonVfsProvider.loadTektonDocument(uri);
+    const uri = tektonFSUri(ContextType.PIPELINERUN, pipelineRunName, 'json');
+    const pipelineDoc = await tektonVfsProvider.loadTektonDocument(uri, true);
     const json = JSON.parse(pipelineDoc.getText());
     runTasks = updatePipelineRunTasks(json, tasks);
   }

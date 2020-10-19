@@ -105,12 +105,12 @@ export abstract class TektonItem {
         }
       }
     }
-    await TektonItem.loadTektonResource(context.contextValue, name);
+    await TektonItem.loadTektonResource(context.contextValue, name, context.getId());
   }
 
-  static async loadTektonResource(type: string, name: string): Promise<void> {
+  static async loadTektonResource(type: string, name: string, uid: string): Promise<void> {
     const outputFormat = TektonItem.getOutputFormat();
-    const uri = await tektonFSUri(type, name, outputFormat);
+    const uri = tektonFSUri(type, name, outputFormat, uid);
     workspace.openTextDocument(uri).then((doc) => {
       if (doc) {
         window.showTextDocument(doc, { preserveFocus: true, preview: true });

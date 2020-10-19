@@ -22,8 +22,8 @@ const readonlyRegex = /(taskrun|pipelinerun|tr)/ as RegExp;
  * @param name tekton resource name
  * @param format output format (yaml|json)
  */
-export async function tektonFSUri(type: string, name: string, format: string): Promise<Uri> {
-  name = await newFileName(type, name);
+export function tektonFSUri(type: string, name: string, format: string, uid?: string): Uri {
+  if (uid) name = newFileName(name, uid);
   const scheme = readonlyRegex.test(type) ? TKN_RESOURCE_SCHEME_READONLY : TKN_RESOURCE_SCHEME;
   return Uri.parse(`${scheme}://kubernetos/${type}/${name}.${format}`);
 }
@@ -91,9 +91,9 @@ export class TektonVFSProvider implements FileSystemProvider {
     }, 10);
   }
 
-  private loadK8sResource(resource: string, outputFormat: string): Promise<CliExitData> {
+  private loadK8sResource(resource: string, outputFormat: string, uid?: boolean): Promise<CliExitData> {
     const id = new RegExp('-[A-Za-z0-9]+$');
-    const newResourceName = resource.replace(id, '');
+    const newResourceName = (uid) ? resource : resource.replace(id, '');
     return cli.execute(newK8sCommand(`-o ${outputFormat} get ${newResourceName}`));
   }
 
@@ -131,10 +131,10 @@ export class TektonVFSProvider implements FileSystemProvider {
     return [resource, ext];
   }
 
-  async loadTektonDocument(uri: Uri): Promise<VirtualDocument> {
+  async loadTektonDocument(uri: Uri, uid?: boolean): Promise<VirtualDocument> {
     const [resource, format] = this.extractResourceAndFormat(uri);
 
-    const sr = await this.loadK8sResource(resource, format);
+    const sr = await this.loadK8sResource(resource, format, uid);
 
     if (!sr || sr['error']) {
       const message = sr ? sr['error'] : 'Unable to run command line tool';
