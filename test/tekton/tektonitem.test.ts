@@ -26,7 +26,6 @@ suite('TektonItem', () => {
   const pipelineResourceItem = new TestItem(null, 'pipelineresource', ContextType.PIPELINERESOURCE);
   const taskItem = new TestItem(null, 'task', ContextType.TASK);
   const clusterTaskItem = new TestItem(null, 'clustertask', ContextType.CLUSTERTASK);
-  let execStub: sinon.SinonStub<unknown[], unknown>;
 
   const textDocument: TextDocument = {
     uri: undefined,
@@ -140,19 +139,11 @@ suite('TektonItem', () => {
 
     setup(() => {
       openTextStub = sandbox.stub(workspace, 'openTextDocument').resolves(textDocument);
-      execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
       sandbox.stub(window, 'showTextDocument').resolves();
     });
 
     test('open yaml file in editor', async () => {
-      execStub.onFirstCall().resolves({ error: undefined,
-        stdout: JSON.stringify({
-          metadata: {
-            uid: 'c85f064e-fbea-45cc-8e5c-167733cd3198'
-          }
-        })
-      });
-      await TektonItem.openInEditor(pipelineResourceItem);
+      TektonItem.openInEditor(pipelineResourceItem);
       expect(openTextStub).calledOnce;
     });
   });
