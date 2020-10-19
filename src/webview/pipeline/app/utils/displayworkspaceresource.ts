@@ -27,7 +27,11 @@ function dropdownForWorkspaceType(event: Node & ParentNode, editId: string, sect
   const workspacesType = new SelectWidget(sectionId, trigger, null, initialValue).workspacesResource(trigger[select.value], select.value, index);
   const workspacesOp = new EditItem(VolumeTypes[select.value], workspacesType, editId, 'inner-editItem');
   event.appendChild(workspacesOp.getElement());
-  selectText(event.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[select.value]}`, (index === undefined) ?? true, 'select-workspace-option');
+  if (VolumeTypes[select.value] === VolumeTypes.PersistentVolumeClaim) {
+    selectText(event.querySelectorAll(`[id^=${sectionId}]`), `Create a new ${VolumeTypes[select.value]}`, false, 'create-new-PersistentVolumeClaim-entry');
+  } else {
+    selectText(event.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[select.value]}`, (index === undefined) ?? true, 'select-workspace-option');
+  }
 }
 
 export function createElementForKeyAndPath(event: Node & ParentNode, optionId: string, select: HTMLSelectElement, initialValue: PipelineStart, trigger: Trigger): void {

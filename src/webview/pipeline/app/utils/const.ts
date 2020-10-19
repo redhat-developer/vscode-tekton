@@ -16,7 +16,8 @@ export const initialResourceFormValues = {
   params: [],
   resources: [],
   workspaces: [],
-  trigger: undefined
+  trigger: undefined,
+  newPvc: []
 }
 
 export enum TknResourceType {
@@ -43,3 +44,33 @@ export enum workspaceResourceTypeName {
   ConfigMap = 'name',
   PersistentVolumeClaim = 'claimName'
 }
+
+export const accessMode = [
+  {
+    name: 'Single User (RWO)',
+    value: 'ReadWriteOnce'
+  },
+  {
+    name: 'Shared Access (RWX)',
+    value: 'ReadWriteMany'
+  },
+  {
+    name: 'Read Only (ROX)',
+    value: 'ReadOnlyMany'
+  }
+]
+
+export const size = [
+  {
+    name: 'MiB',
+    value: 'Mi'
+  },
+  {
+    name: 'GiB',
+    value: 'Gi'
+  },
+  {
+    name: 'TiB',
+    value: 'Ti'
+  }
+];

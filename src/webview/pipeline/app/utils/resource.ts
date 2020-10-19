@@ -65,3 +65,31 @@ export function addItemInWorkspace(resourceName: string, keyValue: string, pathN
 export function collectTriggerData(triggerName: string, initialValue: PipelineStart, trigger: Trigger): void {
   initialValue.trigger = {name: triggerName, resource: trigger.triggerContent[triggerName].resource};
 }
+
+export function createPVC(name: string, accessMode: string, size: string, inputSize: string, initialValue: PipelineStart): void {
+  initialValue.newPvc.push({
+    apiVersion: 'v1',
+    kind: 'PersistentVolumeClaim',
+    metadata: {
+      name: name
+    },
+    spec: {
+      resources: {
+        requests: {
+          storage: `${inputSize}${size}`
+        }
+      },
+      volumeMode: 'Filesystem',
+      accessModes: [accessMode]
+    }
+  });
+}
+
+
+export function storePvcName(name: string, workspaceName: string, initialValue: PipelineStart): void {
+  initialValue.workspaces.forEach(val => {
+    if (val.name === name) {
+      val.workspaceName = workspaceName;
+    }
+  })
+}

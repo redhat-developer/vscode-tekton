@@ -21,6 +21,7 @@ import { exposeRoute, RouteModel } from './expose';
 import { Progress } from '../util/progress';
 import { cli } from '../cli';
 import { TknVersion, version } from '../util/tknversion';
+import { NewPvc } from './createpvc';
 
 export const TriggerTemplateModel = {
   apiGroup: 'triggers.tekton.dev',
@@ -85,7 +86,7 @@ export async function addTrigger(inputAddTrigger: AddTriggerFormValues): Promise
   await exposeRoute(eventListener.metadata.name);
 }
 
-export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind | RouteKind): Promise<boolean> {
+export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind | RouteKind | NewPvc): Promise<boolean> {
   const quote = Platform.OS === 'win32' ? '"' : '\'';
   const triggerYaml = yaml.safeDump(trigger, {skipInvalid: true});
   const tempPath = os.tmpdir();

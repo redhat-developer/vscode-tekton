@@ -39,5 +39,11 @@ export function disableSelection(nodeList: HTMLCollectionOf<HTMLSelectElement>):
 
 export function blockStartButton(): void {
   const disableButtonSection = disableSelection(document.getElementsByTagName('select'));
-  if (disableButtonSection) disableButtonInput(document.getElementsByTagName('input'));
+  if (disableButtonSection) {
+    try {
+      disableButtonInput(document.getElementsByTagName('input'));
+    } catch (err) {
+      // ignore if fails to find input
+    }
+  }
 }

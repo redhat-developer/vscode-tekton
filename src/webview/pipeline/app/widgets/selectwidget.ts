@@ -8,7 +8,7 @@ import { createDiv } from '../utils/util';
 import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
 import { NameType, Trigger, PipelineStart, Workspaces, TknPipelineResource, Item, TriggerType } from '../utils/types';
-import { TknResourceType, workspaceResource, workspaceResourceTypeName } from '../utils/const';
+import { accessMode, size, TknResourceType, VolumeTypes, workspaceResource, workspaceResourceTypeName } from '../utils/const';
 import { collectResourceData, collectWorkspaceData } from '../utils/resource';
 import { triggerSelectedWorkspaceType, createElementForKeyAndPath } from '../utils/displayworkspaceresource';
 import { blockStartButton } from '../utils/disablebutton';
@@ -18,13 +18,15 @@ export class SelectWidget extends BaseWidget {
   constructor(id?: string,
     public trigger?: Trigger,
     classList?: string,
-    public initialValue?: PipelineStart
+    public initialValue?: PipelineStart,
+    selectID?: string
   ) {
     super();
     this.element = createDiv('select-container');
     this.element.id = id ?? '';
     this.select = document.createElement('select');
     this.select.classList.add(classList ?? 'editor-select-box');
+    this.select.id = selectID ?? '';
     this.select.onchange = () => this.addElement(this.select.parentNode.parentNode, this.select);
     this.element.appendChild(this.select);
   }
@@ -43,11 +45,58 @@ export class SelectWidget extends BaseWidget {
         collectResourceData(event.firstElementChild.id, select.value, this.initialValue);
       }
     }
-    if (event.parentNode.firstElementChild.textContent === TknResourceType.Workspaces || event.parentNode.parentNode.firstElementChild.textContent === TknResourceType.Workspaces) {
+    if ((event.parentNode.firstElementChild.textContent === TknResourceType.Workspaces || event.parentNode.parentNode.firstElementChild.textContent === TknResourceType.Workspaces) && event.firstElementChild.textContent !== VolumeTypes.PersistentVolumeClaim) {
       this.clickEvent(event);
     }
     this.createWorkspaceElement(event, select);
+    this.createPVC(event, select);
     blockStartButton();
+  }
+
+  createPVC(event: Node & ParentNode, select: HTMLSelectElement): void {
+    if (select[select.selectedIndex].id === 'create-new-PersistentVolumeClaim-entry') {
+      const newDivClass = 'List-new-PVC-items-webview';
+      const input = new EditItem('Persistent Volume Claim Name', new InputWidget('Please provide Name', null, this.initialValue, null, null, 'Webview-PVC-Name'), 'input-resource', 'inner-editItem');
+      const selectAccessMode = new SelectWidget('editor-select-box-item-select-a-key', null, 'editor-select-box-item', this.initialValue, 'Access-Mode-for-Pvc').selectAccessMode();
+      const selectAccessModeOp = new EditItem('Access Mode', selectAccessMode, 'option-workspace-id', 'inner-editItem');
+      const inputNumber = new EditItem('Size', new InputWidget('', 'number-input-box', this.initialValue, null, null, 'size-for-pvc-create-webview', null, null, 'number'), 'input-resource', 'size-input-item');
+      const selectSize = new SelectWidget('editor-select-box-item-select-a-key', null, 'size-select-box-item', this.initialValue, 'Size-for-PVC-Storage').selectSize();
+      const selectSizeOp = new EditItem('', selectSize, 'option-workspace-id', 'size-select-item', null, true);   
+      this.addPVCItem(event, input, selectAccessModeOp, selectSizeOp, inputNumber, newDivClass);
+    }
+    if (select[select.selectedIndex].id === 'PersistentVolumeClaim') {
+      if (event.lastElementChild.id === 'List-new-PVC-items-webview') {
+        event.lastElementChild.remove();
+      }
+    }
+  }
+
+  addPVCItem(event: Node & ParentNode, input: EditItem, selectAccessModeOp: EditItem, selectSizeOp: EditItem, inputNumber: EditItem, newDivClass: string): void{
+    event.appendChild(createDiv(null, newDivClass));
+    event.lastChild.appendChild(input.getElement());
+    event.lastChild.appendChild(selectAccessModeOp.getElement());
+    event.lastChild.appendChild(inputNumber.getElement());
+    event.lastChild.appendChild(selectSizeOp.getElement());
+  }
+
+  selectSize(): Widget {
+    size.forEach(val => {
+      const op = document.createElement('option');
+      op.value = val.value;
+      op.text = val.name;
+      this.select.appendChild(op);
+    })
+    return this;
+  }
+
+  selectAccessMode(): Widget {
+    accessMode.forEach(val => {
+      const op = document.createElement('option');
+      op.value = val.value;
+      op.text = val.name;
+      this.select.appendChild(op);
+    })
+    return this;
   }
 
   triggerWebhook(event: Node & ParentNode): void {

@@ -53,7 +53,7 @@ export function disableButtonInput(nodeList: HTMLCollectionOf<HTMLInputElement>)
     startButton = document.querySelector('.startButton-disable')
   }
   for (let element = 0; element < nodeList.length; element++) {
-    if (nodeList[element].type === 'text' && nodeList[element].value === '' && nodeList[element].id.trim() !== 'disabled') {
+    if ((nodeList[element].type === 'text' || nodeList[element].type === 'number') && nodeList[element].value === '' && nodeList[element].id.trim() !== 'disabled') {
       startButton.className = 'startButton-disable';    // Disable the button.
       return false;
     } else {

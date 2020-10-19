@@ -7,7 +7,7 @@ import { BaseWidget } from './widget';
 import { Trigger, PipelineStart } from '../utils/types';
 import { createItem } from '../utils/item';
 import { vscode } from '../index';
-import { addItemInWorkspace, collectParameterData, collectTriggerData } from '../utils/resource';
+import { addItemInWorkspace, collectParameterData, collectTriggerData, createPVC, storePvcName } from '../utils/resource';
 import { disableRemoveButton, blockStartButton } from '../utils/disablebutton';
 import { TknResourceType } from '../utils/const';
 
@@ -43,6 +43,8 @@ export class ButtonsPanel extends BaseWidget {
         this.storeItemData(event.querySelectorAll('[id^=items-section-workspace-new-item]'));
         this.storeParamData(event.querySelectorAll(`[id^=${TknResourceType.Params}-input-field-content-data]`));
         this.storeTriggerData(event.querySelectorAll('[id^=Webhook-add-trigger-webhook]'));
+        this.storeNewPvcData(event.querySelectorAll('[id^=List-new-PVC-items-webview]'));
+        this.storePvcContent(event.querySelectorAll('[id^=PersistentVolumeClaim-Workspaces]'));
         if (!this.trigger.trigger) {
           vscode.postMessage({
             type: 'startPipeline',
@@ -70,6 +72,33 @@ export class ButtonsPanel extends BaseWidget {
       createItem(event, this.optionId, this.selectOption, this.initialValue, this.trigger);
     }
     blockStartButton();
+  }
+
+  storePvcContent(data: unknown[] | NodeListOf<Element>): void {
+    if (data.length !== 0) {
+      data.forEach(val => {
+        const pvcName = val.parentNode.parentElement.firstChild.textContent;
+        if (val.firstChild.value === 'Create a new PVC'){
+          const newWorkspaceName = val.parentNode.querySelectorAll('[id^=Webview-PVC-Name]')[0].value;
+          storePvcName(pvcName, newWorkspaceName, this.initialValue);
+        } else {
+          const workspaceName = val.firstChild.value;
+          storePvcName(pvcName, workspaceName, this.initialValue);
+        }
+      })
+    }
+  }
+
+  storeNewPvcData(data: unknown[] | NodeListOf<Element>): void {
+    if (data.length !== 0) {
+      data.forEach(val => {
+        const pvcName = val.querySelectorAll('[id^=Webview-PVC-Name]')[0].value;
+        const accessMode = val.querySelectorAll('[id^=Access-Mode-for-Pvc]')[0].value;
+        const size = val.querySelectorAll('[id^=Size-for-PVC-Storage]')[0].value;
+        const inputSize = val.querySelectorAll('[id^=size-for-pvc-create-webview]')[0].value;
+        createPVC(pvcName, accessMode, size, inputSize, this.initialValue);
+      })
+    }
   }
 
   storeTriggerData(data: unknown[] | NodeListOf<Element>): void {

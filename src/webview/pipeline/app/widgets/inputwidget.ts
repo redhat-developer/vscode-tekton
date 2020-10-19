@@ -19,7 +19,8 @@ export class InputWidget extends BaseWidget {
     wrapperId?: string,
     inputId?: string,
     inputTitle?: string,
-    inputValue?: string
+    inputValue?: string,
+    number?: string
   ) {
     super();
     const editorInput = createDiv(className ?? 'editor-input-box');
@@ -29,7 +30,7 @@ export class InputWidget extends BaseWidget {
     this.input.spellcheck = false;
     this.input.placeholder = text ?? '';
     this.input.value = inputValue ?? '';
-    this.input.type = 'text';
+    this.input.type = number ?? 'text';
     this.input.id = inputId ?? '';
     this.input.disabled = disabledType ?? false;
     this.input.title = inputTitle ?? '';
@@ -62,11 +63,19 @@ export class InputWidget extends BaseWidget {
       createLabel.innerText = 'Required';
       createLabel.className = 'label-text';
       createLabel.id = 'label-text-id';
-      this.input.parentNode.parentElement.className = 'editor-input-box-error';
+      if (this.input.id === 'size-for-pvc-create-webview') {
+        this.input.parentNode.parentElement.className = 'number-input-box-error';
+      } else {
+        this.input.parentNode.parentElement.className = 'editor-input-box-error';
+      }
       this.input.parentNode.parentNode.parentElement.appendChild(createLabel);
     } else {
       this.removeError();
-      this.input.parentNode.parentElement.className = 'editor-input-box';
+      if (this.input.id === 'size-for-pvc-create-webview') {
+        this.input.parentNode.parentElement.className = 'number-input-box';
+      } else {
+        this.input.parentNode.parentElement.className = 'editor-input-box';
+      }
     }
   }
 
