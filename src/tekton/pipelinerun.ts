@@ -69,6 +69,7 @@ export class PipelineRun extends TektonItem {
   }
 
   static async showDiagram(item: TektonNode): Promise<void> {
+    if (!item) return null;
     await showPipelineRunPreview(item.getName());
   }
 }
