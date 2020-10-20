@@ -1,4 +1,4 @@
-# Visual Studio Code Tekton Pipelines Extension  <img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/tekton.png" alt="tekton" width="50"/>
+# Tekton Pipelines Extension  <img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/tekton.png" alt="tekton" width="50"/>
 
 | System | Status |
 | - | - |
