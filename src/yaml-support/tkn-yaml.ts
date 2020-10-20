@@ -31,10 +31,11 @@ export interface DeclaredResource {
 }
 
 export interface DeclaredTask {
+  id: string;
   name: string;
   taskRef: string;
   runAfter: string[];
-  kind: 'Task' | 'ClusterTask' | 'Condition' | string;
+  kind: 'Task' | 'ClusterTask' | 'Condition' | 'When' | string;
   position?: number;
   final?: boolean;
 }
@@ -333,27 +334,24 @@ export const pipelineRunYaml = new PipelineRunYaml();
 
 function collectTasks(specMap: YamlMap): DeclaredTask[] {
   const result: DeclaredTask[] = [];
-  const lastTasks: string[] = [];
   if (specMap) {
     const tasksSeq = getTasksSeq(specMap);
     if (tasksSeq) {
       for (const taskNode of tasksSeq.items) {
         if (taskNode.kind === 'MAPPING') {
           const decTask = toDeclaredTask(taskNode as YamlMap);
-          decTask.runAfter = getRunAfter(taskNode as YamlMap);
-          if (decTask.runAfter.length === 0){
-            lastTasks.push(decTask.name);
-          }
+          decTask.runAfter = collectRunAfter(taskNode as YamlMap, decTask.name);
           collectConditions(taskNode as YamlMap, result);
+          collectWhen(taskNode as YamlMap, result, decTask.name);
           result.push(decTask);
         }
       }
     }
 
-
     // collect finally tasks
     const finallyTasks = findNodeByKey<YamlSequence>('finally', specMap);
     if (finallyTasks) {
+      const lastTasks = getLastTasks(result);
       for (const finalTask of finallyTasks.items) {
         if (finalTask.kind === 'MAPPING') {
           const fTask = toDeclaredTask(finalTask as YamlMap);
@@ -368,26 +366,73 @@ function collectTasks(specMap: YamlMap): DeclaredTask[] {
   return result;
 }
 
+function getLastTasks(tasks: DeclaredTask[]): string[]{
+  const afterTasks = new Set<string>();
+  for (const task of tasks) {
+    task.runAfter.forEach(v => afterTasks.add(v));
+  }
+
+  const result: string[] = [];
+
+  for (const task of tasks) {
+    if (!afterTasks.has(task.id)) {
+      result.push(task.id);
+    }
+  }
+
+  return result;
+}
+
 function toDeclaredTask(taskNode: YamlMap): DeclaredTask {
   const decTask = {} as DeclaredTask;
   const nameValue = findNodeByKey<YamlNode>('name', taskNode);
   if (nameValue) {
-    decTask.name = nameValue.raw;
+    const name = nameValue.raw?.trim();
+    decTask.name = name;
+    decTask.id = name;
     decTask.position = nameValue.startPosition;
   }
 
   const taskRef = pipelineYaml.getTaskRef(taskNode);
   if (taskRef) {
     const taskRefName = findNodeByKey<YamlNode>('name', taskRef);
-    decTask.taskRef = taskRefName.raw;
+    decTask.taskRef = taskRefName.raw.trim();
     const kindName = findNodeByKey<YamlNode>('kind', taskRef);
     if (kindName) {
       decTask.kind = kindName.raw;
     } else {
       decTask.kind = 'Task';
     }
+  } else {
+    const taskSpec = findNodeByKey('taskSpec', taskNode);
+    if (taskSpec) {
+      decTask.kind = 'Task'
+    }
+
   }
   return decTask;
+}
+
+function collectWhen(taskNode: YamlMap, tasks: DeclaredTask[], taskName: string): void {
+  const whens = findNodeByKey<YamlSequence>('when', taskNode);
+  if (whens) {
+    for ( const when of whens.items){
+      const input = findNodeByKey<YamlNode>('input', when as YamlMap);
+      if (input) {
+        const inputVal = _.trim(input.raw, '"');
+        const whenDec = {id: `${taskName}:${inputVal}`, kind: 'When', position: input.startPosition} as DeclaredTask;
+
+        const runAfter = [];
+        const runAfterMap = extractTaskName(inputVal);
+        if (runAfterMap) {
+          runAfter.push(...runAfterMap.map( v => v[0]));
+        }
+        runAfter.push(...getTaskRunAfter(taskNode));
+        whenDec.runAfter = runAfter;
+        tasks.push(whenDec);
+      }
+    }
+  }
 }
 
 function collectConditions(taskNode: YamlMap, tasks: DeclaredTask[]): void {
@@ -397,7 +442,8 @@ function collectConditions(taskNode: YamlMap, tasks: DeclaredTask[]): void {
     for (const condition of conditions.items) {
       const ref = findNodeByKey<YamlNode>('conditionRef', condition as YamlMap);
       if (ref) {
-        const conditionDec = { name: _.trim(ref.raw, '"'), kind: 'Condition', position: ref.startPosition } as DeclaredTask;
+        const name = _.trim(ref.raw, '"');
+        const conditionDec = { id: name, name: name, kind: 'Condition', position: ref.startPosition } as DeclaredTask;
 
         const runAfter = [];
         const conditions = findNodeByKey<YamlSequence>('conditions', taskNode);
@@ -410,7 +456,7 @@ function collectConditions(taskNode: YamlMap, tasks: DeclaredTask[]): void {
                 if (fromKey) {
                   for (const key of fromKey.items) {
                     if (key.kind === 'SCALAR') {
-                      runAfter.push(key.raw);
+                      runAfter.push(key.raw.trim());
                     }
                   }
                 }
@@ -418,6 +464,7 @@ function collectConditions(taskNode: YamlMap, tasks: DeclaredTask[]): void {
             }
           }
         }
+        runAfter.push(...getTaskRunAfter(taskNode));
         conditionDec.runAfter = runAfter;
         tasks.push(conditionDec);
       }
@@ -426,16 +473,8 @@ function collectConditions(taskNode: YamlMap, tasks: DeclaredTask[]): void {
   }
 }
 
-function getRunAfter(taskNode: YamlMap): string[] {
+function collectRunAfter(taskNode: YamlMap, name: string): string[] {
   const result: string[] = [];
-  const runAfter = findNodeByKey<YamlSequence>('runAfter', taskNode);
-  if (runAfter) {
-    for (const run of runAfter.items) {
-      if (run.kind === 'SCALAR') {
-        result.push(_.trim(run.raw, '"'));
-      }
-    }
-  }
 
   const resources = findNodeByKey<YamlMap>('resources', taskNode);
   if (resources) {
@@ -464,9 +503,59 @@ function getRunAfter(taskNode: YamlMap): string[] {
     }
   }
 
+  const whens = findNodeByKey<YamlSequence>('when', taskNode);
+  if (whens) {
+    for (const when of whens.items) {
+      const input = getYamlMappingValue(when as YamlMap, 'input');
+      if (input) {
+        result.push(`${name}:${_.trim(input, '"')}`);
+      }
+    }
+  }
+
+  if (!conditions && !whens) {
+    const runAfter = getTaskRunAfter(taskNode);
+    result.push(...runAfter);
+  }
+
   return result;
 }
 
+function getTaskRunAfter(taskNode: YamlMap): string[] {
+  const result = [];
+  const runAfter = findNodeByKey<YamlSequence>('runAfter', taskNode);
+  if (runAfter) {
+    for (const run of runAfter.items) {
+      if (run.kind === 'SCALAR') {
+        result.push(_.trim(run.raw.trim(), '"'));
+      }
+    }
+  }
+
+  return result;
+}
+
+const taskNameAndResultReg = /\$\(tasks\.(?<taskName>[a-zA-Z\d-]+)\.results\.(?<resultName>[a-zA-Z\d-]+)\)/;
+const varSubstitution = /\$\([a-zA-Z\d\\.-]+\)/g;
+function extractTaskName(variable: string): [string, string][] | undefined {
+  if (!variable) {
+    return undefined;
+  }
+  const result: [string, string][] = [];
+  // TODO: replace this with String.matchAll call, it available on Node.js 12.0.0
+  const vars = variable.match(varSubstitution);
+  if (!vars){
+    return undefined;
+  }
+  for (const tknVar of vars) {
+    const group = tknVar.match(taskNameAndResultReg)?.groups;
+    if (group) {
+      result.push([group.taskName, group.resultName]);
+    }
+  }
+
+  return result;
+}
 
 function getPipelineRunTaskState(status: YamlMap): RunState {
   let result: RunState = 'Unknown';
@@ -549,7 +638,7 @@ function getTasksName(tasks: YamlNode[]): string[] {
     if (taskNode.kind === 'MAPPING') {
       const nameValue = findNodeByKey<YamlNode>('name', taskNode as YamlMap);
       if (nameValue) {
-        result.push(nameValue.raw);
+        result.push(nameValue.raw.trim());
       }
     }
   }

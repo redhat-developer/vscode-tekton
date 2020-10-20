@@ -240,6 +240,28 @@ suite('Tekton yaml', () => {
       expect(pipelineTasks).is.not.empty;
       expect(pipelineTasks).to.eql(['build-skaffold-web']);
     });
+
+    test('should detect taskSpec tasks', ()=> {
+      const yaml = `
+      apiVersion: tekton.dev/v1alpha1
+      kind: Pipeline
+      metadata:
+        name: pipeline-with-when
+      spec:
+        tasks:
+          - name: build-skaffold-web
+            taskSpec:
+              steps:
+                - name: echo
+                  image: ubuntu
+                  script: exit 1
+      `
+      const docs = tektonYaml.getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///pipeline/task-spec-pipeline.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = pipelineYaml.getPipelineTasks(docs[0]);
+      expect(tasks).is.not.empty;
+      const task = tasks.find(t => t.name === 'build-skaffold-web');
+      expect(task.kind).eq('Task');
+    });
   });
 
   suite('Tekton Declared resource detection', () => {
@@ -345,6 +367,184 @@ suite('Tekton yaml', () => {
       expect(pipelineTasks).is.not.empty;
       expect(pipelineTasks[1].name).equal('final-ask');
       expect(pipelineTasks[1].runAfter).eql(['build-skaffold-web']);
-    })
+    });
+
+    test('should set runAfter for finally tasks after last tasks', () => {
+      const yaml = `
+      apiVersion: tekton.dev/v1alpha1
+      kind: Pipeline
+      metadata:
+        name: pipeline-with-parameters
+      spec:
+        tasks:
+          - name: build-skaffold-web
+            taskRef:
+              name: build-push
+          - name: sub-task
+            taskRef:
+              name: build-push
+            runAfter: ["build-skaffold-web"]
+          - name: build-server
+            taskRef:
+              name: build-push
+        finally: 
+          - name: final-task
+            taskRef:
+              name: build-push
+      `
+      const docs = tektonYaml.getTektonDocuments({ getText: () => yaml, version: 1, uri: vscode.Uri.parse('file:///foo/pipeline/finally/several-tasks.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const pipelineTasks = pipelineYaml.getPipelineTasks(docs[0]);
+      expect(pipelineTasks).is.not.empty;
+      const finalTask = pipelineTasks.find(t => t.name === 'final-task');
+      expect(finalTask.runAfter).eql(['sub-task', 'build-server']);
+    });
+
+  });
+
+  suite('When tasks', () => {
+    test('should add when in to graph', () => {
+      const yaml = `
+      apiVersion: tekton.dev/v1alpha1
+      kind: Pipeline
+      metadata:
+        name: pipeline-with-when
+      spec:
+        tasks:
+          - name: build-skaffold-web
+            taskRef:
+              name: build-push
+            when:
+            - input: "$(params.path)"
+              operator: in
+              values: ["README.md"]
+      `
+      const docs = tektonYaml.getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///pipeline/when-pipeline.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = pipelineYaml.getPipelineTasks(docs[0]);
+      expect(tasks).is.not.empty;
+      const whenTask = tasks.find(t => t.id === 'build-skaffold-web:$(params.path)');
+      expect(whenTask).not.undefined;
+    });
+
+    test('should add when to run after of task', () => {
+      const yaml = `
+      apiVersion: tekton.dev/v1alpha1
+      kind: Pipeline
+      metadata:
+        name: pipeline-with-when
+      spec:
+        tasks:
+          - name: build-skaffold-web
+            taskRef:
+              name: build-push
+            when:
+            - input: "$(params.path)"
+              operator: in
+              values: ["README.md"]
+      `
+      const docs = tektonYaml.getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///pipeline/when-pipeline.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = pipelineYaml.getPipelineTasks(docs[0]);
+      expect(tasks).is.not.empty;
+      const whenTask = tasks.find(t => t.id === 'build-skaffold-web:$(params.path)');
+      expect(whenTask).not.undefined;
+      const buildTask = tasks.find(t => t.name === 'build-skaffold-web');
+      expect(buildTask.runAfter).contains('build-skaffold-web:$(params.path)');
+    });
+
+    test('should add when to run after of task with result ordering', () => {
+      const yaml = `
+      apiVersion: tekton.dev/v1alpha1
+      kind: Pipeline
+      metadata:
+        name: pipeline-with-when
+      spec:
+        tasks:
+          - name: multiply-inputs
+            taskRef:
+              name: multiply
+            params:
+              - name: a
+                value: "$(params.a)"
+              - name: b
+                value: "$(params.b)"
+          - name: build
+            taskRef:
+              name: build-push
+            when:
+            - input: "$(tasks.multiply-inputs.results.product)"
+              operator: in
+              values: ["README.md"]
+      `
+      const docs = tektonYaml.getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///pipeline/when-pipeline-result.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = pipelineYaml.getPipelineTasks(docs[0]);
+      expect(tasks).is.not.empty;
+      const whenTask = tasks.find(t => t.id === 'build:$(tasks.multiply-inputs.results.product)');
+      expect(whenTask.runAfter).contains('multiply-inputs');
+    });
+
+    test('should add when to run after of task with multiple result ordering', () => {
+      const yaml = `
+      apiVersion: tekton.dev/v1alpha1
+      kind: Pipeline
+      metadata:
+        name: pipeline-with-when
+      spec:
+        tasks:
+          - name: multiply-inputs
+            taskRef:
+              name: multiply
+            params:
+              - name: a
+                value: "$(params.a)"
+              - name: b
+                value: "$(params.b)"
+          - name: build
+            taskRef:
+              name: build-push
+            when:
+            - input: "$(tasks.multiply-inputs.results.product)$(tasks.sum-inputs.results.sum)"
+              operator: in
+              values: ["README.md"]
+      `
+      const docs = tektonYaml.getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///pipeline/when-pipeline-multiple-result.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = pipelineYaml.getPipelineTasks(docs[0]);
+      expect(tasks).is.not.empty;
+      const whenTask = tasks.find(t => t.id === 'build:$(tasks.multiply-inputs.results.product)$(tasks.sum-inputs.results.sum)');
+      expect(whenTask.runAfter).contains('multiply-inputs', 'sum-inputs');
+    });
+
+    test('should add runAfter to when instead of task itself', () => {
+      const yaml = `
+      apiVersion: tekton.dev/v1alpha1
+      kind: Pipeline
+      metadata:
+        name: pipeline-with-when
+      spec:
+        tasks:
+          - name: multiply-inputs
+            taskRef:
+              name: multiply
+          - name: some
+            taskRef:
+              name: add
+          - name: build
+            taskRef:
+              name: build-push
+            when:
+              - input: "$(tasks.multiply-inputs.results.product)"
+                operator: in
+                values: ["README.md"]
+            runAfter: ["some"]
+      `
+      const docs = tektonYaml.getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///pipeline/when-and-runAfter-pipeline.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = pipelineYaml.getPipelineTasks(docs[0]);
+
+      const buildTask = tasks.find(t => t.name === 'build');
+      expect(buildTask.runAfter).to.not.contain('some');
+      expect(buildTask.runAfter).to.contain('build:$(tasks.multiply-inputs.results.product)');
+
+      const whenTask = tasks.find(t => t.id === 'build:$(tasks.multiply-inputs.results.product)');
+      expect(whenTask.runAfter).to.eql(['multiply-inputs', 'some']);
+      
+    });
   });
 });

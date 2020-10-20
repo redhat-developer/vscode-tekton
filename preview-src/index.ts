@@ -193,6 +193,18 @@ function getStyle(style: CyTheme): cytoscape.Stylesheet[] {
       },
     },
     {
+      selector: 'node[type = "When"]',
+      style: {
+        'shape': 'diamond',
+        'width': 20,
+        'height': 20,
+        'text-wrap': 'wrap',
+        'text-valign': 'center',
+        'text-halign': 'left',
+        'color': style.labelColor,
+      },
+    },
+    {
       selector: 'node[?final]',
       style: {
         'shape': 'diamond',
