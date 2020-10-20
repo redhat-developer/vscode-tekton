@@ -49,7 +49,7 @@ export async function showPipelineRunPreview(name: string, uid?: string): Promis
     return;
   }
   const uri = tektonFSUri(ContextType.PIPELINERUN, name, 'yaml', uid);
-  const pipelineRunDoc = await tektonVfsProvider.loadTektonDocument(uri, (uid) ? false : true);
+  const pipelineRunDoc = await tektonVfsProvider.loadTektonDocument(uri, !!uid);
   const pipelineRun = tektonYaml.getTektonDocuments(pipelineRunDoc, TektonYamlType.PipelineRun);
 
   previewManager.createPipelinePreview(pipelineRunDoc, {

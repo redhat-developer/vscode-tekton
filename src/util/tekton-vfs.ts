@@ -91,9 +91,9 @@ export class TektonVFSProvider implements FileSystemProvider {
     }, 10);
   }
 
-  private loadK8sResource(resource: string, outputFormat: string, uid?: boolean): Promise<CliExitData> {
+  private loadK8sResource(resource: string, outputFormat: string, uid = true): Promise<CliExitData> {
     const id = new RegExp('-[A-Za-z0-9]+$');
-    const newResourceName = (uid) ? resource : resource.replace(id, '');
+    const newResourceName = (uid) ? resource.replace(id, '') : resource;
     return cli.execute(newK8sCommand(`-o ${outputFormat} get ${newResourceName}`));
   }
 
