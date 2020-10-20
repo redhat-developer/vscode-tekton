@@ -18,10 +18,6 @@ export class TestItem implements TektonNode {
     public state?: string) {
   }
 
-  getId(): string {
-    return '111'
-  }
-
   getName(): string {
     return this.name;
   }

@@ -105,7 +105,7 @@ export abstract class TektonItem {
         }
       }
     }
-    TektonItem.loadTektonResource(context.contextValue, name, context.getId());
+    TektonItem.loadTektonResource(context.contextValue, name, context.uid);
   }
 
   static loadTektonResource(type: string, name: string, uid: string): void {

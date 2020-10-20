@@ -43,7 +43,6 @@ function createConfig(): humanize.HumanizerOptions {
 export interface TektonNode extends QuickPickItem {
   getChildren(): ProviderResult<TektonNode[]>;
   getParent(): TektonNode | undefined;
-  getId(): string;
   getName(): string;
   refresh(): Promise<void>;
   contextValue?: string;
@@ -51,6 +50,7 @@ export interface TektonNode extends QuickPickItem {
   state?: string;
   visibleChildren?: number;
   collapsibleState?: TreeItemCollapsibleState;
+  uid?: string;
 }
 
 interface NameId {
@@ -589,10 +589,6 @@ export class TektonNodeImpl implements TektonNode {
     return this.name;
   }
 
-  getId(): string {
-    return this.uid;
-  }
-
   getName(): string {
     return this.name;
   }
@@ -884,10 +880,6 @@ export class MoreNode extends TreeItem implements TektonNode {
 
   get description(): string {
     return `${this.showNext} from ${this.totalCount}`
-  }
-
-  getId(): string {
-    return this.label;
   }
 
   getChildren(): ProviderResult<TektonNode[]> {
