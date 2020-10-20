@@ -55,8 +55,8 @@ suite('Tekton graph', () => {
 
     test('Should convert tasks to node and edge', async () => {
       tknDocuments.returns([{}]);
-      getPipelineTasks.returns([{ name: 'Foo', kind: 'Task', taskRef: 'FooTask', runAfter: [] } as DeclaredTask,
-      { name: 'Bar', kind: 'Task', taskRef: 'BarTask', runAfter: ['Foo'] } as DeclaredTask]);
+      getPipelineTasks.returns([{id: 'Foo', name: 'Foo', kind: 'Task', taskRef: 'FooTask', runAfter: [] } as DeclaredTask,
+      {id: 'Bar', name: 'Bar', kind: 'Task', taskRef: 'BarTask', runAfter: ['Foo'] } as DeclaredTask]);
       const result = await graph.calculatePipelineGraph({} as vscode.TextDocument);
       expect(result.length).equal(3);
     });

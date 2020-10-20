@@ -104,13 +104,13 @@ export async function askToSelectPipeline(pipeDocs: YamlDocument[], type: Tekton
 function convertTasksToNode(tasks: PipelineRunTask[], includePositions = true): NodeOrEdge[] {
   const result: NodeOrEdge[] = [];
   const tasksMap = new Map<string, PipelineRunTask>();
-  tasks.forEach((task: DeclaredTask) => tasksMap.set(task.name, task));
+  tasks.forEach((task: DeclaredTask) => tasksMap.set( task.id, task));
 
   for (const task of tasks) {
-    result.push({ data: { id: task.name, label: getLabel(task), type: task.kind, taskRef: task.taskRef, state: task.state, yamlPosition: includePositions ? task.position : undefined, final: task.final } as NodeData });
+    result.push({ data: { id: task.id, label: getLabel(task), type: task.kind, taskRef: task.taskRef, state: task.state, yamlPosition: includePositions ? task.position : undefined, final: task.final } as NodeData });
     for (const after of task.runAfter ?? []) {
       if (tasksMap.has(after)) {
-        result.push({ data: { source: after, target: task.name, id: `${after}-${task.name}`, state: tasksMap.get(after).state } as EdgeData });
+        result.push({ data: { source: after, target: task.id, id: `${after}-${ task.id}`, state: tasksMap.get(after).state } as EdgeData });
       }
     }
   }
@@ -121,6 +121,9 @@ function convertTasksToNode(tasks: PipelineRunTask[], includePositions = true): 
 
 function getLabel(task: PipelineRunTask): string {
   let label = task.name;
+  if (!label){
+    return '';
+  }
   if (task.kind === 'Condition') {
     return label;
   }

@@ -154,6 +154,43 @@ export class PipelineDeclaredResource extends NodeTknElement {
   }
 }
 
+export class WhenTask extends NodeTknElement {
+  type = TknElementType.PIPELINE_TASK_WHEN;
+  private _input: TknStringElement;
+  private _operator: TknStringElement;
+  private _values: TknArray<TknStringElement>
+
+  get input(): TknStringElement {
+    if (!this._input) {
+      this._input = new TknStringElement(this, findNodeByKey('input', this.node as YamlMap))
+    }
+    return this._input;
+  }
+
+  get operator(): TknStringElement {
+    if (!this._operator) {
+      this._operator = new TknStringElement(this, findNodeByKey('operator', this.node as YamlMap))
+    }
+    return this._operator;
+  }
+
+  get values(): TknArray<TknStringElement> {
+    if (!this._values) {
+      const valuesNode = findNodeByKey<YamlSequence>('values', this.node as YamlMap)
+      if (valuesNode) {
+        this._values = new TknArray(TknElementType.PIPELINE_TASK_WHEN_VALUES, TknStringElement, this, valuesNode);
+      }
+    }
+
+    return this._values;
+  }
+
+  collectChildren(): TknElement[] {
+    return [this.input, this.operator, this.values];
+  }
+
+}
+
 export class PipelineTask extends NodeTknElement {
 
   type = TknElementType.PIPELINE_TASK;
@@ -167,6 +204,7 @@ export class PipelineTask extends NodeTknElement {
   private _params: TknArray<TknParam>;
   private _workspaces: TknArray<WorkspacePipelineTaskBinding>;
   private _timeout: TknStringElement;
+  private _when: TknArray<WhenTask>;
 
   get name(): TknStringElement {
     if (!this._name) {
@@ -177,7 +215,11 @@ export class PipelineTask extends NodeTknElement {
 
   get taskRef(): PipelineTaskRef {
     if (!this._taskRef) {
-      this._taskRef = new PipelineTaskRef(this, pipelineYaml.getTaskRef(this.node as YamlMap));
+
+      const taskRefNode = pipelineYaml.getTaskRef(this.node as YamlMap);
+      if (taskRefNode) {
+        this._taskRef = new PipelineTaskRef(this, taskRefNode);
+      }
     }
     return this._taskRef;
   }
@@ -259,8 +301,19 @@ export class PipelineTask extends NodeTknElement {
     return this._timeout;
   }
 
+  get when(): TknArray<WhenTask> {
+    if (!this._when) {
+      const whenNode = findNodeByKey<YamlSequence>('when', this.node as YamlMap)
+      if (whenNode) {
+        this._when = new TknArray(TknElementType.PIPELINE_TASK_WHEN, WhenTask, this, whenNode);
+      }
+    }
+
+    return this._when;
+  }
+
   collectChildren(): TknElement[] {
-    return [this.name, this.taskRef, this.conditions, this.retries, this.runAfter, this.resources, this.params, this.workspaces, this.timeout];
+    return [this.name, this.taskRef, this.conditions, this.retries, this.runAfter, this.resources, this.params, this.workspaces, this.timeout, this.when];
   }
 }
 
