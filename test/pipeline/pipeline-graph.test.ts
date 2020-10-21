@@ -116,7 +116,6 @@ suite('Tekton graph', () => {
 
       } as vscode.TextDocument
       await graph.calculatePipelineRunGraph(document);
-
       expect(loadTektonDocument).calledWith(tektonFSUri('pipeline', 'FooPipeline', 'yaml'));
     });
 

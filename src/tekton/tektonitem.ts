@@ -105,12 +105,12 @@ export abstract class TektonItem {
         }
       }
     }
-    TektonItem.loadTektonResource(context.contextValue, name);
+    TektonItem.loadTektonResource(context.contextValue, name, context.uid);
   }
 
-  static loadTektonResource(type: string, name: string): void {
+  static loadTektonResource(type: string, name: string, uid: string): void {
     const outputFormat = TektonItem.getOutputFormat();
-    const uri = tektonFSUri(type, name, outputFormat);
+    const uri = tektonFSUri(type, name, outputFormat, uid);
     workspace.openTextDocument(uri).then((doc) => {
       if (doc) {
         window.showTextDocument(doc, { preserveFocus: true, preview: true });

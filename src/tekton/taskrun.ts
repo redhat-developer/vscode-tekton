@@ -53,13 +53,13 @@ export class TaskRun extends TektonItem {
     if (!taskRun) return null;
     const taskName = await TaskRun.getTaskNameByTaskRun(taskRun.getName());
     if (taskName) {
-      TektonItem.loadTektonResource(taskName[0], taskName[1]);
+      TektonItem.loadTektonResource(taskName[0], taskName[1], taskRun.uid);
     }
   }
 
   static async openConditionDefinition(conditionRun: TektonNode): Promise<void> {
     if (!conditionRun) return null;
-    TektonItem.loadTektonResource(ContextType.CONDITIONS, conditionRun.getName());
+    TektonItem.loadTektonResource(ContextType.CONDITIONS, conditionRun.getName(), conditionRun.uid);
   }
 
   private static async getTaskNameByTaskRun(taskRunName: string): Promise<[string, string] | undefined> {
