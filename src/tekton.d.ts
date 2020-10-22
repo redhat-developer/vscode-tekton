@@ -9,6 +9,24 @@ import { K8sResourceKind } from './tekton/triggertype';
 
 //Contains set JSON representation of tkn JSON objects
 
+interface TknTaskRunSpec {
+  resources: object;
+}
+
+
+export interface TknTaskRun {
+  metadata: ObjectMetadata;
+  spec: TknTaskRunSpec;
+  status?: {
+    succeededCondition?: string;
+    creationTimestamp?: string;
+    completionTime?: string;
+    conditions?: PipelineRunConditions[];
+    startTime?: string;
+    completionTime?: string;
+  };
+}
+
 export interface TknMetadata {
   name: string;
   generation?: number;

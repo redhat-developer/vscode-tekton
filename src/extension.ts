@@ -29,6 +29,7 @@ import { updateTektonResource } from './tekton/deploy';
 import { deleteFromExplorer, deleteFromCustom } from './commands/delete';
 import { addTrigger } from './tekton/trigger';
 import { triggerDetection } from './util/detection';
+import { watchCommand } from './util/watchResources';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -107,7 +108,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   detectTknCli().then(() => {
     triggerDetection();
   });
-
+  watchCommand();
   setCommandContext(CommandContext.TreeZenMode, false);
   setCommandContext(CommandContext.PipelinePreview, false);
 

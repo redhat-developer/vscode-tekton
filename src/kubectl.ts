@@ -5,15 +5,19 @@
 
 import { newK8sCommand } from './tkn';
 import { CliCommand, cli} from './cli';
-import { PipelineRunData } from './tekton';
+import { PipelineRunData, TknTaskRun } from './tekton';
 
 export const KubectlCommands = {
   watchPipelineRuns(name: string): CliCommand {
     return newK8sCommand('get', 'pipelinerun', name, '-w', '-o', 'json');
+  },
+  watchResources(resource: string): CliCommand {
+    return newK8sCommand('get', resource, '-w', '-o', 'json');
   }
 }
 
 export type PipelineRunCallback = (pr: PipelineRunData) => void;
+export type watchAllPipelineAndTriggerResources = (pr: PipelineRunData | TknTaskRun) => void;
 
 export interface WatchControl {
   kill(): void;
@@ -22,6 +26,30 @@ export interface WatchControl {
 }
 
 export class Kubectl {
+
+  watchAllResource(command: CliCommand, callback?: watchAllPipelineAndTriggerResources): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const watch = cli.executeWatchJSON(command);
+      watch.on('object', obj => {
+        if (callback) {
+          callback(obj);
+        }
+      });
+
+      watch.stderr.on('data', data => {
+        console.error(data);
+      });
+
+      watch.on('close', code => {
+        if (code == 0) {
+          resolve();
+        } else {
+          reject(`Watch command exited with code: ${code}`);
+        }
+      })
+    });
+  }
+
   watchRunCommand(command: CliCommand, callback?: PipelineRunCallback): Promise<void> {
     return new Promise((resolve, reject) => {
       const watch = cli.executeWatchJSON(command);
