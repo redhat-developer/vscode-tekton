@@ -6,8 +6,9 @@
 import { kubectl, KubectlCommands } from '../kubectl';
 import { pipelineExplorer } from '../pipeline/pipelineExplorer';
 
-export async function watchCommand(): Promise<void> {
-  const resourceList = ['pipeline', 'pipelinerun', 'taskrun', 'task', 'clustertask', 'pipelineresources', 'tt', 'tb', 'el', 'ctb', 'condition'];
+export const pipelineTriggerStatus = new Map<string, boolean>();
+
+export async function watchCommand(resourceList: string[]): Promise<void> {
   for (const resource of resourceList) {
     refreshResources(resource);
   }
@@ -22,4 +23,9 @@ async function refreshResources(resourceName: string, id = undefined): Promise<v
     }
     id = run.metadata.uid;
   });
+}
+
+export function disableWatch(): void {
+  pipelineTriggerStatus.set('pipeline', false);
+  pipelineTriggerStatus.set('trigger', false);
 }
