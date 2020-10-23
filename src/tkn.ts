@@ -980,7 +980,7 @@ export class TknImpl implements Tkn {
       return [new TektonNodeImpl(null, loginError, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
     }
 
-    if ((await version()).trigger === undefined || (await version()).trigger.trim() === 'unknown') {
+    if ((await version())?.trigger === undefined || (await version()).trigger.trim() === 'unknown') {
       pipelineTriggerStatus.set('trigger', false);
     }
     if (!pipelineTriggerStatus.get('pipeline')) {
@@ -988,7 +988,7 @@ export class TknImpl implements Tkn {
       watchCommand(resourceList);
       pipelineTriggerStatus.set('pipeline', true);
     }
-    if (!pipelineTriggerStatus.get('trigger') && (await version()).trigger !== undefined && (await version()).trigger.trim() !== 'unknown') {
+    if (!pipelineTriggerStatus.get('trigger') && (await version())?.trigger !== undefined && (await version()).trigger.trim() !== 'unknown') {
       const resourceList = ['tt', 'tb', 'el', 'ctb'];
       watchCommand(resourceList);
       pipelineTriggerStatus.set('trigger', true);
