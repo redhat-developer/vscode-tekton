@@ -107,7 +107,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   detectTknCli().then(() => {
     triggerDetection();
   });
-
   setCommandContext(CommandContext.TreeZenMode, false);
   setCommandContext(CommandContext.PipelinePreview, false);
 
