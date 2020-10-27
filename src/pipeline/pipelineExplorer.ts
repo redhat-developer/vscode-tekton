@@ -8,6 +8,7 @@ import { TektonNode, MoreNode, tkn } from '../tkn';
 import { WatchUtil, FileContentChangeNotifier } from '../util/watch';
 import { Platform } from '../util/platform';
 import * as path from 'path';
+import { disableWatch } from '../util/watchResources';
 
 const kubeConfigFolder: string = path.join(Platform.getUserHomePath(), '.kube');
 
@@ -19,7 +20,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
 
   constructor() {
     this.fsw = WatchUtil.watchFileForContextChange(kubeConfigFolder, 'config');
-    this.fsw.emitter.on('file-changed', this.refresh.bind(this));
+    this.fsw.emitter.on('file-changed', this.contextChange.bind(this));
     this.treeView = window.createTreeView('tektonPipelineExplorerView', { treeDataProvider: this, canSelectMany: true });
   }
 
@@ -41,6 +42,11 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
 
   getParent?(element: TektonNode): TektonNode {
     return element.getParent();
+  }
+
+  contextChange(): void {
+    disableWatch();
+    this.refresh();
   }
 
   async refresh(target?: TektonNode): Promise<void> {
