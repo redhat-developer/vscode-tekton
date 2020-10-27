@@ -15,8 +15,8 @@ import { kubectl } from './kubectl';
 import { pipelineExplorer } from './pipeline/pipelineExplorer';
 import { StartObject } from './tekton/pipelinecontent';
 import { RunState } from './yaml-support/tkn-yaml';
-import { disableWatch, pipelineTriggerStatus, watchCommand } from './util/watchResources';
 import { version } from './util/tknversion';
+import { pipelineTriggerStatus, watchResources } from './util/watchResources';
 
 export const humanizer = humanize.humanizer(createConfig());
 
@@ -960,37 +960,39 @@ export class TknImpl implements Tkn {
     );
     if (result.stdout.trim() === 'no') {
       const tknDownMsg = 'The current user doesn\'t have the privileges to interact with tekton resources.';
-      disableWatch();
+      watchResources.disableWatch();
       return [new TektonNodeImpl(null, tknDownMsg, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
     }
     if (result.error && getStderrString(result.error).indexOf('You must be logged in to the server (Unauthorized)') > -1) {
       const tknMessage = 'Please login to the server.';
-      disableWatch();
+      watchResources.disableWatch();
       return [new TektonNodeImpl(null, tknMessage, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)]
     }
     if (result.error && getStderrString(result.error).indexOf('the server doesn\'t have a resource type \'pipeline\'') > -1) {
       const tknDownMsg = 'Please install the OpenShift Pipelines Operator.';
-      disableWatch();
+      watchResources.disableWatch();
       return [new TektonNodeImpl(null, tknDownMsg, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
     }
     const serverCheck = RegExp('Unable to connect to the server');
     if (serverCheck.test(getStderrString(result.error))) {
       const loginError = 'Unable to connect to OpenShift cluster, is it down?';
-      disableWatch();
+      watchResources.disableWatch();
       return [new TektonNodeImpl(null, loginError, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
     }
 
-    if ((await version())?.trigger === undefined || (await version()).trigger.trim() === 'unknown') {
+    const tknVersion = await version();
+
+    if (tknVersion && (tknVersion?.trigger === undefined || tknVersion.trigger.trim() === 'unknown')) {
       pipelineTriggerStatus.set('trigger', false);
     }
     if (!pipelineTriggerStatus.get('pipeline')) {
       const resourceList = ['pipeline', 'pipelinerun', 'taskrun', 'task', 'clustertask', 'pipelineresources', 'condition'];
-      watchCommand(resourceList);
+      watchResources.watchCommand(resourceList);
       pipelineTriggerStatus.set('pipeline', true);
     }
-    if (!pipelineTriggerStatus.get('trigger') && (await version())?.trigger !== undefined && (await version()).trigger.trim() !== 'unknown') {
+    if (!pipelineTriggerStatus.get('trigger') && tknVersion && tknVersion?.trigger !== undefined && tknVersion.trigger.trim() !== 'unknown') {
       const resourceList = ['tt', 'tb', 'el', 'ctb'];
-      watchCommand(resourceList);
+      watchResources.watchCommand(resourceList);
       pipelineTriggerStatus.set('trigger', true);
     }
     return this._getPipelineNodes();

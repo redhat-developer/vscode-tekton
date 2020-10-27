@@ -5,22 +5,15 @@
 
 import { TreeDataProvider, TreeView, Event, EventEmitter, TreeItem, ProviderResult, Disposable, window, extensions, commands, Uri, version } from 'vscode';
 import { TektonNode, MoreNode, tkn } from '../tkn';
-import { WatchUtil, FileContentChangeNotifier } from '../util/watch';
 import { Platform } from '../util/platform';
-import * as path from 'path';
-import { disableWatch } from '../util/watchResources';
-
-const kubeConfigFolder: string = path.join(Platform.getUserHomePath(), '.kube');
+import { watchResources } from '../util/watchResources';
 
 export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposable {
   private treeView: TreeView<TektonNode>;
-  private fsw: FileContentChangeNotifier;
   private onDidChangeTreeDataEmitter: EventEmitter<TektonNode | undefined> = new EventEmitter<TektonNode | undefined>();
   readonly onDidChangeTreeData: Event<TektonNode | undefined> = this.onDidChangeTreeDataEmitter.event;
 
   constructor() {
-    this.fsw = WatchUtil.watchFileForContextChange(kubeConfigFolder, 'config');
-    this.fsw.emitter.on('file-changed', this.contextChange.bind(this));
     this.treeView = window.createTreeView('tektonPipelineExplorerView', { treeDataProvider: this, canSelectMany: true });
   }
 
@@ -44,11 +37,6 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     return element.getParent();
   }
 
-  contextChange(): void {
-    disableWatch();
-    this.refresh();
-  }
-
   async refresh(target?: TektonNode): Promise<void> {
     if (target) {
       await target.refresh();
@@ -57,7 +45,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
   }
 
   dispose(): void {
-    this.fsw.watcher.close();
+    watchResources.fsw.watcher.close();
     this.treeView.dispose();
   }
 
