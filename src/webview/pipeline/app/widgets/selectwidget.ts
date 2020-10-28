@@ -50,6 +50,10 @@ export class SelectWidget extends BaseWidget {
     }
     this.createWorkspaceElement(event, select);
     this.createPVC(event, select);
+    const pvcSelect = event.lastElementChild.lastElementChild.getElementsByTagName('select');
+    if (pvcSelect.length !== 0) {
+      this.createPVC(event.lastElementChild, event.lastElementChild.lastElementChild.getElementsByTagName('select')[0]);
+    }
     blockStartButton();
   }
 
