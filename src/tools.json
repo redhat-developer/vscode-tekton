@@ -3,28 +3,28 @@
     "description": "A CLI for interacting with Tekton",
     "vendor": "",
     "name": "tkn",
-    "version": "0.12.1",
-    "versionRange": "0.12.x",
-    "versionRangeLabel": "v0.12.x",
+    "version": "0.13.1",
+    "versionRange": "0.13.x",
+    "versionRangeLabel": "v0.13.x",
     "dlFileName": "tkn",
     "cmdFileName": "tkn",
     "filePrefix": "",
     "platform": {
       "win32": {
-        "url": "https://github.com/tektoncd/cli/releases/download/v0.12.1/tkn_0.12.1_Windows_x86_64.zip",
-        "sha256sum": "097f1cb824ece63ba6a364db0add599e659194257076874db1128a2736159eb7",
-        "dlFileName": "tkn_0.12.1_Windows_x86_64.zip",
+        "url": "https://github.com/tektoncd/cli/releases/download/v0.13.1/tkn_0.13.1_Windows_x86_64.zip",
+        "sha256sum": "4057a6b44d3ac9570d58b174d4dbda9849a1ff2e7cb364a9bc76af9ceeb60166",
+        "dlFileName": "tkn_0.13.1_Windows_x86_64.zip",
         "cmdFileName": "tkn.exe"
       },
       "darwin": {
-        "url": "https://github.com/tektoncd/cli/releases/download/v0.12.1/tkn_0.12.1_Darwin_x86_64.tar.gz",
-        "sha256sum": "82c7bc109dfd7cd0ae83a6163d8a77f4fdf79adc212890f0c3ff48bb8131a1bd",
-        "dlFileName": "tkn_0.12.1_Darwin_x86_64.tar.gz"
+        "url": "https://github.com/tektoncd/cli/releases/download/v0.13.1/tkn_0.13.1_Darwin_x86_64.tar.gz",
+        "sha256sum": "2976e00312a2a7aa8ddf68151d553fd0903944c8e23c75c7346b79c89e41e8b8",
+        "dlFileName": "tkn_0.13.1_Darwin_x86_64.tar.gz"
       },
       "linux": {
-        "url": "https://github.com/tektoncd/cli/releases/download/v0.12.1/tkn_0.12.1_Linux_x86_64.tar.gz",
-        "sha256sum": "1ac46acc76beb197be499598d27e840108d9ad7bba3cc1a43dcdd385bfc6019b",
-        "dlFileName": "tkn_0.12.1_Linux_x86_64.tar.gz"
+        "url": "https://github.com/tektoncd/cli/releases/download/v0.13.1/tkn_0.13.1_Linux_x86_64.tar.gz",
+        "sha256sum": "a5c2318a7979c1edc4fda399b7905990d1beb147b5112564ce1135093d39b7e3",
+        "dlFileName": "tkn_0.13.1_Linux_x86_64.tar.gz"
       }
     }
   }
