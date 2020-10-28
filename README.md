@@ -20,6 +20,10 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 ## New and Noteworthy
 
+### Create new pvc support
+
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/create_pvc.gif" width="800" height="450" /></div>
+
 ### Add Trigger support
 
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/add_trigger.gif" width="800" height="450" /></div>

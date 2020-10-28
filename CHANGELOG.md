@@ -1,5 +1,18 @@
 # Change Log
 
+## 0.7.0 (October 28, 2020)
+
+This release brings to you:
+
+* [#362](https://github.com/redhat-developer/vscode-tekton/issues/362) Unique names for files from Open in Editor
+* [#365](https://github.com/redhat-developer/vscode-tekton/issues/365) Auto refresh when file get created
+* [#414](https://github.com/redhat-developer/vscode-tekton/issues/414) Assist creating PVC for workspaces
+* [#416](https://github.com/redhat-developer/vscode-tekton/issues/416) Add 'when' to diagram
+* [#427](https://github.com/redhat-developer/vscode-tekton/pull/427) Update schemas based on Tekton Pipeline 0.17.0
+* [#430](https://github.com/redhat-developer/vscode-tekton/pull/430) Fix getName error
+* [#436](https://github.com/redhat-developer/vscode-tekton/issues/436) Update tkn version to `0.13.1`
+* [#438](https://github.com/redhat-developer/vscode-tekton/pull/438) Show create PVC UI if no PVC item present in dropdown.
+
 ## 0.6.0 (October 8, 2020)
 
 This release brings to you:
