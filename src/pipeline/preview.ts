@@ -11,7 +11,7 @@ import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
 import { kubectl } from '../kubectl';
 import { PipelineRunData } from '../tekton';
-import { NodeData } from '../../preview-src/model';
+import { NodeData } from '../webview/pipeline-preview/model';
 import { VirtualDocument } from '../yaml-support/yaml-locator';
 
 export interface PipelinePreviewInput {
@@ -233,7 +233,7 @@ export class PipelinePreview extends Disposable {
   private getScripts(nonce: string): string {
     const out: string[] = [];
     out.push(`<script async
-				src="${escapeAttribute(this.editor.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/preview/index.js'))))}"
+				src="${escapeAttribute(this.editor.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/out/webview/pipeline-preview/index.js'))))}"
 				nonce="${nonce}"
 				charset="UTF-8"></script>`);
     return out.join('\n');
@@ -262,7 +262,7 @@ function getWebviewOptions(): vscode.WebviewOptions {
 
 function getLocalResourceRoots(): vscode.Uri[] {
   return [
-    vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/preview')),
+    vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/out/webview/pipeline-preview')),
     vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/images'))
   ];
 }

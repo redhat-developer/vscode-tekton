@@ -8,7 +8,7 @@ import { tektonYaml, pipelineYaml, pipelineRunYaml, TektonYamlType, DeclaredTask
 import { YamlDocument, VirtualDocument } from '../yaml-support/yaml-locator';
 import { ContextType, humanizer, getPipelineRunTaskState } from '../tkn';
 
-import { NodeOrEdge, NodeData, EdgeData } from '../../preview-src/model';
+import { NodeOrEdge, NodeData, EdgeData } from '../webview/pipeline-preview/model';
 import { PipelineRunData, TaskRuns, TaskRun, PipelineRunConditionCheckStatus } from '../tekton';
 import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
 
