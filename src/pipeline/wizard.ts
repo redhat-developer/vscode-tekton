@@ -148,14 +148,14 @@ export class PipelineWizard extends Disposable {
   private getScripts(nonce: string): string {
     const out: string[] = [];
     out.push(`<script
-				src="${escapeAttribute(this.editor.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/out/webview/pipeline/index.js'))))}"
+				src="${escapeAttribute(this.editor.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/out/webview/pipeline-wizard/index.js'))))}"
 				nonce="${nonce}"
 				charset="UTF-8"></script>`);
     return out.join('\n');
   }
 
   private getFontPath(): string {
-    return this.editor.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/out/webview/pipeline/assets/codicon.ttf'))).toString();
+    return this.editor.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/out/webview/assets/codicon.ttf'))).toString();
   }
 
 }
@@ -174,7 +174,7 @@ function getWebviewOptions(): vscode.WebviewOptions {
 
 function getLocalResourceRoots(): vscode.Uri[] {
   return [
-    vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/out/webview/pipeline')),
+    vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/out/webview')),
     vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/images'))
   ];
 }

@@ -9,7 +9,8 @@ const path = require('path');
 module.exports = {
   performance: { hints: false },
   entry: {
-    index: './preview-src/index.ts'
+    'pipeline-preview': {import: './src/webview/pipeline-preview/index.ts', filename: 'webview/[name]/index.js'},
+    'pipeline-wizard': {import: './src/webview/pipeline/app/index.ts', filename: 'webview/[name]/index.js'}
   },
   module: {
     rules: [
@@ -19,11 +20,30 @@ module.exports = {
                 {
                   loader: 'ts-loader',
                   options: {
-                    configFile: 'preview-src/tsconfig.json'
+                    configFile: 'webview-tsconfig.json'
                   }
                 },
         exclude: /node_modules/,
-      }
+      },
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader'
+          }
+        ]
+      },
+      {
+        test: /\.(jpg|svg|woff|woff2|ttf|eot|ico)$/,
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]',
+          outputPath: 'webview/assets/'
+        }
+      },
     ]
   },
   resolve: {
@@ -32,6 +52,6 @@ module.exports = {
   devtool: 'inline-source-map',
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'preview')
+    path: path.resolve(__dirname, 'out')
   }
 };
