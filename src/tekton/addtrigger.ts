@@ -133,6 +133,7 @@ export async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues, 
       params: inputAddTrigger.params,
       resources: inputAddTrigger.resources,
       workspaces: getPipelineRunWorkspaces(inputAddTrigger.workspaces),
+      serviceAccountName: inputAddTrigger.serviceAccount,
     },
   };
   return await getPipelineRunData(pipelineRunData, options);

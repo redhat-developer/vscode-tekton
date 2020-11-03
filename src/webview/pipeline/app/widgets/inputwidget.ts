@@ -57,7 +57,7 @@ export class InputWidget extends BaseWidget {
   }
 
   validator(): void {
-    if (!this.input.value) {
+    if (!this.input.value && this.input.parentElement.parentElement.parentElement.id.trim() !== 'Service-account-name-input-field-content-data') {
       this.addSpaceInItem(this.input.parentNode.parentNode.parentElement, 'items-section-workspace');
       const createLabel = document.createElement('label');
       createLabel.innerText = 'Required';

@@ -26,7 +26,8 @@ export async function pipelineRunData(pipelineRunContent: TektonNode): Promise<T
     pipelineRun: {
       params: [],
       resources: [],
-      workspaces: []
+      workspaces: [],
+      serviceAccount: undefined,
     },
     trigger: undefined,
     triggerLabel: undefined,
@@ -51,6 +52,7 @@ export async function pipelineRunData(pipelineRunContent: TektonNode): Promise<T
   filterPipelineRunParamContent(getPipelineRunContent, pipelineData, pipelineRunData);
   filterPipelineRunResourceContent(getPipelineRunContent, pipelineData, pipelineRunData);
   filterPipelineRunWorkspaceContent(getPipelineRunContent, pipelineData, pipelineRunData);
+  if (pipelineRunContent['item'].spec.serviceAccountName) pipelineRunData.pipelineRun.serviceAccount = pipelineRunContent['item'].spec.serviceAccountName;
   if (pipelineRunContent['item'].spec.workspaces) await TektonItem.workspaceData(pipelineRunData);
   await TektonItem.pipelineResourcesList(pipelineRunData);
   return pipelineRunData;

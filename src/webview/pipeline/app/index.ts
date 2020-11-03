@@ -53,7 +53,8 @@ export function disableButtonInput(nodeList: HTMLCollectionOf<HTMLInputElement>)
     startButton = document.querySelector('.startButton-disable')
   }
   for (let element = 0; element < nodeList.length; element++) {
-    if ((nodeList[element].type === 'text' || nodeList[element].type === 'number') && nodeList[element].value === '' && nodeList[element].id.trim() !== 'disabled') {
+    const serviceAccount = nodeList[element].parentElement.parentElement.parentElement.id.trim();
+    if ((nodeList[element].type === 'text' || nodeList[element].type === 'number') && nodeList[element].value === '' && nodeList[element].id.trim() !== 'disabled' && serviceAccount !== 'Service-account-name-input-field-content-data') {
       startButton.className = 'startButton-disable';    // Disable the button.
       return false;
     } else {
