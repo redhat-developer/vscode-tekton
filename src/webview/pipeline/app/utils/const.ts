@@ -17,7 +17,8 @@ export const initialResourceFormValues = {
   resources: [],
   workspaces: [],
   trigger: undefined,
-  newPvc: []
+  newPvc: [],
+  serviceAccount: undefined
 }
 
 export enum TknResourceType {
@@ -26,6 +27,7 @@ export enum TknResourceType {
   GitResource = 'Git Resource',
   ImageResource = 'Image Resource',
   Workspaces = 'Workspaces',
+  ServiceAccountName = 'Service Account Name'
 }
   
 export enum typeOfResource {

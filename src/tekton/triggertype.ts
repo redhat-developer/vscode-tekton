@@ -73,6 +73,7 @@ export interface CommonPipelineModalFormikValues {
   params: Params[] | undefined;
   resources: PipelineModalFormResource[];
   workspaces?: PipelineRunWorkspace[];
+  serviceAccount?: string;
 }
 
 export type AddTriggerFormValues = CommonPipelineModalFormikValues & {

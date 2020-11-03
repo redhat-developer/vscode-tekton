@@ -38,25 +38,33 @@ export class PipelineRunEditor implements Widget {
     this.update();
   }
 
-  createElement(title: string, resourceType: Params[] | PipelineRunWorkspaces[] | Workspaces[]): void {
+  createElement(title: string, resourceType?: Params[] | PipelineRunWorkspaces[] | Workspaces[], serviceAccount?: string): void {
     const resourceGroup = new GroupItem(title, `${title}-vscode-webview-pipeline`);
     this.initialValue.name = this.trigger.name;
-    for (const resource of resourceType) {
-      let element: Widget;
-      let elementId: string;
-      if (title === TknResourceType.Trigger) {
-        elementId = `${TknResourceType.Trigger}-add-trigger-webhook`;
-        element = new SelectWidget('Add-Trigger-WebHook', null, null, this.initialValue).triggerOption(this.trigger.trigger);
-      } else if (title === TknResourceType.Params) {
-        elementId = `${TknResourceType.Params}-input-field-content-data`;
-        element = new InputWidget('Name', null, this.initialValue, null, null, null, null, resource['default']);
-      } else if (title === TknResourceType.Workspaces) {
-        element = new SelectWidget('Workspaces-volume', this.trigger, null, this.initialValue).workspaces(VolumeTypes, resource);
-      } else {
-        element = new SelectWidget('Resources', null, null, this.initialValue).pipelineResource(this.trigger.pipelineResource, resource);
+    let element: Widget;
+    let elementId: string;
+    if (resourceType) {
+      for (const resource of resourceType) {
+        if (title === TknResourceType.Trigger) {
+          elementId = `${TknResourceType.Trigger}-add-trigger-webhook`;
+          element = new SelectWidget('Add-Trigger-WebHook', null, null, this.initialValue).triggerOption(this.trigger.trigger);
+        } else if (title === TknResourceType.Params) {
+          elementId = `${TknResourceType.Params}-input-field-content-data`;
+          element = new InputWidget('Name', null, this.initialValue, null, null, null, null, resource['default']);
+        } else if (title === TknResourceType.Workspaces) {
+          element = new SelectWidget('Workspaces-volume', this.trigger, null, this.initialValue).workspaces(VolumeTypes, resource);
+        } else if (title === TknResourceType.GitResource || title === TknResourceType.ImageResource) {
+          element = new SelectWidget('Resources', null, null, this.initialValue).pipelineResource(this.trigger.pipelineResource, resource);
+        }
+        resourceGroup.addEditItem(new EditItem(resource.name, element, resource.name, null, elementId));
+        //TODO: complete this
       }
-      resourceGroup.addEditItem(new EditItem(resource.name, element, resource.name, null, elementId));
-      //TODO: complete this
+    } else {
+      if (title === TknResourceType.ServiceAccountName) {
+        elementId = 'Service-account-name-input-field-content-data';
+        element = new InputWidget('Name', null, this.initialValue, null, null, null, null, serviceAccount ?? 'default');
+        resourceGroup.addEditItem(new EditItem('serviceAccountName', element, 'serviceAccountName', null, elementId));
+      }
     }
     this.editor.addGroup(resourceGroup);
     const navigationItem = new NavigationItem(title);
@@ -83,6 +91,9 @@ export class PipelineRunEditor implements Widget {
     if (this.trigger.workspaces) {
       this.createElement(TknResourceType.Workspaces, this.trigger.workspaces);
     }
+    if (this.trigger.serviceAccount === 'Start-Pipeline') {
+      this.createElement(TknResourceType.ServiceAccountName);
+    }
     if (this.trigger.pipelineRun) {
       this.startPipelineRun();
     }
@@ -92,6 +103,13 @@ export class PipelineRunEditor implements Widget {
     this.paramPipelineRun();
     this.resourcePipelineRun();
     this.workspacePipelineRun();
+    this.serviceAccountPipelineRun();
+  }
+
+  serviceAccountPipelineRun(): void {
+    if (!this.trigger.serviceAccount) {
+      this.createElement(TknResourceType.ServiceAccountName, null, this.trigger.pipelineRun.serviceAccount);
+    }
   }
 
   paramPipelineRun(): void {

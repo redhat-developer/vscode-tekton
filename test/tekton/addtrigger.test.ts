@@ -213,7 +213,8 @@ suite('Tekton/Pipeline', () => {
           },
           resources: [],
           status: null,
-          workspaces: []
+          workspaces: [],
+          serviceAccountName: undefined
         }
       });
     });

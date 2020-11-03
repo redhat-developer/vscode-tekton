@@ -7,7 +7,7 @@ import { BaseWidget } from './widget';
 import { Trigger, PipelineStart } from '../utils/types';
 import { createItem } from '../utils/item';
 import { vscode } from '../index';
-import { addItemInWorkspace, collectParameterData, collectTriggerData, createPVC, storePvcName } from '../utils/resource';
+import { addItemInWorkspace, collectParameterData, collectServiceAccountData, collectTriggerData, createPVC, storePvcName } from '../utils/resource';
 import { disableRemoveButton, blockStartButton } from '../utils/disablebutton';
 import { TknResourceType } from '../utils/const';
 
@@ -45,6 +45,7 @@ export class ButtonsPanel extends BaseWidget {
         this.storeTriggerData(event.querySelectorAll('[id^=Webhook-add-trigger-webhook]'));
         this.storeNewPvcData(event.querySelectorAll('[id^=List-new-PVC-items-webview]'));
         this.storePvcContent(event.querySelectorAll('[id^=PersistentVolumeClaim-Workspaces]'));
+        this.storeServiceAccountData(event.querySelectorAll('[id^=Service-account-name-input-field-content-data]'));     
         if (!this.trigger.trigger) {
           vscode.postMessage({
             type: 'startPipeline',
@@ -116,6 +117,15 @@ export class ButtonsPanel extends BaseWidget {
         const name = val.firstElementChild.innerText;
         const defaultValue = val.getElementsByTagName('input')[0].value;
         collectParameterData(name, defaultValue, this.initialValue);
+      });
+    }
+  }
+
+  storeServiceAccountData(data: unknown[] | NodeListOf<Element>): void {
+    if (data.length !== 0) {
+      data.forEach(val => {
+        const name = val.getElementsByTagName('input')[0].value;
+        collectServiceAccountData(name, this.initialValue);
       });
     }
   }

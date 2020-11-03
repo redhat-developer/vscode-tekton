@@ -40,6 +40,7 @@ export interface TknPipelineRun {
   params: TknParams[];
   resources: TknResource[];
   workspaces: TknWorkspaces[];
+  serviceAccount?: string;
 }
 
 export interface TknResourceItem {
@@ -65,7 +66,7 @@ export async function pipelineData(pipeline: TknPipelineTrigger, trigger?: boole
     resources: pipeline.spec.resources,
     params: pipeline.spec.params,
     workspaces: pipeline.spec.workspaces,
-    serviceAccount: pipeline.spec.serviceAccount,
+    serviceAccount: 'Start-Pipeline',
     pipelineResource: undefined,
     Secret: undefined,
     ConfigMap: undefined,

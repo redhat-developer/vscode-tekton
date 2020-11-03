@@ -9,6 +9,10 @@ export function collectParameterData(paramName: string, defaultValue: string, in
   initialValue.params.push({name: paramName, default: defaultValue});
 }
 
+export function collectServiceAccountData(name: string, initialValue: PipelineStart): void {
+  initialValue.serviceAccount = name;
+}
+
 export function collectResourceData(resourceName: string, resourceReference: string, initialValue: PipelineStart): void {
   if (initialValue.resources.length === 0) {
     initialValue.resources.push({name: resourceName, resourceRef: resourceReference});

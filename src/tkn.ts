@@ -175,7 +175,7 @@ export class Command {
     if (!pipelineData.workspaces && !pipelineData.resources && !pipelineData.params) {
       return newTknCommand('pipeline', 'start', pipelineData.name);
     }
-    const svcAcct: string[] = pipelineData.serviceAccount ? ['-s ', pipelineData.serviceAccount] : ['-s', 'pipeline'];
+    const svcAcct: string[] = pipelineData.serviceAccount ? ['-s ', pipelineData.serviceAccount] : [];
     pipelineData.resources.forEach(element => {
       resources.push('--resource');
       resources.push(element.name + '=' + element.resourceRef);

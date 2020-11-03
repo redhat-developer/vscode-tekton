@@ -119,12 +119,13 @@ export interface Trigger {
   resources: NameType[];
   params?: Params[];
   workspaces?: Workspaces[];
-  serviceAcct: string | undefined;
+  serviceAccount: string | undefined;
   pipelineResource?: TknPipelineResource[];
   pipelineRun?: {
     params: PipelineRunParam[];
     resources: PipelineRunResources[];
     workspaces: PipelineRunWorkspaces[];
+    serviceAccount: string;
   };
   trigger?: TriggerType[];
   triggerLabel?: Trigger[];
@@ -169,6 +170,7 @@ export interface PipelineStart {
     resource: TriggerBindingKind;
   };
   newPvc?: PVC[];
+  serviceAccount: string;
 }
 
 export interface Item {
