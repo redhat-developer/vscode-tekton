@@ -29,6 +29,7 @@ import { updateTektonResource } from './tekton/deploy';
 import { deleteFromExplorer, deleteFromCustom } from './commands/delete';
 import { addTrigger } from './tekton/trigger';
 import { triggerDetection } from './util/detection';
+import { showDiagnosticData } from './tekton/diagnostic';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -65,6 +66,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.pipelinerun.describe', (context) => execute(PipelineRun.describe, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.describe.palette', (context) => execute(PipelineRun.describe, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.restart', (context) => execute(PipelineRun.restart, context)),
+    vscode.commands.registerCommand('tekton.ShowDiagnosticDataAction', (context) => execute(showDiagnosticData, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.logs', (context) => execute(PipelineRun.logs, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.logs.palette', (context) => execute(PipelineRun.logs, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.followLogs', (context) => execute(PipelineRun.followLogs, context)),

@@ -319,6 +319,12 @@ export class Command {
   static showPipelineRunLogs(name: string): CliCommand {
     return newTknCommand('pipelinerun', 'logs', name);
   }
+  static showDiagnosticData(name: string): CliCommand {
+    return newK8sCommand('get', 'pods', name, '-o', 'jsonpath=\'{range .status.conditions[?(.reason)]}{"reason: "}{.reason}{"\\n"}{"message: "}{.message}{"\\n"}{end}\'');
+  }
+  static getPipelineRunAndTaskRunData(resource: string, name: string): CliCommand {
+    return newK8sCommand('get', resource, name, '-o', 'json');
+  }
   @verbose
   static listTasks(namespace?: string): CliCommand {
     return newK8sCommand('get', 'task', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
