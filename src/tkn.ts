@@ -776,8 +776,8 @@ export abstract class BaseTaskRun extends TektonNodeImpl {
 }
 
 export class ConditionRun extends BaseTaskRun {
-  constructor(parent: TektonNode, name: string, tkn: Tkn, item: PipelineRunConditionCheckStatus, uid: string) {
-    super(parent, name, name, ContextType.CONDITIONTASKRUN, tkn, TreeItemCollapsibleState.None, uid, item.status?.startTime, item.status?.completionTime, item.status)
+  constructor(parent: TektonNode, name: string, shortName: string, tkn: Tkn, item: PipelineRunConditionCheckStatus, uid: string) {
+    super(parent, name, shortName, ContextType.CONDITIONTASKRUN, tkn, TreeItemCollapsibleState.None, uid, item.status?.startTime, item.status?.completionTime, item.status)
   }
 }
 
@@ -800,7 +800,7 @@ export class TaskRunFromPipeline extends BaseTaskRun {
       const result = []
       for (const conditionName in this.rawTaskRun.conditionChecks) {
         const rawCondition = this.rawTaskRun.conditionChecks[conditionName];
-        result.push(new ConditionRun(this, rawCondition.conditionName, this.tkn, rawCondition, this.uid));
+        result.push(new ConditionRun(this, conditionName, rawCondition.conditionName, this.tkn, rawCondition, this.uid));
       }
       return result.sort(compareTimeNewestFirst);
     } else {

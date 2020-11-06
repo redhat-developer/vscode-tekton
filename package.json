@@ -796,7 +796,7 @@
         },
         {
           "command": "tekton.ShowDiagnosticDataAction",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|taskrun)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|taskrun|tr)$/",
           "group": "c1@6"
         },
         {

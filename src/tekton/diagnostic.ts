@@ -4,12 +4,19 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { window } from 'vscode';
+import { CliExitData } from '../cli';
 import { Command, TektonNode, tkn } from '../tkn';
 
 
 export async function showDiagnosticData(diagnostic: TektonNode): Promise<void> {
   if (!diagnostic) return null
-  const result = await tkn.execute(Command.getPipelineRunAndTaskRunData(diagnostic.contextValue, diagnostic.getName()));
+  let result: CliExitData;
+  try {
+    result = await tkn.execute(Command.getPipelineRunAndTaskRunData(diagnostic.contextValue, diagnostic.getName()));
+  } catch (error) {
+    window.showInformationMessage(`No data available for ${diagnostic.getName()} to Diagnostic Data.`);
+    return;
+  }
   const data = JSON.parse(result.stdout);
   if (diagnostic.contextValue === 'pipelinerun') {
     const taskRun = [];
