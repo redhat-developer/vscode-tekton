@@ -53,7 +53,7 @@
     "onCommand:tekton.taskrun.list",
     "onCommand:tekton.taskrun.listFromTask",
     "onCommand:tekton.taskrun.logs",
-    "onCommand:tekton.ShowDiagnosticDataAction",
+    "onCommand:tekton.showDiagnosticDataAction",
     "onCommand:tekton.taskrun.followLogs",
     "onCommand:tekton.explorer.refresh",
     "onCommand:tekton.about",
@@ -409,7 +409,7 @@
         "enablement": "tekton:tkn"
       },
       {
-        "command": "tekton.ShowDiagnosticDataAction",
+        "command": "tekton.showDiagnosticDataAction",
         "title": "Show Diagnostic Data",
         "category": "Tekton",
         "enablement": "tekton:tkn"
@@ -608,7 +608,7 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
-          "command": "tekton.ShowDiagnosticDataAction",
+          "command": "tekton.showDiagnosticDataAction",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
@@ -795,7 +795,7 @@
           "group": "c1"
         },
         {
-          "command": "tekton.ShowDiagnosticDataAction",
+          "command": "tekton.showDiagnosticDataAction",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|taskrun|tr)$/",
           "group": "c1@6"
         },
