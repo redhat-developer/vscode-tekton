@@ -43,16 +43,44 @@ suite('Tekton/Diagnostic', () => {
 
     test('show diagnostic data for pipelineRun', async () => {
       execStub.onFirstCall().resolves({ error: null, stdout: JSON.stringify({
-        'apiVersion': 'tekton.dev/v1beta1',
-        'kind': 'PipelineRun',
-        'status': {
-          'completionTime': '2020-11-05T18:54:50Z',
-          'taskRuns': {
+        apiVersion: 'tekton.dev/v1beta1',
+        kind: 'PipelineRun',
+        status: {
+          completionTime: '2020-11-05T18:54:50Z',
+          taskRuns: {
             'conditional-pr-first-create-file-hw6r8': {
-              'pipelineTaskName': 'first-create-file',
-              'status': {
-                'completionTime': '2020-11-05T18:54:15Z',
-                'podName': 'conditional-pr-first-create-file-hw6r8-pod-bvpf9',
+              pipelineTaskName: 'first-create-file',
+              status: {
+                conditions: [
+                  {
+                    reason: 'Succeeded'
+                  }
+                ],
+                completionTime: '2020-11-05T18:54:15Z',
+                podName: 'conditional-pr-first-create-file-hw6r8-pod-bvpf9',
+              }
+            },
+            'conditional-pr-first-create-file-hw6r87': {
+              conditionChecks: {
+                'conditional-pipeline-run-bxvnc-then-check-ds46q-file-exis-7wtbz': {
+                  status: {
+                    conditions: [
+                      {
+                        reason: 'Failed'
+                      }
+                    ]
+                  }
+                }
+              },
+              pipelineTaskName: 'first-create-file',
+              status: {
+                conditions: [
+                  {
+                    reason: 'ConditionCheckFailed'
+                  }
+                ],
+                completionTime: '2020-11-05T18:54:15Z',
+                podName: 'conditional-pr-first-create-file-hw6r8-pod-bvpf9',
               }
             }
           }

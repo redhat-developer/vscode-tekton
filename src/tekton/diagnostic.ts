@@ -21,7 +21,13 @@ export async function showDiagnosticData(diagnostic: TektonNode): Promise<void> 
   if (diagnostic.contextValue === 'pipelinerun') {
     const taskRun = [];
     for (const taskRunName in data.status.taskRuns) {
-      taskRun.push({ label: taskRunName, podName: data.status.taskRuns[taskRunName].status.podName })
+      if (data.status.taskRuns[taskRunName].conditionChecks && data.status.taskRuns[taskRunName].status.conditions[0].reason !== 'Succeeded') {
+        for (const conditionName in data.status.taskRuns[taskRunName].conditionChecks) {
+          taskRun.push({ label: `${conditionName} (${data.status.taskRuns[taskRunName].conditionChecks[conditionName].status.conditions[0].reason})`, podName: data.status.taskRuns[taskRunName].conditionChecks[conditionName].status.podName });
+        }
+      } else {
+        taskRun.push({ label: `${taskRunName} (${data.status.taskRuns[taskRunName].status.conditions[0].reason})`, podName: data.status.taskRuns[taskRunName].status.podName });
+      }
     }
     const taskRunName = await window.showQuickPick(taskRun, { placeHolder: 'Select TaskRun to see diagnostic data', ignoreFocusOut: true });
     if (!taskRunName) return null;
