@@ -1241,7 +1241,7 @@ suite('tkn', () => {
       const conditionRun = children[0].getChildren() as tkn.TektonNodeImpl[];
       expect(conditionRun).not.undefined;
       expect(conditionRun).to.have.lengthOf(1);
-      expect(conditionRun[0].name).eq('file-exists');
+      expect(conditionRun[0].name).eq('condtional-pr-then-check-mr5dp-file-exists-bhxgl');
     });
   });
 });
