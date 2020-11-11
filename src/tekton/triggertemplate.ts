@@ -28,7 +28,7 @@ export class TriggerTemplate extends TektonItem {
           await TriggerTemplate.getExposeURl(eventListener.status.configuration.generatedName);
           vscode.window.showInformationMessage('Expose URl successfully copy');
           return;
-        } else if (triggers.triggerRef) {
+        } else if (triggers?.triggerRef) {
           const triggerData = await tkn.execute(Command.getTrigger(triggers.triggerRef));
           const triggerName = JSON.parse(triggerData.stdout).spec.template.name;
           if (triggerName === trigger.getName()) {

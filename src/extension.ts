@@ -30,6 +30,7 @@ import { deleteFromExplorer, deleteFromCustom } from './commands/delete';
 import { addTrigger } from './tekton/trigger';
 import { triggerDetection } from './util/detection';
 import { showDiagnosticData } from './tekton/diagnostic';
+import { TriggerTemplate } from './tekton/triggertemplate';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
