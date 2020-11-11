@@ -100,7 +100,11 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
     vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(result.error)}`);
     return false;
   }
-  if (trigger.kind === RouteModel.kind && !result.error) vscode.window.showInformationMessage('Trigger successfully created.');
+  if (trigger.kind === RouteModel.kind && !result.error) {
+    const routeInfo = await cli.execute(Command.getRoute(trigger.metadata.name));
+    const routeHost = JSON.parse(routeInfo.stdout).spec.host;
+    vscode.window.showInformationMessage(`Trigger successfully created. Expose URL: http://${routeHost}`);
+  }
   await fs.unlink(fsPath);
   return true;
 }

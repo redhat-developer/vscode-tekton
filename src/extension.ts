@@ -73,6 +73,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.pipelinerun.followLogs.palette', (context) => execute(PipelineRun.followLogs, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.cancel', (context) => execute(PipelineRun.cancel, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.cancel.palette', (context) => execute(PipelineRun.cancel, context)),
+    vscode.commands.registerCommand('tekton.triggerTemplate.url', (context) => execute(TriggerTemplate.copyExposeUrl, context)),
     vscode.commands.registerCommand('tekton.task.start', (context) => execute(Task.start, context)),
     vscode.commands.registerCommand('tekton.task.start.palette', (context) => execute(Task.start, context)),
     vscode.commands.registerCommand('tekton.task.list', (context) => execute(Task.list, context)),
