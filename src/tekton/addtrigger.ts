@@ -22,6 +22,7 @@ import { Progress } from '../util/progress';
 import { cli } from '../cli';
 import { TknVersion, version } from '../util/tknversion';
 import { NewPvc } from './createpvc';
+import { getExposeURl } from '../util/exposeurl';
 
 export const TriggerTemplateModel = {
   apiGroup: 'triggers.tekton.dev',
@@ -100,7 +101,10 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
     vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(result.error)}`);
     return false;
   }
-  if (trigger.kind === RouteModel.kind && !result.error) vscode.window.showInformationMessage('Trigger successfully created.');
+  if (trigger.kind === RouteModel.kind && !result.error) {
+    const url = await getExposeURl(trigger.metadata.name);
+    vscode.window.showInformationMessage(`Trigger successfully created. Expose URL: ${url}`);
+  }
   await fs.unlink(fsPath);
   return true;
 }

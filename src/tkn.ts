@@ -427,6 +427,14 @@ export class Command {
     return newK8sCommand('apply', '-f', file);
   }
 
+  static getRoute(name: string): CliCommand {
+    return newK8sCommand('get', 'route', name, '-o', 'json');
+  }
+
+  static getTrigger(name: string): CliCommand {
+    return newK8sCommand('get', 'trigger', name, '-o', 'json');
+  }
+
 }
 
 const IMAGES = '../../images';

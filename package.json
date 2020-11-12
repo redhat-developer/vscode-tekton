@@ -241,6 +241,12 @@
         "enablement": "tekton:tkn"
       },
       {
+        "command": "tekton.triggerTemplate.url",
+        "title": "Copy Expose URL",
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
+      },
+      {
         "command": "tekton.pipeline.list",
         "title": "List Pipelines",
         "category": "Tekton",
@@ -536,6 +542,10 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
+          "command": "tekton.triggerTemplate.url",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
           "command": "tekton.openInEditor",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -662,6 +672,11 @@
         {
           "command": "tekton.pipeline.restart",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
+          "group": "c1@2"
+        },
+        {
+          "command": "tekton.triggerTemplate.url",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == triggertemplates",
           "group": "c1@2"
         },
         {
