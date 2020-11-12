@@ -106,7 +106,7 @@ suite('Tekton/Pipeline', () => {
         stdout: JSON.stringify(route)
       });
       const writeTextStub = sandbox.stub(vscode.env.clipboard, 'writeText').resolves('http://test.openshift.com');
-      const infoMsg = sandbox.stub(vscode.window, 'showInformationMessage').resolves('Expose URl successfully copy');
+      const infoMsg = sandbox.stub(vscode.window, 'showInformationMessage').resolves('Expose URl successfully copied');
       await TriggerTemplate.copyExposeUrl(triggerTemplateItem);
       expect(exeStub).called;
       expect(infoMsg).is.calledOnce;
@@ -127,7 +127,7 @@ suite('Tekton/Pipeline', () => {
         stdout: JSON.stringify(route)
       });
       const writeTextStub = sandbox.stub(vscode.env.clipboard, 'writeText').resolves('http://test.openshift.com');
-      const infoMsg = sandbox.stub(vscode.window, 'showInformationMessage').resolves('Expose URl successfully copy');
+      const infoMsg = sandbox.stub(vscode.window, 'showInformationMessage').resolves('Expose URl successfully copied');
       await TriggerTemplate.copyExposeUrl(triggerTemplateItem);
       expect(exeStub).called;
       expect(infoMsg).is.calledOnce;
