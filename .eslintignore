@@ -6,3 +6,5 @@ out
 coverage
 
 preview
+
+src/tekton-hub-client/

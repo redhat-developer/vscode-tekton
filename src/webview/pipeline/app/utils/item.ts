@@ -3,7 +3,8 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { createDiv, selectText } from './util';
+import { selectText } from './util';
+import { createDiv } from '../../../common/dom-util';
 import { PipelineStart, Trigger, Item } from './types';
 import { SelectWidget } from '../widgets/selectwidget';
 import { EditItem } from '../widgets/maincontent';

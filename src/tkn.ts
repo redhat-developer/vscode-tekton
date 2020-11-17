@@ -382,7 +382,7 @@ export class Command {
     return newK8sCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'kubectl', 'get', 'pipeline.tekton.dev');
   }
   static updateYaml(fsPath: string): CliCommand {
-    return newTknCommand('apply', '-f', fsPath);
+    return newK8sCommand('apply', '-f', fsPath);
   }
   static listTaskRun(): CliCommand {
     return newK8sCommand('get', 'taskrun', '-o', 'json');

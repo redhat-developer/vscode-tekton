@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { createDiv } from '../utils/util';
-import { BaseWidget } from './widget';
+import { createDiv } from '../../../common/dom-util';
+import { BaseWidget } from '../../../common/widget';
 import { PipelineStart } from '../utils/types';
 import { TknResourceType } from '../utils/const';
 import { collectResourceData } from '../utils/resource';

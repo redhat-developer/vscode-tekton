@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { BaseWidget } from './widget';
+import { BaseWidget } from '../../../common/widget';
 import { Trigger, PipelineStart } from '../utils/types';
 import { createItem } from '../utils/item';
 import { vscode } from '../index';

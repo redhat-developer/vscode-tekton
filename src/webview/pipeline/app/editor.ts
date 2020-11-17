@@ -5,7 +5,7 @@
 
 import { Trigger, Params, Workspaces, PipelineStart, NameType, PipelineRunWorkspaces } from './utils/types';
 import { NavigationList, NavigationItem } from './widgets/navigation';
-import { Widget } from './widgets/widget';
+import { Widget } from '../../common/widget';
 import { VolumeTypes, initialResourceFormValues, TknResourceType, typeOfResource } from './utils/const';
 import { ButtonsPanel } from './widgets/buttonspanel';
 import { Editor, GroupItem, EditItem } from './widgets/maincontent';

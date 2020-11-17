@@ -1,0 +1,14 @@
+.list-item {
+  height: 62px;
+  cursor: pointer;
+  touch-action: none;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: 100%;
+}
+
+.message-container {
+  padding: 5px 9px 5px 16px;
+  cursor: default;
+  display: flex;
+}

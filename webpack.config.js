@@ -10,7 +10,9 @@ module.exports = {
   performance: { hints: false },
   entry: {
     'pipeline-preview': {import: './src/webview/pipeline-preview/index.ts', filename: 'webview/[name]/index.js'},
-    'pipeline-wizard': {import: './src/webview/pipeline/app/index.ts', filename: 'webview/[name]/index.js'}
+    'pipeline-wizard': {import: './src/webview/pipeline/app/index.ts', filename: 'webview/[name]/index.js'},
+    'tekton-hub': {import: './src/webview/hub/index.ts', filename: 'webview/[name]/index.js'},
+    'task-view': {import: './src/webview/task-page/index.ts', filename: 'webview/[name]/index.js'}
   },
   module: {
     rules: [
@@ -37,13 +39,17 @@ module.exports = {
         ]
       },
       {
-        test: /\.(jpg|svg|woff|woff2|ttf|eot|ico)$/,
+        test: /\.(woff|woff2|ttf|eot)$/,
         loader: 'file-loader',
         options: {
           name: '[name].[ext]',
           outputPath: 'webview/assets/'
         }
       },
+      {
+        test: /\.(jpe?g|png|svg?)(\?[a-z0-9=&.]+)?$/,
+        use: 'base64-inline-loader?limit=1000&name=[name].[ext]'
+      }
     ]
   },
   resolve: {
