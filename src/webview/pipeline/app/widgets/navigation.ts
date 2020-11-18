@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { createDiv } from '../utils/util';
-import { BaseWidget, Listener } from './widget';
+import { createDiv } from '../../../common/dom-util';
+import { BaseWidget, Listener } from '../../../common/widget';
 
 export class NavigationItem extends BaseWidget {
   constructor(name: string) {

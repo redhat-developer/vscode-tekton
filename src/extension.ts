@@ -31,6 +31,7 @@ import { addTrigger } from './tekton/trigger';
 import { triggerDetection } from './util/detection';
 import { showDiagnosticData } from './tekton/diagnostic';
 import { TriggerTemplate } from './tekton/triggertemplate';
+import { TektonHubTasksViewProvider } from './hub/hub-view';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -39,6 +40,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   contextGlobalState = context;
   migrateFromTkn018();
+
+  const hubViewProvider = new TektonHubTasksViewProvider(context.extensionUri);
 
   const disposables = [
     vscode.commands.registerCommand('tekton.about', (context) => execute(Pipeline.about, context)),
@@ -101,6 +104,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.view.pipelinerun.diagram', (context) => execute(PipelineRun.showDiagram, context)),
     vscode.commands.registerCommand('tekton.pipeline.wizard.start', (context) => execute(Pipeline.startWizard, context)),
 
+    hubViewProvider,
+    vscode.window.registerWebviewViewProvider('tektonHubTasks', hubViewProvider),
     pipelineExplorer,
     // Temporarily loaded resource providers
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME, tektonVfsProvider, { isCaseSensitive: true, }),

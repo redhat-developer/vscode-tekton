@@ -1,0 +1,240 @@
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+.task-page {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--vscode-editor-background);
+}
+
+.task-page>.header {
+  display: flex;
+  padding: 20px 20px 14px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.task-page>.body {
+  flex: 1;
+  overflow: hidden;
+  height: calc(100% - 165px);
+}
+
+.task-page>.header>.icon-container {
+  position: relative;
+  width: 128px;
+}
+
+.task-page>.header>.icon-container .icon {
+  height: 128px;
+  width: 128px;
+  object-fit: contain;
+}
+
+.task-page>.header>.details {
+  padding-left: 20px;
+  overflow: hidden;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.task-page>.header>.details>.title {
+  display: flex;
+  align-items: center;
+}
+
+.task-page>.header>.details>.title>.name {
+  flex: 0;
+  font-size: 26px;
+  line-height: 30px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.task-page>.header>.details>.subtitle, .task-page>.header>.details>.subtitle .install, .task-page>.header>.details>.subtitle .rating {
+  display: flex;
+  align-items: center;
+}
+
+.subtitle .rating .codicon-star-full {
+  color: #ff8e00!important;
+}
+
+.task-page>.header>.details>.subtitle {
+  padding-top: 6px;
+  white-space: nowrap;
+  height: 20px;
+  line-height: 20px;
+}
+
+.task-page>.header>.details>.subtitle>div:not(:first-child):not(:empty) {
+  border-left: 1px solid hsla(0,0%,50%,.7);
+  margin-left: 14px;
+  padding-left: 14px;
+}
+
+.task-page>.header>.details>.subtitle .catalog {
+  font-size: 18px;
+}
+
+.task-page>.header>.details>.subtitle .repository {
+  text-decoration: none;
+  color: var(--vscode-foreground);
+} 
+
+.task-page>.header>.details>.description {
+  margin-top: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.task-page>.header>.details>.actions {
+  margin-top: 10px;
+}
+
+.task-page>.header>.details>.actions>.action-bar {
+  text-align: initial;
+}
+
+.task-page>.header>.details>.actions>.action-bar>.actions-container {
+  justify-content: flex-start;
+}
+
+.task-page>.header>.details>.actions>.action-bar>.actions-container>.action-item>.extension-action.label {
+  font-weight: 600;
+  padding: 1px 6px;
+  max-width: 300px;
+}
+
+.task-page>.header>.details>.actions>.action-bar>.actions-container>.action-item>.extension-action {
+  margin-right: 8px;
+}
+
+.task-page .action-bar .action-item .action-label.extension-action.label {
+  color: var(--vscode-extensionButton-prominentForeground);
+}
+
+.task-page  .action-bar .action-item .action-label.extension-action.label {
+  background-color: var(--vscode-extensionButton-prominentBackground);
+}
+
+.action-bar .action-item .action-label.extension-action.label, .action-bar .action-item .action-label.extension-action.text {
+  line-height: 14px;
+  margin-top: 2px;
+}
+
+.task-page .action-bar .action-item:hover .action-label.extension-action.label {
+  background-color: var(--vscode-extensionButton-prominentHoverBackground);
+}
+
+.action-bar .action-label {
+  font-size: 11px;
+  margin-right: 4px;
+  line-height: 14px;
+  margin-top: 2px;
+}
+
+.versions-select {
+  /* width: 40px; */
+  font-family: inherit;
+  font-size: 11px;
+  border: 1px solid;
+  background-color: var(--vscode-settings-dropdownBackground);
+  color: var(--vscode-settings-dropdownForeground);
+  border-color: var(--vscode-settings-dropdownBorder);
+  /* height: 26px; */
+  /* padding: 2px 8px; */
+  align-items: center;
+  /* -webkit-appearance: none; */
+  -webkit-border-radius: 0px;
+}
+
+.versions-select:focus {
+  outline-color: var(--vscode-focusBorder);
+  outline-width: 1px;
+  outline-style: solid;
+  opacity: 1!important;
+}
+
+.action-bar .action-item .warning {
+    opacity: .9;
+    font-style: italic;
+    font-weight: 400;
+    color: #ff8e00!important;
+}
+
+
+ /* BODY */
+
+.task-page>.body>.navbar {
+  height: 36px;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 36px;
+  padding-left: 20px;
+  border-bottom: 1px solid hsla(0,0%,53%,.45);
+  box-sizing: border-box;
+}
+
+.task-page>.body>.content {
+  height: calc(100% - 36px);
+  position: relative;
+  overflow: scroll;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+
+.task-page>.body>.content>.page {
+  width: 100%;
+  height: 100%;
+  padding: 10px 20px;
+  line-height: 22px;
+  max-width: 882px;
+  margin: 0 auto;
+}
+
+.action-bar {
+  text-align: right;
+  white-space: nowrap;
+}
+.task-page>.body>.navbar>.action-bar>.actions-container {
+  justify-content: initial;
+}
+
+.action-bar .actions-container {
+  display: flex;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+  justify-content: flex-end;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 36px;
+}
+
+.action-bar .action-item {
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 50ms ease;
+  position: relative;
+}
+.task-page>.body>.navbar>.action-bar>.actions-container>.action-item>.action-label:hover {
+  text-decoration: underline;
+}
+.task-page>.body>.navbar>.action-bar>.actions-container>.action-item>.action-label {
+  margin-right: 16px;
+  font-size: inherit;
+  opacity: .7;
+  color: var(--vscode-foreground);
+}
+
+.task-page>.body>.navbar>.action-bar>.actions-container>.action-item>.action-label.checked {
+  opacity: 1;
+  text-decoration: underline;
+}

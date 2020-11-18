@@ -1,0 +1,200 @@
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--vscode-editor-background);
+}
+
+#tasksList {
+
+}
+
+.listContainer {
+  overflow-y: scroll;
+  height: calc(100% - 32px);
+}
+#header {
+  padding: 4px 16px 4px 16px;
+}
+
+.task-list-item {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 0 0 0 16px;
+  overflow: hidden;
+  display: flex;
+}
+
+.task-list-item:hover:not(.selected):not(.focused) {
+  background-color: var(--vscode-list-hoverBackground);
+}
+.task-list-item > .icon-container {
+  position: relative;
+}
+
+.task-list-item>.details {
+  flex: 1;
+  padding: 4px 0;
+  overflow: hidden;
+}
+
+.task-list-item>.details>.header-container {
+  height: 19px;
+  display: flex;
+  overflow: hidden;
+  padding-right: 11px;
+}
+
+.task-list-item>.details>.description {
+  padding-right: 11px;
+}
+
+.task-list-item .ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.task-list-item>.details>.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 7px;
+  height: 18px;
+  overflow: hidden;
+}
+
+.task-list-item>.details>.footer>.author {
+  flex: 1;
+  font-size: 90%;
+  font-weight: 600;
+}
+
+.task-list-item>.icon-container>.icon {
+  width: 56px;
+  height: 62px;
+  padding: 10px 14px 10px 0;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.task-list-item>.details>.header-container>.header {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+
+.task-list-item>.details>.header-container>.header>.name {
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.task-list-item>.details>.header-container>.header>.version {
+  opacity: .85;
+  font-size: 80%;
+  padding-left: 6px;
+  min-width: fit-content;
+  min-width: -moz-fit-content;
+  flex: 1;
+}
+
+.task-list-item>.details>.header-container>.header>.ratings {
+  display: flex;
+  align-items: center;
+  text-align: right;
+  font-size: 80%;
+}
+
+.ratings>.count {
+  margin-left: 0;
+}
+
+.task-list-item>.details>.header-container>.header .codicon {
+  font-size: 120%;
+  margin-right: 2px;
+  -webkit-mask: inherit;
+}
+
+.task-list-item .codicon-star-full {
+  color: #ff8e00!important;
+}
+
+.list-action-bar {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.task-list-item >.details>.footer>.list-action-bar>.actions-container {
+  flex-wrap: wrap-reverse;
+}
+
+.list-action-bar .actions-container {
+  display: flex;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.list-action-bar .action-item {
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 50ms ease;
+  position: relative;
+  font-size: 13px;
+}
+
+.list-action-bar .action-item .codicon {
+  display: flex;
+  align-items: center;
+}
+
+.list-action-bar .action-item .extension-action {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.task-list-item .action-item .action-label {
+  padding: 0 5px;
+  outline-offset: 2px;
+}
+
+.task-list-item .list-action-bar .install {
+  color: var(--vscode-extensionButton-prominentForeground);
+  background-color: var(--vscode-extensionButton-prominentBackground);
+}
+
+.task-list-item a {
+  text-decoration: none;
+}
+
+.list-action-bar .action-label {
+  font-size: 11px;
+  margin-right: 4px;
+  line-height: 14px;
+  margin-top: 2px;
+}
+
+.list-action-bar .action-warning {
+  font-size: 13px;
+  margin-right: 4px;
+  line-height: 14px;
+  margin-top: 3px;
+  color: #ff8e00!important;
+}
+
+
+.list-action-bar .action-label:hover {
+  background-color: var(--vscode-extensionButton-prominentHoverBackground);
+}
+

@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Widget, BaseWidget } from './widget';
-import { createDiv } from '../utils/util';
+import { Widget, BaseWidget } from '../../../common/widget';
+import { createDiv } from '../../../common/dom-util';
 import { EditItem } from './maincontent';
 import { InputWidget } from './inputwidget';
 import { NameType, Trigger, PipelineStart, Workspaces, TknPipelineResource, Item, TriggerType } from '../utils/types';

@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { createDiv } from '../utils/util';
+import { createDiv } from '../../../common/dom-util';
 import { debounce } from 'debounce';
-import { Listener, BaseWidget, Widget } from './widget';
+import { Listener, BaseWidget, Widget } from '../../../common/widget';
 
 export class LabelItem extends BaseWidget {
   constructor(title: string, id?: string) {

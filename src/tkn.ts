@@ -382,7 +382,7 @@ export class Command {
     return newK8sCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'kubectl', 'get', 'pipeline.tekton.dev');
   }
   static updateYaml(fsPath: string): CliCommand {
-    return newTknCommand('apply', '-f', fsPath);
+    return newK8sCommand('apply', '-f', fsPath);
   }
   static listTaskRun(): CliCommand {
     return newK8sCommand('get', 'taskrun', '-o', 'json');
@@ -882,20 +882,17 @@ export class MoreNode extends TreeItem implements TektonNode {
   picked?: boolean;
   alwaysShow?: boolean;
   label: string;
+  tooltip: string;
+  description: string;
 
   constructor(private showNext: number,
     private totalCount: number,
     private parent: TektonNode) {
     super('more', TreeItemCollapsibleState.None);
     this.command = { command: '_tekton.explorer.more', title: `more ${this.showNext}`, arguments: [this.showNext, this.parent] };
-  }
+    this.tooltip = `${this.showNext} more from ${this.totalCount}`;
+    this.description = `${this.showNext} from ${this.totalCount}`;
 
-  get tooltip(): string {
-    return `${this.showNext} more from ${this.totalCount}`
-  }
-
-  get description(): string {
-    return `${this.showNext} from ${this.totalCount}`
   }
 
   getChildren(): ProviderResult<TektonNode[]> {
