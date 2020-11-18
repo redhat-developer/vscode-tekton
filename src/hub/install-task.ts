@@ -30,6 +30,17 @@ export async function installTask(task: HubTaskInstallation): Promise<void> {
 function doInstall(task: HubTaskInstallation): void {
   vscode.window.withProgress({title: `Installing ${task.name}`,location: vscode.ProgressLocation.Notification}, async () => {
     try {
+      const tasks = await tkn.getRawTasks();
+      if (tasks) {
+        for (const rawTask of tasks) {
+          if (rawTask.metadata.name === task.name) {
+            const overwriteResult = await vscode.window.showWarningMessage(`You already has Task '${task.name}'. Do you want to overwrite it?`, 'Overwrite', 'Cancel');
+            if (overwriteResult !== 'Overwrite') {
+              return;
+            }
+          }
+        }
+      }
       const result = await tkn.execute(Command.updateYaml(task.url));
       if (result.error){
         vscode.window.showWarningMessage(`Task installation failed: ${getStderrString(result.error)}`);
