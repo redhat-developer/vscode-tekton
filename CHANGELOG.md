@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.8.0 (November 18, 2020)
+
+This release brings to you:
+
+* [#433](https://github.com/redhat-developer/vscode-tekton/issues/433) Add service account to start and add trigger wizards
+* [#418](https://github.com/redhat-developer/vscode-tekton/issues/418) Display pipelinerun failure reason
+* [#404](https://github.com/redhat-developer/vscode-tekton/issues/404) Display expose url in tree view.
+* [#346](https://github.com/redhat-developer/vscode-tekton/issues/346) Search tasks in Tekton Hub
+* [#186](https://github.com/redhat-developer/vscode-tekton/issues/186) Install tasks from Tekton Hub
+
+
 ## 0.7.0 (October 28, 2020)
 
 This release brings to you:
