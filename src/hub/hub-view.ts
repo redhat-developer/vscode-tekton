@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
-import * as fs from 'fs';
 import * as path from 'path';
 import { Disposable } from '../util/disposable';
 import { getTektonHubStatus, searchTask, TektonHubStatusEnum } from './hub-client';
@@ -30,18 +29,15 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
       enableScripts: true,
 
       localResourceRoots: [
-        vscode.Uri.parse(path.join(this.extensionUri.fsPath, 'src', 'webview', 'hub','/')),
         vscode.Uri.parse(path.join(this.extensionUri.fsPath, 'out', 'webview', 'tekton-hub', '/')),
         vscode.Uri.parse(path.join(this.extensionUri.fsPath, 'out', 'webview', 'assets', '/')),
       ]
     };
 
-    const pagePath = path.join(this.extensionUri.fsPath, 'src', 'webview', 'hub', 'index.html');
+    
     const indexJS = webviewView.webview.asWebviewUri(vscode.Uri.file(path.join(this.extensionUri.fsPath, 'out', 'webview', 'tekton-hub', 'index.js')));
 
-    webviewView.webview.html = fs
-      .readFileSync(pagePath, 'utf-8')
-      .replace('{{init}}', indexJS.toString());
+    webviewView.webview.html = this.getHmlContent().replace('{{init}}', indexJS.toString());
     
     this.register(webviewView.webview.onDidReceiveMessage(e => {
       switch (e.type) {
@@ -59,6 +55,28 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
           break;
       }
     }));
+  }
+
+  private getHmlContent(): string {
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <title>TektonHub</title>
+    </head>
+    <body>
+      <div id="root" style="width: 100%; height: 100%;">
+        <div id="header">
+          <input type="text" placeholder="Search Tasks in TektonHub" id="taskInput" />
+        </div>
+        <div class="listContainer">
+          <div id="tasksList" />
+        </div>
+      </div>
+      <script type="text/javascript" src="{{init}}"> </script>
+    </body>    
+    </html>`;
   }
 
 
