@@ -23,7 +23,7 @@
     "Pipelines",
     "Tekton",
     "k8s",
-    "kubernetos",
+    "kubernetes",
     "openshift"
   ],
   "icon": "images/tekton.png",

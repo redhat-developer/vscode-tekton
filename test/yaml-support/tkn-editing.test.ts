@@ -117,7 +117,7 @@ suite('Tekton Editing support', () => {
       const location = await defProvider.provideDefinition(doc, new vscode.Position(15, 15), {} as vscode.CancellationToken) as vscode.Location;
 
       expect(location).not.undefined;
-      expect(location.uri.toString()).equal('tekton://kubernetos/task/unit-tests.yaml');
+      expect(location.uri.toString()).equal('tekton://kubernetes/task/unit-tests.yaml');
     });
 
     test('go to task name from taskRef should return k8s uri to task resource', async () => {
@@ -128,7 +128,7 @@ suite('Tekton Editing support', () => {
       const location = await defProvider.provideDefinition(doc, new vscode.Position(15, 15), {} as vscode.CancellationToken) as vscode.Location;
 
       expect(location).not.undefined;
-      expect(location.uri.toString()).equal('tekton://kubernetos/task/unit-tests.yaml');
+      expect(location.uri.toString()).equal('tekton://kubernetes/task/unit-tests.yaml');
     });
 
     test('go to task name from conditionRef should return k8s uri to conditions resource', async () => {
@@ -139,7 +139,7 @@ suite('Tekton Editing support', () => {
       const location = await defProvider.provideDefinition(doc, new vscode.Position(21, 30), {} as vscode.CancellationToken) as vscode.Location;
 
       expect(location).not.undefined;
-      expect(location.uri.toString()).equal('tekton://kubernetos/conditions/file-exists.yaml');
+      expect(location.uri.toString()).equal('tekton://kubernetes/conditions/file-exists.yaml');
     });
 
   });

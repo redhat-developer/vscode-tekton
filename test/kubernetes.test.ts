@@ -11,7 +11,7 @@ import { k8sCommands } from '../src/kubernetes';
 const expect = chai.expect;
 chai.use(sinonChai);
 
-suite('Kubernetos', () => {
+suite('kubernetes', () => {
   const sandbox = sinon.createSandbox();
 
   suite('K8s commands', () => {
