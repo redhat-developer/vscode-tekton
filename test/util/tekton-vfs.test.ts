@@ -28,19 +28,19 @@ suite('Tekton VFS Provider', () => {
     test('tektonFSUri should return uri', () => {
       const uri = tektonFSUri('pipeline', 'foo', 'yaml', 'c85f064e-fbea-45cc-8e5c-167733cd3198');
       expect(uri).is.not.undefined;
-      expect(uri.toString()).equal('tekton://kubernetos/pipeline/foo-c85f064e.yaml');
+      expect(uri.toString()).equal('tekton://kubernetes/pipeline/foo-c85f064e.yaml');
     });
 
     test('tektonFSUri should return uri with readonly scheme for pipelinerun', () => {
       const uri = tektonFSUri('pipelinerun', 'foo', 'yaml', 'c85f064e-fbea-45cc-8e5c-167733cd3198');
       expect(uri).is.not.undefined;
-      expect(uri.toString()).equal('tekton-ro://kubernetos/pipelinerun/foo-c85f064e.yaml');
+      expect(uri.toString()).equal('tekton-ro://kubernetes/pipelinerun/foo-c85f064e.yaml');
     });
 
     test('tektonFSUri should return uri with readonly scheme for taskrun', () => {
       const uri = tektonFSUri('taskrun', 'foo', 'yaml', 'c85f064e-fbea-45cc-8e5c-167733cd3198');
       expect(uri).is.not.undefined;
-      expect(uri.toString()).equal('tekton-ro://kubernetos/taskrun/foo-c85f064e.yaml');
+      expect(uri.toString()).equal('tekton-ro://kubernetes/taskrun/foo-c85f064e.yaml');
     })
   });
 
@@ -62,14 +62,14 @@ suite('Tekton VFS Provider', () => {
     });
 
     test('extractResourceAndFormat should return resource and format', () => {
-      const uri = vscode.Uri.parse('tekton://kubernetos/pipeline/foo.yaml');
+      const uri = vscode.Uri.parse('tekton://kubernetes/pipeline/foo.yaml');
       const [resource, format] = tektonVfsProvider.extractResourceAndFormat(uri);
       expect(resource).equal('pipeline/foo');
       expect(format).equal('yaml');
     });
 
     test('extractResourceAndFormat should return default format if not specified', () => {
-      const uri = vscode.Uri.parse('tekton://kubernetos/pipeline/foo');
+      const uri = vscode.Uri.parse('tekton://kubernetes/pipeline/foo');
       const [resource, format] = tektonVfsProvider.extractResourceAndFormat(uri);
       expect(resource).equal('pipeline/foo');
       expect(format).equal('yaml');
@@ -81,7 +81,7 @@ suite('Tekton VFS Provider', () => {
     });
 
     test('"stat" should return stat', () => {
-      const uri = vscode.Uri.parse('tekton://kubernetos/pipeline/foo.yaml');
+      const uri = vscode.Uri.parse('tekton://kubernetes/pipeline/foo.yaml');
       const result = tektonVfsProvider.stat(uri) as vscode.FileStat;
       expect(result).is.not.undefined;
       expect(result.type).equal(vscode.FileType.File);
@@ -89,7 +89,7 @@ suite('Tekton VFS Provider', () => {
     });
 
     test('"readFile" should return file content', async () => {
-      const uri = vscode.Uri.parse('tekton://kubernetos/pipeline/foo.yaml');
+      const uri = vscode.Uri.parse('tekton://kubernetes/pipeline/foo.yaml');
       cliExecuteStub.resolves({ stdout: 'Foo file content' });
       const file = await tektonVfsProvider.readFile(uri);
       expect(file.toString()).equal('Foo file content');
@@ -97,7 +97,7 @@ suite('Tekton VFS Provider', () => {
     });
 
     test('"readFile" should throw an error if cli provide error', async () => {
-      const uri = vscode.Uri.parse('tekton://kubernetos/pipeline/foo.yaml');
+      const uri = vscode.Uri.parse('tekton://kubernetes/pipeline/foo.yaml');
       cliExecuteStub.resolves({ error: 'Can"t get file content' });
       let error = undefined;
       try {
@@ -111,7 +111,7 @@ suite('Tekton VFS Provider', () => {
     });
 
     test('"writeFile" should write file', async () => {
-      const uri = vscode.Uri.parse('tekton://kubernetos/pipeline/foo.yaml');
+      const uri = vscode.Uri.parse('tekton://kubernetes/pipeline/foo.yaml');
       const content = Buffer.from('Foo write content', 'utf8');
 
       tmpdirStub.returns(path.join('tmp', 'bar'));
@@ -132,7 +132,7 @@ suite('Tekton VFS Provider', () => {
     });
 
     test('"writeFile" should throw error if cannot update file', async () => {
-      const uri = vscode.Uri.parse('tekton://kubernetos/pipeline/foo.yaml');
+      const uri = vscode.Uri.parse('tekton://kubernetes/pipeline/foo.yaml');
       const content = Buffer.from('Foo write content', 'utf8');
 
       tmpdirStub.returns(path.join('tmp', 'bar'));
@@ -156,7 +156,7 @@ suite('Tekton VFS Provider', () => {
     });
 
     test('"writeFile" should fire watch event after save', (done) => {
-      const uri = vscode.Uri.parse('tekton://kubernetos/pipeline/foo.yaml');
+      const uri = vscode.Uri.parse('tekton://kubernetes/pipeline/foo.yaml');
       const content = Buffer.from('Foo write content', 'utf8');
 
       tmpdirStub.returns('/tmp/bar');
@@ -173,7 +173,7 @@ suite('Tekton VFS Provider', () => {
         setTimeout(() => {
           expect(event).is.not.undefined;
           expect(event.length).equals(1);
-          expect(event[0].uri.toString()).equal('tekton://kubernetos/pipeline/foo.yaml');
+          expect(event[0].uri.toString()).equal('tekton://kubernetes/pipeline/foo.yaml');
           expect(event[0].type).equal(vscode.FileChangeType.Changed);
           done();
         }, 11);
@@ -182,7 +182,7 @@ suite('Tekton VFS Provider', () => {
     });
 
     test('"loadTektonDocument" should return virtual document', async () => {
-      const uri = vscode.Uri.parse('tekton://kubernetos/pipeline/foo.yaml');
+      const uri = vscode.Uri.parse('tekton://kubernetes/pipeline/foo.yaml');
       cliExecuteStub.resolves({ stdout: 'Foo file content' });
       const doc = await tektonVfsProvider.loadTektonDocument(uri);
       expect(doc.getText()).equal('Foo file content');
@@ -190,7 +190,7 @@ suite('Tekton VFS Provider', () => {
     });
 
     test('"loadTektonDocument" should throw an error if cli provide error', async () => {
-      const uri = vscode.Uri.parse('tekton://kubernetos/pipeline/foo.yaml');
+      const uri = vscode.Uri.parse('tekton://kubernetes/pipeline/foo.yaml');
       cliExecuteStub.resolves({ error: 'Can"t get file content' });
       let error = undefined;
       try {

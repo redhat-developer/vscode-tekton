@@ -25,7 +25,7 @@ const readonlyRegex = /(taskrun|pipelinerun|tr)/ as RegExp;
 export function tektonFSUri(type: string, name: string, format: string, uid?: string): Uri {
   if (uid) name = newFileName(name, uid);
   const scheme = readonlyRegex.test(type) ? TKN_RESOURCE_SCHEME_READONLY : TKN_RESOURCE_SCHEME;
-  return Uri.parse(`${scheme}://kubernetos/${type}/${name}.${format}`);
+  return Uri.parse(`${scheme}://kubernetes/${type}/${name}.${format}`);
 }
 
 
