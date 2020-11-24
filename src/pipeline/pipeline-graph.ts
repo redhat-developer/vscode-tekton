@@ -12,8 +12,6 @@ import { NodeOrEdge, NodeData, EdgeData } from '../webview/pipeline-preview/mode
 import { PipelineRunData, TaskRuns, TaskRun, PipelineRunConditionCheckStatus } from '../tekton';
 import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
 
-const pipelineRunTaskCache = new Map<string, DeclaredTask[]>();
-
 export interface GraphProvider {
   (document: vscode.TextDocument | VirtualDocument, pipelineRun?: PipelineRunData): Promise<NodeOrEdge[]>;
   getElementBySelection?(document: vscode.TextDocument, selection: vscode.Selection): string | undefined;
@@ -42,10 +40,6 @@ export async function calculatePipelineRunGraph(document: VirtualDocument, pipel
     return []; // TODO: throw error there
   }
   let tasks: DeclaredTask[];
-  // const uri = document.uri.toString();
-  // if (pipelineRunTaskCache.has(uri)) {
-  //   tasks = [...pipelineRunTaskCache.get(uri)];
-  // } else {
   const refOrSpec = pipelineRunYaml.getTektonPipelineRefOrSpec(doc);
   if (typeof refOrSpec === 'string') {
     // get ref pipeline definition
@@ -60,8 +54,6 @@ export async function calculatePipelineRunGraph(document: VirtualDocument, pipel
     tasks = [];
   }
 
-  //   pipelineRunTaskCache.set(uri, [...tasks]);
-  // }
   let runTasks: PipelineRunTask[];
   if (pipelineRun) {
     runTasks = updatePipelineRunTasks(pipelineRun, tasks);
@@ -81,7 +73,7 @@ export async function calculatePipelineRunGraph(document: VirtualDocument, pipel
       console.error(err);
       return [];
     }
-   
+
   }
   return convertTasksToNode(runTasks, false);
 
