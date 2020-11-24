@@ -1650,6 +1650,9 @@
             "$ref": "#/definitions/Sysctl"
           },
           "type": "array"
+        },
+        "fsGroupChangePolicy": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -2300,6 +2303,10 @@
         },
         "script": {
           "type": "string"
+        },
+        "timeout": {
+          "pattern": "^[-+]?([0-9]*(\\.[0-9]*)?(ns|us|µs|μs|ms|s|m|h))+$",
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -2393,6 +2400,9 @@
           "type": "string"
         },
         "apiVersion": {
+          "type": "string"
+        },
+        "bundle": {
           "type": "string"
         }
       },
