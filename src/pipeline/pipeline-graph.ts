@@ -12,8 +12,6 @@ import { NodeOrEdge, NodeData, EdgeData } from '../webview/pipeline-preview/mode
 import { PipelineRunData, TaskRuns, TaskRun, PipelineRunConditionCheckStatus } from '../tekton';
 import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
 
-const pipelineRunTaskCache = new Map<string, DeclaredTask[]>();
-
 export interface GraphProvider {
   (document: vscode.TextDocument | VirtualDocument, pipelineRun?: PipelineRunData): Promise<NodeOrEdge[]>;
   getElementBySelection?(document: vscode.TextDocument, selection: vscode.Selection): string | undefined;
@@ -42,35 +40,40 @@ export async function calculatePipelineRunGraph(document: VirtualDocument, pipel
     return []; // TODO: throw error there
   }
   let tasks: DeclaredTask[];
-  const uri = document.uri.toString();
-  if (pipelineRunTaskCache.has(uri)) {
-    tasks = [...pipelineRunTaskCache.get(uri)];
+  const refOrSpec = pipelineRunYaml.getTektonPipelineRefOrSpec(doc);
+  if (typeof refOrSpec === 'string') {
+    // get ref pipeline definition
+    const uri = tektonFSUri(ContextType.PIPELINE, refOrSpec, 'yaml');
+    const pipelineDoc = await tektonVfsProvider.loadTektonDocument(uri, false);
+    const pipeDoc = await getPipelineDocument(pipelineDoc, TektonYamlType.Pipeline);
+    tasks = pipelineYaml.getPipelineTasks(pipeDoc);
+
+  } else if (Array.isArray(refOrSpec)) {
+    tasks = refOrSpec;
   } else {
-    const refOrSpec = pipelineRunYaml.getTektonPipelineRefOrSpec(doc);
-    if (typeof refOrSpec === 'string') {
-      // get ref pipeline definition
-      const uri = tektonFSUri(ContextType.PIPELINE, refOrSpec, 'yaml');
-      const pipelineDoc = await tektonVfsProvider.loadTektonDocument(uri, false);
-      const pipeDoc = await getPipelineDocument(pipelineDoc, TektonYamlType.Pipeline);
-      tasks = pipelineYaml.getPipelineTasks(pipeDoc);
-
-    } else if (Array.isArray(refOrSpec)) {
-      tasks = refOrSpec;
-    } else {
-      tasks = [];
-    }
-
-    pipelineRunTaskCache.set(uri, [...tasks]);
+    tasks = [];
   }
+
   let runTasks: PipelineRunTask[];
   if (pipelineRun) {
     runTasks = updatePipelineRunTasks(pipelineRun, tasks);
   } else {
-    const pipelineRunName = tektonYaml.getMetadataName(doc);
-    const uri = tektonFSUri(ContextType.PIPELINERUN, pipelineRunName, 'json');
-    const pipelineDoc = await tektonVfsProvider.loadTektonDocument(uri, false);
-    const json = JSON.parse(pipelineDoc.getText());
-    runTasks = updatePipelineRunTasks(json, tasks);
+    try {
+      if (tektonYaml.getCreationTimestamp(doc)){
+        const pipelineRunName = tektonYaml.getMetadataName(doc);
+        const uri = tektonFSUri(ContextType.PIPELINERUN, pipelineRunName, 'json');
+        const pipelineDoc = await tektonVfsProvider.loadTektonDocument(uri, false);
+        const json = JSON.parse(pipelineDoc.getText());
+        runTasks = updatePipelineRunTasks(json, tasks);
+      } else {
+        runTasks = tasks; // PipelineRun not started
+      }
+      
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
+
   }
   return convertTasksToNode(runTasks, false);
 
