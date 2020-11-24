@@ -140,6 +140,18 @@ export class TektonYaml {
     return undefined;
   }
 
+  getCreationTimestamp(doc: YamlDocument): string | undefined {
+    const rootMap = this.getRootMap(doc);
+    if (rootMap) {
+      const metadata = this.getMetadata(rootMap);
+      if (metadata) {
+        return getYamlMappingValue(metadata, 'creationTimestamp');
+      }
+    }
+
+    return undefined;
+  }
+
   getApiVersionAndTypePath(vsDocument: vscode.TextDocument): string | undefined {
     const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
     if (!yamlDocuments) {
@@ -296,21 +308,24 @@ export class PipelineRunYaml {
       }
       const pipelineSpec = findNodeByKey<YamlMap>('pipelineSpec', specMap);
       if (pipelineSpec) {
-        return collectTasks(specMap);
+        return collectTasks(pipelineSpec);
       }
     }
 
     return undefined;
   }
 
-  getPipelineRunName(doc: YamlDocument): string {
+  getPipelineRunName(doc: YamlDocument): string | undefined {
+    if (!tektonYaml.getCreationTimestamp(doc)){
+      return undefined;
+    }
     const rootMap = tektonYaml.getRootMap(doc);
     if (rootMap) {
       const metadata = findNodeByKey<YamlMap>('metadata', rootMap);
       return getYamlMappingValue(metadata, 'name');
     }
 
-    return 'PipelineRun name is not defined';
+    return undefined;
   }
 
   getPipelineRunStatus(doc: YamlDocument): RunState {

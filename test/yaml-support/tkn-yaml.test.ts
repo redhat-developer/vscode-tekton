@@ -7,7 +7,7 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { TektonYamlType, tektonYaml, pipelineYaml, pipelineRunYaml } from '../../src/yaml-support/tkn-yaml';
+import { TektonYamlType, tektonYaml, pipelineYaml, pipelineRunYaml, DeclaredTask } from '../../src/yaml-support/tkn-yaml';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -342,6 +342,59 @@ suite('Tekton yaml', () => {
 
       const result = pipelineRunYaml.getPipelineRunStatus(docs[0]);
       expect(result).eql('Failed');
+    });
+
+    test('should collect tasks from PipelineSpec', async () => {
+      const yaml = `
+      apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: pipelinerun-with-taskspec-to-echo-good-morning
+      spec:
+        pipelineSpec:
+          tasks:
+            - name: echo-good-morning
+              taskSpec:
+                metadata:
+                  labels:
+                    app: "example"
+                steps:
+                  - name: echo
+                    image: ubuntu
+                    script: |
+                      #!/usr/bin/env bash
+                      echo "Good Morning!"
+      `;
+      const docs = tektonYaml.getTektonDocuments({ getText: () => yaml, version: 1, uri: vscode.Uri.parse('file:///pipelinespec/pipeline.yaml') } as vscode.TextDocument, TektonYamlType.PipelineRun);
+      const result = pipelineRunYaml.getTektonPipelineRefOrSpec(docs[0]);
+      expect(result).to.be.an('array');
+      expect((result[0] as DeclaredTask).name).to.be.equal('echo-good-morning');
+    });
+
+    test('getPipelineRunName should return undefined if task is not started', ()=> {
+      const yaml = `
+      apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: pipelinerun-with-taskspec-to-echo-good-morning
+      spec:
+        pipelineSpec:
+          tasks:
+            - name: echo-good-morning
+              taskSpec:
+                metadata:
+                  labels:
+                    app: "example"
+                steps:
+                  - name: echo
+                    image: ubuntu
+                    script: |
+                      #!/usr/bin/env bash
+                      echo "Good Morning!"
+      `;
+      const docs = tektonYaml.getTektonDocuments({ getText: () => yaml, version: 2, uri: vscode.Uri.parse('file:///pipelinespec/pipeline.yaml') } as vscode.TextDocument, TektonYamlType.PipelineRun);
+      const result = pipelineRunYaml.getPipelineRunName(docs[0]);
+      expect(result).to.be.an('undefined');
     });
   });
 

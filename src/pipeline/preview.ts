@@ -92,7 +92,10 @@ export class PipelinePreview extends Disposable {
             watchControl.kill();
           }
         }
-      })
+      });
+      watchControl.waitFinish().catch(err => {
+        console.error(err);
+      });
     }
     this.updateFunc();
   }
