@@ -205,6 +205,7 @@ export class Command {
   @verbose
   static startTask(taskData: StartObject): CliCommand {
     const resources: string[] = [];
+    const params: string[] = [];
     const svcAcct: string[] = taskData.serviceAccount ? ['-s ', taskData.serviceAccount] : [];
     taskData.resources.forEach(element => {
       if (element.resourceType === 'inputs') {
@@ -216,17 +217,14 @@ export class Command {
       }
     });
 
-    if (taskData.params.length === 0) {
-      return newTknCommand('task', 'start', taskData.name, ...resources, ...svcAcct);
-    }
-    else {
-      const params: string[] = [];
-      taskData.params.forEach(element => {
-        params.push('--param');
-        params.push(element.name + '=' + element.default);
-      });
-      return newTknCommand('task', 'start', taskData.name, ...resources, ...params, ...svcAcct);
-    }
+    taskData.params.forEach(element => {
+      params.push('--param');
+      params.push(element.name + '=' + element.default);
+    });
+
+    const workspace = tknWorkspace(taskData);
+
+    return newTknCommand('task', 'start', taskData.name, ...resources, ...params, ...workspace, ...svcAcct);
   }
   @verbose
   static restartPipeline(name: string): CliCommand {
