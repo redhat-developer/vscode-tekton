@@ -28,6 +28,7 @@ export async function startTask(taskName: string): Promise<string> {
   }).map<Trigger>(value => ({
     name: value.metadata.name,
     resources: value.spec.resources,
+    workspaces: value.spec.workspaces,
     params: value.spec.params ? value.spec.params : undefined,
     serviceAcct: value.spec.serviceAccount ? value.spec.serviceAccount : undefined
   }));
