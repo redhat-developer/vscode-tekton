@@ -971,6 +971,12 @@ export class TknImpl implements Tkn {
     const result: CliExitData = await this.execute(
       Command.checkTekton(), process.cwd(), false
     );
+    const kubectlCheck = RegExp('kubectl:\\s*command not found');
+    if (kubectlCheck.test(getStderrString(result.error))) {
+      const tknMessage = 'Please install kubectl.';
+      watchResources.disableWatch();
+      return [new TektonNodeImpl(null, tknMessage, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)]
+    }
     if (result.stdout.trim() === 'no') {
       const tknDownMsg = 'The current user doesn\'t have the privileges to interact with tekton resources.';
       watchResources.disableWatch();
@@ -1272,8 +1278,9 @@ export class TknImpl implements Tkn {
   private async _getTriggerResource(trigerResource: TektonNode, command: CliCommand, triggerContextType: ContextType): Promise<TektonNode[]> {
     let data: TknPipelineResource[] = [];
     const result = await this.execute(command, process.cwd(), false);
-    if (result.error) {
-      return [new TektonNodeImpl(trigerResource, getStderrString(result.error), triggerContextType, this, TreeItemCollapsibleState.Expanded)];
+    const triggerCheck = RegExp('undefinederror: the server doesn\'t have a resource type');
+    if (triggerCheck.test(getStderrString(result.error))) {
+      return;
     }
     try {
       data = JSON.parse(result.stdout).items;
