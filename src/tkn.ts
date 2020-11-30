@@ -191,8 +191,10 @@ export class Command {
     } else {
       const params: string[] = [];
       pipelineData.params.forEach(element => {
+        const nameRegex = '^[^\\(]+';
+        const defaultValue = element.default.match(nameRegex)[0];
         params.push('--param');
-        params.push(element.name + '=' + element.default);
+        params.push(element.name + '=' + defaultValue.trim());
       });
       if (pipelineData.workspaces.length === 0) {
         return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...params, ...svcAcct);

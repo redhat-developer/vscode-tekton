@@ -64,7 +64,7 @@ export async function pipelineData(pipeline: TknPipelineTrigger, trigger?: boole
   const pipelineData: TknResourceItem = {
     name: pipeline.metadata.name,
     resources: pipeline.spec.resources,
-    params: pipeline.spec.params,
+    params: undefined,
     workspaces: pipeline.spec.workspaces,
     serviceAccount: 'Start-Pipeline',
     pipelineResource: undefined,
@@ -78,6 +78,18 @@ export async function pipelineData(pipeline: TknPipelineTrigger, trigger?: boole
     }],
     triggerContent: undefined
   };
+  const paramData = [];
+  if (pipeline.spec.params && pipeline.spec.params.length !== 0) {
+    pipeline.spec.params.forEach(value => {
+      if (value.description) {
+        value.default = `${value.default} (${value.description})`;
+        paramData.push(value);
+      } else {
+        paramData.push(value);
+      }
+    });
+    pipelineData.params = paramData;
+  }
   if (pipeline.spec.workspaces) await TektonItem.workspaceData(pipelineData);
   if (trigger) {
     await addTrigger(pipelineData);
