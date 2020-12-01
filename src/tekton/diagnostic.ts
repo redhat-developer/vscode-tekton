@@ -18,7 +18,7 @@ export async function showDiagnosticData(diagnostic: TektonNode): Promise<void> 
     return;
   }
   const data = JSON.parse(result.stdout);
-  if (diagnostic.contextValue === 'pipelinerun') {
+  if (diagnostic.contextValue === 'pipelinerun' || diagnostic.contextValue === 'pr') {
     const taskRun = [];
     for (const taskRunName in data.status.taskRuns) {
       if (data.status.taskRuns[taskRunName].conditionChecks && data.status.taskRuns[taskRunName].status.conditions[0].reason !== 'Succeeded') {

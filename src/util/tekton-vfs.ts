@@ -14,7 +14,7 @@ import { newFileName } from './filename';
 
 export const TKN_RESOURCE_SCHEME = 'tekton';
 export const TKN_RESOURCE_SCHEME_READONLY = 'tekton-ro';
-const readonlyRegex = /(taskrun|pipelinerun|tr)/ as RegExp;
+const readonlyRegex = /(taskrun|pipelinerun|pr|tr)/ as RegExp;
 
 /**
  * Create Uri for Tekton VFS 
