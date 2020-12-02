@@ -39,6 +39,10 @@ export enum TknElementType {
   PIPELINE_TASK_WORKSPACES,
   PIPELINE_TASK_WHEN,
   PIPELINE_TASK_WHEN_VALUES,
+  EMBEDDED_TASK,
+  PIPELINE_TASK_METADATA,
+  TASK_RESULT,
+  TASK_RESULTS,
 }
 
 export function insideElement(element: TknElement, pos: number): boolean {

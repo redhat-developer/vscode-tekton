@@ -6,6 +6,7 @@
 import { TknElement, TknElementType, TknArray, TknBaseRootElement, NodeTknElement, TknStringElement, TknValueElement, TknParam } from '../common';
 import { YamlMap, YamlSequence, YamlNode, isSequence } from '../../yaml-support/yaml-locator';
 import { pipelineYaml, getYamlMappingValue, findNodeByKey } from '../../yaml-support/tkn-yaml';
+import { EmbeddedTask } from './task-model';
 
 const ephemeralMap: YamlMap = {
   endPosition: -1,
@@ -205,6 +206,7 @@ export class PipelineTask extends NodeTknElement {
   private _workspaces: TknArray<WorkspacePipelineTaskBinding>;
   private _timeout: TknStringElement;
   private _when: TknArray<WhenTask>;
+  private _taskSpec: EmbeddedTask;
 
   get name(): TknStringElement {
     if (!this._name) {
@@ -222,6 +224,16 @@ export class PipelineTask extends NodeTknElement {
       }
     }
     return this._taskRef;
+  }
+
+  get taskSpec(): EmbeddedTask {
+    if (!this._taskSpec) {
+      const taskSpecNode = findNodeByKey<YamlSequence>('taskSpec', this.node as YamlMap)
+      if (taskSpecNode) {
+        this._taskSpec = new EmbeddedTask(this, taskSpecNode);
+      }
+    }
+    return this._taskSpec;
   }
 
   get conditions(): TknArray<PipelineTaskCondition> {
@@ -313,7 +325,7 @@ export class PipelineTask extends NodeTknElement {
   }
 
   collectChildren(): TknElement[] {
-    return [this.name, this.taskRef, this.conditions, this.retries, this.runAfter, this.resources, this.params, this.workspaces, this.timeout, this.when];
+    return [this.name, this.taskRef, this.conditions, this.retries, this.runAfter, this.resources, this.params, this.workspaces, this.timeout, this.when, this.taskSpec];
   }
 }
 
