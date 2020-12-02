@@ -59,6 +59,12 @@ export interface TknTaskSpec {
   inputs?: TknInputs;
   outputs?: TknOutputs;
   steps: Array;
+  results?: TaskResult[];
+}
+
+export interface TaskResult {
+  name: string;
+  description: string;
 }
 
 export interface ParamSpec {

@@ -5,7 +5,10 @@
 import { tkn } from '../tkn';
 import { TknTask } from '../tekton';
 import { Snippet } from './snippet';
+import * as NodeCache from 'node-cache';
 
+const cache = new NodeCache({stdTTL: 120, checkperiod: 120});
+const tasksKey = 'tasks';
 
 interface TaskSnippet {
   name: string;
@@ -52,12 +55,21 @@ interface Param {
   value: string | string[];
 }
 
+export async function getRawTasks(): Promise<TknTask[]> {
+  let allRawTasks: TknTask[];
+  if (cache.has(tasksKey)){
+    allRawTasks = cache.get(tasksKey);
+  } else {
+    const [rawClusterTasks, rawTasks] = await Promise.all([tkn.getRawClusterTasks(), tkn.getRawTasks()]);
+    allRawTasks = rawClusterTasks.concat(rawTasks);
+    cache.set(tasksKey, allRawTasks);
+  }
+  return allRawTasks;
+}
+
 export async function getTknTasksSnippets(): Promise<Snippet<TaskSnippet>[]> {
-  const [rawClusterTasks, rawTasks] = await Promise.all([tkn.getRawClusterTasks(), tkn.getRawTasks()]);
-
-  const allRawTasks = rawClusterTasks.concat(rawTasks);
-
-  const snippets = convertTasksToSnippet(allRawTasks);
+  const tasks = await getRawTasks();
+  const snippets = convertTasksToSnippet(tasks);
   return snippets;
 }
 

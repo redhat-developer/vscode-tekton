@@ -5,11 +5,40 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { readFile } from 'fs-extra'
-import { getTknTasksSnippets } from './tkn-tasks-provider';
+import { getRawTasks, getTknTasksSnippets } from './tkn-tasks-provider';
 import { schemeStorage } from './tkn-scheme-storage'
 import { pipelineYaml } from './tkn-yaml';
 import { Snippet } from './snippet';
 import { getTknConditionsSnippets } from './tkn-conditions-provider';
+import { yamlLocator } from './yaml-locator';
+import { TknDocument } from '../model/document';
+import { Pipeline } from '../model/pipeline/pipeline-model';
+import { TknElementType } from '../model/common';
+import { TknTask } from '../tekton';
+
+const pipelineVariables: Snippet<string>[] = [
+  { 
+    label: '"$(context.pipelineRun.name)"',
+    body: '"$(context.pipelineRun.name)"',
+    description: 'The name of the PipelineRun that this Pipeline is running in.'
+  },
+  {
+    label: '"$(context.pipelineRun.namespace)"',
+    body: '"$(context.pipelineRun.namespace)"',
+    description: 'The namespace of the PipelineRun that this Pipeline is running in.'
+  },
+  {
+    label: '"$(context.pipelineRun.uid)"',
+    body: '"$(context.pipelineRun.uid)"',
+    description: 'The uid of the PipelineRun that this Pipeline is running in.'
+  },
+  {
+    label: '"$(context.pipeline.name)"',
+    body: '"$(context.pipeline.name)"',
+    description: 'The name of this Pipeline.'
+  }
+];
+
 
 export function generateScheme(vsDocument: vscode.TextDocument, schemaPath: string): Promise<string> {
 
@@ -83,6 +112,63 @@ function injectMarkdownDescription(templateObj: any): {} {
   return templateObj;
 }
 
+function injectVariables(templateObj: any, docs: TknDocument[], tasks: TknTask[]): unknown {
+  const snippets: Snippet<string>[] = [];
+  const taskMap = new Map<string, TknTask>();
+  for (const task of tasks) {
+    taskMap.set(task.metadata.name, task);
+  }
+  for (const doc of docs) {
+    if (doc.getChildren()?.type === TknElementType.PIPELINE) {
+      const pipeline: Pipeline = doc.getChildren();
+      const params = pipeline.spec.params?.getChildren() ?? [];
+      for (const param of params) {
+        snippets.push({
+          label: `"$(params.${param.name.value})"`,
+          body: `"$(params.${param.name.value})"`,
+          description: 'The value of the parameter at runtime.'
+        });
+      }
+      const workspaces = pipeline.spec.workspaces?.getChildren() ?? [];
+      for (const ws of workspaces) {
+        snippets.push({
+          label: `"$(workspaces.${ws.name.value}.bound)"`,
+          body: `"$(workspaces.${ws.name.value}.bound)"`,
+          description: 'Whether a Workspace has been bound or not. "false" if the Workspace declaration has optional: true and the Workspace binding was omitted by the PipelineRun.'
+        });
+      }
+
+      for (const task of pipeline.spec.tasks.getChildren()){
+        if (taskMap.has(task.taskRef?.name?.value)){
+          const rawTask = taskMap.get(task.taskRef.name.value);
+          if (rawTask.spec.results) {
+            for (const res of rawTask.spec.results) {
+              snippets.push({
+                label: `"$(tasks.${task.name.value}.results.${res.name})"`,
+                body: `"$(tasks.${task.name.value}.results.${res.name})"`,
+                description: res.description
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+  templateObj.definitions.Param.properties.value.defaultSnippets = [
+    ...pipelineVariables, ...snippets
+  ];
+  templateObj.definitions.PipelineResult.properties.value.defaultSnippets = [
+    ...pipelineVariables, ...snippets
+  ];
+
+  templateObj.definitions.PipelineTask.properties.when.items.properties.input.defaultSnippets = [
+    ...pipelineVariables, ...snippets
+  ];
+  return templateObj;
+}
+
 async function generate(doc: vscode.TextDocument, schemaPath: string): Promise<string> {
 
   const template = await readFile(schemaPath, 'UTF8');
@@ -91,6 +177,8 @@ async function generate(doc: vscode.TextDocument, schemaPath: string): Promise<s
     const conditions = await getTknConditionsSnippets();
     const definedTasks = pipelineYaml.getPipelineTasksName(doc);
     const declaredResources = pipelineYaml.getDeclaredResources(doc);
+    const yamlDocs = yamlLocator.getTknDocuments(doc);
+    const clusterTasks = await getRawTasks();
 
     const resNames = declaredResources.map(item => item.name);
     const templateObj = JSON.parse(template);
@@ -100,6 +188,7 @@ async function generate(doc: vscode.TextDocument, schemaPath: string): Promise<s
     templateWithSnippets = injectResourceName(templateWithSnippets, resNames);
     templateWithSnippets = injectConditionRefs(templateWithSnippets, conditions);
     templateWithSnippets = injectMarkdownDescription(templateWithSnippets);
+    templateWithSnippets = injectVariables(templateWithSnippets, yamlDocs, clusterTasks);
     return JSON.stringify(templateWithSnippets);
   }
 
