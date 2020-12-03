@@ -5,7 +5,7 @@
 
 import { window } from 'vscode';
 import { CliExitData } from '../cli';
-import { Command, TektonNode, tkn } from '../tkn';
+import { Command, ContextType, TektonNode, tkn } from '../tkn';
 
 
 export async function showDiagnosticData(diagnostic: TektonNode): Promise<void> {
@@ -18,7 +18,7 @@ export async function showDiagnosticData(diagnostic: TektonNode): Promise<void> 
     return;
   }
   const data = JSON.parse(result.stdout);
-  if (diagnostic.contextValue === 'pipelinerun' || diagnostic.contextValue === 'pr') {
+  if (diagnostic.contextValue === ContextType.PIPELINERUN || diagnostic.contextValue === ContextType.PIPELINERUNCHILDNODE) {
     const taskRun = [];
     for (const taskRunName in data.status.taskRuns) {
       if (data.status.taskRuns[taskRunName].conditionChecks && data.status.taskRuns[taskRunName].status.conditions[0].reason !== 'Succeeded') {
