@@ -12,7 +12,7 @@ export async function showDiagnosticData(diagnostic: TektonNode): Promise<void> 
   if (!diagnostic) return null
   let result: CliExitData;
   try {
-    result = await tkn.execute(Command.getPipelineRunAndTaskRunData(diagnostic.contextValue, diagnostic.getName()));
+    result = await tkn.execute(Command.getPipelineRunAndTaskRunData(ContextType.PIPELINERUN, diagnostic.getName()));
   } catch (error) {
     window.showInformationMessage(`No data available for ${diagnostic.getName()} to Diagnostic Data.`);
     return;

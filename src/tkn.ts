@@ -65,7 +65,7 @@ export enum ContextType {
   TASKRUN = 'taskrun',
   PIPELINE = 'pipeline',
   PIPELINERUN = 'pipelinerun',
-  PIPELINERUNCHILDNODE = 'pipelineRun',
+  PIPELINERUNCHILDNODE = 'pipelineRunFinished',
   CLUSTERTASK = 'clustertask',
   TASKRUNNODE = 'taskrunnode',
   PIPELINENODE = 'pipelinenode',
@@ -484,7 +484,7 @@ export class TektonNodeImpl implements TektonNode {
       tooltip: 'PipelineRun: {label}',
       getChildren: () => []
     },
-    pipelineRun: {
+    pipelineRunFinished: {
       icon: 'PLR.svg',
       tooltip: 'PipelineRun: {label}',
       getChildren: () => []

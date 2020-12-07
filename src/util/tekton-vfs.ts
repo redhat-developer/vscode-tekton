@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 import { FileSystemProvider, EventEmitter, FileChangeEvent, Event, Uri, Disposable, FileStat, FileType, FileChangeType } from 'vscode';
 import { CliExitData, cli } from '../cli';
-import { newK8sCommand, getStderrString } from '../tkn';
+import { newK8sCommand, getStderrString, ContextType } from '../tkn';
 import * as path from 'path';
 import * as os from 'os'
 import * as fsx from 'fs-extra';
@@ -14,7 +14,7 @@ import { newFileName } from './filename';
 
 export const TKN_RESOURCE_SCHEME = 'tekton';
 export const TKN_RESOURCE_SCHEME_READONLY = 'tekton-ro';
-const readonlyRegex = /(taskrun|pipelinerun|pipelineRun|tr)/ as RegExp;
+const readonlyRegex = /(taskrun|pipelinerun|pipelineRunFinished|tr)/ as RegExp;
 
 /**
  * Create Uri for Tekton VFS 
@@ -93,7 +93,11 @@ export class TektonVFSProvider implements FileSystemProvider {
 
   private loadK8sResource(resource: string, outputFormat: string, uid = true): Promise<CliExitData> {
     const id = new RegExp('-[A-Za-z0-9]+$');
-    const newResourceName = (uid) ? resource.replace(id, '') : resource;
+    let newResourceName = (uid) ? resource.replace(id, '') : resource;
+    const pipelineRunFinishedRegex = RegExp(`^${ContextType.PIPELINERUNCHILDNODE}/`);
+    if (pipelineRunFinishedRegex.test(newResourceName)) {
+      newResourceName = newResourceName.replace(`${ContextType.PIPELINERUNCHILDNODE}/`, `${ContextType.PIPELINERUN}/`);
+    }
     return cli.execute(newK8sCommand(`-o ${outputFormat} get ${newResourceName}`));
   }
 

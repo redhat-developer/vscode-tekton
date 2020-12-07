@@ -666,12 +666,12 @@
       "view/item/context": [
         {
           "command": "k8s.tekton.run.logs",
-          "when": "viewItem =~ /vsKubernetes\\.resource\\.(pipelinerun|pipelineRun|taskrun)/i",
+          "when": "viewItem =~ /vsKubernetes\\.resource\\.(pipelinerun|pipelineRunFinished|taskrun)/i",
           "group": "c1@1"
         },
         {
           "command": "k8s.tekton.run.followLogs",
-          "when": "viewItem =~ /vsKubernetes\\.resource\\.(pipelinerun|pipelineRun|taskrun)/i",
+          "when": "viewItem =~ /vsKubernetes\\.resource\\.(pipelinerun|pipelineRunFinished|taskrun)/i",
           "group": "c1@2"
         },
         {
@@ -711,7 +711,7 @@
         },
         {
           "command": "tekton.explorerView.delete",
-          "when": "view =~ /^tekton(PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|pipelineRun|clustertask|task|taskrun|pipelineresource|triggertemplates|triggerbinding|clustertriggerbinding|eventlistener|conditions)$/",
+          "when": "view =~ /^tekton(PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|pipelineRunFinished|clustertask|task|taskrun|pipelineresource|triggertemplates|triggerbinding|clustertriggerbinding|eventlistener|conditions)$/",
           "group": "c2"
         },
         {
@@ -751,22 +751,22 @@
         },
         {
           "command": "tekton.pipelinerun.restart",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRun)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRunFinished)$/",
           "group": "c1@2"
         },
         {
           "command": "tekton.pipelinerun.describe",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRun)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRunFinished)$/",
           "group": "c1@3"
         },
         {
           "command": "tekton.pipelinerun.logs",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRun)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRunFinished)$/",
           "group": "c1@4"
         },
         {
           "command": "tekton.pipelinerun.followLogs",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRun)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRunFinished)$/",
           "group": "c1@5"
         },
         {
@@ -806,7 +806,7 @@
         },
         {
           "command": "tekton.taskrun.list",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRun)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRunFinished)$/",
           "group": "c1@4"
         },
         {
@@ -816,7 +816,7 @@
         },
         {
           "command": "tekton.showDiagnosticDataAction",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRun|taskrun|tr)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRunFinished|taskrun|tr)$/",
           "group": "c1@6"
         },
         {
@@ -831,7 +831,7 @@
         },
         {
           "command": "tekton.view.pipelinerun.diagram",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRun)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipelinerun|pipelineRunFinished)$/",
           "group": "inline@1"
         },
         {
@@ -841,7 +841,7 @@
         },
         {
           "command": "tekton.edit",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|pipelineRun|clustertask|pipelineresource|taskrun|triggertemplates|triggerbinding|eventlistener|conditions|task|clustertriggerbinding|tr)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|pipelineRunFinished|clustertask|pipelineresource|taskrun|triggertemplates|triggerbinding|eventlistener|conditions|task|clustertriggerbinding|tr)$/",
           "group": "inline@2"
         },
         {
@@ -856,7 +856,7 @@
         },
         {
           "command": "tekton.openInEditor",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|pipelineRun|clustertask|pipelineresource|taskrun|task|triggertemplates|triggerbinding|eventlistener|conditions|clustertriggerbinding|tr)$/",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem =~ /^(pipeline|pipelinerun|pipelineRunFinished|clustertask|pipelineresource|taskrun|task|triggertemplates|triggerbinding|eventlistener|conditions|clustertriggerbinding|tr)$/",
           "group": "c0@1"
         }
       ],
