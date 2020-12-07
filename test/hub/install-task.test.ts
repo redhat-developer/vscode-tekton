@@ -12,6 +12,7 @@ import { installTask } from '../../src/hub/install-task';
 import { DownloadUtil } from '../../src/util/download';
 import * as os from 'os';
 import * as fs from 'fs-extra'; 
+import * as path from 'path';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -67,8 +68,9 @@ suite('Install Task', () => {
       url: 'https://some/path/task.yaml',
       asClusterTask: true
     });
-    expect(downloadStub).calledOnceWith('https://some/path/task.yaml', '/foo/task.yaml');
-    expect(executeStub).calledOnceWith(Command.updateYaml('/foo/task.yaml'));
+    const tempPath = path.join('/foo','task.yaml');
+    expect(downloadStub).calledOnceWith('https://some/path/task.yaml', tempPath);
+    expect(executeStub).calledOnceWith(Command.updateYaml(tempPath));
     expect(unlinkStub).calledOnceWith('/foo/task.yaml');
     expect(showInformationMessageStub).calledOnceWith('ClusterTask foo installed.');
   });
