@@ -71,7 +71,7 @@ suite('Install Task', () => {
     const tempPath = path.join('/foo','task.yaml');
     expect(downloadStub).calledOnceWith('https://some/path/task.yaml', tempPath);
     expect(executeStub).calledOnceWith(Command.updateYaml(tempPath));
-    expect(unlinkStub).calledOnceWith('/foo/task.yaml');
+    expect(unlinkStub).calledOnceWith(tempPath);
     expect(showInformationMessageStub).calledOnceWith('ClusterTask foo installed.');
   });
 });
