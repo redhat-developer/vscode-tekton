@@ -101,6 +101,8 @@ function getDeleteCommand(item: TektonNode): CliCommand | undefined {
       return PipelineResource.getDeleteCommand(item);
     case ContextType.PIPELINERUN:
       return PipelineRun.getDeleteCommand(item);
+    case ContextType.PIPELINERUNCHILDNODE:
+      return PipelineRun.getDeleteCommand(item);
     case ContextType.TASK:
       return Task.getDeleteCommand(item);
     case ContextType.TRIGGERTEMPLATES:

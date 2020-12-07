@@ -5,20 +5,20 @@
 
 import { window } from 'vscode';
 import { CliExitData } from '../cli';
-import { Command, TektonNode, tkn } from '../tkn';
+import { Command, ContextType, TektonNode, tkn } from '../tkn';
 
 
 export async function showDiagnosticData(diagnostic: TektonNode): Promise<void> {
   if (!diagnostic) return null
   let result: CliExitData;
   try {
-    result = await tkn.execute(Command.getPipelineRunAndTaskRunData(diagnostic.contextValue, diagnostic.getName()));
+    result = await tkn.execute(Command.getPipelineRunAndTaskRunData(ContextType.PIPELINERUN, diagnostic.getName()));
   } catch (error) {
     window.showInformationMessage(`No data available for ${diagnostic.getName()} to Diagnostic Data.`);
     return;
   }
   const data = JSON.parse(result.stdout);
-  if (diagnostic.contextValue === 'pipelinerun') {
+  if (diagnostic.contextValue === ContextType.PIPELINERUN || diagnostic.contextValue === ContextType.PIPELINERUNCHILDNODE) {
     const taskRun = [];
     for (const taskRunName in data.status.taskRuns) {
       if (data.status.taskRuns[taskRunName].conditionChecks && data.status.taskRuns[taskRunName].status.conditions[0].reason !== 'Succeeded') {

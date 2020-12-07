@@ -65,6 +65,7 @@ export enum ContextType {
   TASKRUN = 'taskrun',
   PIPELINE = 'pipeline',
   PIPELINERUN = 'pipelinerun',
+  PIPELINERUNCHILDNODE = 'pipelineRunFinished',
   CLUSTERTASK = 'clustertask',
   TASKRUNNODE = 'taskrunnode',
   PIPELINENODE = 'pipelinenode',
@@ -483,6 +484,11 @@ export class TektonNodeImpl implements TektonNode {
       tooltip: 'PipelineRun: {label}',
       getChildren: () => []
     },
+    pipelineRunFinished: {
+      icon: 'PLR.svg',
+      tooltip: 'PipelineRun: {label}',
+      getChildren: () => []
+    },
     task: {
       icon: 'T.svg',
       tooltip: 'Task: {label}',
@@ -827,7 +833,7 @@ export class PipelineRun extends TektonNodeImpl {
     tkn: Tkn,
     item: PipelineRunData,
     collapsibleState: TreeItemCollapsibleState) {
-    super(parent, name, ContextType.PIPELINERUN, tkn, collapsibleState, item.metadata?.uid, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status : '');
+    super(parent, name, (item?.status?.completionTime) ? ContextType.PIPELINERUNCHILDNODE : ContextType.PIPELINERUN, tkn, collapsibleState, item.metadata?.uid, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status : '');
     this.started = item.metadata.creationTimestamp;
     this.finished = item.status?.completionTime;
     this.reason = item.status?.conditions[0] ? `(${item.status?.conditions[0].reason})` : '';
