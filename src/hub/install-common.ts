@@ -8,4 +8,5 @@ export interface HubTaskInstallation {
   name: string;
   tknVersion?: string;
   minPipelinesVersion?: string;
+  asClusterTask: boolean;
 }

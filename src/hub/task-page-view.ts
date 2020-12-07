@@ -136,6 +136,7 @@ export class TaskPageView extends Disposable {
       <body>
         <div id="root" style="width: 100%; height: 100%;"></div>
         ${this.getScripts(nonce)}
+        <div class="hide" id="rmenu" />
       </body>
       </html>`;
   }
@@ -143,9 +144,9 @@ export class TaskPageView extends Disposable {
   private getScripts(nonce: string): string {
     const out: string[] = [];
     out.push(`<script
-				src="${escapeAttribute(this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/out/webview/task-view/index.js'))))}"
-				nonce="${nonce}"
-				charset="UTF-8"></script>`);
+        src="${escapeAttribute(this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/out/webview/task-view/index.js'))))}"
+        nonce="${nonce}"
+        charset="UTF-8"></script>`);
     return out.join('\n');
   }
 
