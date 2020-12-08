@@ -168,6 +168,46 @@ html, body {
     color: #ff8e00!important;
 }
 
+.action-bar .action-item.action-dropdown-item {
+  display: flex;
+}
+
+.action-bar .action-item.action-dropdown-item>.monaco-dropdown {
+  margin-right: 4px;
+}
+
+.monaco-dropdown {
+  height: 100%;
+  padding: 0;
+}
+
+.monaco-dropdown>.dropdown-label {
+  cursor: pointer;
+  height: 100%;
+}
+
+.codicon-chevron-down:before {
+  content: '\eab4';
+  font-weight: 600;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.task-page>.header>.details>.actions>.action-bar>.actions-container>.action-item.action-dropdown-item .extension-action.dropdown.label {
+  padding: 1px 0;
+}
+
+.task-page>.header>.details>.actions>.action-bar>.actions-container>.action-item.action-dropdown-item .extension-action.action-label.dropdown, .task-page>.header>.details>.actions>.monaco-action-bar>.actions-container>.action-item.action-dropdown-item>.extension-action.action-label.empty-dropdown, .task-page>.header>.details>.actions>.monaco-action-bar>.actions-container>.action-item:not(.action-dropdown-item)>.extension-action {
+  margin-right: 8px;
+}
+
+.action-bar .action-item.action-dropdown-item>.action-label {
+  margin-right: 1px !important;
+}
+
+.codicon[class*=codicon-] {
+  /* font-size: 16px; */
+}
 
  /* BODY */
 
@@ -215,7 +255,6 @@ html, body {
   justify-content: flex-end;
   font-weight: 700;
   font-size: 14px;
-  line-height: 36px;
 }
 
 .action-bar .action-item {
@@ -237,4 +276,30 @@ html, body {
 .task-page>.body>.navbar>.action-bar>.actions-container>.action-item>.action-label.checked {
   opacity: 1;
   text-decoration: underline;
+}
+
+/* Install options menu */
+
+.show {
+  z-index: 1000;
+  position: absolute;
+  border-radius: 2px;
+  border: 1px solid var(--vscode-pickerGroup-border);
+  padding: 2px;
+  display: block;
+  margin: 0;
+  list-style-type: none;
+  list-style: none;
+}
+.show a {
+  color: var(--vscode-menu-foreground);
+  cursor: pointer;
+}
+.hide {
+  display: none;
+}
+
+.show a:hover {
+  background-color: var(--vscode-menu-selectionBackground);
+  color: var(--vscode-menu-selectionForeground);
 }

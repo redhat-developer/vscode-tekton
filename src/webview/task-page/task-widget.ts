@@ -167,14 +167,26 @@ export class TaskWidget extends BaseWidget {
 
     // install button
     const installLi = document.createElement('li');
-    installLi.classList.add('action-item');
+    installLi.classList.add('action-item', 'action-dropdown-item');
     const installButton = document.createElement('a');
-    installButton.classList.add('action-label', 'codicon', 'extension-action', 'label', 'uninstall');
+    installButton.classList.add('action-label', 'codicon', 'extension-action', 'label', 'uninstall', 'action-dropdown');
     installButton.textContent = 'Install';
     installButton.onclick = () => {
       this.sendInstall();
     }
     installLi.appendChild(installButton);
+    const tknDropdown = createDiv('monaco-dropdown');
+
+    const dropdownLabel = createDiv('dropdown-label');
+    const dropdownButton = document.createElement('a');
+    dropdownButton.classList.add('action-label', 'dropdown', 'codicon-chevron-down', 'extension-action', 'label', 'action-dropdown', 'codicon');
+    dropdownButton.onclick = (e) => {
+      e.stopPropagation();
+      this.showInstallOptions(dropdownButton);
+    }
+    dropdownLabel.appendChild(dropdownButton);
+    tknDropdown.appendChild(dropdownLabel);
+    installLi.appendChild(tknDropdown);
     actionsContainer.appendChild(installLi);
 
     // TKN Version
@@ -186,13 +198,38 @@ export class TaskWidget extends BaseWidget {
 
   }
 
-  private sendInstall(): void {
+  private sendInstall(asCluster = false): void {
     this.messageSender.postMessage({type: 'installTask', data: {
       url: this.currentVersion.rawURL,
       name: this.task.name,
       minPipelinesVersion: this.currentVersion.minPipelinesVersion,
-      tknVersion: this.tknVersion
+      tknVersion: this.tknVersion,
+      asClusterTask: asCluster
     } as HubTaskInstallation});
+  }
+
+  private showInstallOptions(parent: HTMLAnchorElement): void {
+    const rmenu = document.getElementById('rmenu');
+    rmenu.className = 'show';
+    rmenu.style.top = parent.getBoundingClientRect().bottom + 'px';
+    rmenu.style.left = parent.getBoundingClientRect().left + 'px';
+    rmenu.innerHTML = '';
+   
+    const installCluster = document.createElement('a');
+    installCluster.text = 'Install as ClusterTask';
+    rmenu.appendChild(installCluster);
+
+    installCluster.onclick = () => {
+      this.sendInstall(true);
+      document.getElementById('rmenu').className = 'hide';
+    }
+
+    const docClickListener = (): void => {
+      document.getElementById('rmenu').className = 'hide';
+      document.removeEventListener('click',docClickListener);
+    };
+    document.addEventListener('click', docClickListener);
+
   }
 
   private addVersionCheck(container: HTMLUListElement): void {
