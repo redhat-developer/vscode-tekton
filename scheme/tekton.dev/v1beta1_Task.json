@@ -815,7 +815,8 @@
           "type": "string"
         },
         "time": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "fieldsType": {
           "type": "string"
@@ -886,11 +887,12 @@
           "type": "integer"
         },
         "creationTimestamp": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "deletionTimestamp": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "deletionGracePeriodSeconds": {
           "type": "integer"
@@ -1783,11 +1785,6 @@
           "type": "array"
         }
       },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "Time": {
-      "properties": {},
       "additionalProperties": false,
       "type": "object"
     },
