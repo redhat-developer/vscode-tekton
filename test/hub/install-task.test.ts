@@ -19,8 +19,6 @@ chai.use(sinonChai);
 
 suite('Install Task', () => {
   const sandbox = sinon.createSandbox();
-  let showWarningMessageStub: sinon.SinonStub;
-  let showErrorMessageStub: sinon.SinonStub;
   let showInformationMessageStub: sinon.SinonStub;
   let getRawTasksStub: sinon.SinonStub;
   let getRawClusterTasksStub: sinon.SinonStub;
@@ -30,7 +28,6 @@ suite('Install Task', () => {
   let unlinkStub: sinon.SinonStub;
   
   setup(() => {
-    showWarningMessageStub = sandbox.stub(vscode.window, 'showWarningMessage');
     showInformationMessageStub = sandbox.stub(vscode.window, 'showInformationMessage');
     getRawTasksStub = sandbox.stub(tkn, 'getRawTasks');
     getRawClusterTasksStub = sandbox.stub(tkn, 'getRawClusterTasks');
