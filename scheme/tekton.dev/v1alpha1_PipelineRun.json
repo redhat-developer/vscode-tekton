@@ -209,7 +209,8 @@
           "type": "string"
         },
         "sentAt": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "message": {
           "type": "string"
@@ -237,8 +238,8 @@
           "type": "string"
         },
         "lastTransitionTime": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/VolatileTime"
+          "type": "string",
+          "format": "data-time"
         },
         "reason": {
           "type": "string"
@@ -276,10 +277,12 @@
           "type": "string"
         },
         "startTime": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "completionTime": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "check": {
           "$schema": "http://json-schema.org/draft-04/schema#",
@@ -496,7 +499,8 @@
     "ContainerStateRunning": {
       "properties": {
         "startedAt": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         }
       },
       "additionalProperties": false,
@@ -520,10 +524,12 @@
           "type": "string"
         },
         "startedAt": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "finishedAt": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "containerID": {
           "type": "string"
@@ -1063,7 +1069,8 @@
           "type": "string"
         },
         "time": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "fieldsType": {
           "type": "string"
@@ -1208,11 +1215,12 @@
           "type": "integer"
         },
         "creationTimestamp": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "deletionTimestamp": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "deletionGracePeriodSeconds": {
           "type": "integer"
@@ -1402,10 +1410,12 @@
           "type": "string"
         },
         "lastProbeTime": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "lastTransitionTime": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "reason": {
           "type": "string"
@@ -1794,10 +1804,12 @@
           "type": "object"
         },
         "startTime": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "completionTime": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "taskRuns": {
           "patternProperties": {
@@ -3118,10 +3130,12 @@
           "type": "string"
         },
         "startTime": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "completionTime": {
-          "$ref": "#/definitions/Time"
+          "type": "string",
+          "format": "data-time"
         },
         "steps": {
           "items": {
@@ -3324,11 +3338,6 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "Time": {
-      "properties": {},
-      "additionalProperties": false,
-      "type": "object"
-    },
     "Toleration": {
       "properties": {
         "key": {
@@ -3365,18 +3374,6 @@
         },
         "name": {
           "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "VolatileTime": {
-      "required": [
-        "Inner"
-      ],
-      "properties": {
-        "Inner": {
-          "$ref": "#/definitions/Time"
         }
       },
       "additionalProperties": false,
