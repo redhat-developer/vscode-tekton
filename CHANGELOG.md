@@ -10,6 +10,7 @@ This release brings to you:
 * [#413](https://github.com/redhat-developer/vscode-tekton/issues/413) Display param descriptions in start pipeline and add trigger
 * [#429](https://github.com/redhat-developer/vscode-tekton/issues/429) Provide completion for Variable Substitutions
 * [#444](https://github.com/redhat-developer/vscode-tekton/issues/444) Cancel button on finished pipeline
+* [#449](https://github.com/redhat-developer/vscode-tekton/issues/449) Add support for installing from Tekton Hub as clustertask
 * Bugfixes or minor issues:
   * [#441](https://github.com/redhat-developer/vscode-tekton/issues/441) undefined/bin/sh: kubectl: command not found
   * [#442](https://github.com/redhat-developer/vscode-tekton/issues/442) Task is running endlessly
