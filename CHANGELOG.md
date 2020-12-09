@@ -1,5 +1,20 @@
 # Change Log
 
+## 0.9.0 (December 9, 2020)
+
+This release brings to you:
+
+* [#458](https://github.com/redhat-developer/vscode-tekton/issues/458) Update Tkn version to latest.
+* [#448](https://github.com/redhat-developer/vscode-tekton/issues/448) Support Tekton 0.18
+* [#344](https://github.com/redhat-developer/vscode-tekton/issues/344) Validate support for embedded specs
+* [#413](https://github.com/redhat-developer/vscode-tekton/issues/413) Display param descriptions in start pipeline and add trigger
+* [#429](https://github.com/redhat-developer/vscode-tekton/issues/429) Provide completion for Variable Substitutions
+* [#444](https://github.com/redhat-developer/vscode-tekton/issues/444) Cancel button on finished pipeline
+* Bugfixes or minor issues:
+  * [#441](https://github.com/redhat-developer/vscode-tekton/issues/441) undefined/bin/sh: kubectl: command not found
+  * [#442](https://github.com/redhat-developer/vscode-tekton/issues/442) Task is running endlessly
+  * [#468](https://github.com/redhat-developer/vscode-tekton/issues/468) Upgrade schema to latest
+
 ## 0.8.0 (November 18, 2020)
 
 This release brings to you:

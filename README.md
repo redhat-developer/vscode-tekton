@@ -20,6 +20,12 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 ## New and Noteworthy
 
+### Install Task from TektonHub as ClusterTask
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/install_task_as_clustertask_0.9.0.gif" width="800" height="600" /></div>
+
+### Tekton variables code completion
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/tekton_variables_completion_0.9.0.gif" width="800" height="600" /></div>
+
 ### TektonHub integration
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/tekton_hub_0.8.0.gif" width="1080" height="675" /></div>
 
@@ -55,10 +61,6 @@ Pipeline with Workspace:
 
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_start_with_ws_0.1.0.gif" width="800" height="450" /></div>
 
-### Editor and Pipeline preview sync
-
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/editor_and_preview_sync_0.1.0.gif" width="800" height="650" /></div>
-
 
 ### Tekton tree auto refresh and open resource from inline command
 
@@ -66,12 +68,6 @@ Pipeline with Workspace:
 
 ### PipelineRun preview
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_run_preview_0.0.7.gif" width="800" height="450" /></div>
-
-### Pipeline preview
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_preview_0.0.6.gif" width="600" height="493" /></div>
-
-### New icons and Tekton resources
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/new_items_and_icons_0.2.0.png" width="720" height="968" /></div>
 
 ### Provides editing support for Pipeline yaml
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/editing-demo.gif" width="800" height="450" /></div>
