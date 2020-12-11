@@ -84,6 +84,12 @@
           "default": false,
           "description": "Start pipeline from Command Palette."
         },
+        "vs-tekton.pipelineRunNotifications": {
+          "Title": "Show pipelineRun notification",
+          "type": "boolean",
+          "default": true,
+          "description": "Show pipelineRun execution status in notification."
+        },
         "vs-tekton.pipelineRun": {
           "Title": "Show PipelineRun on staring Pipeline",
           "type": "boolean",

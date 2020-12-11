@@ -7,6 +7,7 @@ import { StartObject } from './pipelinecontent';
 import { Progress } from '../util/progress';
 import { TektonItem } from './tektonitem';
 import { showPipelineRunPreview } from '../pipeline/pipeline-preview';
+import { window } from 'vscode';
 
 
 
@@ -16,6 +17,6 @@ export function startPipeline(inputStartPipeline: StartObject): Promise<string> 
       .then((pipelineRunName) => TektonItem.ShowPipelineRun() ? showPipelineRunPreview(pipelineRunName) : undefined)
       .then(() => TektonItem.explorer.refresh())
       .then(() => `Pipeline '${inputStartPipeline.name}' successfully started`)
-      .catch((error) => Promise.reject(`Failed to start Pipeline with error '${error}'`))
+      .catch((error) => window.showErrorMessage(`Failed to start Pipeline with error '${error}'`))
   );
 }
