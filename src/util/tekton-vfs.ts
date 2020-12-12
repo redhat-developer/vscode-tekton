@@ -11,10 +11,42 @@ import * as fsx from 'fs-extra';
 import { VirtualDocument } from '../yaml-support/yaml-locator';
 import { TektonItem } from '../tekton/tektonitem';
 import { newFileName } from './filename';
+import * as yaml from 'js-yaml';
 
 export const TKN_RESOURCE_SCHEME = 'tekton';
 export const TKN_RESOURCE_SCHEME_READONLY = 'tekton-ro';
 const readonlyRegex = /(taskrun|pipelinerun|pipelineRunFinished|tr)/ as RegExp;
+
+const taskRunTemplate = {
+  apiVersion: 'tekton.dev/v1beta1',
+  kind: 'TaskRun',
+  metadata: {
+    name: 'change me'
+  },
+  spec: {
+    taskSpec: {
+      resources: {
+        inputs: {
+          name: 'change me',
+          type: 'change me'
+        }
+      },
+      steps: {
+        name: 'change me',
+        image: 'change me',
+        env: {
+          name: 'change me',
+          value: 'change me'
+        },
+        command: 'change me',
+        args: 'change me'
+      }
+    },
+    taskRef: {
+      name: undefined
+    }
+  }
+}
 
 /**
  * Create Uri for Tekton VFS 
@@ -58,14 +90,20 @@ export class TektonVFSProvider implements FileSystemProvider {
 
   async readFile(uri: Uri): Promise<Uint8Array> {
     const [resource, format] = this.extractResourceAndFormat(uri);
-
-    const loadResult = await this.loadK8sResource(resource, format);
-    if (loadResult.error) {
-      throw new Error(getStderrString(loadResult.error));
+    const generateTaskRunRegex = /^generateTaskRun/;
+    if (generateTaskRunRegex.test(resource)) {
+      const taskRefRegex = /[^\\/]*$/;
+      const taskRef = resource.match(taskRefRegex)[0];
+      taskRunTemplate.spec.taskRef.name = taskRef;
+      const taskRunYaml = yaml.dump(taskRunTemplate);
+      return Buffer.from(taskRunYaml, 'utf8');
+    } else {
+      const loadResult = await this.loadK8sResource(resource, format);
+      if (loadResult.error) {
+        throw new Error(getStderrString(loadResult.error));
+      }
+      return Buffer.from(loadResult.stdout, 'utf8'); // TODO: add execute which return buffer instead of string
     }
-
-    return Buffer.from(loadResult.stdout, 'utf8'); // TODO: add execute which return buffer instead of string
-
   }
 
   async writeFile(uri: Uri, content: Uint8Array): Promise<void> {
