@@ -15,6 +15,7 @@ interface TknTaskRunSpec {
 
 
 export interface TknTaskRun {
+  kind?: string;
   metadata: ObjectMetadata;
   spec: TknTaskRunSpec;
   status?: {
