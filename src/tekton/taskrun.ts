@@ -5,8 +5,9 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command, PipelineTaskRunData, ContextType } from '../tkn';
-import { window } from 'vscode';
+import { window, workspace } from 'vscode';
 import { CliCommand } from '../cli';
+import { showLogInEditor } from '../util/log-in-editor';
 
 export class TaskRun extends TektonItem {
 
@@ -30,16 +31,28 @@ export class TaskRun extends TektonItem {
     if (!taskRun) {
       taskRun = await window.showQuickPick(await TaskRun.getTaskRunNames(), { placeHolder: 'Select Task Run to see logs', ignoreFocusOut: true });
     }
-    if (!taskRun) return null;
-    TaskRun.tkn.executeInTerminal(Command.showTaskRunLogs(taskRun.getName()));
+    if (!taskRun) {
+      return;
+    }
+    if (workspace.getConfiguration('vs-tekton').get('showLogInEditor')) {
+      showLogInEditor(Command.showTaskRunLogs(taskRun.getName()), `Log: ${taskRun.getName()}`);
+    } else {
+      TaskRun.tkn.executeInTerminal(Command.showTaskRunLogs(taskRun.getName()));
+    }
   }
 
   static async followLogs(taskRun: TektonNode): Promise<void> {
     if (!taskRun) {
       taskRun = await window.showQuickPick(await TaskRun.getTaskRunNames(), { placeHolder: 'Select Task Run to see follow logs', ignoreFocusOut: true });
     }
-    if (!taskRun) return null;
-    TaskRun.tkn.executeInTerminal(Command.showTaskRunFollowLogs(taskRun.getName()));
+    if (!taskRun) {
+      return;
+    }
+    if (workspace.getConfiguration('vs-tekton').get('showLogInEditor')) {
+      showLogInEditor(Command.showTaskRunFollowLogs(taskRun.getName()), `Log: ${taskRun.getName()}`);
+    } else {
+      TaskRun.tkn.executeInTerminal(Command.showTaskRunFollowLogs(taskRun.getName()));
+    }
   }
 
   static getDeleteCommand(item: TektonNode): CliCommand {

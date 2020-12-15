@@ -13,6 +13,7 @@ import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { PipelineRun } from '../../src/tekton/pipelinerun';
 import { TestItem } from './testTektonitem';
 import { TektonItem } from '../../src/tekton/tektonitem';
+import * as logInEditor from '../../src/util/log-in-editor';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -23,6 +24,8 @@ suite('Tekton/PipelineRun', () => {
   let showQuickPickStub: sinon.SinonStub<unknown[], unknown>;
   const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
   const pipelineRunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
+  let showLogInEditorStub: sinon.SinonStub;
+  let configurationStub: sinon.SinonStub;
 
   setup(() => {
     sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
@@ -31,6 +34,9 @@ suite('Tekton/PipelineRun', () => {
     showQuickPickStub = sandbox.stub(vscode.window, 'showQuickPick').resolves(undefined);
     getPipelineNamesStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();
+
+    showLogInEditorStub = sandbox.stub(logInEditor, 'showLogInEditor').resolves();
+    configurationStub = sandbox.stub(vscode.workspace, 'getConfiguration').returns({ get: () => false } as unknown as vscode.WorkspaceConfiguration);
   });
 
   teardown(() => {
@@ -114,7 +120,15 @@ suite('Tekton/PipelineRun', () => {
         const result = await PipelineRun.logs(null);
 
         // tslint:disable-next-line: no-unused-expression
-        expect(result).null;
+        expect(result).to.be.undefined;
+      });
+
+      test('Show Log in editor', async () => {
+        configurationStub.returns({ get: () => true } as unknown as vscode.WorkspaceConfiguration);
+
+        await PipelineRun.logs(pipelineRunItem);
+
+        expect(showLogInEditorStub).calledOnceWith(Command.showPipelineRunLogs(pipelineRunItem.getName()));
       });
 
     });
@@ -125,6 +139,14 @@ suite('Tekton/PipelineRun', () => {
         await PipelineRun.followLogs(pipelineRunItem);
 
         expect(termStub).calledOnceWith(Command.showPipelineRunFollowLogs(pipelineRunItem.getName()));
+      });
+
+      test('Follow Log in editor', async () => {
+        configurationStub.returns({ get: () => true } as unknown as vscode.WorkspaceConfiguration);
+
+        await PipelineRun.followLogs(pipelineRunItem);
+
+        expect(showLogInEditorStub).calledOnceWith(Command.showPipelineRunFollowLogs(pipelineRunItem.getName()));
       });
 
     });

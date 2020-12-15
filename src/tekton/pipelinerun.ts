@@ -5,12 +5,13 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
-import { window, ViewColumn } from 'vscode';
+import { window, ViewColumn, workspace } from 'vscode';
 import { CliCommand } from '../cli';
 import { showPipelineRunPreview } from '../pipeline/pipeline-preview';
 import { pipelineRunData } from './restartpipelinerundata';
 import { PipelineWizard } from '../pipeline/wizard';
 import { startPipeline } from './startpipeline';
+import { showLogInEditor } from '../util/log-in-editor';
 
 export class PipelineRun extends TektonItem {
 
@@ -44,16 +45,28 @@ export class PipelineRun extends TektonItem {
     if (!pipelineRun) {
       pipelineRun = await window.showQuickPick(await PipelineRun.getPipelineRunNames(), { placeHolder: 'Select Pipeline Run to see logs', ignoreFocusOut: true });
     }
-    if (!pipelineRun) return null;
-    PipelineRun.tkn.executeInTerminal(Command.showPipelineRunLogs(pipelineRun.getName()));
+    if (!pipelineRun) {
+      return;
+    }
+    if (workspace.getConfiguration('vs-tekton').get('showLogInEditor')) {
+      showLogInEditor(Command.showPipelineRunLogs(pipelineRun.getName()), `Log: ${pipelineRun.getName()}`);
+    } else {
+      PipelineRun.tkn.executeInTerminal(Command.showPipelineRunLogs(pipelineRun.getName()));
+    }
   }
 
   static async followLogs(pipelineRun: TektonNode): Promise<void> {
     if (!pipelineRun) {
       pipelineRun = await window.showQuickPick(await PipelineRun.getPipelineRunNames(), { placeHolder: 'Select Pipeline Run to see logs', ignoreFocusOut: true });
     }
-    if (!pipelineRun) return null;
-    PipelineRun.tkn.executeInTerminal(Command.showPipelineRunFollowLogs(pipelineRun.getName()));
+    if (!pipelineRun){
+      return;
+    }
+    if (workspace.getConfiguration('vs-tekton').get('showLogInEditor')) {
+      showLogInEditor(Command.showPipelineRunFollowLogs(pipelineRun.getName()), `Log: ${pipelineRun.getName()}`);
+    } else {
+      PipelineRun.tkn.executeInTerminal(Command.showPipelineRunFollowLogs(pipelineRun.getName()));
+    }
   }
 
   static async cancel(pipelineRun: TektonNode): Promise<void> {

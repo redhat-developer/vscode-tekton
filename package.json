@@ -113,6 +113,12 @@
           "type": "boolean",
           "default": false,
           "description": "Enable/disable to Deploy the yaml resources on cluster"
+        },
+        "vs-tekton.showLogInEditor": {
+          "title": "Show Tekton Logs in editor",
+          "type": "boolean",
+          "default": false,
+          "description": "Show Tekton Logs in Text editor"
         }
       }
     },

@@ -14,6 +14,7 @@ import { TaskRun } from '../../src/tekton/taskrun';
 import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { CliExitData } from '../../src/cli';
+import * as logInEditor from '../../src/util/log-in-editor';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -26,6 +27,8 @@ suite('Tekton/TaskRun', () => {
   const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
   const pipelineRunItem = new TestItem(pipelineItem, 'pipelinerun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
   const taskRunItem = new TestItem(pipelineRunItem, 'taskrun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
+  let showLogInEditorStub: sinon.SinonStub;
+  let configurationStub: sinon.SinonStub;
 
   setup(() => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
@@ -34,6 +37,9 @@ suite('Tekton/TaskRun', () => {
     sandbox.stub(TknImpl.prototype, 'getPipelineRunsList').resolves([pipelineRunItem]);
     sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskRunItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();
+
+    showLogInEditorStub = sandbox.stub(logInEditor, 'showLogInEditor').resolves();
+    configurationStub = sandbox.stub(vscode.workspace, 'getConfiguration').returns({ get: () => false } as unknown as vscode.WorkspaceConfiguration);
   });
 
   teardown(() => {
@@ -130,6 +136,12 @@ suite('Tekton/TaskRun', () => {
         termStub.restore();
       });
 
+      test('Show log in editor', async () => {
+        configurationStub.returns({ get: () => true } as unknown as vscode.WorkspaceConfiguration);
+        await TaskRun.logs(taskRunItem);
+        expect(showLogInEditorStub).calledOnceWith(Command.showTaskRunLogs(taskRunItem.getName()));
+      });
+
     });
 
     suite('followLog', () => {
@@ -138,6 +150,13 @@ suite('Tekton/TaskRun', () => {
         await TaskRun.followLogs(taskRunItem);
 
         expect(termStub).calledOnceWith(Command.showTaskRunFollowLogs(taskRunItem.getName()));
+      });
+
+      test('Show followLog log in editor', async () => {
+        configurationStub.returns({ get: () => true } as unknown as vscode.WorkspaceConfiguration);
+        await TaskRun.followLogs(taskRunItem);
+
+        expect(showLogInEditorStub).calledOnceWith(Command.showTaskRunFollowLogs(taskRunItem.getName()));
       });
 
     });
