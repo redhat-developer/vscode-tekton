@@ -32,6 +32,7 @@ import { triggerDetection } from './util/detection';
 import { showDiagnosticData } from './tekton/diagnostic';
 import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
+import { registerLogDocumentProvider } from './util/log-in-editor';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -107,6 +108,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     hubViewProvider,
     vscode.window.registerWebviewViewProvider('tektonHubTasks', hubViewProvider),
     pipelineExplorer,
+    registerLogDocumentProvider(),
     // Temporarily loaded resource providers
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME, tektonVfsProvider, { isCaseSensitive: true, }),
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider, { isCaseSensitive: true, isReadonly: true }),

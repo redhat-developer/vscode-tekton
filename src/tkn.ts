@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { CliCommand, CliExitData, cli, createCliCommand, cliCommandToString } from './cli';
+import { CliCommand, CliExitData, cli, createCliCommand, cliCommandToString, WatchProcess } from './cli';
 import { ProviderResult, TreeItemCollapsibleState, Terminal, Uri, workspace, TreeItem, QuickPickItem } from 'vscode';
 import { WindowUtil } from './util/windowUtils';
 import * as path from 'path';
@@ -929,6 +929,7 @@ export interface Tkn {
   getClusterTasks(clustertask?: TektonNode): Promise<TektonNode[]>;
   getRawClusterTasks(): Promise<TknTask[]>;
   execute(command: CliCommand, cwd?: string, fail?: boolean): Promise<CliExitData>;
+  executeWatch(command: CliCommand, opts?: {}): WatchProcess;
   executeInTerminal(command: CliCommand, cwd?: string): void;
   getTaskRunsForTasks(task: TektonNode): Promise<TektonNode[]>;
   getTriggerTemplates(triggerTemplates?: TektonNode): Promise<TektonNode[]>;
@@ -1447,6 +1448,18 @@ export class TknImpl implements Tkn {
     return cli.execute(command, cwd ? { cwd } : {})
       .then(async (result) => result.error && fail ? Promise.reject(result.error) : result)
       .catch((err) => fail ? Promise.reject(err) : Promise.resolve({ error: null, stdout: '', stderr: '' }));
+  }
+
+  executeWatch(command: CliCommand, cwd?: string): WatchProcess {
+    if (command.cliCommand.indexOf('tkn') >= 0) {
+      const toolLocation = ToolsConfig.getTknLocation();
+      if (toolLocation) {
+        // eslint-disable-next-line require-atomic-updates
+        command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);
+      }
+    }
+
+    return cli.executeWatch(command, cwd ? { cwd } : {});
   }
 
 }
