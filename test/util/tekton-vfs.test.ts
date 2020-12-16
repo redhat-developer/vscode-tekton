@@ -4,6 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
+import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
 import { tektonFSUri, tektonVfsProvider } from '../../src/util/tekton-vfs';
 import * as vscode from 'vscode';
@@ -13,12 +14,41 @@ import * as path from 'path';
 import { cli } from '../../src/cli';
 import { teardown } from 'mocha';
 import { newK8sCommand } from '../../src/tkn';
+import { TASK_RUN_YAML_GENERATE } from '../../src/tekton/taskruntemplate';
 
 const expect = chai.expect;
 chai.use(sinonChai);
 
 suite('Tekton VFS Provider', () => {
   const sandbox = sinon.createSandbox();
+
+
+  const taskRun =
+ `apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: Change Me
+spec:
+  params:
+    - name: filename
+      value: Change Me
+  resources:
+    outputs:
+      - name: workspace
+        resourceRef:
+          name: Change Me
+    inputs:
+      - name: optional-workspace
+        resourceRef:
+          name: Change Me
+  workspaces:
+    - name: storage
+      emptyDir: {}
+  serviceAccountName: Change Me
+  taskRef:
+    kind: Task
+    name: foo
+`;
 
   teardown(() => {
     sandbox.restore();
@@ -108,6 +138,43 @@ suite('Tekton VFS Provider', () => {
         expect(error).not.undefined;
         expect(error.toString()).equal('Error: Can"t get file content');
       }
+    });
+
+    test('"readFile" should return file content for taskrun', async () => {
+      const uri = vscode.Uri.parse(`${TASK_RUN_YAML_GENERATE}://kubernetes/generateTaskRun/foo.yaml`);
+      cliExecuteStub.resolves({ stdout: JSON.stringify({
+        apiVersion:'tekton.dev/v1beta1',
+        kind:'Task',
+        spec: {
+          params: [
+            {
+              name:'filename',
+              type:'string'
+            }
+          ],
+          workspaces: [
+            {
+              name:'storage'
+            }
+          ],
+          resources: {
+            inputs: [
+              {
+                name: 'optional-workspace',
+                type: 'git'
+              }
+            ],
+            outputs: [
+              {
+                name: 'workspace',
+                type: 'git'
+              }
+            ]
+          }
+        }
+      })});
+      const file = await tektonVfsProvider.readFile(uri);
+      expect(file.toString()).deep.equal(taskRun);
     });
 
     test('"writeFile" should write file', async () => {
