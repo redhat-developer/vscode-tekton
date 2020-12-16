@@ -4,7 +4,6 @@
  *-----------------------------------------------------------------------------------------------*/
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
-import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
 import { tektonFSUri, tektonVfsProvider } from '../../src/util/tekton-vfs';
 import * as vscode from 'vscode';
@@ -141,7 +140,7 @@ spec:
     });
 
     test('"readFile" should return file content for taskrun', async () => {
-      const uri = vscode.Uri.parse(`${TASK_RUN_YAML_GENERATE}://kubernetes/generateTaskRun/foo.yaml`);
+      const uri = vscode.Uri.parse(`${TASK_RUN_YAML_GENERATE}://kubernetes/generateTaskRun/taskRun-for-foo.yaml`);
       cliExecuteStub.resolves({ stdout: JSON.stringify({
         apiVersion:'tekton.dev/v1beta1',
         kind:'Task',

@@ -136,8 +136,8 @@ export class TektonVFSProvider implements FileSystemProvider {
     const [resource, format] = this.extractResourceAndFormat(uri);
     const generateTaskRunRegex = /^generateTaskRun/;
     if (generateTaskRunRegex.test(resource)) {
-      const taskRefRegex = /[^\\/]*$/;
-      const taskRef = resource.match(taskRefRegex)[0];
+      const taskRefRegex = /generateTaskRun\/taskRun-for-(.*)/;
+      const taskRef = resource.match(taskRefRegex)[1];
       const getTaskData = await this.getTask(taskRef);
       const taskRunTemplate = this.defaultStructureForTaskRun();
       this.getParams(getTaskData, taskRunTemplate);

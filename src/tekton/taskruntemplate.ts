@@ -13,7 +13,7 @@ export const TASK_RUN_YAML_GENERATE = 'taskRunYamlGenerate';
 
 export async function openTaskRunTemplate(context: TektonNode): Promise<void> {
   const outputFormat = TektonItem.getOutputFormat();
-  const uri = tektonFSUri('generateTaskRun', context.getName(), outputFormat, undefined, TASK_RUN_YAML_GENERATE);
+  const uri = tektonFSUri('generateTaskRun', `taskRun-for-${context.getName()}`, outputFormat, undefined, TASK_RUN_YAML_GENERATE);
   vscode.workspace.openTextDocument(uri).then((doc) => {
     window.showTextDocument(doc, { preserveFocus: true, preview: true });
   });
