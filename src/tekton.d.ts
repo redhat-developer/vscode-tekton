@@ -73,6 +73,49 @@ export interface TknSpec {
   workspaces?: TknWorkspaces[];
 }
 
+export interface TaskRunTemplate {
+  apiVersion: string;
+  kind: string;
+  metadata: {
+    name: string;
+  };
+  spec: object;
+}
+
+export interface Params {
+  name: string;
+  value: string;
+}
+
+export interface Task {
+  kind: string;
+  metadata: TknMetadata;
+  spec: {
+    params: Params[];
+    resources: Resource;
+    workspaces: TknWorkspaces[];
+  };
+}
+
+export interface Resource {
+  outputs: Outputs[];
+  inputs: Inputs[];
+}
+
+export interface Outputs {
+  name: string;
+  resourceRef: {
+    name: string;
+  };
+}
+
+export interface Inputs {
+  name: string;
+  resourceRef: {
+    name: string;
+  };
+}
+
 export interface TknTaskSpec {
   inputs?: TknInputs;
   outputs?: TknOutputs;

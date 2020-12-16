@@ -113,6 +113,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     registerLogDocumentProvider(),
     // Temporarily loaded resource providers
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME, tektonVfsProvider, { isCaseSensitive: true, }),
+    vscode.workspace.registerFileSystemProvider(TASK_RUN_YAML_GENERATE, tektonVfsProvider, { isCaseSensitive: true, }),
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider, { isCaseSensitive: true, isReadonly: true }),
   ];
   disposables.forEach((e) => context.subscriptions.push(e));
