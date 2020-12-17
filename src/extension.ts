@@ -33,7 +33,7 @@ import { showDiagnosticData } from './tekton/diagnostic';
 import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
 import { registerLogDocumentProvider } from './util/log-in-editor';
-import { openTaskRunTemplate, TASK_RUN_YAML_GENERATE } from './tekton/taskruntemplate';
+import { openTaskRunTemplate } from './tekton/taskruntemplate';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -114,7 +114,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     registerLogDocumentProvider(),
     // Temporarily loaded resource providers
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME, tektonVfsProvider, { isCaseSensitive: true, }),
-    vscode.workspace.registerFileSystemProvider(TASK_RUN_YAML_GENERATE, tektonVfsProvider, { isCaseSensitive: true, }),
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider, { isCaseSensitive: true, isReadonly: true }),
   ];
   disposables.forEach((e) => context.subscriptions.push(e));

@@ -61,8 +61,7 @@
     "onCommand:tekton.explorer.reportIssue",
     "onLanguage:yaml",
     "onFileSystem:tekton",
-    "onFileSystem:tekton-ro",
-    "onFileSystem:taskRunYamlGenerate"
+    "onFileSystem:tekton-ro"
   ],
   "main": "./out/src/extension",
   "contributes": {

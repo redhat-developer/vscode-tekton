@@ -11,9 +11,6 @@ import * as fsx from 'fs-extra';
 import { VirtualDocument } from '../yaml-support/yaml-locator';
 import { TektonItem } from '../tekton/tektonitem';
 import { newFileName } from './filename';
-import * as yaml from 'js-yaml';
-import { Task, TaskRunTemplate } from '../tekton';
-import { TASK_RUN_YAML_GENERATE } from '../tekton/taskruntemplate';
 
 export const TKN_RESOURCE_SCHEME = 'tekton';
 export const TKN_RESOURCE_SCHEME_READONLY = 'tekton-ro';
@@ -25,11 +22,9 @@ const readonlyRegex = /(taskrun|pipelinerun|pipelineRunFinished|tr)/ as RegExp;
  * @param name tekton resource name
  * @param format output format (yaml|json)
  */
-export function tektonFSUri(type: string, name: string, format: string, uid?: string, scheme?: string): Uri {
+export function tektonFSUri(type: string, name: string, format: string, uid?: string): Uri {
   if (uid) name = newFileName(name, uid);
-  if (!scheme) {
-    scheme = readonlyRegex.test(type) ? TKN_RESOURCE_SCHEME_READONLY : TKN_RESOURCE_SCHEME;
-  }
+  const scheme = readonlyRegex.test(type) ? TKN_RESOURCE_SCHEME_READONLY : TKN_RESOURCE_SCHEME;
   return Uri.parse(`${scheme}://kubernetes/${type}/${name}.${format}`);
 }
 
@@ -56,108 +51,24 @@ export class TektonVFSProvider implements FileSystemProvider {
     }
 
     const stat = this.fileStats.get(uri.toString());
-    if (uri.scheme !== TASK_RUN_YAML_GENERATE) {
-      stat.changeStat(stat.size + 1);
-    }
+    stat.changeStat(stat.size + 1);
 
     return stat;
   }
 
-  async getTask(name: string): Promise<Task> {
-    const task = await cli.execute(newK8sCommand(`get task ${name} -o json`));
-    const taskData = JSON.parse(task.stdout);
-    return taskData;
-  }
-
-  getInputsOutputs(getTaskData: Task, taskRunTemplate: TaskRunTemplate): void {
-    const resources = {};
-    if (getTaskData.spec.resources?.outputs && getTaskData.spec.resources?.outputs.length !== 0) {
-      const outputs = [];
-      getTaskData.spec.resources.outputs.forEach((value) => {
-        outputs.push({name: value.name, resourceRef: {name: 'Change Me'}});
-      });
-      resources['outputs'] = outputs;
-    }
-
-    if (getTaskData.spec.resources?.inputs && getTaskData.spec.resources?.inputs.length !== 0) {
-      const inputs = [];
-      getTaskData.spec.resources.inputs.forEach((value) => {
-        inputs.push({name: value.name, resourceRef: {name: 'Change Me'}});
-      });
-      resources['inputs'] = inputs;
-    }
-    if (Object.keys(resources).length !== 0) taskRunTemplate.spec['resources'] = resources;
-  }
-
-  workspace(getTaskData: Task, taskRunTemplate: TaskRunTemplate): void {
-    const workspacesContent = [];
-    if (getTaskData.spec.workspaces && getTaskData.spec.workspaces.length !== 0) {
-      getTaskData.spec.workspaces.forEach(value => {
-        workspacesContent.push({name: value.name, emptyDir: {}});
-      });
-      taskRunTemplate.spec['workspaces'] = workspacesContent;
-    }
-  }
-
-  getParams(getTaskData: Task, taskRunTemplate: TaskRunTemplate): void {
-    const params = [];
-    if (getTaskData.spec.params && getTaskData.spec.params.length !== 0) {
-      getTaskData.spec.params.forEach(value => {
-        params.push({name: value.name, value: 'Change Me'});
-      });
-      taskRunTemplate.spec['params'] = params;
-    }
-  }
-
-  serviceAccountName(taskRunTemplate: TaskRunTemplate): void {
-    taskRunTemplate.spec['serviceAccountName'] = 'Change Me';
-  }
-
-  taskRef(taskRefName: string, taskRunTemplate: TaskRunTemplate): void {
-    taskRunTemplate.spec['taskRef'] = {
-      kind: 'Task',
-      name: taskRefName
-    };
-  }
-
-  defaultStructureForTaskRun(): TaskRunTemplate {
-    return {
-      apiVersion: 'tekton.dev/v1beta1',
-      kind: 'TaskRun',
-      metadata: {
-        name: 'Change Me'
-      },
-      spec: {
-      }
-    }
-  }
-
   async readFile(uri: Uri): Promise<Uint8Array> {
     const [resource, format] = this.extractResourceAndFormat(uri);
-    const generateTaskRunRegex = /^generateTaskRun/;
-    if (generateTaskRunRegex.test(resource)) {
-      const taskRefRegex = /generateTaskRun\/taskRun-for-(.*)/;
-      const taskRef = resource.match(taskRefRegex)[1];
-      const getTaskData = await this.getTask(taskRef);
-      const taskRunTemplate = this.defaultStructureForTaskRun();
-      this.getParams(getTaskData, taskRunTemplate);
-      this.getInputsOutputs(getTaskData, taskRunTemplate);
-      this.workspace(getTaskData, taskRunTemplate);
-      this.serviceAccountName(taskRunTemplate);
-      this.taskRef(taskRef, taskRunTemplate);
-      const taskRunYaml = yaml.dump(taskRunTemplate);
-      return Buffer.from(taskRunYaml, 'utf8');
-    } else {
-      const loadResult = await this.loadK8sResource(resource, format);
-      if (loadResult.error) {
-        throw new Error(getStderrString(loadResult.error));
-      }
-      return Buffer.from(loadResult.stdout, 'utf8'); // TODO: add execute which return buffer instead of string
+
+    const loadResult = await this.loadK8sResource(resource, format);
+    if (loadResult.error) {
+      throw new Error(getStderrString(loadResult.error));
     }
+
+    return Buffer.from(loadResult.stdout, 'utf8'); // TODO: add execute which return buffer instead of string
+
   }
 
   async writeFile(uri: Uri, content: Uint8Array): Promise<void> {
-    if (uri.scheme === TASK_RUN_YAML_GENERATE) return null;
     const tempPath = os.tmpdir();
     const fsPath = path.join(tempPath, uri.fsPath);
 
