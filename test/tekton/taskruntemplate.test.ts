@@ -58,37 +58,36 @@ suite('Tekton/TaskRunTemplate', () => {
 
   test('"readFile" should return file content for taskrun', async () => {
     cliExecuteStub.resolves({ stdout: JSON.stringify({
-        apiVersion:'tekton.dev/v1beta1',
-        kind:'Task',
-        spec: {
-          params: [
-            {
-              name:'filename',
-              type:'string'
-            }
-          ],
-          workspaces: [
-            {
-              name:'storage'
-            }
-          ],
-          resources: {
-            inputs: [
-              {
-                name: 'optional-workspace',
-                type: 'git'
-              }
-            ],
-            outputs: [
-              {
-                name: 'workspace',
-                type: 'git'
-              }
-            ]
+      apiVersion:'tekton.dev/v1beta1',
+      kind:'Task',
+      spec: {
+        params: [
+          {
+            name:'filename',
+            type:'string'
           }
+        ],
+        workspaces: [
+          {
+            name:'storage'
+          }
+        ],
+        resources: {
+          inputs: [
+            {
+              name: 'optional-workspace',
+              type: 'git'
+            }
+          ],
+          outputs: [
+            {
+              name: 'workspace',
+              type: 'git'
+            }
+          ]
         }
-      })
-    });
+      }
+    })});
     await taskRunTemplate.openTaskRunTemplate(taskItem);
     expect(openTextStub).calledOnce;
     expect(cliExecuteStub).calledOnceWith(newK8sCommand(`get task ${taskItem.getName()} -o json`));
