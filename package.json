@@ -427,6 +427,12 @@
         "enablement": "tekton:tkn"
       },
       {
+        "command": "tekton.taskrun.restart",
+        "title": "Restart",
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
+      },
+      {
         "command": "tekton.showDiagnosticDataAction",
         "title": "Show Diagnostic Data",
         "category": "Tekton",
@@ -635,6 +641,10 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
+          "command": "tekton.taskrun.restart",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
           "command": "tekton.showDiagnosticDataAction",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -822,9 +832,14 @@
           "group": "c1@4"
         },
         {
-          "command": "tekton.taskrun.logs",
+          "command": "tekton.taskrun.restart",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == taskrun",
           "group": "c1"
+        },
+        {
+          "command": "tekton.taskrun.logs",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == taskrun",
+          "group": "c1@1"
         },
         {
           "command": "tekton.showDiagnosticDataAction",
@@ -834,7 +849,7 @@
         {
           "command": "tekton.taskrun.followLogs",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == taskrun",
-          "group": "c1@1"
+          "group": "c1@2"
         },
         {
           "command": "tekton.open.task",

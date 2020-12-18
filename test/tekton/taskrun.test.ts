@@ -5,6 +5,8 @@
 
 'use strict';
 
+import * as os from 'os';
+import * as fs from 'fs-extra';
 import * as vscode from 'vscode';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
@@ -13,8 +15,9 @@ import { TestItem } from './testTektonitem';
 import { TaskRun } from '../../src/tekton/taskrun';
 import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { TektonItem } from '../../src/tekton/tektonitem';
-import { CliExitData } from '../../src/cli';
+import { cli, CliExitData } from '../../src/cli';
 import * as logInEditor from '../../src/util/log-in-editor';
+import { Platform } from '../../src/util/platform';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -22,6 +25,9 @@ chai.use(sinonChai);
 suite('Tekton/TaskRun', () => {
   const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
+  let quote: string;
+  let showErrorMessageStub: sinon.SinonStub;
+  let unlinkStub: sinon.SinonStub;
   let getPipelineRunNamesStub: sinon.SinonStub;
   let showQuickPickStub: sinon.SinonStub<unknown[], unknown>;
   const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
@@ -29,6 +35,10 @@ suite('Tekton/TaskRun', () => {
   const taskRunItem = new TestItem(pipelineRunItem, 'taskrun', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
   let showLogInEditorStub: sinon.SinonStub;
   let configurationStub: sinon.SinonStub;
+  let cliExecuteStub: sinon.SinonStub;
+  let osStub: sinon.SinonStub;
+  let writeFileStub: sinon.SinonStub;
+  let showInformationMessageStub: sinon.SinonStub;
 
   setup(() => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
@@ -37,7 +47,13 @@ suite('Tekton/TaskRun', () => {
     sandbox.stub(TknImpl.prototype, 'getPipelineRunsList').resolves([pipelineRunItem]);
     sandbox.stub(TknImpl.prototype, 'getTasks').resolves([taskRunItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();
-
+    cliExecuteStub = sandbox.stub(cli, 'execute');
+    osStub = sandbox.stub(os, 'tmpdir').resolves();
+    unlinkStub = sandbox.stub(fs, 'unlink').resolves();
+    showInformationMessageStub = sandbox.stub(vscode.window, 'showInformationMessage').resolves();
+    showErrorMessageStub = sandbox.stub(vscode.window, 'showErrorMessage').resolves();
+    quote = Platform.OS === 'win32' ? '"' : '\'';
+    writeFileStub = sandbox.stub(fs, 'writeFile').resolves();
     showLogInEditorStub = sandbox.stub(logInEditor, 'showLogInEditor').resolves();
     configurationStub = sandbox.stub(vscode.workspace, 'getConfiguration').returns({ get: () => false } as unknown as vscode.WorkspaceConfiguration);
   });
@@ -165,10 +181,8 @@ suite('Tekton/TaskRun', () => {
   suite('Open Task Definition', () => {
 
     let loadTektonResourceStub: sinon.SinonStub;
-    let showErrorStub: sinon.SinonStub;
     setup(() => {
-      loadTektonResourceStub = sandbox.stub(TektonItem, 'loadTektonResource');
-      showErrorStub = sandbox.stub(vscode.window, 'showErrorMessage');
+      loadTektonResourceStub = sandbox.stub(TektonItem, 'loadTektonResource')
     });
 
     test('openDefinition should ask taskrun definition', async () => {
@@ -189,7 +203,7 @@ suite('Tekton/TaskRun', () => {
 
       expect(execStub).calledOnceWith(Command.getTaskRun(taskRunItem.getName()));
       expect(loadTektonResourceStub).not.called;
-      expect(showErrorStub).calledOnceWith('TaskRun may not have started yet, try again when it starts running. "Foo error"');
+      expect(showErrorMessageStub).calledOnceWith('TaskRun may not have started yet, try again when it starts running. "Foo error"');
     });
 
     test('openDefinition should show error if trying to open condition taskrun', async () => {
@@ -200,7 +214,94 @@ suite('Tekton/TaskRun', () => {
 
       expect(execStub).calledOnceWith(Command.getTaskRun(taskRunItem.getName()));
       expect(loadTektonResourceStub).not.called;
-      expect(showErrorStub).calledOnceWith('Cannot find Condition definition for: taskrun. Please look in Pipeline definition');
+      expect(showErrorMessageStub).calledOnceWith('Cannot find Condition definition for: taskrun. Please look in Pipeline definition');
     });
   });
+
+  suite('Open Task Definition', () => {
+
+    test('Restart taskRun', async () => {
+      execStub.onFirstCall().resolves({ stdout: JSON.stringify({
+        apiVersion:'tekton.dev/v1beta1',
+        kind: "TaskRun",
+        metadata: {
+          name: "send-cloud-event",
+        },
+        spec: {
+          resources: {
+            outputs: [
+              {
+                name: 'myimage',
+                resourceSpec: {
+                  params: [
+                    {
+                      name: 'url',
+                      value: 'fake'
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          serviceAccountName: 'default',
+          taskRef: {
+            kind: "Task",
+            name: "send-cloud-event-task"
+          },
+        }
+      })});
+      osStub.returns('path');
+      cliExecuteStub.resolves({ stdout: 'successfully created'})
+      await TaskRun.restartTaskRun(taskRunItem);
+      unlinkStub.calledOnce;
+      osStub.calledOnce;
+      writeFileStub.calledOnce;
+      showInformationMessageStub.calledOnce;
+      expect(cliExecuteStub).calledOnceWith(Command.create(`${quote}path/${taskRunItem.getName()}-.yaml${quote}`));
+      expect(showInformationMessageStub).calledOnceWith('TaskRun successfully restarted');
+    });
+
+    test('show error message if fails to restart taskRun', async () => {
+      execStub.onFirstCall().resolves({ stdout: JSON.stringify({
+        apiVersion:'tekton.dev/v1beta1',
+        kind: "TaskRun",
+        metadata: {
+          name: "send-cloud-event",
+        },
+        spec: {
+          resources: {
+            outputs: [
+              {
+                name: 'myimage',
+                resourceSpec: {
+                  params: [
+                    {
+                      name: 'url',
+                      value: 'fake'
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          serviceAccountName: 'default',
+          taskRef: {
+            kind: "Task",
+            name: "send-cloud-event-task"
+          },
+        }
+      })});
+      osStub.returns('path');
+      cliExecuteStub.resolves({ error: 'fails'})
+      await TaskRun.restartTaskRun(taskRunItem);
+      unlinkStub.calledOnce;
+      osStub.calledOnce;
+      writeFileStub.calledOnce;
+      showErrorMessageStub.calledOnce;
+      expect(cliExecuteStub).calledOnceWith(Command.create(`${quote}path/${taskRunItem.getName()}-.yaml${quote}`));
+      expect(showErrorMessageStub).calledOnceWith('Fail to restart TaskRun: fails');
+    });
+
+  });
+
 });

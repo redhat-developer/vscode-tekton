@@ -3,13 +3,61 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
+import * as os from 'os';
+import * as path from 'path';
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command, PipelineTaskRunData, ContextType } from '../tkn';
+import { TektonNode, Command, PipelineTaskRunData, ContextType, getStderrString } from '../tkn';
 import { window, workspace } from 'vscode';
-import { CliCommand } from '../cli';
+import { cli, CliCommand } from '../cli';
 import { showLogInEditor } from '../util/log-in-editor';
+import { TknTaskRun } from '../tekton';
+import * as fs from 'fs-extra';
+import * as yaml from 'js-yaml';
+import { Platform } from '../util/platform';
 
 export class TaskRun extends TektonItem {
+
+  static async getTaskRunData(taskRunName: string):  Promise<TknTaskRun>{
+    const result = await TaskRun.tkn.execute(Command.getTaskRun(taskRunName), undefined, false);
+    if (result.error) {
+      window.showErrorMessage(`TaskRun not Found: ${result.error}`)
+      return;
+    }
+    let data: TknTaskRun;
+    try {
+      data = JSON.parse(result.stdout);
+      // eslint-disable-next-line no-empty
+    } catch (ignore) {
+    }
+    return data;
+  }
+
+  static async restartTaskRun(taskRun: TektonNode): Promise<void> {
+    const taskRunTemplate = {
+      apiVersion: 'tekton.dev/v1beta1',
+      kind: 'TaskRun',
+      metadata: {
+        generateName: `${taskRun.getName()}-`
+      }
+    }
+    const taskRunContent = await TaskRun.getTaskRunData(taskRun.getName());
+    taskRunTemplate['spec'] = taskRunContent.spec;
+    const tempPath = os.tmpdir();
+    if (!tempPath) {
+      return;
+    }
+    const quote = Platform.OS === 'win32' ? '"' : '\'';
+    const fsPath = path.join(tempPath, `${taskRunTemplate.metadata.generateName}.yaml`);
+    const taskRunYaml = yaml.dump(taskRunTemplate);
+    await fs.writeFile(fsPath, taskRunYaml, 'utf8');
+    const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
+    await fs.unlink(fsPath);
+    if (result.error) {
+      window.showErrorMessage(`Fail to restart TaskRun: ${getStderrString(result.error)}`);
+    } else {
+      window.showInformationMessage('TaskRun successfully restarted');
+    }
+  }
 
   static async listFromPipelineRun(pipelineRun: TektonNode): Promise<void> {
     if (!pipelineRun) {
