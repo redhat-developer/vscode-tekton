@@ -6,6 +6,7 @@
 'use strict';
 
 import * as os from 'os';
+import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as vscode from 'vscode';
 import * as chai from 'chai';
@@ -251,13 +252,14 @@ suite('Tekton/TaskRun', () => {
         }
       })});
       osStub.returns('path');
-      cliExecuteStub.resolves({ stdout: 'successfully created'})
+      cliExecuteStub.resolves({ stdout: 'successfully created'});
       await TaskRun.restartTaskRun(taskRunItem);
       unlinkStub.calledOnce;
       osStub.calledOnce;
       writeFileStub.calledOnce;
       showInformationMessageStub.calledOnce;
-      expect(cliExecuteStub).calledOnceWith(Command.create(`${quote}path/${taskRunItem.getName()}-.yaml${quote}`));
+      const mockFilePath = path.join('path', `${taskRunItem.getName()}-.yaml`);
+      expect(cliExecuteStub).calledOnceWith(Command.create(`${quote}${mockFilePath}${quote}`));
       expect(showInformationMessageStub).calledOnceWith('TaskRun successfully restarted');
     });
 
@@ -292,13 +294,14 @@ suite('Tekton/TaskRun', () => {
         }
       })});
       osStub.returns('path');
-      cliExecuteStub.resolves({ error: 'fails'})
+      cliExecuteStub.resolves({ error: 'fails'});
       await TaskRun.restartTaskRun(taskRunItem);
       unlinkStub.calledOnce;
       osStub.calledOnce;
       writeFileStub.calledOnce;
       showErrorMessageStub.calledOnce;
-      expect(cliExecuteStub).calledOnceWith(Command.create(`${quote}path/${taskRunItem.getName()}-.yaml${quote}`));
+      const mockFilePath = path.join('path', `${taskRunItem.getName()}-.yaml`);
+      expect(cliExecuteStub).calledOnceWith(Command.create(`${quote}${mockFilePath}${quote}`));
       expect(showErrorMessageStub).calledOnceWith('Fail to restart TaskRun: fails');
     });
 
