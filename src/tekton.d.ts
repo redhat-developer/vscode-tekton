@@ -12,21 +12,21 @@ import { K8sResourceKind } from './tekton/triggertype';
 interface TknTaskRunSpec {
   params?: Param[];
   resources?: Resource;
-  workspaces?: PipelineRunWorkspace[]
+  workspaces?: PipelineRunWorkspace[];
   serviceAccountName?: string;
 }
 
 interface Resource {
-  inputs?: inputOutput[]
-  outputs?: inputOutput[];
+  inputs?: InputAndOutput[];
+  outputs?: InputAndOutput[];
 }
 
-interface inputAndOutput {
+interface InputAndOutput {
   inputOutput: {
     name: string;
     resourceRef: {
       name: string;
-    }
+    };
   };
 }
 

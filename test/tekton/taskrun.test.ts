@@ -223,9 +223,9 @@ suite('Tekton/TaskRun', () => {
     test('Restart taskRun', async () => {
       execStub.onFirstCall().resolves({ stdout: JSON.stringify({
         apiVersion:'tekton.dev/v1beta1',
-        kind: "TaskRun",
+        kind: 'TaskRun',
         metadata: {
-          name: "send-cloud-event",
+          name: 'send-cloud-event',
         },
         spec: {
           resources: {
@@ -245,8 +245,8 @@ suite('Tekton/TaskRun', () => {
           },
           serviceAccountName: 'default',
           taskRef: {
-            kind: "Task",
-            name: "send-cloud-event-task"
+            kind: 'Task',
+            name: 'send-cloud-event-task'
           },
         }
       })});
@@ -264,9 +264,9 @@ suite('Tekton/TaskRun', () => {
     test('show error message if fails to restart taskRun', async () => {
       execStub.onFirstCall().resolves({ stdout: JSON.stringify({
         apiVersion:'tekton.dev/v1beta1',
-        kind: "TaskRun",
+        kind: 'TaskRun',
         metadata: {
-          name: "send-cloud-event",
+          name: 'send-cloud-event',
         },
         spec: {
           resources: {
@@ -286,8 +286,8 @@ suite('Tekton/TaskRun', () => {
           },
           serviceAccountName: 'default',
           taskRef: {
-            kind: "Task",
-            name: "send-cloud-event-task"
+            kind: 'Task',
+            name: 'send-cloud-event-task'
           },
         }
       })});

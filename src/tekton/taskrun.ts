@@ -17,7 +17,7 @@ import { Platform } from '../util/platform';
 
 export class TaskRun extends TektonItem {
 
-  static async getTaskRunData(taskRunName: string):  Promise<TknTaskRun>{
+  static async getTaskRunData(taskRunName: string): Promise<TknTaskRun>{
     const result = await TaskRun.tkn.execute(Command.getTaskRun(taskRunName), undefined, false);
     if (result.error) {
       window.showErrorMessage(`TaskRun not Found: ${result.error}`)
