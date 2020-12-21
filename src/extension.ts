@@ -72,6 +72,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.pipelinerun.describe.palette', (context) => execute(PipelineRun.describe, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.restart', (context) => execute(PipelineRun.restart, context)),
     vscode.commands.registerCommand('tekton.showDiagnosticDataAction', (context) => execute(showDiagnosticData, context)),
+    vscode.commands.registerCommand('tekton.taskrun.restart', (context) => execute(TaskRun.restartTaskRun, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.logs', (context) => execute(PipelineRun.logs, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.logs.palette', (context) => execute(PipelineRun.logs, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.followLogs', (context) => execute(PipelineRun.followLogs, context)),
