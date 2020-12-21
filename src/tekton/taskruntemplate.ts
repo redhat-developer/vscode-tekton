@@ -15,19 +15,19 @@ async function getTask(name: string): Promise<Task> {
   return taskData;
 }
 
-function getInputsOutputs(getTaskData: Task, taskRunTemplate: TaskRunTemplate): void {
+function getInputsOutputs(task: Task, taskRunTemplate: TaskRunTemplate): void {
   const resources = {};
-  if (getTaskData.spec.resources?.outputs && getTaskData.spec.resources?.outputs.length !== 0) {
+  if (task.spec.resources?.outputs && task.spec.resources?.outputs.length !== 0) {
     const outputs = [];
-    getTaskData.spec.resources.outputs.forEach((value) => {
+    task.spec.resources.outputs.map((value) => {
       outputs.push({name: value.name, resourceRef: {name: 'Change Me'}});
     });
     resources['outputs'] = outputs;
   }
 
-  if (getTaskData.spec.resources?.inputs && getTaskData.spec.resources?.inputs.length !== 0) {
+  if (task.spec.resources?.inputs && task.spec.resources?.inputs.length !== 0) {
     const inputs = [];
-    getTaskData.spec.resources.inputs.forEach((value) => {
+    task.spec.resources.inputs.map((value) => {
       inputs.push({name: value.name, resourceRef: {name: 'Change Me'}});
     });
     resources['inputs'] = inputs;
@@ -35,20 +35,20 @@ function getInputsOutputs(getTaskData: Task, taskRunTemplate: TaskRunTemplate): 
   if (Object.keys(resources).length !== 0) taskRunTemplate.spec['resources'] = resources;
 }
 
-function workspace(getTaskData: Task, taskRunTemplate: TaskRunTemplate): void {
+function workspace(task: Task, taskRunTemplate: TaskRunTemplate): void {
   const workspacesContent = [];
-  if (getTaskData.spec.workspaces && getTaskData.spec.workspaces.length !== 0) {
-    getTaskData.spec.workspaces.forEach(value => {
+  if (task.spec.workspaces && task.spec.workspaces.length !== 0) {
+    task.spec.workspaces.map(value => {
       workspacesContent.push({name: value.name, emptyDir: {}});
     });
     taskRunTemplate.spec['workspaces'] = workspacesContent;
   }
 }
 
-function getParams(getTaskData: Task, taskRunTemplate: TaskRunTemplate): void {
+function getParams(task: Task, taskRunTemplate: TaskRunTemplate): void {
   const params = [];
-  if (getTaskData.spec.params && getTaskData.spec.params.length !== 0) {
-    getTaskData.spec.params.forEach(value => {
+  if (task.spec.params && task.spec.params.length !== 0) {
+    task.spec.params.map(value => {
       params.push({name: value.name, value: 'Change Me'});
     });
     taskRunTemplate.spec['params'] = params;
@@ -79,11 +79,11 @@ function defaultStructureForTaskRun(): TaskRunTemplate {
 }
 
 export async function openTaskRunTemplate(context: TektonNode): Promise<void> {
-  const getTaskData = await getTask(context.getName());
+  const task = await getTask(context.getName());
   const taskRunTemplate = defaultStructureForTaskRun();
-  getParams(getTaskData, taskRunTemplate);
-  getInputsOutputs(getTaskData, taskRunTemplate);
-  workspace(getTaskData, taskRunTemplate);
+  getParams(task, taskRunTemplate);
+  getInputsOutputs(task, taskRunTemplate);
+  workspace(task, taskRunTemplate);
   serviceAccountName(taskRunTemplate);
   taskRef(context.getName(), taskRunTemplate);
   const taskRunYaml = yaml.dump(taskRunTemplate);

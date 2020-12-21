@@ -22,11 +22,9 @@ interface Resource {
 }
 
 interface InputAndOutput {
-  inputOutput: {
+  name: string;
+  resourceRef: {
     name: string;
-    resourceRef: {
-      name: string;
-    };
   };
 }
 
