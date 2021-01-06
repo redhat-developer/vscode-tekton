@@ -11,6 +11,7 @@ import { ButtonsPanel } from './widgets/buttonspanel';
 import { Editor, GroupItem, EditItem } from './widgets/maincontent';
 import { InputWidget } from './widgets/inputwidget';
 import { SelectWidget } from './widgets/selectwidget';
+import { createDiv, createSpan } from '../../common/dom-util';
 
 export class PipelineRunEditor implements Widget {
   private element: HTMLElement;
@@ -51,6 +52,13 @@ export class PipelineRunEditor implements Widget {
         } else if (title === TknResourceType.Params) {
           elementId = `${TknResourceType.Params}-input-field-content-data`;
           element = new InputWidget('Name', null, this.initialValue, null, null, null, null, resource['default']);
+          if (resource['description']) {
+            const createNewDiv = createDiv('Description-Param', 'Description-Param');
+            const description = createSpan('description');
+            description.innerText = `Description: ${resource['description']}`
+            createNewDiv.appendChild(description)
+            element.getElement().appendChild(createNewDiv);
+          }
         } else if (title === TknResourceType.Workspaces) {
           element = new SelectWidget('Workspaces-volume', this.trigger, null, this.initialValue).workspaces(VolumeTypes, resource);
         } else if (title === TknResourceType.GitResource || title === TknResourceType.ImageResource) {

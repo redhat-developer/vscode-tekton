@@ -111,10 +111,8 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
 
 function newParam(params: Param[]): void {
   params.map(val => {
-    const nameRegex = '^[^\\(]+';
-    const defaultValue = val.default.match(nameRegex)[0];
-    val.value = defaultValue.trim();
-    delete val.default;
+    val.value = val.default
+    delete val.default
   })
 }
 
