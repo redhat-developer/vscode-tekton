@@ -48,6 +48,7 @@ export class InputWidget extends BaseWidget {
     if (this.input.parentNode.parentNode.parentElement.lastElementChild.id === 'label-text-id') {
       this.input.parentNode.parentNode.parentElement.lastElementChild.remove();
     }
+    this.paddingForParamInput();
   }
 
   addSpaceInItem(addItemContent: HTMLElement, className?: string): void {
@@ -67,6 +68,7 @@ export class InputWidget extends BaseWidget {
         this.input.parentNode.parentElement.className = 'number-input-box-error';
       } else {
         this.input.parentNode.parentElement.className = 'editor-input-box-error';
+        this.addPaddingForParamInput();
       }
       this.input.parentNode.parentNode.parentElement.appendChild(createLabel);
     } else {
@@ -75,7 +77,24 @@ export class InputWidget extends BaseWidget {
         this.input.parentNode.parentElement.className = 'number-input-box';
       } else {
         this.input.parentNode.parentElement.className = 'editor-input-box';
+        this.paddingForParamInput();
       }
+    }
+  }
+
+  paddingForParamInput(): void {
+    const paramDescription = this.input.parentNode.parentElement.parentElement.querySelector('[id^=Description-Param]');
+    if (paramDescription) {
+      this.input.parentNode.parentElement.parentElement.className = 'editItem';
+      paramDescription.className = 'Description-Param';
+    }
+  }
+
+  addPaddingForParamInput(): void {
+    const paramDescription = this.input.parentNode.parentElement.parentElement.querySelector('[id^=Description-Param]');
+    if (paramDescription) {
+      this.input.parentNode.parentElement.parentElement.className = 'editItem-param';
+      paramDescription.className = 'Description-Param-top';
     }
   }
 

@@ -100,6 +100,19 @@ body {
   color: white;
 }
 
+.Description-Param-top {
+  position: absolute;
+  top: 39px;
+}
+
+.editItem-param {
+  padding-top: 12px;
+  padding-bottom: 32px;
+  white-space: normal;
+  width: 500px;
+  position: relative;
+}
+
 .startButton {
   height: 16px;
   margin: -20px -50px;
