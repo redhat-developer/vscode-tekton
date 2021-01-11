@@ -33,6 +33,7 @@ import { showDiagnosticData } from './tekton/diagnostic';
 import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
 import { registerLogDocumentProvider } from './util/log-in-editor';
+import { openTaskRunTemplate } from './tekton/taskruntemplate';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -105,6 +106,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.open.task.palette', (context) => execute(TaskRun.openDefinition, context)),
     vscode.commands.registerCommand('tekton.view.pipelinerun.diagram', (context) => execute(PipelineRun.showDiagram, context)),
     vscode.commands.registerCommand('tekton.pipeline.wizard.start', (context) => execute(Pipeline.startWizard, context)),
+    vscode.commands.registerCommand('tekton.taskrun.template', (context) => execute(openTaskRunTemplate, context)),
 
     hubViewProvider,
     vscode.window.registerWebviewViewProvider('tektonHubTasks', hubViewProvider),

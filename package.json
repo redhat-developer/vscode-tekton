@@ -403,6 +403,12 @@
         "enablement": "tekton:tkn"
       },
       {
+        "command": "tekton.taskrun.template",
+        "title": "Generate TaskRun Template",
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
+      },
+      {
         "command": "tekton.taskrun.list.palette",
         "title": "List TaskRuns from Pipeline Run",
         "category": "Tekton",
@@ -633,6 +639,10 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
+          "command": "tekton.taskrun.template",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
           "command": "tekton.taskrun.listFromTask",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -815,6 +825,11 @@
           "command": "tekton.taskrun.listFromTask",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == task",
           "group": "c1@2"
+        },
+        {
+          "command": "tekton.taskrun.template",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == task",
+          "group": "c1@3"
         },
         {
           "command": "tekton.clustertask.list",

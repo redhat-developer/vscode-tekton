@@ -140,8 +140,8 @@ function tknWorkspace(pipelineData: StartObject): string[] {
       } else {
         workspace.push(`-w name=${element.name},secret=${element.workspaceName}`);
       }
-    } else if (element.workspaceType === 'EmptyDir') {
-      workspace.push(`-w name=${element.name},emptyDir=${element.emptyDir}`);
+    } else if (element.workspaceType === 'EmptyDirectory' || element.workspaceType === 'EmptyDir') {
+      workspace.push(`-w name=${element.name},emptyDir=${element.emptyDir ?? '""'}`);
     }
   });
   return workspace;
