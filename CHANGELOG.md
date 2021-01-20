@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.10.0 (January 20, 2020)
+
+This release brings to you:
+
+* [#343](https://github.com/redhat-developer/vscode-tekton/issues/343) Display PipelineRun result as notifications
+* [#399](https://github.com/redhat-developer/vscode-tekton/issues/399) Display Logs in the editor
+* [#364](https://github.com/redhat-developer/vscode-tekton/issues/364) New action to rerun tasks
+* [#354](https://github.com/redhat-developer/vscode-tekton/issues/354) Generate an example TaskRun YAML for a Task
+* [#482](https://github.com/redhat-developer/vscode-tekton/pull/482) Param description below input field
+* [#480](https://github.com/redhat-developer/vscode-tekton/issues/480) Update tkn cli version to latest `0.15.0` version
+
 ## 0.9.0 (December 9, 2020)
 
 This release brings to you:
