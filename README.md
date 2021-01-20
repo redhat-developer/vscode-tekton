@@ -20,6 +20,9 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 ## New and Noteworthy
 
+### Show Tekton TaskRun/PipelineRun Logs in Editor
+<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/logs_in_editor_0.10.0.gif" width="800" height="500" /></div>
+
 ### Install Task from TektonHub as ClusterTask
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/install_task_as_clustertask_0.9.0.gif" width="800" height="600" /></div>
 
