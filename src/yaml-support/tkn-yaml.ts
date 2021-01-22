@@ -528,6 +528,21 @@ function collectRunAfter(taskNode: YamlMap, name: string): string[] {
     }
   }
 
+  const params = findNodeByKey<YamlSequence>('params', taskNode);
+  if (params) {
+    for (const param of params.items){
+      const val = findNodeByKey<YamlNode>('value', param as YamlMap);
+      if (val){
+        const inputVal = _.trim(val.raw, '"');
+        const task = extractTaskName(inputVal);
+        if (task){
+          result.push(...task.map( v => v[0]));
+        }
+      
+      }
+    }
+  }
+
   if (!conditions && !whens) {
     const runAfter = getTaskRunAfter(taskNode);
     result.push(...runAfter);
