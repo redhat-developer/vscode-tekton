@@ -31,4 +31,6 @@ export interface CyTheme {
   fontSize: string;
   labelColor: string;
   fontFamily: string;
+  targetEdgesColor: string;
+  sourceEdgesColor: string;
 }

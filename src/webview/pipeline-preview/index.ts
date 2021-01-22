@@ -24,6 +24,8 @@ if (previousState) {
   restore(previousState);
 }
 
+let highlightedSourceEdges: cytoscape.Collection;
+let highlightedTargetEdges: cytoscape.Collection;
 
 window.addEventListener('message', event => {
 
@@ -79,6 +81,36 @@ function startUpdatingState(): void {
       });
     }
   });
+
+  cy.on('mouseover', 'node', (e) => {
+    const node = e.target;
+    const sourceEdges = node.connectedEdges(`edge[source = "${node.data().id}"]`);
+    const targetEdges = node.connectedEdges(`edge[target = "${node.data().id}"]`);
+    const theme = getTheme();
+    sourceEdges.select();
+    highlightedSourceEdges = sourceEdges;
+    highlightedTargetEdges = targetEdges;
+    sourceEdges.style('line-color', theme.sourceEdgesColor);
+    sourceEdges.style('target-arrow-color', theme.sourceEdgesColor);
+    sourceEdges.style('z-index', '100');
+
+    targetEdges.style('line-color', theme.targetEdgesColor);
+    targetEdges.style('target-arrow-color', theme.targetEdgesColor);
+    targetEdges.style('z-index', '100');
+  });
+
+  cy.on('mouseout', 'node', () => {
+    if (highlightedSourceEdges) {
+      highlightedSourceEdges.removeStyle('line-color');
+      highlightedSourceEdges.removeStyle('z-index');
+      highlightedSourceEdges.removeStyle('target-arrow-color');
+    }
+    if (highlightedTargetEdges) {
+      highlightedTargetEdges.removeStyle('line-color');
+      highlightedTargetEdges.removeStyle('z-index');
+      highlightedTargetEdges.removeStyle('target-arrow-color');
+    }
+  });
 }
 
 function restore(state: object): void {
@@ -124,7 +156,8 @@ function getTheme(): CyTheme {
   result.fontSize = getComputedStyle(document.body).getPropertyValue('font-size');
   result.fontFamily = getComputedStyle(document.body).getPropertyValue('font-family');
   result.arrowColor = getComputedStyle(document.documentElement).getPropertyValue('--vscode-editor-selectionBackground');
-
+  result.targetEdgesColor = getComputedStyle(document.body).getPropertyValue('--vscode-charts-yellow');
+  result.sourceEdgesColor = getComputedStyle(document.body).getPropertyValue('--vscode-charts-green');
   return result;
 }
 
@@ -139,9 +172,13 @@ function getStyle(style: CyTheme): cytoscape.Stylesheet[] {
         'font-family': style.fontFamily,
         'font-size': style.fontSize,
         'curve-style': 'taxi',
+        'taxi-direction': 'downward',
+        'taxi-turn': '50px',
+        'taxi-turn-min-distance': 1,
+        'edge-distances': 'node-position',
         'target-arrow-shape': 'triangle',
         'target-arrow-color': style.arrowColor,
-      }
+      } as unknown,
     },
     {
       selector: 'edge[state = "Cancelled"]',

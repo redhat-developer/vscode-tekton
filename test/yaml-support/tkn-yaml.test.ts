@@ -324,6 +324,33 @@ suite('Tekton yaml', () => {
       expect(result).equal('file-exists');
     });
 
+    test('task should have other task in runAfter if task use output value from other task', async ()=> {
+      const yaml = `
+      apiVersion: tekton.dev/v1alpha1
+      kind: Pipeline
+      metadata:
+        name: pipeline-with-parameters
+      spec:
+        tasks:
+          - name: foo-task
+            taskRef:
+              name: build
+          - name: build-skaffold-web
+            taskRef:
+              name: build-push
+            params:
+              - name: pathToDockerFile
+                value: Dockerfile
+              - name: pathToContext
+                value: "$(tasks.foo-task.results.product)"
+      `
+      const docs = tektonYaml.getTektonDocuments({ getText: () => yaml, version: 1, uri: vscode.Uri.parse('file:///tasks/with/variables/pipeline.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = pipelineYaml.getPipelineTasks(docs[0]);
+      expect(tasks).is.not.empty;
+      const task = tasks.find(t => t.name === 'build-skaffold-web');
+      expect(task.runAfter).to.be.deep.equal(['foo-task']);
+    });
+
   });
 
   suite('PipelineRun', () => {
