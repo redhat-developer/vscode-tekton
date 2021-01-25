@@ -326,7 +326,7 @@ export class Command {
   }
   @verbose
   static listTasks(namespace?: string): CliCommand {
-    return newK8sCommand('get', 'task', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
+    return newK8sCommand('get', 'task.tekton', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
   }
   @verbose
   static listTasksInTerminal(namespace?: string): CliCommand {
