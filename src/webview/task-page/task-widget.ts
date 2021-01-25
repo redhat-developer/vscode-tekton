@@ -204,7 +204,8 @@ export class TaskWidget extends BaseWidget {
       name: this.task.name,
       minPipelinesVersion: this.currentVersion.minPipelinesVersion,
       tknVersion: this.tknVersion,
-      asClusterTask: asCluster
+      asClusterTask: asCluster,
+      taskVersion: this.currentVersion.version
     } as HubTaskInstallation});
   }
 

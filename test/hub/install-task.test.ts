@@ -47,10 +47,11 @@ suite('Install Task', () => {
     await installTask({
       name: 'foo',
       url: 'https://some/path/task.yaml',
-      asClusterTask: false
+      asClusterTask: false,
+      taskVersion: '1.0'
     });
 
-    expect(executeStub).calledOnceWith(Command.updateYaml('https://some/path/task.yaml'));
+    expect(executeStub).calledOnceWith(Command.hubInstall('foo', '1.0'));
     expect(showInformationMessageStub).calledOnceWith('Task foo installed.');
   });
 

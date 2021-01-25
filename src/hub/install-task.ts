@@ -54,7 +54,7 @@ function doInstallTask(task: HubTaskInstallation): void {
           }
         }
       }
-      const result = await tkn.execute(Command.updateYaml(task.url));
+      const result = await tkn.execute(Command.hubInstall(task.name, task.taskVersion));
       if (result.error){
         vscode.window.showWarningMessage(`Task installation failed: ${getStderrString(result.error)}`);
       } else {
