@@ -144,7 +144,8 @@ export class TaskItem extends BaseWidget {
       url: this.task.latestVersion.rawURL,
       name: this.task.name,
       minPipelinesVersion: this.task.latestVersion.minPipelinesVersion,
-      tknVersion: this.tknVersion
+      tknVersion: this.tknVersion,
+      taskVersion: this.task.latestVersion.version
     } as HubTaskInstallation});
   }
 

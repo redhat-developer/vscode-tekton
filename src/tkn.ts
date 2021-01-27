@@ -383,6 +383,9 @@ export class Command {
   static updateYaml(fsPath: string): CliCommand {
     return newK8sCommand('apply', '-f', fsPath);
   }
+  static hubInstall(name: string, version: string): CliCommand {
+    return newTknCommand('hub', 'install', 'task', name, '--version', version);
+  }
   static listTaskRun(): CliCommand {
     return newK8sCommand('get', 'taskrun', '-o', 'json');
   }
