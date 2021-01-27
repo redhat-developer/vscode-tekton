@@ -112,6 +112,7 @@ function injectMarkdownDescription(templateObj: any): {} {
   return templateObj;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function injectVariables(templateObj: any, docs: TknDocument[], tasks: TknTask[]): unknown {
   const snippets: Snippet<string>[] = [];
   const taskMap = new Map<string, TknTask>();

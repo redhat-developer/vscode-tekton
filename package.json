@@ -933,7 +933,7 @@
     "generate:hub-client": "openapi-generator-cli generate -i https://raw.githubusercontent.com/tektoncd/hub/master/api/gen/http/openapi3.json -g typescript-axios -o src/tekton-hub-client --additional-properties=supportsES6=true"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.0.3",
+    "@openapitools/openapi-generator-cli": "^2.1.18",
     "@types/byline": "^4.2.31",
     "@types/chai": "^4.1.7",
     "@types/collections": "^5.0.0",
