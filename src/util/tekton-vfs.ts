@@ -95,8 +95,12 @@ export class TektonVFSProvider implements FileSystemProvider {
     const id = new RegExp('-[A-Za-z0-9]+$');
     let newResourceName = (uid) ? resource.replace(id, '') : resource;
     const pipelineRunFinishedRegex = RegExp(`^${ContextType.PIPELINERUNCHILDNODE}/`);
+    const taskRegex = RegExp(`^${ContextType.TASK}/`);
     if (pipelineRunFinishedRegex.test(newResourceName)) {
       newResourceName = newResourceName.replace(`${ContextType.PIPELINERUNCHILDNODE}/`, `${ContextType.PIPELINERUN}/`);
+    }
+    if (taskRegex.test(newResourceName)) {
+      newResourceName = newResourceName.replace(`${ContextType.TASK}/`, `${ContextType.TASK}.tekton/`);
     }
     return cli.execute(newK8sCommand(`-o ${outputFormat} get ${newResourceName}`));
   }
