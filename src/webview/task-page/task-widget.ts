@@ -8,7 +8,7 @@ import { createDiv, createSpan } from '../common/dom-util';
 import { BaseWidget } from '../common/widget';
 import { VSMessage } from '../common/vscode-api';
 import * as hljs from 'highlight.js/lib/core';
-import { HubTaskInstallation } from '../../hub/install-common';
+import { HubTaskInstallation, HubTaskUninstall, InstalledTask, isInstalledTask } from '../../hub/hub-common';
 import * as yaml from 'highlight.js/lib/languages/yaml';
 import {CodeLineNumbers} from 'code-line-numbers';
 import * as semver from 'semver';
@@ -43,9 +43,13 @@ export class TaskWidget extends BaseWidget {
     this.md = new MarkdownIt();
   }
 
-  showTask(task: ResourceData, tknVersion: string): void {
+  showTask(task: ResourceData | InstalledTask, tknVersion: string): void {
     this.task = task;
-    this.currentVersion = task.latestVersion;
+    if (isInstalledTask(task)){
+      this.currentVersion = task.installedVersion;
+    } else {
+      this.currentVersion = task.latestVersion;
+    }
     this.versions = undefined;
     this.tknVersion = tknVersion;
     this.updatePage();
@@ -61,6 +65,7 @@ export class TaskWidget extends BaseWidget {
     for (const ver of this.versions.versions){
       const opt = document.createElement('option');
       opt.value = ver.version;
+      console.error(this.task);
       if (ver.version === this.task.latestVersion.version){
         opt.text = ver.version + ' (latest)';
       } else {
@@ -166,6 +171,22 @@ export class TaskWidget extends BaseWidget {
     };
 
     // install button
+    if (!isInstalledTask(this.task)){
+      this.addInstallButton(actionsContainer);
+    } else {
+      this.addUninstallButton(actionsContainer);
+    }
+
+    // TKN Version
+    if (this.tknVersion){
+      this.addVersionCheck(actionsContainer);
+    }
+
+    details.appendChild(actions);
+
+  }
+
+  private addInstallButton(actionsContainer: HTMLUListElement): void {
     const installLi = document.createElement('li');
     installLi.classList.add('action-item', 'action-dropdown-item');
     const installButton = document.createElement('a');
@@ -188,14 +209,19 @@ export class TaskWidget extends BaseWidget {
     tknDropdown.appendChild(dropdownLabel);
     installLi.appendChild(tknDropdown);
     actionsContainer.appendChild(installLi);
+  }
 
-    // TKN Version
-    if (this.tknVersion){
-      this.addVersionCheck(actionsContainer);
+  private addUninstallButton(actionsContainer: HTMLUListElement): void {
+    const uninstallLi = document.createElement('li');
+    uninstallLi.classList.add('action-item');
+    const uninstallButton = document.createElement('a');
+    uninstallButton.classList.add('action-label', 'codicon', 'extension-action', 'label', 'uninstall');
+    uninstallButton.textContent = 'Uninstall';
+    uninstallButton.onclick = () => {
+      this.sendUninstall();
     }
-
-    details.appendChild(actions);
-
+    uninstallLi.appendChild(uninstallButton);
+    actionsContainer.appendChild(uninstallLi);
   }
 
   private sendInstall(asCluster = false): void {
@@ -205,8 +231,17 @@ export class TaskWidget extends BaseWidget {
       minPipelinesVersion: this.currentVersion.minPipelinesVersion,
       tknVersion: this.tknVersion,
       asClusterTask: asCluster,
-      taskVersion: this.currentVersion.version
+      taskVersion: this.currentVersion
     } as HubTaskInstallation});
+  }
+
+  private sendUninstall(): void {
+    if (isInstalledTask(this.task)) {
+      this.messageSender.postMessage({type: 'uninstallTask', data: {
+        clusterTask: this.task.clusterTask,
+        name: this.task.name
+      } as HubTaskUninstall});
+    }
   }
 
   private showInstallOptions(parent: HTMLAnchorElement): void {
@@ -215,7 +250,7 @@ export class TaskWidget extends BaseWidget {
     rmenu.style.top = parent.getBoundingClientRect().bottom + 'px';
     rmenu.style.left = parent.getBoundingClientRect().left + 'px';
     rmenu.innerHTML = '';
-   
+
     const installCluster = document.createElement('a');
     installCluster.text = 'Install as ClusterTask';
     rmenu.appendChild(installCluster);

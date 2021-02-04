@@ -21,7 +21,7 @@ chai.use(sinonChai);
 suite('Pipeline scheme generator', () => {
   const sandbox = sinon.createSandbox();
 
-  let getRawTasksStub: sinon.SinonStub<[], Promise<TknTask[]>>;
+  let getRawTasksStub: sinon.SinonStub;
 
   setup(() => {
     sandbox.stub(tasksProvider, 'getTknTasksSnippets').resolves([]);

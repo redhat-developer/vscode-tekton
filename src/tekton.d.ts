@@ -49,6 +49,7 @@ export interface TknMetadata {
   namespace?: string;
   uid?: string;
   resourceVersion?: string;
+  labels?: {[key: string]: string};
 }
 
 export interface TknParams {

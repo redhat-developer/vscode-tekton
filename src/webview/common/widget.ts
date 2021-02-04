@@ -16,4 +16,10 @@ export class BaseWidget implements Widget {
   getElement(): HTMLElement {
     return this.element;
   }
+
+  clear(): void {
+    if (this.element){
+      this.element.innerHTML = '';
+    }
+  }
 }

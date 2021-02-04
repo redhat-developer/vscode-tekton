@@ -27,14 +27,16 @@ window.addEventListener('message', event => {
     case 'tknVersion': 
       view.setTknVersion(event.data.data);
       break;
+    case 'installedTasks':
+      view.setInstalledTasks(event.data.data);
+      break;
+    case 'recommendedTasks':
+      view.setRecommendedTasks(event.data.data);
+      break;
+    default: 
+      console.error(`Cannot handle: ${JSON.stringify(event.data)}`);
+
   }
 }, false);
-
-// Check if we have an old state to restore from
-const previousState = vscode.getState();
-if (previousState) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  view.restore(previousState as any);
-}
 
 vscode.postMessage({type: 'ready'});

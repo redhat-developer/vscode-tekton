@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 import { ViewColumn } from 'vscode';
-import { ResourceData } from '../tekton-hub-client';
 import { Disposable } from '../util/disposable';
+import { HubTask } from './hub-common';
 import { TaskPageView } from './task-page-view';
 
 
@@ -18,7 +18,7 @@ export class TaskPageManager extends Disposable {
     super();
   }
 
-  showTaskPageView(task: ResourceData, tknVersion: string): void {
+  showTaskPageView(task: HubTask, tknVersion: string): void {
     if (!this.activePreview){
       this.createTaskPageView(task, tknVersion);
 
@@ -27,7 +27,7 @@ export class TaskPageManager extends Disposable {
     }
   }
 
-  createTaskPageView(task: ResourceData, tknVersion: string): TaskPageView {
+  createTaskPageView(task: HubTask, tknVersion: string): TaskPageView {
     const preview = TaskPageView.create(task, tknVersion, ViewColumn.One);
 
     this.activePreview = preview;

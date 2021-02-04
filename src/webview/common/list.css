@@ -12,3 +12,98 @@
   cursor: default;
   display: flex;
 }
+
+.split-view {
+  white-space: normal;
+  position: absolute;
+  width: 100%;
+}
+
+.collapsible {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-left: 16px;
+}
+
+.collapsible.animated {
+  transition-duration: 0.15s;
+  transition-timing-function: ease-out;
+  transition-property: height;
+}
+.split-view:first-of-type>.collapsible>.collapsible-header {
+  border-top: none!important;
+}
+.collapsible-header {
+  border-top: none;
+  position: relative;
+  height: 22px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  overflow: hidden;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  box-sizing: border-box;
+  border-top: 1px solid var(--vscode-sideBarSectionHeader-border);
+  line-height: 22px;
+  user-select: none;
+}
+
+.focused {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  opacity: 1!important;
+  outline-color: var(--vscode-focusBorder);
+}
+
+.collapsible-body {
+  overflow-y: auto;
+  flex: 1;
+}
+.codicon-view-pane-container-collapsed .codicon-view-pane-container-expanded{
+  font-size: 16px;
+}
+.codicon-view-pane-container-expanded:before {
+    content: '\eab4';
+}
+
+.codicon-view-pane-container-collapsed:before {
+  content: '\eab6';
+}
+
+h3.title {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-size: 11px;
+  min-width: 3ch;
+  -webkit-margin-before: 0;
+  -webkit-margin-after: 0;
+  font-weight: bold;
+}
+
+.count-badge-wrapper{
+  margin-right: 4px;
+  display: initial;
+  margin-left: auto;
+}
+
+.monaco-count-badge {
+  padding: 3px 6px;
+  border-radius: 11px;
+  font-size: 11px;
+  min-width: 18px;
+  min-height: 18px;
+  line-height: 11px;
+  font-weight: 400;
+  text-align: center;
+  display: inline-block;
+  box-sizing: border-box;
+  background-color: var(--vscode-badge-background);
+  color: var(--vscode-badge-foreground);
+}

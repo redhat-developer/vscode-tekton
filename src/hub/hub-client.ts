@@ -58,3 +58,21 @@ export async function getTaskByVersion(taskId: number): Promise<hubApi.ResourceV
   const result = await restApi.resourceByVersionId(taskId);
   return result.data.data;
 }
+
+export async function getTaskByNameAndVersion(catalog: string, name: string, version: string): Promise<hubApi.ResourceVersionData> {
+  const restApi = new hubApi.ResourceApi();
+  const result = await restApi.resourceByCatalogKindNameVersion(catalog, 'task', name, version);
+  return result.data.data;
+}
+
+export async function getTaskById(taskId: number): Promise<hubApi.ResourceData> {
+  const restApi = new hubApi.ResourceApi();
+  const result = await restApi.resourceById(taskId);
+  return result.data.data;
+}
+
+export async function getTopRatedTasks(limit: number): Promise<hubApi.ResourceData[]> {
+  const restApi = new hubApi.ResourceApi();
+  const result = await restApi.resourceList(limit);
+  return result.data.data;
+}

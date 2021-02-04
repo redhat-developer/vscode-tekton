@@ -3,11 +3,10 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-export function createDiv(className: string, id?: string): HTMLDivElement {
+export function createDiv(...className: string[]): HTMLDivElement {
   const element = document.createElement('div');
-  if (className) element.classList.add(className);
-  if (id){
-    element.id = id;
+  if (className){
+    element.classList.add(...className);
   }
   return element;
 }
