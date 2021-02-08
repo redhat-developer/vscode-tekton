@@ -188,8 +188,13 @@ async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<v
     identifier: commandId,
   };
   const result = await cli.execute(createCliCommand(`"${cmd}"`, 'version'));
-  telemetryProps.version = result.stdout;
-  sendTelemetry('command', telemetryProps);
+  if (result.error) {
+    telemetryProps.error = result.error.toString();
+    sendTelemetry('command', telemetryProps);
+  } else {
+    telemetryProps.version = result.stdout;
+    sendTelemetry('command', telemetryProps);
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
