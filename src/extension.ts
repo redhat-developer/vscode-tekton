@@ -178,13 +178,18 @@ async function detectTknCli(): Promise<void> {
 
   if (tknPath) {
     setCommandContext(CommandContext.TknCli, true);
-    const telemetryProps: any = {
-      identifier: 'tkn.version',
-    };
-    const result = await cli.execute(createCliCommand(`"${tknPath}"`, 'version'));
-    telemetryProps.version = result.stdout;
-    sendTelemetry('command', telemetryProps);
+    sendVersionToTelemetry('tkn.version', tknPath);
   }
+  sendVersionToTelemetry('kubectl.version', 'kubectl');
+}
+
+async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<void> {
+  const telemetryProps: any = {
+    identifier: commandId,
+  };
+  const result = await cli.execute(createCliCommand(`"${cmd}"`, 'version'));
+  telemetryProps.version = result.stdout;
+  sendTelemetry('command', telemetryProps);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
