@@ -15,7 +15,7 @@ import fsx = require('fs-extra');
 import * as k8s from 'vscode-kubernetes-tools-api';
 import { ClusterTask } from './tekton/clustertask';
 import { PipelineResource } from './tekton/pipelineresource';
-import { TektonNode } from './tkn';
+import { Command, TektonNode } from './tkn';
 import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
 import { setCommandContext, CommandContext, enterZenMode, exitZenMode, refreshCustomTree, removeItemFromCustomTree } from './commands';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
@@ -34,6 +34,8 @@ import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
 import { registerLogDocumentProvider } from './util/log-in-editor';
 import { openTaskRunTemplate } from './tekton/taskruntemplate';
+import sendTelemetry from './telemetry';
+import { cli, createCliCommand } from './cli';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -42,6 +44,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   contextGlobalState = context;
   migrateFromTkn018();
+  sendTelemetry('activation');
 
   const hubViewProvider = new TektonHubTasksViewProvider(context.extensionUri);
 
@@ -175,6 +178,12 @@ async function detectTknCli(): Promise<void> {
 
   if (tknPath) {
     setCommandContext(CommandContext.TknCli, true);
+    const telemetryProps: any = {
+      identifier: 'tkn.version',
+    };
+    const result = await cli.execute(createCliCommand(`"${tknPath}"`, 'version'));
+    telemetryProps.version = result.stdout;
+    sendTelemetry('command', telemetryProps);
   }
 }
 
