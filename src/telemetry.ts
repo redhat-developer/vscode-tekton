@@ -8,21 +8,21 @@ import { getTelemetryService, TelemetryEvent, TelemetryService } from '@redhat-d
 const telemetryService: Promise<TelemetryService> = getTelemetryService('redhat.vscode-tekton-pipelines');
 
 export async function getTelemetryServiceInstance(): Promise<TelemetryService> {
-    return telemetryService;
+  return telemetryService;
 }
 
 export function createTrackingEvent(name: string, properties: any = {}): TelemetryEvent {
-    return {
-        type: 'track',
-        name,
-        properties
-    }
+  return {
+      type: 'track',
+      name,
+      properties
+  }
 }
 
 export default async function sendTelemetry(actionName: string, properties?: any): Promise<void> {
-    const service = await getTelemetryServiceInstance();
-    if (actionName === 'activation') {
-        return service?.sendStartupEvent();
-    }
-    return service?.send(createTrackingEvent(actionName, properties));
+  const service = await getTelemetryServiceInstance();
+  if (actionName === 'activation') {
+      return service?.sendStartupEvent();
+  }
+  return service?.send(createTrackingEvent(actionName, properties));
 } 
