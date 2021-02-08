@@ -8,7 +8,7 @@
 
 import * as vscode from 'vscode';
 
-import { parse, findNodeAtPosition } from 'node-yaml-parser';
+import { parse, findNodeAtPosition, } from 'node-yaml-parser';
 import { TknDocument, isYamlDocumentSupported } from '../model/document';
 import { TknElement, insideElement } from '../model/common';
 

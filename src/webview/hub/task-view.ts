@@ -215,6 +215,7 @@ export class TaskView {
   private installedList: TaskList | undefined;
   private recommendedList: TaskList | undefined;
   private state: TaskViewState;
+  private searchTasks: ResourceData[];
 
   constructor(private vscodeAPI: VSMessage & ViewState) {
     this.searchInput = new SearchInput(document.getElementById('taskInput') as HTMLInputElement, vscodeAPI);
@@ -263,20 +264,28 @@ export class TaskView {
   showTasks(tasks: ResourceData[]): void {
     this.loader.hide();
     if (this.searchInput.value){
-      if (this.installedTasks){
-        for (const task of tasks){
-          if (this.installedTasks.has(task.name)){
-            (task as InstalledTask).installedVersion = this.installedTasks.get(task.name).installedVersion;
-            (task as InstalledTask).clusterTask = this.installedTasks.get(task.name).clusterTask;
-          }
-        }
-      }
-      this.taskList.show(tasks);
+      this.searchTasks = tasks;
+      this.updateSearchList();
       this.mainContainer.removeChild(this.welcomeList.getElement());
       this.mainContainer.appendChild(this.taskList.getElement());
     } else {
       this.showWelcomeList();
     }
+  }
+
+  private updateSearchList(): void {
+    if (this.installedTasks){
+      for (const task of this.searchTasks){
+        if (this.installedTasks.has(task.name)){
+          (task as InstalledTask).installedVersion = this.installedTasks.get(task.name).installedVersion;
+          (task as InstalledTask).clusterTask = this.installedTasks.get(task.name).clusterTask;
+        } else if ((task as InstalledTask).installedVersion && !this.installedTasks.has(task.name)){
+          delete (task as InstalledTask).installedVersion;
+          delete (task as InstalledTask).clusterTask;
+        }
+      }
+    }
+    this.taskList.show(this.searchTasks);
   }
 
   private showWelcomeList(): void {
@@ -297,6 +306,9 @@ export class TaskView {
       this.welcomeList.addSubList('INSTALLED', this.installedList);
     }
     this.installedList.show(tasks);
+    if (this.searchInput.value) {
+      this.updateSearchList();
+    }
   }
 
   setRecommendedTasks(tasks: ResourceData[]): void {

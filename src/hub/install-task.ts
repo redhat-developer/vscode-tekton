@@ -11,6 +11,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra'; 
 import { DownloadUtil } from '../util/download';
+import * as jsYaml from 'js-yaml';
 
 const installEventEmitter = new vscode.EventEmitter<HubTaskInstallation>()
 export const installEvent = installEventEmitter.event;
@@ -72,7 +73,7 @@ async function doInstallTask(task: HubTaskInstallation): Promise<boolean> {
     return false;
   });
 }
-const taskRegexp = /^kind:[\t ]*Task[\t ]*$/m;
+
 async function doInstallClusterTask(task: HubTaskInstallation): Promise<boolean> {
   return await vscode.window.withProgress({title: `Installing ${task.name}`,location: vscode.ProgressLocation.Notification}, async () => {
     try {
@@ -91,10 +92,16 @@ async function doInstallClusterTask(task: HubTaskInstallation): Promise<boolean>
       const tempFile = path.join(os.tmpdir(), path.basename(url.fsPath));
       await DownloadUtil.downloadFile(task.url, tempFile);
       if (await fs.pathExists(tempFile)) {
-        let content = await fs.readFile(tempFile, {encoding : 'UTF8'});
-        content = content.replace(taskRegexp, 'kind: ClusterTask');
-        await fs.writeFile(tempFile, content);
-      
+        const content = await fs.readFile(tempFile, {encoding : 'UTF8'});
+        const yaml = jsYaml.safeLoadAll(content);
+        if (yaml[0]) {
+          yaml[0].kind = 'ClusterTask';
+          if (!yaml[0].metadata) {
+            yaml[0].metadata = [];
+          }
+          yaml[0].metadata.labels['hub.tekton.dev/catalog'] = 'tekton';
+          await fs.writeFile(tempFile, jsYaml.dump(yaml[0]));
+        }
       }
       const result = await tkn.execute(Command.updateYaml(tempFile));
       await fs.unlink(tempFile);
