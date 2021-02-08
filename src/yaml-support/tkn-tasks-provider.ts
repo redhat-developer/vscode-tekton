@@ -55,9 +55,9 @@ interface Param {
   value: string | string[];
 }
 
-export async function getRawTasks(): Promise<TknTask[]> {
+export async function getRawTasks(forceLoad?: boolean): Promise<TknTask[]> {
   let allRawTasks: TknTask[];
-  if (cache.has(tasksKey)){
+  if (cache.has(tasksKey) && !forceLoad){
     allRawTasks = cache.get(tasksKey);
   } else {
     const [rawClusterTasks, rawTasks] = await Promise.all([tkn.getRawClusterTasks(), tkn.getRawTasks()]);

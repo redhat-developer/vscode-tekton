@@ -1,0 +1,24 @@
+.progress {
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+  padding: 0 5px;
+  display: flex;
+  height: 2px;
+  width: 100%;
+  display: none;
+}
+
+.progress-value {
+  background: var(--vscode-progressBar-background);
+	transition: width 100ms linear;
+ 	animation-name: progress;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	transform: translate3d(0px, 0px, 0px);
+  height: 2px;
+  width: 2%;
+}
+
+@keyframes progress { from { transform: translateX(0%) scaleX(1) } 50% { transform: translateX(2500%) scaleX(3) } to { transform: translateX(4900%) scaleX(1) } }

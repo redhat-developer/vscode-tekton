@@ -9,10 +9,11 @@ import { VSMessage, ViewState} from '../common/vscode-api';
 import { debounce } from 'debounce';
 import {ResourceData} from '../../tekton-hub-client/api';
 import { BaseWidget, Listener, Widget } from '../common/widget';
-import { ListWidget } from '../common/list-widget';
+import { CollapsibleList, CollapsibleListState, ListWidget } from '../common/list-widget';
 import { createDiv, createSpan } from '../common/dom-util';
 import * as semver from 'semver';
-import { HubTaskInstallation } from '../../hub/install-common';
+import { HubTask, HubTaskInstallation, InstalledTask } from '../../hub/hub-common';
+import { Loader } from '../common/loader';
 
 
 export class SearchInput {
@@ -49,7 +50,7 @@ export class SearchInput {
 export class TaskItem extends BaseWidget {
 
   
-  constructor(private task: ResourceData, private messageSender: VSMessage, private tknVersion?: string) {
+  constructor(private task: HubTask, private messageSender: VSMessage, private loader: Loader, private tknVersion?: string) {
     super();
     this.element = createDiv('task-list-item');
     const iconContainer = createDiv('icon-container');
@@ -60,7 +61,11 @@ export class TaskItem extends BaseWidget {
     iconContainer.appendChild(image);
     this.createDetails();
     this.element.onclick = () => {
-      this.messageSender.postMessage({type: 'openTaskPage', data: this.task});
+      try {
+        this.messageSender.postMessage({type: 'openTaskPage', data: this.task});
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 
@@ -81,11 +86,11 @@ export class TaskItem extends BaseWidget {
 
     const header = createDiv('header');
     const name = createSpan('name');
-    name.innerText = this.task.latestVersion.displayName ? this.task.latestVersion.displayName : this.task.name;
+    name.innerText = this.task.latestVersion?.displayName ? this.task.latestVersion.displayName : this.task.name;
     header.appendChild(name);
 
     const version = createSpan('version');
-    version.innerText = this.task.latestVersion.version;
+    version.innerText = this.task.latestVersion ? this.task.latestVersion.version : (this.task as InstalledTask).installedVersion.version;
     header.appendChild(version);
 
     const ratings = createSpan('ratings');
@@ -102,7 +107,7 @@ export class TaskItem extends BaseWidget {
   private createDescription(details: HTMLDivElement): void {
     const description = createDiv('description');
     description.classList.add('ellipsis');
-    description.textContent = this.task.latestVersion.description;
+    description.textContent = this.task.latestVersion ? this.task.latestVersion.description : (this.task as InstalledTask).installedVersion.description;
     details.appendChild(description);
   }
 
@@ -123,16 +128,19 @@ export class TaskItem extends BaseWidget {
     const installEl = document.createElement('li');
     installEl.classList.add('action-item');
     
-    const installButton = document.createElement('a');
-    installButton.classList.add('action-label', 'codicon', 'extension-action', 'install');
+    if (!(this.task as InstalledTask).installedVersion) {
+      const installButton = document.createElement('a');
+      installButton.classList.add('action-label', 'codicon', 'extension-action', 'install');
+  
+      installButton.textContent = 'Install';
+      installButton.onclick = (e) =>{
+        e.preventDefault();
+        e.stopPropagation();
+        this.sendInstall();
+      };
+      installEl.appendChild(installButton);
+    }
 
-    installButton.textContent = 'Install';
-    installButton.onclick = (e) =>{
-      e.preventDefault();
-      e.stopPropagation();
-      this.sendInstall();
-    };
-    installEl.appendChild(installButton);
     actionContainer.appendChild(installEl);
     actionBar.appendChild(actionContainer);
     footer.appendChild(actionBar);
@@ -140,17 +148,18 @@ export class TaskItem extends BaseWidget {
   }
 
   private sendInstall(): void {
+    this.loader.show();
     this.messageSender.postMessage({type: 'installTask', data: {
       url: this.task.latestVersion.rawURL,
       name: this.task.name,
       minPipelinesVersion: this.task.latestVersion.minPipelinesVersion,
       tknVersion: this.tknVersion,
-      taskVersion: this.task.latestVersion.version
+      taskVersion: this.task.latestVersion
     } as HubTaskInstallation});
   }
 
   private addVersionCheck(container: HTMLUListElement): void {
-    if (this.task.latestVersion.minPipelinesVersion) {
+    if (this.task.latestVersion && this.task.latestVersion.minPipelinesVersion) {
       if (semver.lt(this.tknVersion, this.task.latestVersion.minPipelinesVersion)){
         const versionWarning = document.createElement('li');
         versionWarning.classList.add('action-item');
@@ -166,11 +175,11 @@ export class TaskItem extends BaseWidget {
 
 }
 
-export class TaskList extends ListWidget<ResourceData> {
+export class TaskList extends ListWidget<HubTask> {
 
   tknVersion: string | undefined;
 
-  constructor(element: HTMLElement, private messageSender: VSMessage){
+  constructor(element: HTMLElement, private messageSender: VSMessage, private loader: Loader){
     super(element);
   }
 
@@ -178,13 +187,16 @@ export class TaskList extends ListWidget<ResourceData> {
     this.element.innerText = message;
   }
 
-  createItemWidget(item: ResourceData): Widget {
-    return new TaskItem(item, this.messageSender, this.tknVersion);
+  createItemWidget(item: HubTask): Widget {
+    return new TaskItem(item, this.messageSender, this.loader, this.tknVersion);
   }
 
-  show(items: ResourceData[]): void {
+  show(items: HubTask[]): void {
     if (items.length === 0) {
       this.showPlaceholder('No tasks found.');
+      if (this.itemListChangedListener) {
+        this.itemListChangedListener(items);
+      }
     } else {
       super.show(items);
     }
@@ -196,19 +208,52 @@ export class TaskView {
 
   private searchInput: SearchInput;
   private taskList: TaskList;
+  private installedTasks: Map<string, InstalledTask>;
+  private welcomeList: CollapsibleList<HubTask>;
+  private mainContainer: HTMLElement;
+  private loader: Loader;
+  private installedList: TaskList | undefined;
+  private recommendedList: TaskList | undefined;
+  private state: TaskViewState;
+  private searchTasks: ResourceData[];
 
   constructor(private vscodeAPI: VSMessage & ViewState) {
     this.searchInput = new SearchInput(document.getElementById('taskInput') as HTMLInputElement, vscodeAPI);
     this.searchInput.onInputChange((input) => {
       if (input) {
+        this.loader.show();
         this.vscodeAPI.postMessage({type: 'search', data: input});
       } else {
-        this.taskList.clear();
-        this.vscodeAPI.setState({input: '', tasks: [], tknVersion: this.taskList.tknVersion});
+        this.showWelcomeList();
       }
-    })
+    });
+
+    // Check if we have an old state to restore from
+    this.state = vscodeAPI.getState() as TaskViewState;
+    if (!this.state || !this.state.welcomeList){
+      this.state = {input: undefined, welcomeList: {}};
+    }
+
+    this.loader = new Loader();
+    const rootElement = document.getElementById('root')
+    rootElement.insertBefore(this.loader.getElement(), rootElement.firstChild);
+    this.loader.show();
     
-    this.taskList = new TaskList(document.getElementById('tasksList'), this.vscodeAPI);
+    // 
+    const taskListContainer = createDiv();
+    taskListContainer.id = 'tasksList';
+    this.taskList = new TaskList(taskListContainer, this.vscodeAPI, this.loader);
+
+    this.mainContainer = document.getElementById('mainContainer');
+    const listContainer = createDiv('collapsibleListContainer');
+    this.mainContainer.appendChild(listContainer);
+    this.welcomeList = new CollapsibleList(listContainer, (state) => {
+      this.state.welcomeList = state;
+      this.vscodeAPI.setState(this.state);
+    }, this.state.welcomeList);
+    document.body.onresize = () => {
+      this.welcomeList.updateLayout();
+    }
   }
 
   setErrorState(message: string): void {
@@ -217,20 +262,62 @@ export class TaskView {
   }
 
   showTasks(tasks: ResourceData[]): void {
-    this.taskList.show(tasks);
-    this.vscodeAPI.setState({input: this.searchInput.value, tasks: tasks, tknVersion: this.taskList.tknVersion});
+    this.loader.hide();
+    if (this.searchInput.value){
+      this.searchTasks = tasks;
+      this.updateSearchList();
+      this.mainContainer.removeChild(this.welcomeList.getElement());
+      this.mainContainer.appendChild(this.taskList.getElement());
+    } else {
+      this.showWelcomeList();
+    }
   }
 
-  restore(state: TaskViewState): void {
-    this.taskList.tknVersion = state.tknVersion;
-    if (state.tasks.length !== 0) {
-      this.taskList.show(state.tasks);
+  private updateSearchList(): void {
+    if (this.installedTasks){
+      for (const task of this.searchTasks){
+        if (this.installedTasks.has(task.name)){
+          (task as InstalledTask).installedVersion = this.installedTasks.get(task.name).installedVersion;
+          (task as InstalledTask).clusterTask = this.installedTasks.get(task.name).clusterTask;
+        } else if ((task as InstalledTask).installedVersion && !this.installedTasks.has(task.name)){
+          delete (task as InstalledTask).installedVersion;
+          delete (task as InstalledTask).clusterTask;
+        }
+      }
     }
-    this.searchInput.setValue(state.input);
+    this.taskList.show(this.searchTasks);
+  }
+
+  private showWelcomeList(): void {
+    this.mainContainer.removeChild(this.taskList.getElement());
+    this.mainContainer.appendChild(this.welcomeList.getElement());
   }
 
   setTknVersion(version: string): void {
     this.taskList.tknVersion = version;
+  }
+
+  setInstalledTasks(tasks: InstalledTask[]): void {
+    this.loader.hide();
+    this.installedTasks = new Map(tasks.map(it => [it.name, it]));
+    if (!this.installedList){
+      const installedElement = createDiv();
+      this.installedList = new TaskList(installedElement, this.vscodeAPI, this.loader);
+      this.welcomeList.addSubList('INSTALLED', this.installedList);
+    }
+    this.installedList.show(tasks);
+    if (this.searchInput.value) {
+      this.updateSearchList();
+    }
+  }
+
+  setRecommendedTasks(tasks: ResourceData[]): void {
+    if (!this.recommendedList){
+      const recommendedElement = createDiv();
+      this.recommendedList = new TaskList(recommendedElement, this.vscodeAPI, this.loader);
+      this.welcomeList.addSubList('RECOMMENDED', this.recommendedList);
+    }
+    this.recommendedList.show(tasks);
   }
 
 }
@@ -238,6 +325,5 @@ export class TaskView {
 
 interface TaskViewState {
   input: string;
-  tknVersion: string;
-  tasks: ResourceData[];
+  welcomeList: CollapsibleListState;
 }

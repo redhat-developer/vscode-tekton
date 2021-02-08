@@ -11,13 +11,15 @@ import { debounce } from 'debounce';
 import { ResourceData } from '../tekton-hub-client';
 import { getTaskByVersion, getVersions } from './hub-client';
 import { installTask } from './install-task';
+import { uninstallTask } from './uninstall-task';
+import { HubTask, HubTaskInstallation, HubTaskUninstall, InstalledTask, isInstalledTask } from './hub-common';
 
 
 export class TaskPageView extends Disposable {
   static viewType = 'tekton.pipeline.start.wizard';
   static title: string;
 
-  public static create(task: ResourceData, tknVersion: string, previewColumn: vscode.ViewColumn): TaskPageView {
+  public static create(task: HubTask, tknVersion: string, previewColumn: vscode.ViewColumn): TaskPageView {
     TaskPageView.title = getTitle(task);
     const webview = vscode.window.createWebviewPanel(
       'task-view',
@@ -38,7 +40,7 @@ export class TaskPageView extends Disposable {
   private readonly onDidChangeViewStateEmitter = new vscode.EventEmitter<vscode.WebviewPanelOnDidChangeViewStateEvent>();
   public readonly onDidChangeViewState = this.onDidChangeViewStateEmitter.event;
 
-  constructor(webview: vscode.WebviewPanel, private task: ResourceData, private tknVersion: string) {
+  constructor(webview: vscode.WebviewPanel, private task: HubTask, private tknVersion: string) {
     super();
     this.webviewPanel = webview;
     this.register(this.webviewPanel.onDidDispose(() => {
@@ -55,11 +57,16 @@ export class TaskPageView extends Disposable {
           this.getTaskVersions(e.data);
           break;
         case 'installTask':
-          installTask(e.data);
+          this.installTask(e.data);
           break;
         case 'getTask': 
           this.getTask(e.data);
           break;
+        case 'uninstallTask': 
+          this.uninstallTask(e.data);
+          break;
+        default:
+          console.error(`Unknown message received - type: "${e.type}" data: ${JSON.stringify(e.data)}`);
       }
     }));
 
@@ -86,6 +93,24 @@ export class TaskPageView extends Disposable {
     this.task = task;
     this.webviewPanel.title = getTitle(task);
     this.sendTask();
+  }
+
+  private async installTask(task: HubTaskInstallation): Promise<void>{
+    const isInstalled = await installTask(task);
+    if (isInstalled) {
+      (this.task as InstalledTask).installedVersion = task.taskVersion;
+      (this.task as InstalledTask).clusterTask = task.asClusterTask;
+      this.sendTask();
+    }
+  }
+
+  private async uninstallTask(task: HubTaskUninstall): Promise<void>{
+    await uninstallTask(task);
+    if (isInstalledTask(this.task)){
+      this.task.installedVersion = undefined;
+      this.task.clusterTask = undefined;
+      this.sendTask();
+    }
   }
 
   private async getTaskVersions(id: number): Promise<void>{
@@ -172,6 +197,6 @@ function getLocalResourceRoots(): vscode.Uri[] {
 }
 
 function getTitle(task: ResourceData): string {
-  const name = task.latestVersion.displayName ? task.latestVersion.displayName : task.name;
+  const name = task.latestVersion?.displayName ? task.latestVersion.displayName : task.name;
   return `Task: ${name}`;
 }

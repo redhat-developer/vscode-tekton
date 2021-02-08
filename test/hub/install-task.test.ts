@@ -13,6 +13,7 @@ import { DownloadUtil } from '../../src/util/download';
 import * as os from 'os';
 import * as fs from 'fs-extra'; 
 import * as path from 'path';
+import { ResourceVersionData } from '../../src/tekton-hub-client';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -48,7 +49,7 @@ suite('Install Task', () => {
       name: 'foo',
       url: 'https://some/path/task.yaml',
       asClusterTask: false,
-      taskVersion: '1.0'
+      taskVersion: {version: '1.0'} as ResourceVersionData
     });
 
     expect(executeStub).calledOnceWith(Command.hubInstall('foo', '1.0'));

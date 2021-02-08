@@ -9,8 +9,10 @@ html, body {
   background-color: var(--vscode-editor-background);
 }
 
-#tasksList {
-
+.collapsibleListContainer{
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 
 .listContainer {
@@ -197,4 +199,3 @@ html, body {
 .list-action-bar .action-label:hover {
   background-color: var(--vscode-extensionButton-prominentHoverBackground);
 }
-
