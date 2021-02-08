@@ -34,7 +34,7 @@ import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
 import { registerLogDocumentProvider } from './util/log-in-editor';
 import { openTaskRunTemplate } from './tekton/taskruntemplate';
-import sendTelemetry from './telemetry';
+import sendTelemetry, { TelemetryProperties } from './telemetry';
 import { cli, createCliCommand } from './cli';
 
 export let contextGlobalState: vscode.ExtensionContext;
@@ -184,7 +184,7 @@ async function detectTknCli(): Promise<void> {
 }
 
 async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<void> {
-  const telemetryProps: any = {
+  const telemetryProps: TelemetryProperties = {
     identifier: commandId,
   };
   const result = await cli.execute(createCliCommand(`"${cmd}"`, 'version'));

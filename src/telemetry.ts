@@ -5,6 +5,16 @@
 
 import { getTelemetryService, TelemetryEvent, TelemetryService } from '@redhat-developer/vscode-redhat-telemetry';
 
+export interface TelemetryProperties {
+  identifier?: string;
+  version?: string;
+  duration?: string;
+  runtime?: string;
+  error?: string;
+  runtimeversion?: string;
+  mission?: string;
+}
+
 const telemetryService: Promise<TelemetryService> = getTelemetryService('redhat.vscode-tekton-pipelines');
 
 export async function getTelemetryServiceInstance(): Promise<TelemetryService> {
@@ -19,7 +29,7 @@ export function createTrackingEvent(name: string, properties = {}): TelemetryEve
   }
 }
 
-export default async function sendTelemetry(actionName: string, properties?: unknown): Promise<void> {
+export default async function sendTelemetry(actionName: string, properties?: TelemetryProperties): Promise<void> {
   const service = await getTelemetryServiceInstance();
   if (actionName === 'activation') {
     return service?.sendStartupEvent();
