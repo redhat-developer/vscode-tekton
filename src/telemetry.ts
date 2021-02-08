@@ -11,18 +11,18 @@ export async function getTelemetryServiceInstance(): Promise<TelemetryService> {
   return telemetryService;
 }
 
-export function createTrackingEvent(name: string, properties: any = {}): TelemetryEvent {
+export function createTrackingEvent(name: string, properties = {}): TelemetryEvent {
   return {
-      type: 'track',
-      name,
-      properties
+    type: 'track',
+    name,
+    properties
   }
 }
 
-export default async function sendTelemetry(actionName: string, properties?: any): Promise<void> {
+export default async function sendTelemetry(actionName: string, properties?: unknown): Promise<void> {
   const service = await getTelemetryServiceInstance();
   if (actionName === 'activation') {
-      return service?.sendStartupEvent();
+    return service?.sendStartupEvent();
   }
   return service?.send(createTrackingEvent(actionName, properties));
-} 
+}

@@ -15,7 +15,7 @@ import fsx = require('fs-extra');
 import * as k8s from 'vscode-kubernetes-tools-api';
 import { ClusterTask } from './tekton/clustertask';
 import { PipelineResource } from './tekton/pipelineresource';
-import { Command, TektonNode } from './tkn';
+import { TektonNode } from './tkn';
 import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
 import { setCommandContext, CommandContext, enterZenMode, exitZenMode, refreshCustomTree, removeItemFromCustomTree } from './commands';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
