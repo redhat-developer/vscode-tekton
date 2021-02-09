@@ -180,19 +180,28 @@ async function detectTknCli(): Promise<void> {
     setCommandContext(CommandContext.TknCli, true);
     sendVersionToTelemetry('tkn.version', tknPath);
   }
-  sendVersionToTelemetry('kubectl.version', 'kubectl');
+  sendVersionToTelemetry('kubectl.version', 'kubectl -o json');
 }
 
 async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<void> {
   const telemetryProps: TelemetryProperties = {
     identifier: commandId,
   };
-  const result = await cli.execute(createCliCommand(`"${cmd}"`, 'version'));
+  const result = await cli.execute(createCliCommand(`${cmd} version`));
   if (result.error) {
     telemetryProps.error = result.error.toString();
     sendTelemetry('command', telemetryProps);
   } else {
-    telemetryProps.version = result.stdout;
+    if (commandId === 'kubectl.version') {
+      let version = '';
+      const items = JSON.parse(result.stdout);
+      for (const [key, value] of Object.entries(items)) {
+        version += `${key}: v${value['major']}.${value['minor']} `;
+      }
+      telemetryProps.version = version;
+    } else {
+      telemetryProps.version = result.stdout;
+    }
     sendTelemetry('command', telemetryProps);
   }
 }
