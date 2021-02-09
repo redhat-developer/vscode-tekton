@@ -386,6 +386,12 @@ export class Command {
   static hubInstall(name: string, version: string): CliCommand {
     return newTknCommand('hub', 'install', 'task', name, '--version', version);
   }
+  static hubTaskUpgrade(name: string, version: string): CliCommand {
+    return newTknCommand('hub', 'upgrade', 'task', name, '--to', version);
+  }
+  static hubTaskDowngrade(name: string, version: string): CliCommand {
+    return newTknCommand('hub', 'downgrade', 'task', name, '--to', version);
+  }
   static listTaskRun(): CliCommand {
     return newK8sCommand('get', 'taskrun', '-o', 'json');
   }

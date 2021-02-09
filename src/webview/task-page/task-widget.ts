@@ -171,7 +171,7 @@ export class TaskWidget extends BaseWidget {
     };
 
     // install button
-    if (!isInstalledTask(this.task)){
+    if (!isInstalledTask(this.task) || this.currentVersion.version !== this.task.installedVersion.version){
       this.addInstallButton(actionsContainer);
     } else {
       this.addUninstallButton(actionsContainer);

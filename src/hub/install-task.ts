@@ -49,6 +49,8 @@ async function doInstallTask(task: HubTaskInstallation): Promise<boolean> {
   return await vscode.window.withProgress({title: `Installing ${task.name}`,location: vscode.ProgressLocation.Notification}, async () => {
     try {
       const tasks = await tkn.getRawTasks();
+      let needToUpgrade = false;
+      let installedVersion: string;
       if (tasks) {
         for (const rawTask of tasks) {
           if (rawTask.metadata.name === task.name) {
@@ -56,10 +58,23 @@ async function doInstallTask(task: HubTaskInstallation): Promise<boolean> {
             if (overwriteResult !== 'Overwrite') {
               return false;
             }
+            installedVersion = rawTask.metadata.labels['app.kubernetes.io/version'];
+            needToUpgrade = true;
           }
         }
       }
-      const result = await tkn.execute(Command.hubInstall(task.name, task.taskVersion.version));
+      
+      let result;
+      if (needToUpgrade && installedVersion) {
+        if (parseFloat(installedVersion) < parseFloat(task.taskVersion.version)){
+          result = await tkn.execute(Command.hubTaskUpgrade(task.name, task.taskVersion.version));
+        } else {
+          result = await tkn.execute(Command.hubTaskDowngrade(task.name, task.taskVersion.version));
+        }
+      } else {
+        result = await tkn.execute(Command.hubInstall(task.name, task.taskVersion.version));
+      }
+
       if (result.error){
         vscode.window.showWarningMessage(`Task installation failed: ${getStderrString(result.error)}`);
       } else {
