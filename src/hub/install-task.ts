@@ -66,6 +66,9 @@ async function doInstallTask(task: HubTaskInstallation): Promise<boolean> {
       
       let result;
       if (needToUpgrade && installedVersion) {
+        if (installedVersion === task.taskVersion.version){
+          return true; // we already install this task
+        }
         if (parseFloat(installedVersion) < parseFloat(task.taskVersion.version)){
           result = await tkn.execute(Command.hubTaskUpgrade(task.name, task.taskVersion.version));
         } else {
