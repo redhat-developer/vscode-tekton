@@ -36,6 +36,7 @@ import { registerLogDocumentProvider } from './util/log-in-editor';
 import { openTaskRunTemplate } from './tekton/taskruntemplate';
 import sendTelemetry, { TelemetryProperties } from './telemetry';
 import { cli, createCliCommand } from './cli';
+import { getVersion, tektonVersionType, TknVersion } from './util/tknversion';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -192,18 +193,28 @@ async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<v
     telemetryProps.error = result.error.toString();
     sendTelemetry('command', telemetryProps);
   } else {
-    if (commandId === 'kubectl.version') {
-      let version = '';
-      const items = JSON.parse(result.stdout);
-      for (const [key, value] of Object.entries(items)) {
-        version += `${key}: v${value['major']}.${value['minor']} `;
-      }
-      telemetryProps.version = version;
-    } else {
-      telemetryProps.version = result.stdout;
+    let version: unknown;
+    if (commandId === 'tkn.version') {
+      version = getVersion(result.stdout);
+    } else if (commandId === 'kubectl.version') {
+      version = JSON.parse(result.stdout);
     }
-    sendTelemetry('command', telemetryProps);
+    for (const [key, value] of Object.entries(version)) {
+      if (commandId === 'tkn.version') {
+        sendTknAndKubectlVersionToTelemetry(tektonVersionType[key], `${tektonVersionType[key]}: ${value}`, commandId);
+      } else {
+        sendTknAndKubectlVersionToTelemetry(`kubectl_${key}`, `${key}: v${value['major']}.${value['minor']}`, commandId);
+      }
+    }
   }
+}
+
+async function sendTknAndKubectlVersionToTelemetry(commandId: string, tknKubectlVersion: string, identifierID: string): Promise<void> {
+  const telemetryProps: TelemetryProperties = {
+    identifier: identifierID,
+    version: tknKubectlVersion
+  };
+  sendTelemetry(commandId, telemetryProps);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
