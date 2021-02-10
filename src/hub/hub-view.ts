@@ -112,7 +112,7 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
     const status = await getTektonHubStatus();
     const tknVersions = await version();
     if (!tknVersions){
-      this.sendMessage({type: 'error', data: 'Cannot find "tkn" CLI' });
+      this.sendMessage({type: 'error', data: 'Cannot detect Tekton Pipelines version' });
       return false;
     }
     this.tknVersion = tknVersions.pipeline;
