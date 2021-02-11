@@ -912,7 +912,8 @@
     }
   },
   "extensionDependencies": [
-    "redhat.vscode-yaml"
+    "redhat.vscode-yaml",
+    "redhat.vscode-commons"
   ],
   "scripts": {
     "verify": "node ./out/build/verify-tools.js",
@@ -993,6 +994,7 @@
   },
   "dependencies": {
     "@kubernetes/client-node": "^0.12.2",
+    "@redhat-developer/vscode-redhat-telemetry": "0.0.12",
     "axios": "^0.21.1",
     "binary-search": "^1.3.5",
     "byline": "^5.0.0",

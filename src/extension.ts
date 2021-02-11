@@ -34,6 +34,9 @@ import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
 import { registerLogDocumentProvider } from './util/log-in-editor';
 import { openTaskRunTemplate } from './tekton/taskruntemplate';
+import sendTelemetry, { TelemetryProperties } from './telemetry';
+import { cli, createCliCommand } from './cli';
+import { getVersion, tektonVersionType } from './util/tknversion';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -42,6 +45,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   contextGlobalState = context;
   migrateFromTkn018();
+  sendTelemetry('activation');
 
   const hubViewProvider = new TektonHubTasksViewProvider(context.extensionUri);
 
@@ -175,7 +179,42 @@ async function detectTknCli(): Promise<void> {
 
   if (tknPath) {
     setCommandContext(CommandContext.TknCli, true);
+    sendVersionToTelemetry('tkn.version', tknPath);
   }
+  sendVersionToTelemetry('kubectl.version', 'kubectl -o json');
+}
+
+async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<void> {
+  const telemetryProps: TelemetryProperties = {
+    identifier: commandId,
+  };
+  const result = await cli.execute(createCliCommand(`${cmd} version`));
+  if (result.error) {
+    telemetryProps.error = result.error.toString();
+    sendTelemetry(`${commandId}_error`, telemetryProps);
+  } else {
+    let version: unknown;
+    if (commandId === 'tkn.version') {
+      version = getVersion(result.stdout);
+    } else if (commandId === 'kubectl.version') {
+      version = JSON.parse(result.stdout);
+    }
+    for (const [key, value] of Object.entries(version)) {
+      if (commandId === 'tkn.version') {
+        sendTknAndKubectlVersionToTelemetry(tektonVersionType[key], `${tektonVersionType[key]}: ${value}`, commandId);
+      } else {
+        sendTknAndKubectlVersionToTelemetry(`kubectl_${key}`, `${key}: v${value['major']}.${value['minor']}`, commandId);
+      }
+    }
+  }
+}
+
+async function sendTknAndKubectlVersionToTelemetry(commandId: string, tknKubectlVersion: string, identifierID: string): Promise<void> {
+  const telemetryProps: TelemetryProperties = {
+    identifier: identifierID,
+    version: tknKubectlVersion
+  };
+  sendTelemetry(commandId, telemetryProps);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
