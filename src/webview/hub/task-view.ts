@@ -136,7 +136,12 @@ export class TaskItem extends BaseWidget {
       installButton.onclick = (e) =>{
         e.preventDefault();
         e.stopPropagation();
+        if (installButton.textContent !== 'Install'){
+          return;
+        }
+
         this.sendInstall();
+        installButton.textContent = 'Installing';
       };
       installEl.appendChild(installButton);
     }
@@ -304,6 +309,7 @@ export class TaskView {
       const installedElement = createDiv();
       this.installedList = new TaskList(installedElement, this.vscodeAPI, this.loader);
       this.welcomeList.addSubList('INSTALLED', this.installedList);
+      this.installedList.tknVersion = this.taskList.tknVersion;
     }
     this.installedList.show(tasks);
     if (this.searchInput.value) {
@@ -316,6 +322,7 @@ export class TaskView {
       const recommendedElement = createDiv();
       this.recommendedList = new TaskList(recommendedElement, this.vscodeAPI, this.loader);
       this.welcomeList.addSubList('RECOMMENDED', this.recommendedList);
+      this.recommendedList.tknVersion = this.taskList.tknVersion;
     }
     this.recommendedList.show(tasks);
   }

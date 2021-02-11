@@ -193,7 +193,11 @@ export class TaskWidget extends BaseWidget {
     installButton.classList.add('action-label', 'codicon', 'extension-action', 'label', 'uninstall', 'action-dropdown');
     installButton.textContent = 'Install';
     installButton.onclick = () => {
+      if (installButton.textContent !== 'Install') {
+        return;
+      }
       this.sendInstall();
+      installButton.textContent = 'Installing';
     }
     installLi.appendChild(installButton);
     const tknDropdown = createDiv('monaco-dropdown');
@@ -218,7 +222,11 @@ export class TaskWidget extends BaseWidget {
     uninstallButton.classList.add('action-label', 'codicon', 'extension-action', 'label', 'uninstall');
     uninstallButton.textContent = 'Uninstall';
     uninstallButton.onclick = () => {
+      if (uninstallButton.textContent !== 'Uninstall'){
+        return;
+      }
       this.sendUninstall();
+      uninstallButton.textContent = 'Uninstalling';
     }
     uninstallLi.appendChild(uninstallButton);
     actionsContainer.appendChild(uninstallLi);
