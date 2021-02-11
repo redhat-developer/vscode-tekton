@@ -36,7 +36,7 @@ import { registerLogDocumentProvider } from './util/log-in-editor';
 import { openTaskRunTemplate } from './tekton/taskruntemplate';
 import sendTelemetry, { TelemetryProperties } from './telemetry';
 import { cli, createCliCommand } from './cli';
-import { getVersion, tektonVersionType, TknVersion } from './util/tknversion';
+import { getVersion, tektonVersionType } from './util/tknversion';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -191,7 +191,7 @@ async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<v
   const result = await cli.execute(createCliCommand(`${cmd} version`));
   if (result.error) {
     telemetryProps.error = result.error.toString();
-    sendTelemetry('command', telemetryProps);
+    sendTelemetry(`${commandId}_error`, telemetryProps);
   } else {
     let version: unknown;
     if (commandId === 'tkn.version') {
