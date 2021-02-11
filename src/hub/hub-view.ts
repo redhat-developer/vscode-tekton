@@ -111,6 +111,10 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
   private async doCheckHub(): Promise<boolean> {
     const status = await getTektonHubStatus();
     const tknVersions = await version();
+    if (!tknVersions){
+      this.sendMessage({type: 'error', data: 'Cannot detect Tekton Pipelines version' });
+      return false;
+    }
     this.tknVersion = tknVersions.pipeline;
     
     if (status.status !== TektonHubStatusEnum.Ok){

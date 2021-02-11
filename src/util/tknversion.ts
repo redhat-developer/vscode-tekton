@@ -12,7 +12,7 @@ export interface TknVersion {
 }
 
 
-export async function version(): Promise<TknVersion> {
+export async function version(): Promise<TknVersion | null> {
   const tknVersion = {};
   const versionType = {
     'Triggers version': 'trigger',
