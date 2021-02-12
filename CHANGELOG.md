@@ -1,6 +1,18 @@
 # Change Log
 
-## 0.10.0 (January 20, 2020)
+## 0.11.0 (February 12, 2021)
+
+This release brings to you:
+
+* [#470](https://github.com/redhat-developer/vscode-tekton/issues/470) Add telemetry reporting
+* [#474](https://github.com/redhat-developer/vscode-tekton/issues/474) Add 'hub.tekton.dev/catalog' label to task yaml while installing it from TektonHub
+* [#476]https://github.com/redhat-developer/vscode-tekton/issues/476) Bug: kubectl get tasks doesn't work on system with name conflicts?
+* [#484](https://github.com/redhat-developer/vscode-tekton/issues/484) Enhance visualization for complex pipelines
+* [#485](https://github.com/redhat-developer/vscode-tekton/issues/485) Show installed tasks in the Tekton Hub view
+* [#496](https://github.com/redhat-developer/vscode-tekton/pull/496) Open tekton resource in editor for task
+* [#499](https://github.com/redhat-developer/vscode-tekton/issues/499) Error while reinstalling a hub task with the new tkn command
+
+## 0.10.0 (January 20, 2021)
 
 This release brings to you:
 
