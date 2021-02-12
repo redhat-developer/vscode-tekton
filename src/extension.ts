@@ -201,19 +201,16 @@ async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<v
     }
     for (const [key, value] of Object.entries(version)) {
       if (commandId === 'tkn.version') {
-        sendTknAndKubectlVersionToTelemetry(tektonVersionType[key], `${tektonVersionType[key]}: ${value}`, commandId);
+        telemetryProps[tektonVersionType[key]] = `${value}`;
       } else {
-        sendTknAndKubectlVersionToTelemetry(`kubectl_${key}`, `${key}: v${value['major']}.${value['minor']}`, commandId);
+        telemetryProps[key] = `v${value['major']}.${value['minor']}`;
       }
     }
+    sendTknAndKubectlVersionToTelemetry(commandId, telemetryProps);
   }
 }
 
-async function sendTknAndKubectlVersionToTelemetry(commandId: string, tknKubectlVersion: string, identifierID: string): Promise<void> {
-  const telemetryProps: TelemetryProperties = {
-    identifier: identifierID,
-    version: tknKubectlVersion
-  };
+async function sendTknAndKubectlVersionToTelemetry(commandId: string, telemetryProps: TelemetryProperties): Promise<void> {
   sendTelemetry(commandId, telemetryProps);
 }
 
