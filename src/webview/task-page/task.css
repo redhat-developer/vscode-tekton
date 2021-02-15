@@ -53,6 +53,8 @@ html, body {
   line-height: 30px;
   font-weight: 600;
   white-space: nowrap;
+  text-decoration: none;
+  color: var(--vscode-foreground);
 }
 
 .task-page>.header>.details>.subtitle, .task-page>.header>.details>.subtitle .install, .task-page>.header>.details>.subtitle .rating {
