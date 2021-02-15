@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.11.1 (February 15, 2021)
+
+This release brings to you:
+
+* [#505](https://github.com/redhat-developer/vscode-tekton/pull/505) Send version content in one event
+* [#490](https://github.com/redhat-developer/vscode-tekton/issues/490) Add link to Tekton Hub on tasks
+
 ## 0.11.0 (February 12, 2021)
 
 This release brings to you:
