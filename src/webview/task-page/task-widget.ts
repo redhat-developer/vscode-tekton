@@ -103,9 +103,11 @@ export class TaskWidget extends BaseWidget {
     const title = createDiv('title');
     details.appendChild(title);
     
-    const name = createDiv('name');
+    const name = document.createElement('a');
+    name.classList.add('name');
     title.appendChild(name);
     name.textContent = this.currentVersion.displayName ? this.currentVersion.displayName : this.task.name;
+    name.href = `https://hub.tekton.dev/${this.task.catalog.name}/task/${this.task.name}`;
 
     const subtitle = createDiv('subtitle');
     details.appendChild(subtitle);
