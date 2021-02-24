@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TreeDataProvider, TreeView, Event, EventEmitter, TreeItem, ProviderResult, Disposable, window, extensions, commands, Uri, version } from 'vscode';
-import sendTelemetry, { telemetryProperties, TelemetryProperties } from '../telemetry';
+import { sendCommandContentToTelemetry } from '../telemetry';
 import { TektonNode, MoreNode, tkn } from '../tkn';
 import { Platform } from '../util/platform';
 import { watchResources } from '../util/watchResources';
@@ -67,7 +67,6 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
   }
 
   static async reportIssue(commandId?: string): Promise<void> {
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
     let body = '';
     const repoURL = 'https://github.com/redhat-developer/vscode-tekton';
     const template = {
@@ -78,10 +77,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     for (const [key, value] of Object.entries(template)) {
       body = `${body}${key} ${value}\n`;
     }
-    if (commandId) {
-      telemetryProps['message'] = 'Report issue command click';
-      sendTelemetry(commandId, telemetryProps);
-    }
+    sendCommandContentToTelemetry(commandId, 'Report issue command click');
     return commands.executeCommand(
       'vscode.open',
       Uri.parse(`${repoURL}/issues/new?labels=kind/bug&title=Issue&body=**Environment**\n${body}\n**Description**`));

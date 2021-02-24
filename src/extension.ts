@@ -198,7 +198,7 @@ async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<v
   };
   const result = await cli.execute(createCliCommand(`${cmd} version`));
   if (result.error) {
-    telemetryError(commandId, result.error, telemetryProps);
+    telemetryError(commandId, result.error);
   } else {
     let version: unknown;
     if (commandId === 'tkn.version') {

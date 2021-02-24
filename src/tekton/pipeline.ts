@@ -15,12 +15,11 @@ import { PipelineWizard } from '../pipeline/wizard';
 import { pipelineData } from './webviewstartpipeline';
 import { startPipeline } from './startpipeline';
 import { triggerDetection } from '../util/detection';
-import sendTelemetry, { telemetryError, telemetryProperties, TelemetryProperties } from '../telemetry';
+import { sendCommandContentToTelemetry, telemetryError } from '../telemetry';
 
 export class Pipeline extends TektonItem {
 
   static async start(pipeline: TektonNode, commandId?: string): Promise<string> {
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
     if (Pipeline.startQuickPick()) {
       if (!pipeline) {
         pipeline = await window.showQuickPick(await Pipeline.getPipelineNames(), { placeHolder: 'Select Pipeline to start', ignoreFocusOut: true });
@@ -29,8 +28,8 @@ export class Pipeline extends TektonItem {
       const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.listPipelines(), process.cwd(), false);
       let data: TknPipelineTrigger[] = [];
       if (result.error) {
-        telemetryError(commandId, result.error, telemetryProps);
-        console.log(result + ' Std.err when processing pipelines');
+        telemetryError(commandId, result.error);
+        return window.showInformationMessage(`${result} Std.err when processing pipelines`)
       }
       try {
         data = JSON.parse(result.stdout).items;
@@ -49,7 +48,7 @@ export class Pipeline extends TektonItem {
       }));
 
       const inputStartPipeline = await PipelineContent.startObject(pipelineTrigger, 'Pipeline');
-      inputStartPipeline.commandId = commandId;
+      if (commandId) inputStartPipeline.commandId = commandId;
       return await startPipeline(inputStartPipeline);
     } else {
       Pipeline.startWizard(pipeline, commandId);
@@ -61,36 +60,34 @@ export class Pipeline extends TektonItem {
       pipeline = await window.showQuickPick(await Pipeline.getPipelineNames(), { placeHolder: 'Select Pipeline to restart', ignoreFocusOut: true });
     }
     if (!pipeline) return null;
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
     return Progress.execFunctionWithProgress(`Creating the Pipeline '${pipeline.getName()}'.`, () =>
       Pipeline.tkn.restartPipeline(pipeline)
         .then(() => Pipeline.explorer.refresh())
         .then(() => {
-          telemetryProps['message'] = 'successfully restarted';
-          sendTelemetry(commandId, telemetryProps);
+          sendCommandContentToTelemetry(commandId, 'successfully restarted');
           window.showInformationMessage(`Pipeline '${pipeline.getName()}' successfully created`);
         })
-        .catch((error) => Promise.reject(`Failed to create Pipeline with error '${error}'`))
+        .catch((error) => {
+          telemetryError(commandId, error);
+          return Promise.reject(`Failed to create Pipeline with error '${error}'`)
+        })
     );
   }
 
   static refresh(commandId?: string): void {
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
     triggerDetection();
     Pipeline.explorer.refresh();
-    sendTelemetry(commandId, telemetryProps);
+    sendCommandContentToTelemetry(commandId, 'Refresh command click');
   }
 
 
   static about(commandId?: string): void {
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
-    sendTelemetry(commandId, telemetryProps);
+    sendCommandContentToTelemetry(commandId, 'About command click');
     Pipeline.tkn.executeInTerminal(Command.printTknVersion());
   }
 
   static async showTektonOutput(commandId?: string): Promise<void> {
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
-    sendTelemetry(commandId, telemetryProps);
+    sendCommandContentToTelemetry(commandId, 'Output channel click');
     cli.showOutputChannel();
   }
 
@@ -114,14 +111,13 @@ export class Pipeline extends TektonItem {
     return Command.deletePipeline(pipeline.getName());
   }
 
-  static async startWizard(pipeline: TektonNode, commandId?: string): Promise<void> {
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
+  static async startWizard(pipeline: TektonNode, commandId?: string): Promise<void | string> {
     if (!pipeline) return null;
     const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.getPipeline(pipeline.getName()), process.cwd(), false);
     let data: TknPipelineTrigger;
     if (result.error) {
-      telemetryError(commandId, result.error, telemetryProps);
-      console.log(result + ' Std.err when processing pipelines');
+      telemetryError(commandId, result.error);
+      return window.showInformationMessage(`${result} Std.err when processing pipelines`)
     }
     try {
       data = JSON.parse(result.stdout);

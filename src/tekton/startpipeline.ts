@@ -8,23 +8,20 @@ import { Progress } from '../util/progress';
 import { TektonItem } from './tektonitem';
 import { showPipelineRunPreview } from '../pipeline/pipeline-preview';
 import { window } from 'vscode';
-import sendTelemetry, { TelemetryProperties, telemetryProperties } from '../telemetry';
+import { sendCommandContentToTelemetry, telemetryError } from '../telemetry';
 
 
 
 export function startPipeline(inputStartPipeline: StartObject): Promise<string> {
-  const telemetryProps: TelemetryProperties = telemetryProperties(inputStartPipeline.commandId);
   return Progress.execFunctionWithProgress(`Starting Pipeline '${inputStartPipeline.name}'.`, () =>
     TektonItem.tkn.startPipeline(inputStartPipeline)
       .then((pipelineRunName) => TektonItem.ShowPipelineRun() ? showPipelineRunPreview(pipelineRunName) : undefined)
       .then(() => {
-        if (inputStartPipeline.commandId) {
-          telemetryProps['message'] = 'Pipeline successfully started';
-          sendTelemetry(inputStartPipeline.commandId, telemetryProps);
-        }
+        sendCommandContentToTelemetry(inputStartPipeline.commandId, 'Pipeline successfully started')
         window.showInformationMessage(`Pipeline '${inputStartPipeline.name}' successfully started`)
       })
       .catch((error) => {
+        telemetryError(inputStartPipeline.commandId, error);
         window.showErrorMessage(`Failed to start Pipeline with error '${error}'`)
       })
   );

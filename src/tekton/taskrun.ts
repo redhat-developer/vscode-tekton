@@ -14,7 +14,7 @@ import { TknTaskRun } from '../tekton';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
-import sendTelemetry, { telemetryError, telemetryProperties, TelemetryProperties } from '../telemetry';
+import { sendCommandContentToTelemetry, telemetryError } from '../telemetry';
 
 export class TaskRun extends TektonItem {
 
@@ -47,10 +47,6 @@ export class TaskRun extends TektonItem {
     if (!tempPath) {
       return;
     }
-    let telemetryProps: TelemetryProperties;
-    if (commandId) {
-      telemetryProps = telemetryProperties(commandId);
-    }
     const quote = Platform.OS === 'win32' ? '"' : '\'';
     const fsPath = path.join(tempPath, `${taskRunTemplate.metadata.generateName}.yaml`);
     const taskRunYaml = yaml.dump(taskRunTemplate);
@@ -58,16 +54,11 @@ export class TaskRun extends TektonItem {
     const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
     await fs.unlink(fsPath);
     if (result.error) {
-      if (commandId) {
-        telemetryError(commandId, result.error, telemetryProps);
-      }
+      telemetryError(commandId, result.error);
       window.showErrorMessage(`Fail to restart TaskRun: ${getStderrString(result.error)}`);
     } else {
       const message = 'TaskRun successfully restarted';
-      if (commandId) {
-        telemetryProps['message'] = message;
-        sendTelemetry(commandId, telemetryProps);
-      }
+      sendCommandContentToTelemetry(commandId, message);
       window.showInformationMessage(message);
     }
   }

@@ -20,7 +20,7 @@ import { TaskRun } from '../tekton/taskrun';
 import { window } from 'vscode';
 import { Progress } from '../util/progress';
 import { ClusterTriggerBinding } from '../tekton/clustertriggerbunding';
-import sendTelemetry, { telemetryProperties, TelemetryProperties } from '../telemetry';
+import { sendCommandContentToTelemetry, telemetryError } from '../telemetry';
 
 interface Refreshable {
   refresh(): void;
@@ -50,7 +50,6 @@ function getItemToDelete(contextItem: TektonNode, selectedItems: TektonNode[]): 
 }
 
 async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?: string): Promise<void | string> {
-  const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
   if (items) {
     const toDelete = new Map<TektonNode, CliCommand>();
     for (const item of items) {
@@ -77,13 +76,11 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
           .then(() => toRefresh.refresh())
           .then(() => {
             const message = 'All items successfully deleted.';
-            if (commandId) {
-              telemetryProps['message'] = message;
-              sendTelemetry(commandId, telemetryProps);
-            }
+            sendCommandContentToTelemetry(commandId, message);
             return window.showInformationMessage(message);
           })
           .catch((err) => {
+            telemetryError(commandId, err);
             return Promise.reject(`Failed to delete: '${err}'.`);
           });
       }
@@ -96,11 +93,11 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
           tkn.execute(toDelete.values().next().value))
           .then(() => toRefresh.refresh())
           .then(() => {
-            telemetryProps['message'] = 'Successfully deleted.';
-            sendTelemetry(commandId, telemetryProps);
+            sendCommandContentToTelemetry(commandId, 'Successfully deleted.');
             return window.showInformationMessage(`The '${name}' successfully deleted.`)
           })
           .catch((err) => {
+            telemetryError(commandId, err);
             return Promise.reject(`Failed to delete the '${name}': '${err}'.`)
           });
       }

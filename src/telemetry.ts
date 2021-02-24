@@ -24,9 +24,12 @@ export function telemetryProperties(commandId: string): TelemetryProperties {
   }
 }
 
-export function telemetryError(commandId: string, result: string | Error , telemetryProps: TelemetryProperties): void {
-  telemetryProps.error = getStderrString(result);
-  sendTelemetry(`${commandId}_error`, telemetryProps);
+export function telemetryError(commandId: string, result: string | Error): void {
+  if (commandId) {
+    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
+    telemetryProps.error = getStderrString(result);
+    sendTelemetry(`${commandId}_error`, telemetryProps);
+  }
 }
 
 export async function getTelemetryServiceInstance(): Promise<TelemetryService> {
@@ -40,6 +43,14 @@ export function createTrackingEvent(name: string, properties = {}): TelemetryEve
     properties
   }
 }
+
+export function sendCommandContentToTelemetry(commandId: string, message?: string): void {
+  if (commandId) {
+    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
+    if (message) telemetryProps['message'] = message;
+    sendTelemetry(commandId, telemetryProps);
+  }
+} 
 
 export default async function sendTelemetry(actionName: string, properties?: TelemetryProperties): Promise<void> {
   const service = await getTelemetryServiceInstance();

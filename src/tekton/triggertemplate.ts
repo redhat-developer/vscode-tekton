@@ -8,7 +8,7 @@ import { TektonItem } from './tektonitem';
 import { TektonNode, Command, tkn } from '../tkn';
 import { CliCommand } from '../cli';
 import { getExposeURl } from '../util/exposeurl';
-import sendTelemetry, { telemetryProperties, TelemetryProperties } from '../telemetry';
+import { sendCommandContentToTelemetry } from '../telemetry';
 
 export class TriggerTemplate extends TektonItem {
 
@@ -18,11 +18,12 @@ export class TriggerTemplate extends TektonItem {
 
   static async copyExposeUrl(trigger: TektonNode, commandId?: string): Promise<string> {
     if (!trigger) return null;
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
     const result = await tkn.execute(Command.listEventListener());
     const listEventListener = JSON.parse(result.stdout).items;
     if (listEventListener.length === 0) {
-      vscode.window.showInformationMessage('Expose URl not available');
+      const message = 'Expose URl not available';
+      sendCommandContentToTelemetry(commandId, message);
+      vscode.window.showInformationMessage(message);
       return null;
     }
     for (const eventListener of listEventListener) {
@@ -31,10 +32,7 @@ export class TriggerTemplate extends TektonItem {
           const url = await getExposeURl(eventListener.status.configuration.generatedName);
           vscode.env.clipboard.writeText(url);
           const message = 'Expose URl successfully copied';
-          if (commandId) {
-            telemetryProps['message'] = message;
-            sendTelemetry(commandId, telemetryProps);
-          }
+          sendCommandContentToTelemetry(commandId, message);
           vscode.window.showInformationMessage(message);
           return;
         } else if (triggers?.triggerRef) {
@@ -44,10 +42,7 @@ export class TriggerTemplate extends TektonItem {
             const url = await getExposeURl(eventListener.status.configuration.generatedName);
             vscode.env.clipboard.writeText(url);
             const message = 'Expose URl successfully copied';
-            if (commandId) {
-              telemetryProps['message'] = message;
-              sendTelemetry(commandId, telemetryProps);
-            }
+            sendCommandContentToTelemetry(commandId, message);
             vscode.window.showInformationMessage(message);
             return;
           }
@@ -55,10 +50,7 @@ export class TriggerTemplate extends TektonItem {
       }
     }
     const message = 'Expose URl not available';
-    if (commandId) {
-      telemetryProps['message'] = message;
-      sendTelemetry(commandId, telemetryProps);
-    }
+    sendCommandContentToTelemetry(commandId, message);
     vscode.window.showInformationMessage('Expose URl not available');
   }
 }

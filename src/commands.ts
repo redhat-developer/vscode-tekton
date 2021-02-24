@@ -5,7 +5,7 @@
 
 import { commands } from 'vscode';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
-import sendTelemetry, { telemetryProperties, TelemetryProperties } from './telemetry';
+import { sendCommandContentToTelemetry } from './telemetry';
 
 export enum VSCodeCommands {
   SetContext = 'setContext',
@@ -36,19 +36,11 @@ export function exitZenMode(): void {
 }
 
 export function refreshCustomTree(commandId?: string): void {
-  if (commandId) {
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
-    telemetryProps['message'] = 'Custom refresh command call';
-    sendTelemetry(commandId, telemetryProps);
-  }
+  sendCommandContentToTelemetry(commandId, 'Custom refresh command call');
   customTektonExplorer.refresh();
 }
 
 export function removeItemFromCustomTree(commandId?: string): void {
-  if (commandId) {
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
-    telemetryProps['message'] = 'Custom remove command call';
-    sendTelemetry(commandId, telemetryProps);
-  }
+  sendCommandContentToTelemetry(commandId, 'Custom remove command call');
   customTektonExplorer.removeItem();
 }

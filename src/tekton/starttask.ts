@@ -9,17 +9,16 @@ import { TektonItem } from './tektonitem';
 import { Command } from '../tkn';
 import { TknPipelineTrigger } from '../tekton';
 import { Trigger, PipelineContent } from './pipelinecontent';
-import sendTelemetry, { telemetryError, TelemetryProperties, telemetryProperties } from '../telemetry';
+import { sendCommandContentToTelemetry, telemetryError } from '../telemetry';
 import { window } from 'vscode';
 
 export async function startTask(taskName: string, commandId?: string): Promise<string> {
-  const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
   if (!taskName) return null;
   const result: cliInstance.CliExitData = await TektonItem.tkn.execute(Command.listTasks(), process.cwd(), false);
   let data: TknPipelineTrigger[] = [];
   if (result.error) {
-    if (commandId) telemetryError(commandId, result.error, telemetryProps);
-    console.log(result + ' Std.err when processing task');
+    telemetryError(commandId, result.error);
+    return window.showInformationMessage(`${result} Std.err when processing task`)
   }
   try {
     data = JSON.parse(result.stdout).items;
@@ -54,13 +53,13 @@ export async function startTask(taskName: string, commandId?: string): Promise<s
     TektonItem.tkn.startTask(inputStartTask)
       .then(() => TektonItem.explorer.refresh())
       .then(() => {
-        if (commandId) {
-          telemetryProps['message'] = 'Task successfully started';
-          sendTelemetry(commandId, telemetryProps);
-        }
-        window.showInformationMessage(`Task '${inputStartTask.name}' successfully started`);
+        sendCommandContentToTelemetry(commandId, 'Task successfully started');
+        return window.showInformationMessage(`Task '${inputStartTask.name}' successfully started`);
       })
-      .catch((error) => Promise.reject(`Failed to start Task with error '${error}'`))
+      .catch((error) => {
+        telemetryError(commandId, error);
+        return Promise.reject(`Failed to start Task with error '${error}'`)
+      })
   );
 }
 

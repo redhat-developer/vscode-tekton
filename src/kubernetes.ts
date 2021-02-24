@@ -10,9 +10,9 @@ import { TknPipelineTrigger } from './tekton';
 import { pipelineData } from './tekton/webviewstartpipeline';
 import { startPipeline } from './tekton/startpipeline';
 import { PipelineWizard } from './pipeline/wizard';
-import { ViewColumn } from 'vscode';
+import { ViewColumn, window } from 'vscode';
 import { startTask } from './tekton/starttask';
-import { telemetryError, telemetryProperties, TelemetryProperties } from './telemetry';
+import { telemetryError } from './telemetry';
 
 interface K8sClusterExplorerItem {
   nodeType: 'resource';
@@ -50,14 +50,13 @@ class K8sCommands extends TektonItem {
     }
   }
 
-  async startPipeline(context: K8sClusterExplorerItem, commandId?: string): Promise<void> {
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
+  async startPipeline(context: K8sClusterExplorerItem, commandId?: string): Promise<void | string> {
     if (!context) return null;
     const result: cliInstance.CliExitData = await K8sCommands.tkn.execute(Command.getPipeline(context.name), process.cwd(), false);
     let data: TknPipelineTrigger;
     if (result.error) {
-      telemetryError(commandId, result.error, telemetryProps);
-      console.log(result + ' Std.err when processing pipelines');
+      telemetryError(commandId, result.error);
+      return window.showInformationMessage(`${result}  Std.err when processing pipelines`);
     }
     try {
       data = JSON.parse(result.stdout);
@@ -65,7 +64,7 @@ class K8sCommands extends TektonItem {
       //show no pipelines if output is not correct json
     }
     const trigger = await pipelineData(data);
-    trigger.commandId = commandId;
+    if (commandId) trigger.commandId = commandId;
     if (!trigger.workspaces && !trigger.resources && !trigger.params) {
       await startPipeline(trigger);
     } else {
