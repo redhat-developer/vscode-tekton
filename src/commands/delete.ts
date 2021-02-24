@@ -20,21 +20,22 @@ import { TaskRun } from '../tekton/taskrun';
 import { window } from 'vscode';
 import { Progress } from '../util/progress';
 import { ClusterTriggerBinding } from '../tekton/clustertriggerbunding';
+import sendTelemetry, { telemetryProperties, TelemetryProperties } from '../telemetry';
 
 interface Refreshable {
   refresh(): void;
 }
 
-export function deleteFromExplorer(node: TektonNode): Promise<void | string> {
+export function deleteFromExplorer(node: TektonNode, commandId?: string): Promise<void | string> {
 
   const selection = pipelineExplorer.getSelection();
-  return doDelete(getItemToDelete(node, selection), pipelineExplorer);
+  return doDelete(getItemToDelete(node, selection), pipelineExplorer, commandId);
 }
 
-export function deleteFromCustom(node: TektonNode): Promise<void | string> {
+export function deleteFromCustom(node: TektonNode, commandId?: string): Promise<void | string> {
 
   const selection = customTektonExplorer.getSelection();
-  return doDelete(getItemToDelete(node, selection), customTektonExplorer);
+  return doDelete(getItemToDelete(node, selection), customTektonExplorer, commandId);
 }
 
 function getItemToDelete(contextItem: TektonNode, selectedItems: TektonNode[]): TektonNode[] {
@@ -48,7 +49,8 @@ function getItemToDelete(contextItem: TektonNode, selectedItems: TektonNode[]): 
   }
 }
 
-async function doDelete(items: TektonNode[], toRefresh: Refreshable): Promise<void | string> {
+async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?: string): Promise<void | string> {
+  const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
   if (items) {
     const toDelete = new Map<TektonNode, CliCommand>();
     for (const item of items) {
@@ -73,8 +75,17 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable): Promise<vo
           }
         })
           .then(() => toRefresh.refresh())
-          .then(() => 'All items successfully deleted.')
-          .catch((err) => Promise.reject(`Failed to delete: '${err}'.`));
+          .then(() => {
+            const message = 'All items successfully deleted.';
+            if (commandId) {
+              telemetryProps['message'] = message;
+              sendTelemetry(commandId, telemetryProps);
+            }
+            return window.showInformationMessage(message);
+          })
+          .catch((err) => {
+            return Promise.reject(`Failed to delete: '${err}'.`);
+          });
       }
 
     } else {
@@ -84,8 +95,14 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable): Promise<vo
         return Progress.execFunctionWithProgress(`Deleting the '${name}'.`, () =>
           tkn.execute(toDelete.values().next().value))
           .then(() => toRefresh.refresh())
-          .then(() => `The '${name}' successfully deleted.`)
-          .catch((err) => Promise.reject(`Failed to delete the '${name}': '${err}'.`));
+          .then(() => {
+            telemetryProps['message'] = 'Successfully deleted.';
+            sendTelemetry(commandId, telemetryProps);
+            return window.showInformationMessage(`The '${name}' successfully deleted.`)
+          })
+          .catch((err) => {
+            return Promise.reject(`Failed to delete the '${name}': '${err}'.`)
+          });
       }
     }
   }

@@ -8,10 +8,12 @@ import { TektonNode, Command } from '../tkn';
 import { Progress } from '../util/progress';
 import { window } from 'vscode';
 import { CliCommand } from '../cli';
+import sendTelemetry, { TelemetryProperties, telemetryProperties } from '../telemetry';
 
 export class PipelineResource extends TektonItem {
 
-  static async create(context: TektonNode): Promise<string> {
+  static async create(context: TektonNode, commandId?: string): Promise<string> {
+    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
     const document = window.activeTextEditor ? window.activeTextEditor.document : undefined;
     const pleaseSave = 'Please save your changes before executing \'Tekton: Create\' command.';
     let message: string;
@@ -40,8 +42,17 @@ export class PipelineResource extends TektonItem {
       return Progress.execFunctionWithProgress('Creating PipelineResource', () =>
         PipelineResource.tkn.execute(Command.createPipelineResource(document.fileName)))
         .then(() => PipelineResource.explorer.refresh(context ? context : undefined))
-        .then(() => 'PipelineResources were successfully created.')
-        .catch((err) => Promise.reject(`Failed to Create PipelineResources with error: ${err}`));
+        .then(() => {
+          const message = 'PipelineResources were successfully created.';
+          if (commandId) {
+            telemetryProps['message'] = message;
+            sendTelemetry(commandId, telemetryProps);
+          }
+          return window.showInformationMessage(message);
+        })
+        .catch((err) => {
+          return Promise.reject(`Failed to Create PipelineResources with error: ${err}`)
+        });
     }
   }
 

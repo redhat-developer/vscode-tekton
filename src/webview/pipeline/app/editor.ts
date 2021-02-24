@@ -42,6 +42,7 @@ export class PipelineRunEditor implements Widget {
   createElement(title: string, resourceType?: Params[] | PipelineRunWorkspaces[] | Workspaces[], serviceAccount?: string): void {
     const resourceGroup = new GroupItem(title, `${title}-vscode-webview-pipeline`);
     this.initialValue.name = this.trigger.name;
+    this.initialValue.commandId = this.trigger.commandId;
     let element: Widget;
     let elementId: string;
     if (resourceType) {

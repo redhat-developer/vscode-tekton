@@ -14,6 +14,7 @@ import { TknTaskRun } from '../tekton';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
+import sendTelemetry, { telemetryError, telemetryProperties, TelemetryProperties } from '../telemetry';
 
 export class TaskRun extends TektonItem {
 
@@ -32,7 +33,7 @@ export class TaskRun extends TektonItem {
     return data;
   }
 
-  static async restartTaskRun(taskRun: TektonNode): Promise<void> {
+  static async restartTaskRun(taskRun: TektonNode, commandId?: string): Promise<void> {
     const taskRunTemplate = {
       apiVersion: 'tekton.dev/v1beta1',
       kind: 'TaskRun',
@@ -46,6 +47,10 @@ export class TaskRun extends TektonItem {
     if (!tempPath) {
       return;
     }
+    let telemetryProps: TelemetryProperties;
+    if (commandId) {
+      telemetryProps = telemetryProperties(commandId);
+    }
     const quote = Platform.OS === 'win32' ? '"' : '\'';
     const fsPath = path.join(tempPath, `${taskRunTemplate.metadata.generateName}.yaml`);
     const taskRunYaml = yaml.dump(taskRunTemplate);
@@ -53,9 +58,17 @@ export class TaskRun extends TektonItem {
     const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
     await fs.unlink(fsPath);
     if (result.error) {
+      if (commandId) {
+        telemetryError(commandId, result.error, telemetryProps);
+      }
       window.showErrorMessage(`Fail to restart TaskRun: ${getStderrString(result.error)}`);
     } else {
-      window.showInformationMessage('TaskRun successfully restarted');
+      const message = 'TaskRun successfully restarted';
+      if (commandId) {
+        telemetryProps['message'] = message;
+        sendTelemetry(commandId, telemetryProps);
+      }
+      window.showInformationMessage(message);
     }
   }
 
@@ -107,20 +120,20 @@ export class TaskRun extends TektonItem {
     return Command.deleteTaskRun(item.getName());
   }
 
-  static async openDefinition(taskRun: TektonNode): Promise<void> {
+  static async openDefinition(taskRun: TektonNode, commandId?: string): Promise<void> {
     if (!taskRun) {
       taskRun = await window.showQuickPick(await TaskRun.getTaskRunNames(), { placeHolder: 'Select Task Run to Open Task Definition', ignoreFocusOut: true });
     }
     if (!taskRun) return null;
     const taskName = await TaskRun.getTaskNameByTaskRun(taskRun.getName());
     if (taskName) {
-      TektonItem.loadTektonResource(taskName[0], taskName[1], taskRun.uid);
+      TektonItem.loadTektonResource(taskName[0], taskName[1], taskRun.uid, commandId);
     }
   }
 
-  static async openConditionDefinition(conditionRun: TektonNode): Promise<void> {
+  static async openConditionDefinition(conditionRun: TektonNode, commandId?: string): Promise<void> {
     if (!conditionRun) return null;
-    TektonItem.loadTektonResource(ContextType.CONDITIONS, conditionRun.getName(), conditionRun.uid);
+    TektonItem.loadTektonResource(ContextType.CONDITIONS, conditionRun.getName(), conditionRun.uid, commandId);
   }
 
   private static async getTaskNameByTaskRun(taskRunName: string): Promise<[string, string] | undefined> {

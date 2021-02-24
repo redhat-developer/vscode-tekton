@@ -34,7 +34,7 @@ import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
 import { registerLogDocumentProvider } from './util/log-in-editor';
 import { openTaskRunTemplate } from './tekton/taskruntemplate';
-import sendTelemetry, { TelemetryProperties } from './telemetry';
+import sendTelemetry, { telemetryError, TelemetryProperties } from './telemetry';
 import { cli, createCliCommand } from './cli';
 import { getVersion, tektonVersionType } from './util/tknversion';
 
@@ -50,43 +50,43 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const hubViewProvider = new TektonHubTasksViewProvider(context.extensionUri);
 
   const disposables = [
-    vscode.commands.registerCommand('tekton.about', (context) => execute(Pipeline.about, context)),
-    vscode.commands.registerCommand('tekton.pipeline.preview', showPipelinePreview),
-    vscode.commands.registerCommand('tekton.output', (context) => execute(Pipeline.showTektonOutput, context)),
-    vscode.commands.registerCommand('tekton.explorer.refresh', (context) => execute(Pipeline.refresh, context)),
-    vscode.commands.registerCommand('k8s.tekton.pipeline.start', (context) => execute(k8sCommands.startPipeline, context)),
-    vscode.commands.registerCommand('k8s.tekton.task.start', (context) => execute(k8sCommands.startTask, context)),
-    vscode.commands.registerCommand('tekton.pipeline.start', (context) => execute(Pipeline.start, context)),
-    vscode.commands.registerCommand('tekton.addTrigger', (context) => execute(addTrigger, context)),
-    vscode.commands.registerCommand('tekton.pipeline.start.palette', (context) => execute(Pipeline.start, context)),
-    vscode.commands.registerCommand('tekton.openInEditor', (context) => execute(TektonItem.openInEditor, context)),
-    vscode.commands.registerCommand('tekton.edit', (context) => execute(TektonItem.openInEditor, context)),
-    vscode.commands.registerCommand('tekton.pipeline.restart', (context) => execute(Pipeline.restart, context)),
+    vscode.commands.registerCommand('tekton.about', () => execute(Pipeline.about, 'tekton.about')),
+    vscode.commands.registerCommand('tekton.pipeline.preview', () => execute(showPipelinePreview, 'tekton.pipeline.preview')),
+    vscode.commands.registerCommand('tekton.output', () => execute(Pipeline.showTektonOutput, 'tekton.output')),
+    vscode.commands.registerCommand('tekton.explorer.refresh', () => execute(Pipeline.refresh, 'tekton.explorer.refresh')),
+    vscode.commands.registerCommand('k8s.tekton.pipeline.start', (context) => execute(k8sCommands.startPipeline, context, 'k8s.tekton.pipeline.start')),
+    vscode.commands.registerCommand('k8s.tekton.task.start', (context) => execute(k8sCommands.startTask, context, 'k8s.tekton.task.start')),
+    vscode.commands.registerCommand('tekton.pipeline.start', (context) => execute(Pipeline.start, context, 'tekton.pipeline.start')),
+    vscode.commands.registerCommand('tekton.addTrigger', (context) => execute(addTrigger, context, 'tekton.addTrigger')),
+    vscode.commands.registerCommand('tekton.pipeline.start.palette', (context) => execute(Pipeline.start, context, 'tekton.pipeline.start.palette')),
+    vscode.commands.registerCommand('tekton.openInEditor', (context) => execute(TektonItem.openInEditor, context, 'tekton.openInEditor')),
+    vscode.commands.registerCommand('tekton.edit', (context) => execute(TektonItem.openInEditor, context, 'tekton.edit')),
+    vscode.commands.registerCommand('tekton.pipeline.restart', (context) => execute(Pipeline.restart, context, 'tekton.pipeline.restart')),
     vscode.commands.registerCommand('tekton.pipeline.list', (context) => execute(Pipeline.list, context)),
     vscode.commands.registerCommand('tekton.pipeline.describe', (context) => execute(Pipeline.describe, context)),
     vscode.commands.registerCommand('tekton.pipeline.describe.palette', (context) => execute(Pipeline.describe, context)),
-    vscode.commands.registerCommand('tekton.explorerView.delete', (context) => deleteFromExplorer(context)),
-    vscode.commands.registerCommand('tekton.customView.delete', (context) => deleteFromCustom(context)),
+    vscode.commands.registerCommand('tekton.explorerView.delete', (context) => deleteFromExplorer(context, 'tekton.explorerView.delete')),
+    vscode.commands.registerCommand('tekton.customView.delete', (context) => deleteFromCustom(context), 'tekton.customView.delete'),
     vscode.commands.registerCommand('tekton.pipelineresource.list', (context) => execute(PipelineResource.list, context)),
-    vscode.commands.registerCommand('tekton.pipelineresource.create', (context) => execute(PipelineResource.create, context)),
-    vscode.commands.registerCommand('tekton.pipelineresource.create.palette', (context) => execute(PipelineResource.create, context)),
+    vscode.commands.registerCommand('tekton.pipelineresource.create', (context) => execute(PipelineResource.create, context, 'tekton.pipelineresource.create')),
+    vscode.commands.registerCommand('tekton.pipelineresource.create.palette', (context) => execute(PipelineResource.create, context, 'tekton.pipelineresource.create.palette')),
     vscode.commands.registerCommand('tekton.pipelineresource.describe', (context) => execute(PipelineResource.describe, context)),
     vscode.commands.registerCommand('tekton.pipelineresource.describe.palette', (context) => execute(PipelineResource.describe, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.list', (context) => execute(PipelineRun.list, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.describe', (context) => execute(PipelineRun.describe, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.describe.palette', (context) => execute(PipelineRun.describe, context)),
-    vscode.commands.registerCommand('tekton.pipelinerun.restart', (context) => execute(PipelineRun.restart, context)),
-    vscode.commands.registerCommand('tekton.showDiagnosticDataAction', (context) => execute(showDiagnosticData, context)),
-    vscode.commands.registerCommand('tekton.taskrun.restart', (context) => execute(TaskRun.restartTaskRun, context)),
+    vscode.commands.registerCommand('tekton.pipelinerun.restart', (context) => execute(PipelineRun.restart, context, 'tekton.pipelinerun.restart')),
+    vscode.commands.registerCommand('tekton.showDiagnosticDataAction', (context) => execute(showDiagnosticData, context, 'tekton.showDiagnosticDataAction')),
+    vscode.commands.registerCommand('tekton.taskrun.restart', (context) => execute(TaskRun.restartTaskRun, context, 'tekton.taskrun.restart')),
     vscode.commands.registerCommand('tekton.pipelinerun.logs', (context) => execute(PipelineRun.logs, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.logs.palette', (context) => execute(PipelineRun.logs, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.followLogs', (context) => execute(PipelineRun.followLogs, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.followLogs.palette', (context) => execute(PipelineRun.followLogs, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.cancel', (context) => execute(PipelineRun.cancel, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.cancel.palette', (context) => execute(PipelineRun.cancel, context)),
-    vscode.commands.registerCommand('tekton.triggerTemplate.url', (context) => execute(TriggerTemplate.copyExposeUrl, context)),
-    vscode.commands.registerCommand('tekton.task.start', (context) => execute(Task.start, context)),
-    vscode.commands.registerCommand('tekton.task.start.palette', (context) => execute(Task.start, context)),
+    vscode.commands.registerCommand('tekton.triggerTemplate.url', (context) => execute(TriggerTemplate.copyExposeUrl, context, 'tekton.triggerTemplate.url')),
+    vscode.commands.registerCommand('tekton.task.start', (context) => execute(Task.start, context, 'tekton.task.start')),
+    vscode.commands.registerCommand('tekton.task.start.palette', (context) => execute(Task.start, context, 'tekton.task.start.palette')),
     vscode.commands.registerCommand('tekton.task.list', (context) => execute(Task.list, context)),
     vscode.commands.registerCommand('tekton.clustertask.list', (context) => execute(ClusterTask.list, context)),
     vscode.commands.registerCommand('tekton.taskrun.list', (context) => execute(TaskRun.listFromPipelineRun, context)),
@@ -97,20 +97,20 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.taskrun.logs.palette', (context) => execute(TaskRun.logs, context)),
     vscode.commands.registerCommand('tekton.taskrun.followLogs', (context) => execute(TaskRun.followLogs, context)),
     vscode.commands.registerCommand('tekton.taskrun.followLogs.palette', (context) => execute(TaskRun.followLogs, context)),
-    vscode.commands.registerCommand('tekton.explorer.reportIssue', () => PipelineExplorer.reportIssue()),
+    vscode.commands.registerCommand('tekton.explorer.reportIssue', () => PipelineExplorer.reportIssue('tekton.explorer.reportIssue')),
     vscode.commands.registerCommand('_tekton.explorer.more', expandMoreItem),
     vscode.commands.registerCommand('tekton.explorer.enterZenMode', enterZenMode),
     vscode.commands.registerCommand('tekton.custom.explorer.exitZenMode', exitZenMode),
-    vscode.commands.registerCommand('tekton.custom.explorer.refresh', refreshCustomTree),
-    vscode.commands.registerCommand('tekton.custom.explorer.removeItem', removeItemFromCustomTree),
+    vscode.commands.registerCommand('tekton.custom.explorer.refresh', () => refreshCustomTree('tekton.custom.explorer.refresh')),
+    vscode.commands.registerCommand('tekton.custom.explorer.removeItem', () => removeItemFromCustomTree('tekton.custom.explorer.removeItem')),
     vscode.commands.registerCommand('k8s.tekton.run.logs', k8sCommands.showLogs),
     vscode.commands.registerCommand('k8s.tekton.run.followLogs', k8sCommands.followLogs),
-    vscode.commands.registerCommand('tekton.open.condition', (context) => execute(TaskRun.openConditionDefinition, context)),
-    vscode.commands.registerCommand('tekton.open.task', (context) => execute(TaskRun.openDefinition, context)),
-    vscode.commands.registerCommand('tekton.open.task.palette', (context) => execute(TaskRun.openDefinition, context)),
+    vscode.commands.registerCommand('tekton.open.condition', (context) => execute(TaskRun.openConditionDefinition, context, 'tekton.open.condition')),
+    vscode.commands.registerCommand('tekton.open.task', (context) => execute(TaskRun.openDefinition, context, 'tekton.open.task')),
+    vscode.commands.registerCommand('tekton.open.task.palette', (context) => execute(TaskRun.openDefinition, context, 'tekton.open.task.palette')),
     vscode.commands.registerCommand('tekton.view.pipelinerun.diagram', (context) => execute(PipelineRun.showDiagram, context)),
-    vscode.commands.registerCommand('tekton.pipeline.wizard.start', (context) => execute(Pipeline.startWizard, context)),
-    vscode.commands.registerCommand('tekton.taskrun.template', (context) => execute(openTaskRunTemplate, context)),
+    vscode.commands.registerCommand('tekton.pipeline.wizard.start', (context) => execute(Pipeline.startWizard, context, 'tekton.pipeline.wizard.start')),
+    vscode.commands.registerCommand('tekton.taskrun.template', (context) => execute(openTaskRunTemplate, context, 'tekton.taskrun.template')),
 
     hubViewProvider,
     vscode.window.registerWebviewViewProvider('tektonHubTasks', hubViewProvider),
@@ -198,8 +198,7 @@ async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<v
   };
   const result = await cli.execute(createCliCommand(`${cmd} version`));
   if (result.error) {
-    telemetryProps.error = result.error.toString();
-    sendTelemetry(`${commandId}_error`, telemetryProps);
+    telemetryError(commandId, result.error, telemetryProps);
   } else {
     let version: unknown;
     if (commandId === 'tkn.version') {

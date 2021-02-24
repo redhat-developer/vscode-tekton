@@ -4,6 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { getTelemetryService, TelemetryEvent, TelemetryService } from '@redhat-developer/vscode-redhat-telemetry';
+import { getStderrString } from './tkn';
 
 export interface TelemetryProperties {
   identifier?: string;
@@ -16,6 +17,17 @@ export interface TelemetryProperties {
 }
 
 const telemetryService: Promise<TelemetryService> = getTelemetryService('redhat.vscode-tekton-pipelines');
+
+export function telemetryProperties(commandId: string): TelemetryProperties {
+  return {
+    identifier: commandId,
+  }
+}
+
+export function telemetryError(commandId: string, result: string | Error , telemetryProps: TelemetryProperties): void {
+  telemetryProps.error = getStderrString(result);
+  sendTelemetry(`${commandId}_error`, telemetryProps);
+}
 
 export async function getTelemetryServiceInstance(): Promise<TelemetryService> {
   return telemetryService;

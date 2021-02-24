@@ -8,6 +8,7 @@ import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer
 import { workspace, window } from 'vscode';
 import { tektonFSUri } from '../util/tekton-vfs';
 import { TknResourceItem } from './webviewstartpipeline';
+import sendTelemetry, { telemetryError, telemetryProperties, TelemetryProperties } from '../telemetry';
 
 const errorMessage = {
   Pipeline: 'You need at least one Pipeline available. Please create new Tekton Pipeline and try again.',
@@ -96,7 +97,7 @@ export abstract class TektonItem {
     return pipelineResourceList;
   }
 
-  static openInEditor(context: TektonNode): void {
+  static openInEditor(context: TektonNode, commandId?: string): void {
     let name = context.getName();
     if (context.contextValue === ContextType.CONDITIONTASKRUN) {
       for (const conditionName in context.getParent()['rawTaskRun'].conditionChecks) {
@@ -105,20 +106,28 @@ export abstract class TektonItem {
         }
       }
     }
-    TektonItem.loadTektonResource(context.contextValue, name, context.uid);
+    TektonItem.loadTektonResource(context.contextValue, name, context.uid, commandId);
   }
 
-  static loadTektonResource(type: string, name: string, uid: string): void {
+  static loadTektonResource(type: string, name: string, uid: string, commandId?: string): void {
+    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
     const outputFormat = TektonItem.getOutputFormat();
     const uri = tektonFSUri(type, name, outputFormat, uid);
     workspace.openTextDocument(uri).then((doc) => {
       if (doc) {
+        if (commandId) {
+          telemetryProps['message'] = 'successfully open in editor';
+          sendTelemetry(commandId, telemetryProps);
+        }
         window.showTextDocument(doc, { preserveFocus: true, preview: true });
       }
     }, (err) => {
       if (type === 'taskrun') {
-        window.showErrorMessage('TaskRun may not have started yet, try again when it starts running');
+        const message = 'TaskRun may not have started yet, try again when it starts running';
+        if (commandId) telemetryError(commandId, message, telemetryProps);
+        window.showErrorMessage(message);
       } else {
+        if (commandId) telemetryError(commandId, err, telemetryProps);
         window.showErrorMessage(`Error loading document: ${err}`)
       }
     });

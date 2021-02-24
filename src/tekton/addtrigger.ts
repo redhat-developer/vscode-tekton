@@ -23,6 +23,7 @@ import { cli } from '../cli';
 import { TknVersion, version } from '../util/tknversion';
 import { NewPvc } from './createpvc';
 import { getExposeURl } from '../util/exposeurl';
+import sendTelemetry, { telemetryError, telemetryProperties, TelemetryProperties } from '../telemetry';
 
 export const TriggerTemplateModel = {
   apiGroup: 'triggers.tekton.dev',
@@ -76,18 +77,22 @@ export async function addTrigger(inputAddTrigger: AddTriggerFormValues): Promise
     triggerTemplateParams,
     inputAddTrigger.name
   );
-  const createTt = await k8sCreate(triggerTemplate);
+  const createTt = await k8sCreate(triggerTemplate, inputAddTrigger.commandId);
   if (!createTt) return null;
   const eventListener: EventListenerKind = await createEventListener(
     [triggerBinding.resource],
     triggerTemplate,
   );
-  const createEt = await k8sCreate(eventListener);
+  const createEt = await k8sCreate(eventListener, inputAddTrigger.commandId);
   if (!createEt) return null;
-  await exposeRoute(eventListener.metadata.name);
+  await exposeRoute(eventListener.metadata.name, inputAddTrigger.commandId);
 }
 
-export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind | RouteKind | NewPvc): Promise<boolean> {
+export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind | RouteKind | NewPvc, commandId?: string): Promise<boolean> {
+  let telemetryProps: TelemetryProperties;
+  if (commandId) {
+    telemetryProps = telemetryProperties(commandId);
+  }
   const quote = Platform.OS === 'win32' ? '"' : '\'';
   const triggerYaml = yaml.safeDump(trigger, {skipInvalid: true});
   const tempPath = os.tmpdir();
@@ -98,11 +103,16 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
   await fs.writeFile(fsPath, triggerYaml, 'utf8');
   const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
   if (result.error) {
+    if (commandId) {
+      telemetryError(commandId, result.error, telemetryProps);
+    }
     vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(result.error)}`);
     return false;
   }
   if (trigger.kind === RouteModel.kind && !result.error) {
     const url = await getExposeURl(trigger.metadata.name);
+    telemetryProps['message'] = 'Trigger successfully created';
+    sendTelemetry(commandId, telemetryProps);
     vscode.window.showInformationMessage(`Trigger successfully created. Expose URL: ${url}`);
   }
   await fs.unlink(fsPath);

@@ -5,15 +5,23 @@
 
 import { window } from 'vscode';
 import { CliExitData } from '../cli';
+import { telemetryError, telemetryProperties, TelemetryProperties } from '../telemetry';
 import { Command, ContextType, TektonNode, tkn } from '../tkn';
 
 
-export async function showDiagnosticData(diagnostic: TektonNode): Promise<void> {
-  if (!diagnostic) return null
+export async function showDiagnosticData(diagnostic: TektonNode, commandId?: string): Promise<void> {
+  if (!diagnostic) return null;
+  let telemetryProps: TelemetryProperties;
+  if (commandId) {
+    telemetryProps = telemetryProperties(commandId);
+  }
   let result: CliExitData;
   try {
     result = await tkn.execute(Command.getPipelineRunAndTaskRunData(ContextType.PIPELINERUN, diagnostic.getName()));
   } catch (error) {
+    if (commandId) {
+      telemetryError(commandId, 'No data available to Diagnostic Data.', telemetryProps);
+    }
     window.showInformationMessage(`No data available for ${diagnostic.getName()} to Diagnostic Data.`);
     return;
   }

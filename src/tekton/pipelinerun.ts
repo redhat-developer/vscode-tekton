@@ -15,9 +15,10 @@ import { showLogInEditor } from '../util/log-in-editor';
 
 export class PipelineRun extends TektonItem {
 
-  static async restart(pipelineRun: TektonNode): Promise<void> {
+  static async restart(pipelineRun: TektonNode, commandId?: string): Promise<void> {
     if (!pipelineRun) return null;
     const trigger = await pipelineRunData(pipelineRun);
+    if (commandId) trigger.commandId = commandId;
     if (trigger.pipelineRun.workspaces.length === 0 && trigger.pipelineRun.resources.length === 0 && trigger.pipelineRun.params.length === 0) {
       await startPipeline(trigger);
     } else {

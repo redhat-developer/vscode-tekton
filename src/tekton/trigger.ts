@@ -12,13 +12,16 @@ import { TknPipelineTrigger } from '../tekton';
 import { TektonItem } from './tektonitem';
 import { multiStepInput } from '../util/MultiStepInput';
 import { addTriggerToPipeline } from './addtrigger';
+import { telemetryError, telemetryProperties, TelemetryProperties } from '../telemetry';
 
 
-export async function addTrigger(pipeline: TektonNode): Promise<string> {
+export async function addTrigger(pipeline: TektonNode, commandId?: string): Promise<string> {
+  const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
   if (!pipeline) return null;
   const result: cliInstance.CliExitData = await TektonItem.tkn.execute(Command.getPipeline(pipeline.getName()), process.cwd(), false);
   let data: TknPipelineTrigger;
   if (result.error) {
+    telemetryError(commandId, result.error, telemetryProps);
     console.log(result + ' Std.err when processing pipelines');
   }
   try {
@@ -27,6 +30,7 @@ export async function addTrigger(pipeline: TektonNode): Promise<string> {
     //show no pipelines if output is not correct json
   }
   const trigger = await pipelineData(data, true);
+  trigger.commandId = commandId;
   if (!trigger.params && !trigger.resources && !trigger.workspaces) {
     selectTrigger(trigger);
   } else {
@@ -40,7 +44,8 @@ async function selectTrigger(trigger: TknResourceItem): Promise<string> {
     params: [],
     resources: [],
     workspaces: [],
-    trigger: undefined
+    trigger: undefined,
+    commandId: undefined
   }
   const pick = await multiStepInput.showQuickPick({
     title: 'Webhook: Git Provider Type',
@@ -49,5 +54,6 @@ async function selectTrigger(trigger: TknResourceItem): Promise<string> {
   });
   initialResourceFormValues.name = trigger.name;
   initialResourceFormValues.trigger = pick;
+  initialResourceFormValues.commandId = trigger.commandId;
   return await addTriggerToPipeline(initialResourceFormValues);
 }

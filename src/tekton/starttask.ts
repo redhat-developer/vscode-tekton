@@ -9,12 +9,16 @@ import { TektonItem } from './tektonitem';
 import { Command } from '../tkn';
 import { TknPipelineTrigger } from '../tekton';
 import { Trigger, PipelineContent } from './pipelinecontent';
+import sendTelemetry, { telemetryError, TelemetryProperties, telemetryProperties } from '../telemetry';
+import { window } from 'vscode';
 
-export async function startTask(taskName: string): Promise<string> {
+export async function startTask(taskName: string, commandId?: string): Promise<string> {
+  const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
   if (!taskName) return null;
   const result: cliInstance.CliExitData = await TektonItem.tkn.execute(Command.listTasks(), process.cwd(), false);
   let data: TknPipelineTrigger[] = [];
   if (result.error) {
+    if (commandId) telemetryError(commandId, result.error, telemetryProps);
     console.log(result + ' Std.err when processing task');
   }
   try {
@@ -49,7 +53,13 @@ export async function startTask(taskName: string): Promise<string> {
   return Progress.execFunctionWithProgress(`Starting Task '${inputStartTask.name}'.`, () =>
     TektonItem.tkn.startTask(inputStartTask)
       .then(() => TektonItem.explorer.refresh())
-      .then(() => `Task '${inputStartTask.name}' successfully started`)
+      .then(() => {
+        if (commandId) {
+          telemetryProps['message'] = 'Task successfully started';
+          sendTelemetry(commandId, telemetryProps);
+        }
+        window.showInformationMessage(`Task '${inputStartTask.name}' successfully started`);
+      })
       .catch((error) => Promise.reject(`Failed to start Task with error '${error}'`))
   );
 }

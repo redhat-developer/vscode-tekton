@@ -17,7 +17,7 @@ export const RouteModel: K8sKind = {
   kind: 'Route',
 };
 
-export async function exposeRoute(elName: string): Promise<void> {
+export async function exposeRoute(elName: string, commandId?: string): Promise<void> {
   const elResourceCli = await TektonItem.tkn.execute(Command.getEventListener(elName), process.cwd(), false);
   const elResource: EventListenerKind = JSON.parse(elResourceCli.stdout);
   const serviceGeneratedName = elResource?.status?.configuration.generatedName;
@@ -29,7 +29,7 @@ export async function exposeRoute(elName: string): Promise<void> {
     serviceGeneratedName,
     servicePort,
   );
-  await k8sCreate(route);
+  await k8sCreate(route, commandId);
 }
 
 export function createEventListenerRoute(eventListener: EventListenerKind, generatedName?: string, targetPort = 8080): RouteKind {
