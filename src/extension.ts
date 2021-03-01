@@ -147,6 +147,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     ).at(undefined);
     k8sExplorer.registerNodeContributor(nodeContributor);
   }
+
+  const configurationApi = await k8s.extension.configuration.v1_1;
+  if (configurationApi.available) {
+    const confApi = configurationApi.api;
+    confApi.onDidChangeContext(() => {
+      pipelineExplorer.refresh();
+    });
+  }
   vscode.workspace.onDidSaveTextDocument(async (document: vscode.TextDocument) => {
     await updateTektonResource(document);
   });
