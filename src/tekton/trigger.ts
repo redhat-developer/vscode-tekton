@@ -21,7 +21,7 @@ export async function addTrigger(pipeline: TektonNode, commandId?: string): Prom
   let data: TknPipelineTrigger;
   if (result.error) {
     telemetryError(commandId, result.error);
-    return window.showInformationMessage(`${result} Std.err when processing pipelines`);
+    return window.showErrorMessage(`${result.error} Std.err when processing pipelines`);
   }
   try {
     data = JSON.parse(result.stdout);

@@ -38,7 +38,7 @@ export async function pipelineRunData(pipelineRunContent: TektonNode): Promise<T
     resources: {},
     workspaces: {}
   }
-  const getPipelineContent = await TektonItem.tkn.execute(Command.getPipeline(pipelineRunContent.getParent().getName()), process.cwd(), false);
+  const getPipelineContent = await TektonItem.tkn.execute(Command.getPipeline(pipelineRunContent['item'].metadata.labels['tekton.dev/pipeline']), process.cwd(), false);
   let data: TknSpec;
   try {
     data = JSON.parse(getPipelineContent.stdout).spec;

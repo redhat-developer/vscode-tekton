@@ -109,7 +109,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.open.task', (context) => execute(TaskRun.openDefinition, context, 'tekton.open.task')),
     vscode.commands.registerCommand('tekton.open.task.palette', (context) => execute(TaskRun.openDefinition, context, 'tekton.open.task.palette')),
     vscode.commands.registerCommand('tekton.view.pipelinerun.diagram', (context) => execute(PipelineRun.showDiagram, context)),
-    vscode.commands.registerCommand('tekton.pipeline.wizard.start', (context) => execute(Pipeline.startWizard, context, 'tekton.pipeline.wizard.start')),
     vscode.commands.registerCommand('tekton.taskrun.template', (context) => execute(openTaskRunTemplate, context, 'tekton.taskrun.template')),
 
     hubViewProvider,

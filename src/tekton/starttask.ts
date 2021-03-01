@@ -18,7 +18,7 @@ export async function startTask(taskName: string, commandId?: string): Promise<s
   let data: TknPipelineTrigger[] = [];
   if (result.error) {
     telemetryError(commandId, result.error);
-    return window.showInformationMessage(`${result} Std.err when processing task`)
+    return window.showErrorMessage(`${result.error} Std.err when processing task`)
   }
   try {
     data = JSON.parse(result.stdout).items;
@@ -54,11 +54,11 @@ export async function startTask(taskName: string, commandId?: string): Promise<s
       .then(() => TektonItem.explorer.refresh())
       .then(() => {
         sendCommandContentToTelemetry(commandId, 'Task successfully started');
-        return window.showInformationMessage(`Task '${inputStartTask.name}' successfully started`);
+        window.showInformationMessage(`Task '${inputStartTask.name}' successfully started`);
       })
       .catch((error) => {
         telemetryError(commandId, error);
-        return Promise.reject(`Failed to start Task with error '${error}'`)
+        window.showErrorMessage(`Failed to start Task with error '${error}'`)
       })
   );
 }

@@ -99,7 +99,7 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
   await fs.writeFile(fsPath, triggerYaml, 'utf8');
   const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
   if (result.error) {
-    telemetryError(commandId, result.error);
+    telemetryError(commandId, result.error.toString().replace(fsPath, 'user path'));
     vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(result.error)}`);
     return false;
   }

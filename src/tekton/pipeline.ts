@@ -20,16 +20,16 @@ import { sendCommandContentToTelemetry, telemetryError } from '../telemetry';
 export class Pipeline extends TektonItem {
 
   static async start(pipeline: TektonNode, commandId?: string): Promise<string> {
+    if (!pipeline) {
+      pipeline = await window.showQuickPick(await Pipeline.getPipelineNames(), { placeHolder: 'Select Pipeline to start', ignoreFocusOut: true });
+    }
+    if (!pipeline) return null;
     if (Pipeline.startQuickPick()) {
-      if (!pipeline) {
-        pipeline = await window.showQuickPick(await Pipeline.getPipelineNames(), { placeHolder: 'Select Pipeline to start', ignoreFocusOut: true });
-      }
-      if (!pipeline) return null;
       const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.listPipelines(), process.cwd(), false);
       let data: TknPipelineTrigger[] = [];
       if (result.error) {
         telemetryError(commandId, result.error);
-        return window.showInformationMessage(`${result} Std.err when processing pipelines`)
+        return window.showErrorMessage(`${result.error} Std.err when processing pipelines`)
       }
       try {
         data = JSON.parse(result.stdout).items;
@@ -117,7 +117,7 @@ export class Pipeline extends TektonItem {
     let data: TknPipelineTrigger;
     if (result.error) {
       telemetryError(commandId, result.error);
-      return window.showInformationMessage(`${result} Std.err when processing pipelines`)
+      return window.showErrorMessage(`${result.error} Std.err when processing pipelines`)
     }
     try {
       data = JSON.parse(result.stdout);

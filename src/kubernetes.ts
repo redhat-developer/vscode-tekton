@@ -56,7 +56,8 @@ class K8sCommands extends TektonItem {
     let data: TknPipelineTrigger;
     if (result.error) {
       telemetryError(commandId, result.error);
-      return window.showInformationMessage(`${result}  Std.err when processing pipelines`);
+      window.showErrorMessage(`${result.error}  Std.err when processing pipelines`);
+      return;
     }
     try {
       data = JSON.parse(result.stdout);
