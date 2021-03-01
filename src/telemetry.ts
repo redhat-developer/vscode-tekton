@@ -24,10 +24,12 @@ export function telemetryProperties(commandId: string): TelemetryProperties {
   }
 }
 
-export function telemetryError(commandId: string, result: string | Error): void {
+export async function telemetryError(commandId: string, result: string | Error): Promise<void> {
   if (commandId) {
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
-    telemetryProps.error = getStderrString(result);
+    const telemetryProps: TelemetryProperties = telemetryProperties(`${commandId}_error`);
+    const message = getStderrString(result);
+    const errorMessage = message.replace(/lookup\s+([^']+):/, 'lookup cluster info: ');
+    telemetryProps.error = errorMessage;
     sendTelemetry(`${commandId}_error`, telemetryProps);
   }
 }
