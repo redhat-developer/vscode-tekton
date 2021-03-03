@@ -8,7 +8,7 @@ import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer
 import { workspace, window } from 'vscode';
 import { tektonFSUri } from '../util/tekton-vfs';
 import { TknResourceItem } from './webviewstartpipeline';
-import { sendCommandContentToTelemetry, telemetryError } from '../telemetry';
+import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 
 const errorMessage = {
   Pipeline: 'You need at least one Pipeline available. Please create new Tekton Pipeline and try again.',
@@ -114,16 +114,16 @@ export abstract class TektonItem {
     const uri = tektonFSUri(type, name, outputFormat, uid);
     workspace.openTextDocument(uri).then((doc) => {
       if (doc) {
-        sendCommandContentToTelemetry(commandId, 'successfully open in editor');
+        telemetryLogCommand(commandId, 'successfully open in editor');
         window.showTextDocument(doc, { preserveFocus: true, preview: true });
       }
     }, (err) => {
       if (type === 'taskrun') {
         const message = 'TaskRun may not have started yet, try again when it starts running';
-        telemetryError(commandId, message);
+        telemetryLogError(commandId, message);
         window.showErrorMessage(message);
       } else {
-        telemetryError(commandId, err);
+        telemetryLogError(commandId, err);
         window.showErrorMessage(`Error loading document: ${err}`)
       }
     });

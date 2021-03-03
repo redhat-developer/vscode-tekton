@@ -8,7 +8,7 @@ import { TektonNode, Command } from '../tkn';
 import { Progress } from '../util/progress';
 import { window } from 'vscode';
 import { CliCommand } from '../cli';
-import { sendCommandContentToTelemetry, telemetryError } from '../telemetry';
+import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 
 export class PipelineResource extends TektonItem {
 
@@ -43,11 +43,11 @@ export class PipelineResource extends TektonItem {
         .then(() => PipelineResource.explorer.refresh(context ? context : undefined))
         .then(() => {
           const message = 'PipelineResources were successfully created.';
-          sendCommandContentToTelemetry(commandId, message);
+          telemetryLogCommand(commandId, message);
           return message;
         })
         .catch((err) => {
-          telemetryError(commandId, err);
+          telemetryLogError(commandId, err);
           return Promise.reject(`Failed to Create PipelineResources with error: ${err}`)
         });
     }

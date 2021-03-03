@@ -12,7 +12,7 @@ import { startPipeline } from './tekton/startpipeline';
 import { PipelineWizard } from './pipeline/wizard';
 import { ViewColumn, window } from 'vscode';
 import { startTask } from './tekton/starttask';
-import { telemetryError } from './telemetry';
+import { telemetryLogError } from './telemetry';
 
 interface K8sClusterExplorerItem {
   nodeType: 'resource';
@@ -55,7 +55,7 @@ class K8sCommands extends TektonItem {
     const result: cliInstance.CliExitData = await K8sCommands.tkn.execute(Command.getPipeline(context.name), process.cwd(), false);
     let data: TknPipelineTrigger;
     if (result.error) {
-      telemetryError(commandId, result.error);
+      telemetryLogError(commandId, result.error);
       window.showErrorMessage(`${result.error}  Std.err when processing pipelines`);
       return;
     }

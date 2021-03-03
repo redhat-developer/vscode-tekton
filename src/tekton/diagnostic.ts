@@ -5,7 +5,7 @@
 
 import { window } from 'vscode';
 import { CliExitData } from '../cli';
-import { telemetryError } from '../telemetry';
+import { telemetryLogError } from '../telemetry';
 import { Command, ContextType, TektonNode, tkn } from '../tkn';
 
 
@@ -15,7 +15,7 @@ export async function showDiagnosticData(diagnostic: TektonNode, commandId?: str
   try {
     result = await tkn.execute(Command.getPipelineRunAndTaskRunData(ContextType.PIPELINERUN, diagnostic.getName()));
   } catch (error) {
-    telemetryError(commandId, 'No data available to Diagnostic Data.');
+    telemetryLogError(commandId, 'No data available to Diagnostic Data.');
     window.showInformationMessage(`No data available for ${diagnostic.getName()} to Diagnostic Data.`);
     return;
   }

@@ -6,7 +6,7 @@
 import * as os from 'os';
 import * as path from 'path';
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command, PipelineTaskRunData, ContextType, getStderrString } from '../tkn';
+import { TektonNode, Command, PipelineTaskRunData, ContextType } from '../tkn';
 import { window, workspace } from 'vscode';
 import { cli, CliCommand } from '../cli';
 import { showLogInEditor } from '../util/log-in-editor';
@@ -14,7 +14,8 @@ import { TknTaskRun } from '../tekton';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
-import { sendCommandContentToTelemetry, telemetryError } from '../telemetry';
+import { telemetryLogCommand, telemetryLogError } from '../telemetry';
+import { getStderrString } from '../util/stderrstring';
 
 export class TaskRun extends TektonItem {
 
@@ -53,12 +54,12 @@ export class TaskRun extends TektonItem {
     await fs.writeFile(fsPath, taskRunYaml, 'utf8');
     const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
     if (result.error) {
-      telemetryError(commandId, result.error.toString().replace(fsPath, 'user path'));
+      telemetryLogError(commandId, result.error.toString().replace(fsPath, 'user path'));
       window.showErrorMessage(`Fail to restart TaskRun: ${getStderrString(result.error)}`);
       return false;
     } else {
       const message = 'TaskRun successfully restarted';
-      sendCommandContentToTelemetry(commandId, message);
+      telemetryLogCommand(commandId, message);
       window.showInformationMessage(message);
     }
     await fs.unlink(fsPath);
@@ -128,7 +129,7 @@ export class TaskRun extends TektonItem {
     if (!conditionRun) return null;
     const result = await cli.execute(Command.getTaskRun(conditionRun.getName()));
     if (result.error) {
-      telemetryError(commandId, result.error);
+      telemetryLogError(commandId, result.error);
       window.showErrorMessage(`${result.error}  Std.err when processing condition Definition`);
       return;
     }
@@ -140,7 +141,7 @@ export class TaskRun extends TektonItem {
     }
     if (!data.metadata.labels['tekton.dev/conditionName']) {
       const message = `Cannot find Condition definition for: ${conditionRun.getName()}.`;
-      telemetryError(commandId, message);
+      telemetryLogError(commandId, message);
       window.showErrorMessage(message);
       return;
     }

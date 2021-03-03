@@ -12,8 +12,9 @@ import * as vscode from 'vscode';
 import { contextGlobalState } from '../extension';
 import { tektonYaml } from '../yaml-support/tkn-yaml';
 import { pipelineExplorer } from '../pipeline/pipelineExplorer';
-import { getStderrString, Command } from '../tkn';
+import { Command } from '../tkn';
 import { Platform } from '../util/platform';
+import { getStderrString } from '../util/stderrstring';
 
 function checkDeploy(): boolean {
   return vscode.workspace

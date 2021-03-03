@@ -12,7 +12,7 @@ import { TknPipelineTrigger } from '../tekton';
 import { TektonItem } from './tektonitem';
 import { multiStepInput } from '../util/MultiStepInput';
 import { addTriggerToPipeline } from './addtrigger';
-import { telemetryError } from '../telemetry';
+import { telemetryLogError } from '../telemetry';
 
 
 export async function addTrigger(pipeline: TektonNode, commandId?: string): Promise<string> {
@@ -20,7 +20,7 @@ export async function addTrigger(pipeline: TektonNode, commandId?: string): Prom
   const result: cliInstance.CliExitData = await TektonItem.tkn.execute(Command.getPipeline(pipeline.getName()), process.cwd(), false);
   let data: TknPipelineTrigger;
   if (result.error) {
-    telemetryError(commandId, result.error);
+    telemetryLogError(commandId, result.error);
     return window.showErrorMessage(`${result.error} Std.err when processing pipelines`);
   }
   try {

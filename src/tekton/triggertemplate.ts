@@ -8,7 +8,7 @@ import { TektonItem } from './tektonitem';
 import { TektonNode, Command, tkn } from '../tkn';
 import { CliCommand } from '../cli';
 import { getExposeURl } from '../util/exposeurl';
-import { sendCommandContentToTelemetry } from '../telemetry';
+import { telemetryLogCommand } from '../telemetry';
 
 export class TriggerTemplate extends TektonItem {
 
@@ -22,7 +22,7 @@ export class TriggerTemplate extends TektonItem {
     const listEventListener = JSON.parse(result.stdout).items;
     if (listEventListener.length === 0) {
       const message = 'Expose URl not available';
-      sendCommandContentToTelemetry(commandId, message);
+      telemetryLogCommand(commandId, message);
       vscode.window.showInformationMessage(message);
       return null;
     }
@@ -32,7 +32,7 @@ export class TriggerTemplate extends TektonItem {
           const url = await getExposeURl(eventListener.status.configuration.generatedName);
           vscode.env.clipboard.writeText(url);
           const message = 'Expose URl successfully copied';
-          sendCommandContentToTelemetry(commandId, message);
+          telemetryLogCommand(commandId, message);
           vscode.window.showInformationMessage(message);
           return;
         } else if (triggers?.triggerRef) {
@@ -42,7 +42,7 @@ export class TriggerTemplate extends TektonItem {
             const url = await getExposeURl(eventListener.status.configuration.generatedName);
             vscode.env.clipboard.writeText(url);
             const message = 'Expose URl successfully copied';
-            sendCommandContentToTelemetry(commandId, message);
+            telemetryLogCommand(commandId, message);
             vscode.window.showInformationMessage(message);
             return;
           }
@@ -50,7 +50,7 @@ export class TriggerTemplate extends TektonItem {
       }
     }
     const message = 'Expose URl not available';
-    sendCommandContentToTelemetry(commandId, message);
+    telemetryLogCommand(commandId, message);
     vscode.window.showInformationMessage('Expose URl not available');
   }
 }

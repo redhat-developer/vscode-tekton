@@ -34,7 +34,7 @@ import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
 import { registerLogDocumentProvider } from './util/log-in-editor';
 import { openTaskRunTemplate } from './tekton/taskruntemplate';
-import sendTelemetry, { telemetryError, TelemetryProperties } from './telemetry';
+import sendTelemetry, { telemetryLogError, TelemetryProperties } from './telemetry';
 import { cli, createCliCommand } from './cli';
 import { getVersion, tektonVersionType } from './util/tknversion';
 
@@ -197,7 +197,7 @@ async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<v
   };
   const result = await cli.execute(createCliCommand(`${cmd} version`));
   if (result.error) {
-    telemetryError(commandId, result.error);
+    telemetryLogError(commandId, result.error);
   } else {
     let version: unknown;
     if (commandId === 'tkn.version') {

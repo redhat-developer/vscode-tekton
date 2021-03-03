@@ -20,7 +20,7 @@ import { TaskRun } from '../tekton/taskrun';
 import { window } from 'vscode';
 import { Progress } from '../util/progress';
 import { ClusterTriggerBinding } from '../tekton/clustertriggerbunding';
-import { sendCommandContentToTelemetry, telemetryError } from '../telemetry';
+import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 
 interface Refreshable {
   refresh(): void;
@@ -76,11 +76,11 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
           .then(() => toRefresh.refresh())
           .then(() => {
             const message = 'All items successfully deleted.';
-            sendCommandContentToTelemetry(commandId, message);
+            telemetryLogCommand(commandId, message);
             return window.showInformationMessage(message);
           })
           .catch((err) => {
-            telemetryError(commandId, err);
+            telemetryLogError(commandId, err);
             return Promise.reject(`Failed to delete: '${err}'.`);
           });
       }
@@ -93,11 +93,11 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
           tkn.execute(toDelete.values().next().value))
           .then(() => toRefresh.refresh())
           .then(() => {
-            sendCommandContentToTelemetry(commandId, 'Successfully deleted.');
+            telemetryLogCommand(commandId, 'Successfully deleted.');
             return window.showInformationMessage(`The '${name}' successfully deleted.`)
           })
           .catch((err) => {
-            telemetryError(commandId, err);
+            telemetryLogError(commandId, err);
             return Promise.reject(`Failed to delete the '${name}': '${err}'.`)
           });
       }

@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs-extra';
 import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind, EventListenerKind, PipelineRunWorkspace } from '../tekton';
 import { TektonItem } from './tektonitem';
-import { Command, getStderrString } from '../tkn';
+import { Command } from '../tkn';
 import { AddTriggerFormValues, Pipeline, TriggerBindingKind, Resources, Param, Workspaces } from './triggertype';
 import { K8sKind, RouteKind } from './k8s-type';
 import * as yaml from 'js-yaml';
@@ -23,7 +23,8 @@ import { cli } from '../cli';
 import { TknVersion, version } from '../util/tknversion';
 import { NewPvc } from './createpvc';
 import { getExposeURl } from '../util/exposeurl';
-import { sendCommandContentToTelemetry, telemetryError } from '../telemetry';
+import { telemetryLogCommand, telemetryLogError } from '../telemetry';
+import { getStderrString } from '../util/stderrstring';
 
 export const TriggerTemplateModel = {
   apiGroup: 'triggers.tekton.dev',
@@ -99,13 +100,13 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
   await fs.writeFile(fsPath, triggerYaml, 'utf8');
   const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
   if (result.error) {
-    telemetryError(commandId, result.error.toString().replace(fsPath, 'user path'));
+    telemetryLogError(commandId, result.error.toString().replace(fsPath, 'user path'));
     vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(result.error)}`);
     return false;
   }
   if (trigger.kind === RouteModel.kind && !result.error) {
     const url = await getExposeURl(trigger.metadata.name);
-    sendCommandContentToTelemetry(commandId, 'Trigger successfully created');
+    telemetryLogCommand(commandId, 'Trigger successfully created');
     vscode.window.showInformationMessage(`Trigger successfully created. Expose URL: ${url}`);
   }
   await fs.unlink(fsPath);

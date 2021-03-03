@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TreeDataProvider, TreeView, Event, EventEmitter, TreeItem, ProviderResult, Disposable, window, extensions, commands, Uri, version } from 'vscode';
-import { sendCommandContentToTelemetry } from '../telemetry';
+import { telemetryLogCommand } from '../telemetry';
 import { TektonNode, MoreNode, tkn } from '../tkn';
 import { Platform } from '../util/platform';
 import { watchResources } from '../util/watchResources';
@@ -77,7 +77,7 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     for (const [key, value] of Object.entries(template)) {
       body = `${body}${key} ${value}\n`;
     }
-    sendCommandContentToTelemetry(commandId, 'Report issue command click');
+    telemetryLogCommand(commandId, 'Report issue command click');
     return commands.executeCommand(
       'vscode.open',
       Uri.parse(`${repoURL}/issues/new?labels=kind/bug&title=Issue&body=**Environment**\n${body}\n**Description**`));

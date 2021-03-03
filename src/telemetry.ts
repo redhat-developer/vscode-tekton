@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { getTelemetryService, TelemetryEvent, TelemetryService } from '@redhat-developer/vscode-redhat-telemetry';
-import { getStderrString } from './tkn';
+import { getStderrString } from './util/stderrstring';
 
 export interface TelemetryProperties {
   identifier?: string;
@@ -24,12 +24,19 @@ export function telemetryProperties(commandId: string): TelemetryProperties {
   }
 }
 
-export async function telemetryError(commandId: string, result: string | Error): Promise<void> {
+export async function telemetryLogError(commandId: string, result: string | Error): Promise<void> {
   if (commandId) {
     const telemetryProps: TelemetryProperties = telemetryProperties(`${commandId}_error`);
-    const message = getStderrString(result);
-    const errorMessage = message.replace(/lookup\s+([^']+):/, 'lookup cluster info: ');
-    telemetryProps.error = errorMessage;
+    let message = getStderrString(result);
+    const clusterInfo = /lookup\s+([^']+):/;
+    if (clusterInfo.test(message)) {
+      message = message.replace(clusterInfo, 'lookup cluster info: ');
+    }
+    const urlCheck = /(https?:\/\/[^\s]+)/g;
+    if (urlCheck.test(message)) {
+      message = message.replace(urlCheck, 'cluster info');
+    }
+    telemetryProps.error = message;
     sendTelemetry(`${commandId}_error`, telemetryProps);
   }
 }
@@ -46,7 +53,7 @@ export function createTrackingEvent(name: string, properties = {}): TelemetryEve
   }
 }
 
-export function sendCommandContentToTelemetry(commandId: string, message?: string): void {
+export function telemetryLogCommand(commandId: string, message?: string): void {
   if (commandId) {
     const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
     if (message) telemetryProps['message'] = message;
