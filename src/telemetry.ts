@@ -4,6 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { getTelemetryService, TelemetryEvent, TelemetryService } from '@redhat-developer/vscode-redhat-telemetry';
+import { hideClusterInfo } from './util/hideclusterinformation';
 import { getStderrString } from './util/stderrstring';
 
 export interface TelemetryProperties {
@@ -27,16 +28,8 @@ export function telemetryProperties(commandId: string): TelemetryProperties {
 export async function telemetryLogError(commandId: string, result: string | Error): Promise<void> {
   if (commandId) {
     const telemetryProps: TelemetryProperties = telemetryProperties(`${commandId}_error`);
-    let message = getStderrString(result);
-    const clusterInfo = /lookup\s+([^']+):/;
-    if (clusterInfo.test(message)) {
-      message = message.replace(clusterInfo, 'lookup cluster info: ');
-    }
-    const urlCheck = /(https?:\/\/[^\s]+)/g;
-    if (urlCheck.test(message)) {
-      message = message.replace(urlCheck, 'cluster info');
-    }
-    telemetryProps.error = message;
+    const message = getStderrString(result);
+    telemetryProps.error = hideClusterInfo(message);
     sendTelemetry(`${commandId}_error`, telemetryProps);
   }
 }

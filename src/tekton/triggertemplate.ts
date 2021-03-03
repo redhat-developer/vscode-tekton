@@ -19,19 +19,19 @@ export class TriggerTemplate extends TektonItem {
   static async copyExposeUrl(trigger: TektonNode, commandId?: string): Promise<string> {
     if (!trigger) return null;
     const result = await tkn.execute(Command.listEventListener());
+    const message = 'Expose URL not available';
     const listEventListener = JSON.parse(result.stdout).items;
     if (listEventListener.length === 0) {
-      const message = 'Expose URl not available';
       telemetryLogCommand(commandId, message);
       vscode.window.showInformationMessage(message);
       return null;
     }
     for (const eventListener of listEventListener) {
       for (const triggers of eventListener.spec.triggers) {
+        const message = 'Expose URL successfully copied';
         if (triggers?.template?.name === trigger.getName()) {
           const url = await getExposeURl(eventListener.status.configuration.generatedName);
           vscode.env.clipboard.writeText(url);
-          const message = 'Expose URl successfully copied';
           telemetryLogCommand(commandId, message);
           vscode.window.showInformationMessage(message);
           return;
@@ -41,7 +41,6 @@ export class TriggerTemplate extends TektonItem {
           if (triggerName === trigger.getName()) {
             const url = await getExposeURl(eventListener.status.configuration.generatedName);
             vscode.env.clipboard.writeText(url);
-            const message = 'Expose URl successfully copied';
             telemetryLogCommand(commandId, message);
             vscode.window.showInformationMessage(message);
             return;
@@ -49,7 +48,6 @@ export class TriggerTemplate extends TektonItem {
         }
       }
     }
-    const message = 'Expose URl not available';
     telemetryLogCommand(commandId, message);
     vscode.window.showInformationMessage('Expose URl not available');
   }
