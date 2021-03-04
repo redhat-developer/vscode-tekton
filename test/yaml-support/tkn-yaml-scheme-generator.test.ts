@@ -90,4 +90,31 @@ suite('Pipeline scheme generator', () => {
       description: 'Foo Result Description'
     });
   });
+
+  test('Generator should add custom task name to tasks ref enum', async () => {
+    const yaml = `
+    apiVersion: tekton.dev/v1beta1
+    kind: Pipeline
+    metadata:
+      name: example
+    spec:
+      params:
+      - name: pipeline-param
+        default: hello
+      tasks:
+      - name: example-task
+        taskRef:
+          apiVersion: example.dev/v0
+          kind: Example
+          name: my-example
+        params:
+        - name: task-param
+          value: "$(params.pipeline-param)"
+        `
+    const doc = new TestTextDocument(vscode.Uri.file(path.join('foo', 'PipelineSchemeGenerator3.yaml')), yaml);
+    const result = await generateScheme(doc, path.resolve(__dirname, '..', '..', '..', 'scheme', 'tekton.dev', 'v1beta1_Pipeline.json'));
+    const scheme = JSON.parse(result);
+    expect(scheme.definitions.TaskRef.properties.name.enum).is.contains('my-example');
+
+  });
 });

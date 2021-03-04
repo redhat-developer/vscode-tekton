@@ -183,6 +183,38 @@ export class PipelineYaml {
     return getTasksSeq(specMap);
   }
 
+  getCustomTasks(vsDocument: vscode.TextDocument): string[]{
+    const result: string[] = [];
+    if (tektonYaml.isTektonYaml(vsDocument) === TektonYamlType.Pipeline) {
+      const yamlDocuments = yamlLocator.getYamlDocuments(vsDocument);
+      for (const doc of yamlDocuments) {
+        const rootMap = tektonYaml.getRootMap(doc);
+        if (rootMap) {
+          const specMap = getSpecMap(rootMap);
+          if (specMap) {
+            const tasksSeq = getTasksSeq(specMap);
+            if (tasksSeq) {
+              for (const taskNode of tasksSeq.items) {
+                if (taskNode.kind === 'MAPPING') {
+                  const taskRef = findNodeByKey<YamlMap>('taskRef', taskNode as YamlMap);
+                  if (taskRef){
+                    const apiVersion = findNodeByKey<YamlNode>('apiVersion', taskRef);
+                    const kind = findNodeByKey<YamlNode>('kind', taskRef);
+                    const nameValue = findNodeByKey<YamlNode>('name', taskRef);
+                    if (nameValue && apiVersion && kind) {
+                      result.push(nameValue.raw.trim());
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return result;
+  }
+
   getTaskRef(task: YamlMap): YamlMap {
     return findNodeByKey<YamlMap>('taskRef', task);
   }

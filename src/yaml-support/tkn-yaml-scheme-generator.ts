@@ -7,7 +7,7 @@ import * as path from 'path';
 import { readFile } from 'fs-extra'
 import { getRawTasks, getTknTasksSnippets } from './tkn-tasks-provider';
 import { schemeStorage } from './tkn-scheme-storage'
-import { pipelineYaml } from './tkn-yaml';
+import { pipelineYaml, tektonYaml } from './tkn-yaml';
 import { Snippet } from './snippet';
 import { getTknConditionsSnippets } from './tkn-conditions-provider';
 import { yamlLocator } from './yaml-locator';
@@ -185,6 +185,10 @@ async function generate(doc: vscode.TextDocument, schemaPath: string): Promise<s
     const templateObj = JSON.parse(template);
     let templateWithSnippets = injectTaskSnippets(templateObj, snippets);
     const tasksRef = snippets.map(value => value.body.taskRef.name);
+    const customTasks = pipelineYaml.getCustomTasks(doc);
+    if (customTasks.length > 0){
+      tasksRef.push(...customTasks);
+    }
     templateWithSnippets = injectTasksName(templateWithSnippets, definedTasks, tasksRef);
     templateWithSnippets = injectResourceName(templateWithSnippets, resNames);
     templateWithSnippets = injectConditionRefs(templateWithSnippets, conditions);
