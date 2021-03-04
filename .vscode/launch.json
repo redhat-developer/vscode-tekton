@@ -18,7 +18,10 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
-			"preLaunchTask": "npm: watch"
+			"preLaunchTask": "npm: watch",
+			"env": {
+				"VSCODE_REDHAT_TELEMETRY_DEBUG": "true"
+			}
 		},
 		{
 			"name": "Extension Tests Debug",

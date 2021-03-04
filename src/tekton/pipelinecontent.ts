@@ -63,6 +63,7 @@ export interface StartObject {
     resources: Resources[];
     workspaces: Workspaces[];
   };
+  commandId?: string;
 }
   
 export interface Trigger {

@@ -81,6 +81,7 @@ export type AddTriggerFormValues = CommonPipelineModalFormikValues & {
     name: string;
     resource: TriggerBindingKind;
   };
+  commandId?: string;
 };
 
 export interface Workspaces {

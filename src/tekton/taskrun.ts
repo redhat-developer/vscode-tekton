@@ -6,7 +6,7 @@
 import * as os from 'os';
 import * as path from 'path';
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command, PipelineTaskRunData, ContextType, getStderrString } from '../tkn';
+import { TektonNode, Command, PipelineTaskRunData, ContextType } from '../tkn';
 import { window, workspace } from 'vscode';
 import { cli, CliCommand } from '../cli';
 import { showLogInEditor } from '../util/log-in-editor';
@@ -14,6 +14,8 @@ import { TknTaskRun } from '../tekton';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
+import { telemetryLogCommand, telemetryLogError } from '../telemetry';
+import { getStderrString } from '../util/stderrstring';
 
 export class TaskRun extends TektonItem {
 
@@ -32,7 +34,7 @@ export class TaskRun extends TektonItem {
     return data;
   }
 
-  static async restartTaskRun(taskRun: TektonNode): Promise<void> {
+  static async restartTaskRun(taskRun: TektonNode, commandId?: string): Promise<boolean> {
     const taskRunTemplate = {
       apiVersion: 'tekton.dev/v1beta1',
       kind: 'TaskRun',
@@ -51,12 +53,17 @@ export class TaskRun extends TektonItem {
     const taskRunYaml = yaml.dump(taskRunTemplate);
     await fs.writeFile(fsPath, taskRunYaml, 'utf8');
     const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
-    await fs.unlink(fsPath);
     if (result.error) {
+      telemetryLogError(commandId, result.error.toString().replace(fsPath, 'user path'));
       window.showErrorMessage(`Fail to restart TaskRun: ${getStderrString(result.error)}`);
+      return false;
     } else {
-      window.showInformationMessage('TaskRun successfully restarted');
+      const message = 'TaskRun successfully restarted';
+      telemetryLogCommand(commandId, message);
+      window.showInformationMessage(message);
     }
+    await fs.unlink(fsPath);
+    return true;
   }
 
   static async listFromPipelineRun(pipelineRun: TektonNode): Promise<void> {
@@ -107,20 +114,38 @@ export class TaskRun extends TektonItem {
     return Command.deleteTaskRun(item.getName());
   }
 
-  static async openDefinition(taskRun: TektonNode): Promise<void> {
+  static async openDefinition(taskRun: TektonNode, commandId?: string): Promise<void> {
     if (!taskRun) {
       taskRun = await window.showQuickPick(await TaskRun.getTaskRunNames(), { placeHolder: 'Select Task Run to Open Task Definition', ignoreFocusOut: true });
     }
     if (!taskRun) return null;
     const taskName = await TaskRun.getTaskNameByTaskRun(taskRun.getName());
     if (taskName) {
-      TektonItem.loadTektonResource(taskName[0], taskName[1], taskRun.uid);
+      TektonItem.loadTektonResource(taskName[0], taskName[1], taskRun.uid, commandId);
     }
   }
 
-  static async openConditionDefinition(conditionRun: TektonNode): Promise<void> {
+  static async openConditionDefinition(conditionRun: TektonNode, commandId?: string): Promise<void | string> {
     if (!conditionRun) return null;
-    TektonItem.loadTektonResource(ContextType.CONDITIONS, conditionRun.getName(), conditionRun.uid);
+    const result = await cli.execute(Command.getTaskRun(conditionRun.getName()));
+    if (result.error) {
+      telemetryLogError(commandId, result.error);
+      window.showErrorMessage(`${result.error}  Std.err when processing condition Definition`);
+      return;
+    }
+    let data;
+    try {
+      data = JSON.parse(result.stdout);
+      // eslint-disable-next-line no-empty
+    } catch (ignore) {
+    }
+    if (!data.metadata.labels['tekton.dev/conditionName']) {
+      const message = `Cannot find Condition definition for: ${conditionRun.getName()}.`;
+      telemetryLogError(commandId, message);
+      window.showErrorMessage(message);
+      return;
+    }
+    TektonItem.loadTektonResource(ContextType.CONDITIONS, data.metadata.labels['tekton.dev/conditionName'], conditionRun.uid, commandId);
   }
 
   private static async getTaskNameByTaskRun(taskRunName: string): Promise<[string, string] | undefined> {

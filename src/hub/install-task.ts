@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Command, getStderrString, tkn } from '../tkn';
+import { Command, tkn } from '../tkn';
 import * as vscode from 'vscode';
 import { HubTaskInstallation } from './hub-common';
 import * as semver from 'semver';
@@ -12,6 +12,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra'; 
 import { DownloadUtil } from '../util/download';
 import * as jsYaml from 'js-yaml';
+import { getStderrString } from '../util/stderrstring';
 
 const installEventEmitter = new vscode.EventEmitter<HubTaskInstallation>()
 export const installEvent = installEventEmitter.event;

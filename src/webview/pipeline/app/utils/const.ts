@@ -18,7 +18,8 @@ export const initialResourceFormValues = {
   workspaces: [],
   trigger: undefined,
   newPvc: [],
-  serviceAccount: undefined
+  serviceAccount: undefined,
+  commandId: undefined
 }
 
 export enum TknResourceType {

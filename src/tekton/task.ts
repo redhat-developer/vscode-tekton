@@ -11,12 +11,12 @@ import { startTask } from './starttask';
 
 export class Task extends TektonItem {
 
-  static async start(task: TektonNode): Promise<string> {
+  static async start(task: TektonNode, commandId?: string): Promise<string> {
     if (!task) {
       task = await window.showQuickPick(await Task.getTaskNames(), { placeHolder: 'Select Task to start', ignoreFocusOut: true });
     }
     if (!task) return null;
-    return await startTask(task.getName());
+    return await startTask(task.getName(), commandId);
   }
 
   static async list(): Promise<void> {

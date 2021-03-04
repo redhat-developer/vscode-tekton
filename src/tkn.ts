@@ -17,6 +17,7 @@ import { StartObject } from './tekton/pipelinecontent';
 import { RunState } from './yaml-support/tkn-yaml';
 import { version } from './util/tknversion';
 import { pipelineTriggerStatus, watchResources } from './util/watchResources';
+import { getStderrString } from './util/stderrstring';
 
 export const humanizer = humanize.humanizer(createConfig());
 
@@ -964,13 +965,6 @@ function compareTimeNewestFirst(a: TektonNode, b: TektonNode): number {
   return aTime < bTime ? 1 : -1;
 }
 
-export function getStderrString(data: string | Error): string {
-  if (data instanceof Error) {
-    return data.message;
-  } else if ((typeof data === 'string')) {
-    return data;
-  }
-}
 const nodeToRefresh = ['TaskRuns', 'ClusterTasks', 'Tasks'];
 export class TknImpl implements Tkn {
 

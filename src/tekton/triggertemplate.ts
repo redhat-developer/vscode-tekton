@@ -8,6 +8,7 @@ import { TektonItem } from './tektonitem';
 import { TektonNode, Command, tkn } from '../tkn';
 import { CliCommand } from '../cli';
 import { getExposeURl } from '../util/exposeurl';
+import { telemetryLogCommand } from '../telemetry';
 
 export class TriggerTemplate extends TektonItem {
 
@@ -15,20 +16,24 @@ export class TriggerTemplate extends TektonItem {
     return Command.deleteTriggerTemplate(item.getName());
   }
 
-  static async copyExposeUrl(trigger: TektonNode): Promise<string> {
+  static async copyExposeUrl(trigger: TektonNode, commandId?: string): Promise<string> {
     if (!trigger) return null;
     const result = await tkn.execute(Command.listEventListener());
+    const message = 'Expose URL not available';
     const listEventListener = JSON.parse(result.stdout).items;
     if (listEventListener.length === 0) {
-      vscode.window.showInformationMessage('Expose URl not available');
+      telemetryLogCommand(commandId, message);
+      vscode.window.showInformationMessage(message);
       return null;
     }
     for (const eventListener of listEventListener) {
       for (const triggers of eventListener.spec.triggers) {
+        const message = 'Expose URL successfully copied';
         if (triggers?.template?.name === trigger.getName()) {
           const url = await getExposeURl(eventListener.status.configuration.generatedName);
           vscode.env.clipboard.writeText(url);
-          vscode.window.showInformationMessage('Expose URl successfully copied');
+          telemetryLogCommand(commandId, message);
+          vscode.window.showInformationMessage(message);
           return;
         } else if (triggers?.triggerRef) {
           const triggerData = await tkn.execute(Command.getTrigger(triggers.triggerRef));
@@ -36,12 +41,14 @@ export class TriggerTemplate extends TektonItem {
           if (triggerName === trigger.getName()) {
             const url = await getExposeURl(eventListener.status.configuration.generatedName);
             vscode.env.clipboard.writeText(url);
-            vscode.window.showInformationMessage('Expose URl successfully copied');
+            telemetryLogCommand(commandId, message);
+            vscode.window.showInformationMessage(message);
             return;
           }
         }
       }
     }
+    telemetryLogCommand(commandId, message);
     vscode.window.showInformationMessage('Expose URl not available');
   }
 }

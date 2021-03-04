@@ -58,6 +58,7 @@ export interface TknResourceItem {
   triggerContent: object;
   PipelineRunName?: string;
   pipelineRun?: TknPipelineRun;
+  commandId?: string;
 }
 
 export async function pipelineData(pipeline: TknPipelineTrigger, trigger?: boolean | undefined): Promise<TknResourceItem> {

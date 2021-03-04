@@ -130,6 +130,7 @@ export interface Trigger {
   trigger?: TriggerType[];
   triggerLabel?: Trigger[];
   triggerContent?: object;
+  commandId?: string;
 }
 
 export type TriggerBindingParam = {
@@ -171,6 +172,7 @@ export interface PipelineStart {
   };
   newPvc?: PVC[];
   serviceAccount: string;
+  commandId?: string;
 }
 
 export interface Item {

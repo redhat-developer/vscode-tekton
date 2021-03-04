@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs-extra';
 import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind, EventListenerKind, PipelineRunWorkspace } from '../tekton';
 import { TektonItem } from './tektonitem';
-import { Command, getStderrString } from '../tkn';
+import { Command } from '../tkn';
 import { AddTriggerFormValues, Pipeline, TriggerBindingKind, Resources, Param, Workspaces } from './triggertype';
 import { K8sKind, RouteKind } from './k8s-type';
 import * as yaml from 'js-yaml';
@@ -23,6 +23,8 @@ import { cli } from '../cli';
 import { TknVersion, version } from '../util/tknversion';
 import { NewPvc } from './createpvc';
 import { getExposeURl } from '../util/exposeurl';
+import { telemetryLogCommand, telemetryLogError } from '../telemetry';
+import { getStderrString } from '../util/stderrstring';
 
 export const TriggerTemplateModel = {
   apiGroup: 'triggers.tekton.dev',
@@ -76,18 +78,18 @@ export async function addTrigger(inputAddTrigger: AddTriggerFormValues): Promise
     triggerTemplateParams,
     inputAddTrigger.name
   );
-  const createTt = await k8sCreate(triggerTemplate);
+  const createTt = await k8sCreate(triggerTemplate, inputAddTrigger.commandId);
   if (!createTt) return null;
   const eventListener: EventListenerKind = await createEventListener(
     [triggerBinding.resource],
     triggerTemplate,
   );
-  const createEt = await k8sCreate(eventListener);
+  const createEt = await k8sCreate(eventListener, inputAddTrigger.commandId);
   if (!createEt) return null;
-  await exposeRoute(eventListener.metadata.name);
+  await exposeRoute(eventListener.metadata.name, inputAddTrigger.commandId);
 }
 
-export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind | RouteKind | NewPvc): Promise<boolean> {
+export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind | RouteKind | NewPvc, commandId?: string): Promise<boolean> {
   const quote = Platform.OS === 'win32' ? '"' : '\'';
   const triggerYaml = yaml.safeDump(trigger, {skipInvalid: true});
   const tempPath = os.tmpdir();
@@ -98,11 +100,13 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
   await fs.writeFile(fsPath, triggerYaml, 'utf8');
   const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
   if (result.error) {
+    telemetryLogError(commandId, result.error.toString().replace(fsPath, 'user path'));
     vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(result.error)}`);
     return false;
   }
   if (trigger.kind === RouteModel.kind && !result.error) {
     const url = await getExposeURl(trigger.metadata.name);
+    telemetryLogCommand(commandId, 'Trigger successfully created');
     vscode.window.showInformationMessage(`Trigger successfully created. Expose URL: ${url}`);
   }
   await fs.unlink(fsPath);
