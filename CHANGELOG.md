@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.12.0 (March 04, 2021)
+
+This release brings to you:
+
+* [#312](https://github.com/redhat-developer/vscode-tekton/issues/312) Explore consistent kubeconfig settings between Tekton and K8s ext.
+* [#505](https://github.com/redhat-developer/vscode-tekton/issues/502) Send error/command log to telemetry.
+* [#514](https://github.com/redhat-developer/vscode-tekton/issues/514) Extension is not Telemetry compliant.
+
 ## 0.11.1 (February 15, 2021)
 
 This release brings to you:
