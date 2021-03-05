@@ -185,6 +185,10 @@ async function generate(doc: vscode.TextDocument, schemaPath: string): Promise<s
     const templateObj = JSON.parse(template);
     let templateWithSnippets = injectTaskSnippets(templateObj, snippets);
     const tasksRef = snippets.map(value => value.body.taskRef.name);
+    const customTasks = pipelineYaml.getCustomTasks(doc);
+    if (customTasks.length > 0){
+      tasksRef.push(...customTasks);
+    }
     templateWithSnippets = injectTasksName(templateWithSnippets, definedTasks, tasksRef);
     templateWithSnippets = injectResourceName(templateWithSnippets, resNames);
     templateWithSnippets = injectConditionRefs(templateWithSnippets, conditions);

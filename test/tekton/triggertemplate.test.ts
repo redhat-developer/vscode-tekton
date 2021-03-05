@@ -105,12 +105,11 @@ suite('Tekton/Pipeline', () => {
         error: '',
         stdout: JSON.stringify(route)
       });
-      const writeTextStub = sandbox.stub(vscode.env.clipboard, 'writeText').resolves('http://test.openshift.com');
       const infoMsg = sandbox.stub(vscode.window, 'showInformationMessage').resolves('Expose URl successfully copied');
       await TriggerTemplate.copyExposeUrl(triggerTemplateItem);
       expect(exeStub).called;
       expect(infoMsg).is.calledOnce;
-      expect(writeTextStub).called;
+      expect(await vscode.env.clipboard.readText()).equal('http://test.openshift.com');
     });
 
     test('copy expose URL for triggerRef', async () => {
@@ -126,12 +125,12 @@ suite('Tekton/Pipeline', () => {
         error: '',
         stdout: JSON.stringify(route)
       });
-      const writeTextStub = sandbox.stub(vscode.env.clipboard, 'writeText').resolves('http://test.openshift.com');
+    
       const infoMsg = sandbox.stub(vscode.window, 'showInformationMessage').resolves('Expose URl successfully copied');
       await TriggerTemplate.copyExposeUrl(triggerTemplateItem);
       expect(exeStub).called;
       expect(infoMsg).is.calledOnce;
-      expect(writeTextStub).called;
+      expect(await vscode.env.clipboard.readText()).equal('http://test.openshift.com');
     });
 
     test('return null if no EventListener found', async () => {
