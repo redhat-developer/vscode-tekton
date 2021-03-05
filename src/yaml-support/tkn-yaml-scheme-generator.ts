@@ -7,7 +7,7 @@ import * as path from 'path';
 import { readFile } from 'fs-extra'
 import { getRawTasks, getTknTasksSnippets } from './tkn-tasks-provider';
 import { schemeStorage } from './tkn-scheme-storage'
-import { pipelineYaml, tektonYaml } from './tkn-yaml';
+import { pipelineYaml } from './tkn-yaml';
 import { Snippet } from './snippet';
 import { getTknConditionsSnippets } from './tkn-conditions-provider';
 import { yamlLocator } from './yaml-locator';
