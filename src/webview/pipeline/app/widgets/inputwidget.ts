@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { createDiv } from '../../../common/dom-util';
+import { createDivWithID } from '../../../common/dom-util';
 import { BaseWidget } from '../../../common/widget';
 import { PipelineStart } from '../utils/types';
 import { TknResourceType } from '../utils/const';
@@ -23,7 +23,7 @@ export class InputWidget extends BaseWidget {
     number?: string
   ) {
     super();
-    const editorInput = createDiv(className ?? 'editor-input-box');
+    const editorInput = createDivWithID(className ?? 'editor-input-box');
     this.input = document.createElement('input');
     this.input.classList.add('input');
     this.input.autocapitalize = 'off';
@@ -35,7 +35,7 @@ export class InputWidget extends BaseWidget {
     this.input.disabled = disabledType ?? false;
     this.input.title = inputTitle ?? '';
     this.element = editorInput;
-    const wrapper = createDiv('wrapper', wrapperId);
+    const wrapper = createDivWithID('wrapper', wrapperId);
     wrapper.appendChild(this.input);
     this.input.oninput = () => this.getValue(this.input);
     this.input.onblur = () => this.validator();
