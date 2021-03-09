@@ -7,7 +7,7 @@ import { BaseWidget } from '../../../common/widget';
 import { Trigger, PipelineStart } from '../utils/types';
 import { createItem } from '../utils/item';
 import { vscode } from '../index';
-import { addItemInWorkspace, collectParameterData, collectServiceAccountData, collectTriggerData, createPVC, storePvcName } from '../utils/resource';
+import { addItemInWorkspace, collectParameterData, collectServiceAccountData, collectTriggerData, createPVC, createVCT, removePvcName, storePvcName } from '../utils/resource';
 import { disableRemoveButton, blockStartButton } from '../utils/disablebutton';
 import { TknResourceType } from '../utils/const';
 
@@ -45,10 +45,16 @@ export class ButtonsPanel extends BaseWidget {
         this.storeTriggerData(event.querySelectorAll('[id^=Webhook-add-trigger-webhook]'));
         this.storeNewPvcData(event.querySelectorAll('[id^=List-new-PVC-items-webview]'));
         this.storePvcContent(event.querySelectorAll('[id^=PersistentVolumeClaim-Workspaces]'));
-        this.storeServiceAccountData(event.querySelectorAll('[id^=Service-account-name-input-field-content-data]'));     
-        if (!this.trigger.trigger) {
+        this.storeVolumeClaimTemplate(event.querySelectorAll('[id^=List-new-VCT-items-webview]'));
+        this.storeServiceAccountData(event.querySelectorAll('[id^=Service-account-name-input-field-content-data]'));
+        if (!this.trigger.trigger && this.initialValue.volumeClaimTemplate.length === 0) {
           vscode.postMessage({
             type: 'startPipeline',
+            body: this.initialValue
+          });
+        } else if (this.initialValue.volumeClaimTemplate.length !== 0) {
+          vscode.postMessage({
+            type: 'startPipeline_yaml',
             body: this.initialValue
           });
         } else {
@@ -79,9 +85,11 @@ export class ButtonsPanel extends BaseWidget {
     if (data.length !== 0) {
       data.forEach(val => {
         const pvcName = val.parentNode.parentElement.firstChild.textContent;
-        if (val.firstChild.value === 'Create a new PVC'){
+        if (val.firstChild.value.trim() === 'Create a new PVC') {
           const newWorkspaceName = val.parentNode.querySelectorAll('[id^=Webview-PVC-Name]')[0].value;
           storePvcName(pvcName, newWorkspaceName, this.initialValue);
+        } else if (val.firstChild.value.trim() === 'Create a new VolumeClaimTemplate') {
+          removePvcName(pvcName, this.initialValue);
         } else {
           const workspaceName = val.firstChild.value;
           storePvcName(pvcName, workspaceName, this.initialValue);
@@ -98,6 +106,18 @@ export class ButtonsPanel extends BaseWidget {
         const size = val.querySelectorAll('[id^=Size-for-PVC-Storage]')[0].value;
         const inputSize = val.querySelectorAll('[id^=size-for-pvc-create-webview]')[0].value;
         createPVC(pvcName, accessMode, size, inputSize, this.initialValue);
+      })
+    }
+  }
+
+  storeVolumeClaimTemplate(data: unknown[] | NodeListOf<Element>): void {
+    if (data.length !== 0) {
+      data.forEach(val => {
+        const resourceName = val.parentNode.parentElement.firstElementChild.id;
+        const accessMode = val.querySelectorAll('[id^=Access-Mode-for-Pvc]')[0].value;
+        const size = val.querySelectorAll('[id^=Size-for-PVC-Storage]')[0].value;
+        const inputSize = val.querySelectorAll('[id^=size-for-pvc-create-webview]')[0].value;
+        createVCT(resourceName, accessMode, size, inputSize, this.initialValue);
       })
     }
   }

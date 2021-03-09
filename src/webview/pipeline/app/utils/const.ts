@@ -19,7 +19,8 @@ export const initialResourceFormValues = {
   trigger: undefined,
   newPvc: [],
   serviceAccount: undefined,
-  commandId: undefined
+  commandId: undefined,
+  volumeClaimTemplate: []
 }
 
 export enum TknResourceType {

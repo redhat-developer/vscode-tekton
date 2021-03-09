@@ -304,6 +304,14 @@ body {
   width: 500px;
 }
 
+.size-select-item-vtc {
+  position: absolute;
+  left: 105px;
+  top: 232px;
+  white-space: normal;
+  width: 500px;
+}
+
 .input {
   text-overflow: ellipsis;
   -webkit-writing-mode: horizontal-tb !important;

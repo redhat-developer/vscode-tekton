@@ -66,6 +66,10 @@ export class PipelineWizard extends Disposable {
           const inputAddTrigger = e.body;
           this.dispose();
           return await addTriggerToPipeline(inputAddTrigger);
+        case 'startPipeline_yaml':
+          // eslint-disable-next-line no-case-declarations
+          const startPipelineRun = e.body;
+          console.log(startPipelineRun);
       }
     }));
 
