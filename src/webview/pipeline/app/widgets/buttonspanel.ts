@@ -52,7 +52,7 @@ export class ButtonsPanel extends BaseWidget {
             type: 'startPipeline',
             body: this.initialValue
           });
-        } else if (this.initialValue.volumeClaimTemplate.length !== 0) {
+        } else if (!this.trigger.trigger && this.initialValue.volumeClaimTemplate.length !== 0) {
           vscode.postMessage({
             type: 'startPipeline_yaml',
             body: this.initialValue

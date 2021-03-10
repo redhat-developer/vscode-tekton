@@ -11,6 +11,7 @@ export interface NewPvc {
   kind: string;
   metadata: {
     name: string;
+    generateName?: string;
   };
   spec: {
     accessMode: string[];

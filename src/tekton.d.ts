@@ -157,6 +157,7 @@ export interface TknWorkspaces {
 }
 
 export interface TknPipelineTrigger {
+  apiVersion?: string;
   metadata: TknMetadata;
   spec: TknSpec;
 }
@@ -175,7 +176,7 @@ export interface TknTask {
 // JSON types
 
 export interface Param {
-  name: string;
+  name?: string;
 }
 
 export type VolumeTypeSecret = {
@@ -210,8 +211,20 @@ type PipelineRunResourceCommonProperties = {
   name: string;
 };
 
+export interface VolumeTypeClaim {
+  metadata: ObjectMetadata;
+  spec: {
+    accessModes: string[];
+    resources: {
+      requests: {
+        storage: string;
+      };
+    };
+  };
+}
+
 export interface PipelineRunWorkspace extends Param {
-  [volumeType: string]: VolumeTypeSecret | VolumeTypeConfigMaps | VolumeTypePVC | {};
+  [volumeType: string]: VolumeTypeSecret | VolumeTypeConfigMaps | VolumeTypePVC | VolumeTypeClaim | {};
 }
 
 export type PipelineRunReferenceResource = PipelineRunResourceCommonProperties & {
