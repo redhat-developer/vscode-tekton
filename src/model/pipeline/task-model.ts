@@ -5,7 +5,8 @@
 
 import { findNodeByKey } from '../../yaml-support/tkn-yaml';
 import { YamlMap, YamlSequence } from '../../yaml-support/yaml-locator';
-import { NodeTknElement, TknArray, TknElement, TknElementType, TknStringElement } from '../common';
+import { NodeTknElement, TknArray, TknElement, TknStringElement } from '../common';
+import { TknElementType } from '../element-type';
 
 export class EmbeddedTask extends NodeTknElement {
 

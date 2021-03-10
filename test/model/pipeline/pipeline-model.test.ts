@@ -8,7 +8,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { yamlLocator } from '../../../src/yaml-support/yaml-locator';
-import { TknElementType } from '../../../src/model/common';
+import { TknElementType } from '../../../src/model/element-type';
 import { TektonYamlType } from '../../../src/yaml-support/tkn-yaml';
 import { Pipeline, PipelineTask, PipelineTaskRef } from '../../../src/model/pipeline/pipeline-model';
 

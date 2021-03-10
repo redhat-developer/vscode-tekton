@@ -3,7 +3,8 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { TknElement, TknElementType, TknBaseRootElement, insideElement } from './common';
+import { TknElement, TknBaseRootElement, insideElement } from './common';
+import { TknElementType } from './element-type';
 import { YamlDocument } from '../yaml-support/yaml-locator';
 import { tektonYaml, TektonYamlType } from '../yaml-support/tkn-yaml';
 import { Pipeline } from './pipeline/pipeline-model';

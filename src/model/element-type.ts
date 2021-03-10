@@ -1,0 +1,44 @@
+
+/*-----------------------------------------------------------------------------------------------
+ *  Copyright (c) Red Hat, Inc. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE file in the project root for license information.
+ *-----------------------------------------------------------------------------------------------*/
+
+export enum TknElementType {
+  DOCUMENT,
+  PIPELINE,
+  METADATA,
+  PARAM,
+  PARAMS,
+  PIPELINE_SPEC,
+  PIPELINE_RESOURCES,
+  PIPELINE_RESOURCE,
+  PIPELINE_TASKS,
+  PIPELINE_TASK,
+  PIPELINE_TASK_REF,
+  VALUE,
+  PARAM_SPECS,
+  PARAM_SPEC,
+  STRING_ARRAY,
+  PIPELINE_WORKSPACES,
+  PIPELINE_WORKSPACE,
+  PIPELINE_TASK_CONDITIONS,
+  PIPELINE_TASK_CONDITION,
+  PIPELINE_TASK_INPUT_RESOURCES,
+  PIPELINE_TASK_INPUT_RESOURCE,
+  PIPELINE_TASK_INPUT_RESOURCE_FROM,
+  PIPELINE_TASK_RUN_AFTER,
+  PIPELINE_TASK_RESOURCES,
+  PIPELINE_TASK_OUTPUTS_RESOURCE,
+  PIPELINE_TASK_OUTPUTS_RESOURCES,
+  PIPELINE_TASK_PARAMS,
+  PIPELINE_TASK_WORKSPACE,
+  PIPELINE_TASK_WORKSPACES,
+  PIPELINE_TASK_WHEN,
+  PIPELINE_TASK_WHEN_VALUES,
+  EMBEDDED_TASK,
+  PIPELINE_TASK_METADATA,
+  TASK_RESULT,
+  TASK_RESULTS,
+  KEY
+}

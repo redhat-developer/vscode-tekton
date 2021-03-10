@@ -13,7 +13,7 @@ import { getTknConditionsSnippets } from './tkn-conditions-provider';
 import { yamlLocator } from './yaml-locator';
 import { TknDocument } from '../model/document';
 import { Pipeline } from '../model/pipeline/pipeline-model';
-import { TknElementType } from '../model/common';
+import { TknElementType } from '../model/element-type';
 import { TknTask } from '../tekton';
 
 const pipelineVariables: Snippet<string>[] = [
@@ -125,16 +125,16 @@ function injectVariables(templateObj: any, docs: TknDocument[], tasks: TknTask[]
       const params = pipeline.spec.params?.getChildren() ?? [];
       for (const param of params) {
         snippets.push({
-          label: `"$(params.${param.name.value})"`,
-          body: `"$(params.${param.name.value})"`,
+          label: `"$(params.${param.name?.value})"`,
+          body: `"$(params.${param.name?.value})"`,
           description: 'The value of the parameter at runtime.'
         });
       }
       const workspaces = pipeline.spec.workspaces?.getChildren() ?? [];
       for (const ws of workspaces) {
         snippets.push({
-          label: `"$(workspaces.${ws.name.value}.bound)"`,
-          body: `"$(workspaces.${ws.name.value}.bound)"`,
+          label: `"$(workspaces.${ws.name?.value}.bound)"`,
+          body: `"$(workspaces.${ws.name?.value}.bound)"`,
           description: 'Whether a Workspace has been bound or not. "false" if the Workspace declaration has optional: true and the Workspace binding was omitted by the PipelineRun.'
         });
       }
