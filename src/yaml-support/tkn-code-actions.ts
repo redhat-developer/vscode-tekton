@@ -33,7 +33,10 @@ class PipelineCodeActionProvider implements vscode.CodeActionProvider {
       const selectedElement = this.findTask(tknDoc, range.start);
       if (selectedElement) {
         const taskRefName = selectedElement.taskRef?.name.value
-        const action: TaskInlineAction = new vscode.CodeAction(`Inline '${taskRefName}'`, vscode.CodeActionKind.RefactorInline.append('TektonTask'));
+        if (!taskRefName){
+          continue;
+        }
+        const action: TaskInlineAction = new vscode.CodeAction(`Inline '${taskRefName}' Task spec`, vscode.CodeActionKind.RefactorInline.append('TektonTask'));
         const startPos = document.positionAt(selectedElement.taskRef?.keyNode?.startPosition);
         const endPos = document.positionAt(selectedElement.taskRef?.endPosition);
         action.taskRefStartPosition = startPos;

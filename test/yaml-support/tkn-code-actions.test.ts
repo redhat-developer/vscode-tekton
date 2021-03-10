@@ -47,7 +47,7 @@ suite('Tekton CodeActions', () => {
       const result = codeActionProvider.getProvider(TektonYamlType.Pipeline).provideCodeActions(doc, new vscode.Range(24, 17, 24, 17), undefined, undefined) as vscode.CodeAction[];
       expect(result).is.not.empty;
       const inlineAction = result.find(it => it.title.startsWith('Inline'));
-      expect(inlineAction.title).to.be.equal('Inline \'echo-hello\'');
+      expect(inlineAction.title).to.be.equal('Inline \'echo-hello\' Task spec');
     });
 
     test('Provider should resolve Inline CodeAction', async () => {
