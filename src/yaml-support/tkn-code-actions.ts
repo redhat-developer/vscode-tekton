@@ -50,15 +50,19 @@ class PipelineCodeActionProvider implements vscode.CodeActionProvider {
 
     return result;
   }
-  async resolveCodeAction?(codeAction: TaskInlineAction): Promise<vscode.CodeAction> {
-
-    return vscode.window.withProgress({location: vscode.ProgressLocation.Window, }, async (): Promise<vscode.CodeAction> => {
+  resolveCodeAction?(codeAction: TaskInlineAction): Thenable<vscode.CodeAction> {
+    return vscode.window.withProgress({location: vscode.ProgressLocation.Notification, cancellable: false, title: `Loading '${codeAction.taskRefName}' Task...` }, async (): Promise<vscode.CodeAction> => {
       const uri = tektonFSUri(codeAction.taskKind === TektonYamlType.ClusterTask ? ContextType.CLUSTERTASK : ContextType.TASK , codeAction.taskRefName, 'yaml');
-      const taskDoc = await tektonVfsProvider.loadTektonDocument(uri, false);
-      codeAction.edit = new vscode.WorkspaceEdit();
-      codeAction.edit.replace(codeAction.documentUri,
-        new vscode.Range(codeAction.taskRefStartPosition, codeAction.taskRefEndPosition), 
-        this.extractTaskDef(taskDoc, codeAction.taskRefStartPosition.character, codeAction.taskRefEndPosition.character));
+      try {
+        const taskDoc = await tektonVfsProvider.loadTektonDocument(uri, false);
+        codeAction.edit = new vscode.WorkspaceEdit();
+        codeAction.edit.replace(codeAction.documentUri,
+          new vscode.Range(codeAction.taskRefStartPosition, codeAction.taskRefEndPosition), 
+          this.extractTaskDef(taskDoc, codeAction.taskRefStartPosition.character, codeAction.taskRefEndPosition.character));
+      } catch (err){
+        vscode.window.showErrorMessage('Cannot get Tekton Task definition: ' + err.toString());
+        console.error(err);
+      }
       return codeAction;
     });
     
