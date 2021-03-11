@@ -17,7 +17,7 @@ export async function startPipelineFromYaml(formValue: StartObject): Promise<voi
   await k8sCreate(pipelineRunJson, formValue.commandId, PipelineRunModel.kind);
 }
 
-async function getPipelineRun(formValue: StartObject, commandId?: string): Promise<PipelineRunKind> {
+export async function getPipelineRun(formValue: StartObject, commandId?: string): Promise<PipelineRunKind> {
   const pipelineRunData: PipelineRunKind = {
     metadata: {
     },
@@ -76,7 +76,7 @@ function getPipelineRunData(pipeline: TknPipelineTrigger, pipelineRunData: Pipel
 
 function getPipelineRunResources(resources: Resources[]): Resources[] {
   const newResource = [];
-  if (resources.length !== 0) {
+  if (resources && resources.length !== 0) {
     resources.map(val => {
       newResource.push({name: val.name, resourceRef: { name: val.resourceRef}})
     })
@@ -85,7 +85,7 @@ function getPipelineRunResources(resources: Resources[]): Resources[] {
 }
 
 function getPipelineRunParams(params: Params[]): Params[] {
-  if (params.length !== 0) {
+  if (params && params.length !== 0) {
     params.map(val => {
       val['value'] = val.default;
       delete val.default
@@ -98,7 +98,7 @@ function getPipelineRunParams(params: Params[]): Params[] {
 
 function getPipelineRunWorkspaces(workspace: Workspaces[], volumeClaimTemplate: VCT[]): PipelineRunWorkspace[] {
   const newWorkSpace = [];
-  if (workspace.length !== 0) {
+  if (workspace && workspace.length !== 0) {
     workspace.map(value => {
       const workspaceObject = {};
       workspaceObject['name'] = value.name;
