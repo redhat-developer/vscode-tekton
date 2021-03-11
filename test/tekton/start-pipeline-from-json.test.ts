@@ -9,8 +9,8 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { getPipelineRun } from '../../src/tekton/startpipelinefromyaml';
 import { cli } from '../../src/cli';
+import { getPipelineRun } from '../../src/tekton/start-pipeline-from-json';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -31,6 +31,25 @@ suite('Tekton/startPipeline', () => {
       name: 'test',
       resourceRef: 'test'
     }],
+    workspaces: [
+      {
+        item: [],
+        name: 'password-vault',
+        workspaceName: 'secret-password',
+        workspaceType: 'Secret'
+      },
+      {
+        item: [],
+        name: 'recipe-store',
+        workspaceName: 'sensitive-recipe-storage',
+        workspaceType: 'ConfigMap'
+      },
+      {
+        item: [],
+        name: 'test',
+        workspaceType: 'EmptyDirectory'
+      }
+    ],
     serviceAccount: 'default',
     volumeClaimTemplate: [
       {
@@ -100,6 +119,24 @@ suite('Tekton/startPipeline', () => {
         serviceAccountName: 'default',
         status: null,
         workspaces: [
+          {
+            name: 'password-vault',
+            secret: {
+              items: [],
+              secretName: 'secret-password'
+            }
+          },
+          {
+            configMap: {
+              items: [],
+              name: 'sensitive-recipe-storage'
+            },
+            name: 'recipe-store'
+          },
+          {
+            emptyDir: {},
+            name: 'test'
+          },
           {
             name: 'shared-workspace',
             volumeClaimTemplate: {

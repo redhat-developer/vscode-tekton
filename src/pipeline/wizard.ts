@@ -12,7 +12,7 @@ import { TknResourceItem } from '../tekton/webviewstartpipeline';
 import { startPipeline } from '../tekton/startpipeline';
 import { addTriggerToPipeline } from '../tekton/addtrigger';
 import { createPvc } from '../tekton/createpvc';
-import { startPipelineFromYaml } from '../tekton/startpipelinefromyaml';
+import { startPipelineFromJson } from '../tekton/start-pipeline-from-json';
 
 export interface PipelineWizardInput {
   readonly resourceColumn: vscode.ViewColumn;
@@ -71,7 +71,7 @@ export class PipelineWizard extends Disposable {
           // eslint-disable-next-line no-case-declarations
           const startPipelineRun = e.body;
           this.dispose();
-          return startPipelineFromYaml(startPipelineRun);
+          return startPipelineFromJson(startPipelineRun);
       }
     }));
 

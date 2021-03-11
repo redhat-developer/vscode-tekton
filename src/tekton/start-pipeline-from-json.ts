@@ -12,7 +12,7 @@ import { k8sCreate, PipelineRunModel } from './addtrigger';
 import { PipelineRunKind } from './k8s-type';
 import { Params, Resources, StartObject, VCT, Workspaces } from './pipelinecontent';
 
-export async function startPipelineFromYaml(formValue: StartObject): Promise<void> {
+export async function startPipelineFromJson(formValue: StartObject): Promise<void> {
   const pipelineRunJson = await getPipelineRun(formValue, formValue.commandId);
   await k8sCreate(pipelineRunJson, formValue.commandId, PipelineRunModel.kind);
 }
@@ -117,10 +117,7 @@ function getPipelineRunWorkspaces(workspace: Workspaces[], volumeClaimTemplate: 
           claimName: value.workspaceName
         }
       } else if (value.workspaceType === 'EmptyDirectory') { 
-        workspaceObject['persistentVolumeClaim'] = {
-          claimName: value.workspaceName,
-          emptyDir: {}
-        }
+        workspaceObject['emptyDir'] = {}
       }
       newWorkSpace.push(workspaceObject);
     })
