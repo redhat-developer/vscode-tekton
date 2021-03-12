@@ -12,6 +12,7 @@ import { TektonYamlType } from './tkn-yaml';
 import { VirtualDocument, yamlLocator } from './yaml-locator';
 import * as jsYaml from 'js-yaml';
 import { Task } from '../tekton';
+import { telemetryLogError } from '../telemetry';
 
 interface ProviderMetadata {
   getProviderMetadata(): vscode.CodeActionProviderMetadata;
@@ -61,7 +62,7 @@ class PipelineCodeActionProvider implements vscode.CodeActionProvider {
           this.extractTaskDef(taskDoc, codeAction.taskRefStartPosition.character, codeAction.taskRefEndPosition.character));
       } catch (err){
         vscode.window.showErrorMessage('Cannot get Tekton Task definition: ' + err.toString());
-        console.error(err);
+        telemetryLogError('resolveCodeAction', `Cannot get '${codeAction.taskRefName}' Task definition`);
       }
       return codeAction;
     });
@@ -98,17 +99,43 @@ class PipelineCodeActionProvider implements vscode.CodeActionProvider {
 
   private extractTaskDef(taskDoc: VirtualDocument, startPos: number, endPos): string {
     const task: Task = jsYaml.safeLoad(taskDoc.getText()) as Task;
+    if (!task){
+      throw new Error('Task is empty!');
+    }
 
-    delete task.metadata.managedFields;
-    delete task.metadata.namespace;
-    delete task.metadata.resourceVersion;
-    delete task.metadata.selfLink;
-    delete task.metadata.uid;
-    delete task.metadata.generation;
-    delete task.metadata.creationTimestamp;
-    delete task.metadata.name;
-    delete task.metadata.ownerReferences;
-    delete task.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration'];
+    if (task.metadata){
+      if (task.metadata.managedFields){
+        delete task.metadata.managedFields;
+      }
+      if (task.metadata.namespace){
+        delete task.metadata.namespace;
+      }
+      if (task.metadata.resourceVersion){
+        delete task.metadata.resourceVersion;
+      }
+      if (task.metadata.selfLink){
+        delete task.metadata.selfLink;
+      }
+      if (task.metadata.uid){
+        delete task.metadata.uid;
+      }
+      if (task.metadata.generation){
+        delete task.metadata.generation;
+      }
+      if (task.metadata.creationTimestamp){
+        delete task.metadata.creationTimestamp;
+      }
+      if (task.metadata.name){
+        delete task.metadata.name;
+      }
+      if (task.metadata.ownerReferences){
+        delete task.metadata.ownerReferences;
+      }
+      if (task.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration']){
+        delete task.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration'];
+      }
+    }
+
 
 
     const tabSize: number = vscode.workspace.getConfiguration('editor',{languageId: 'yaml'} ).get('tabSize');
