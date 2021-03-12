@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { ItemPath, Params } from './pipelinecontent';
+import { ItemPath, Params, VCT } from './pipelinecontent';
 import { VolumeTypeSecret, VolumeTypeConfigMaps, VolumeTypePVC, PipelineRunWorkspace } from '../tekton';
 
 export interface TriggerFormValues {
@@ -16,11 +16,11 @@ export interface ObjectMetadata {
   creationTimestamp?: string;
   deletionGracePeriodSeconds?: number;
   deletionTimestamp?: string;
-  generateName?: string;
   generation?: number;
   labels?: { [key: string]: string };
   managedFields?: unknown[];
   name?: string;
+  generateName?: string;
   Ref?: string;
   namespace?: string;
   resourceVersion?: string;
@@ -76,16 +76,17 @@ export interface CommonPipelineModalFormikValues {
   serviceAccount?: string;
 }
 
-export type AddTriggerFormValues = CommonPipelineModalFormikValues & {
+export interface AddTriggerFormValues extends CommonPipelineModalFormikValues {
   trigger: {
     name: string;
     resource: TriggerBindingKind;
   };
+  volumeClaimTemplate?: VCT[];
   commandId?: string;
-};
+}
 
 export interface Workspaces {
-  name: string;
+  name?: string;
   workspaceName?: string;
   workspaceType?: string;
   item?: ItemPath[];

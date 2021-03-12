@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
+import { PipelineRunResource, PipelineRunWorkspace, TknParams, TknResource, TknWorkspaces } from '../tekton';
 import { ObjectMetadata } from './triggertype';
 
 export type K8sKind = {
@@ -70,7 +71,7 @@ export type K8sResourceCommon = {
   metadata?: ObjectMetadata;
 };
 
-export type RouteKind = {
+export interface RouteKind extends K8sResourceCommon {
   spec: {
     alternateBackends?: RouteTarget[];
     host?: string;
@@ -86,4 +87,22 @@ export type RouteKind = {
   status?: {
     ingress: RouteIngress[];
   };
-} & K8sResourceCommon;
+}
+
+export interface PipelineSpec {
+  params?: TknParams[];
+  resources?: TknResource[];
+  serviceAccountName?: string;
+  workspaces?: TknWorkspaces[];
+}
+
+export interface PipelineRunKind extends K8sResourceCommon {
+  spec: {
+    pipelineRef?: { name: string };
+    pipelineSpec?: PipelineSpec;
+    params?: TknParams[];
+    workspaces?: PipelineRunWorkspace[];
+    resources?: PipelineRunResource[];
+    serviceAccountName?: string;
+  };
+}

@@ -14,7 +14,7 @@ import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind, EventLi
 import { TektonItem } from './tektonitem';
 import { Command } from '../tkn';
 import { AddTriggerFormValues, Pipeline, TriggerBindingKind, Resources, Param, Workspaces } from './triggertype';
-import { K8sKind, RouteKind } from './k8s-type';
+import { K8sKind, PipelineRunKind, RouteKind } from './k8s-type';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
 import { exposeRoute, RouteModel } from './expose';
@@ -25,6 +25,7 @@ import { NewPvc } from './createpvc';
 import { getExposeURl } from '../util/exposeurl';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 import { getStderrString } from '../util/stderrstring';
+import { VCT } from './pipelinecontent';
 
 export const TriggerTemplateModel = {
   apiGroup: 'triggers.tekton.dev',
@@ -89,14 +90,14 @@ export async function addTrigger(inputAddTrigger: AddTriggerFormValues): Promise
   await exposeRoute(eventListener.metadata.name, inputAddTrigger.commandId);
 }
 
-export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind | RouteKind | NewPvc, commandId?: string): Promise<boolean> {
+export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind | RouteKind | NewPvc | PipelineRunKind, commandId?: string, kind?: string): Promise<boolean> {
   const quote = Platform.OS === 'win32' ? '"' : '\'';
   const triggerYaml = yaml.safeDump(trigger, {skipInvalid: true});
   const tempPath = os.tmpdir();
   if (!tempPath) {
     return false;
   }
-  const fsPath = path.join(tempPath, `${trigger.metadata.name}.yaml`);
+  const fsPath = path.join(tempPath, `${trigger.metadata.name || trigger.metadata.generateName}.yaml`);
   await fs.writeFile(fsPath, triggerYaml, 'utf8');
   const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
   if (result.error) {
@@ -108,6 +109,11 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
     const url = await getExposeURl(trigger.metadata.name);
     telemetryLogCommand(commandId, 'Trigger successfully created');
     vscode.window.showInformationMessage(`Trigger successfully created. Expose URL: ${url}`);
+  }
+  if (kind === PipelineRunModel.kind && !result.error) {
+    const message = 'Pipeline successfully started';
+    telemetryLogCommand(commandId, message);
+    vscode.window.showInformationMessage(message);
   }
   await fs.unlink(fsPath);
   return true;
@@ -140,14 +146,14 @@ export async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues, 
       },
       params: inputAddTrigger.params,
       resources: inputAddTrigger.resources,
-      workspaces: getPipelineRunWorkspaces(inputAddTrigger.workspaces),
+      workspaces: getPipelineRunWorkspaces(inputAddTrigger.workspaces, inputAddTrigger.volumeClaimTemplate),
       serviceAccountName: inputAddTrigger.serviceAccount,
     },
   };
   return await getPipelineRunData(pipelineRunData, options);
 }
 
-export function getPipelineRunWorkspaces(workspaces: Workspaces[]): PipelineRunWorkspace[] {
+export function getPipelineRunWorkspaces(workspaces: Workspaces[], volumeClaimTemplate?: VCT[]): PipelineRunWorkspace[] {
   const newWorkspace = [];
   if (workspaces && workspaces.length === 0) return newWorkspace;
   workspaces.map((workspaceData: Workspaces) => {
@@ -168,7 +174,17 @@ export function getPipelineRunWorkspaces(workspaces: Workspaces[]): PipelineRunW
     }
     newWorkspaceObject[WorkspaceResource[workspaceData.workspaceType]] = workspaceResourceObject;
     newWorkspace.push(newWorkspaceObject);
-  })
+  });
+  if (volumeClaimTemplate && volumeClaimTemplate.length !== 0) {
+    volumeClaimTemplate.map(value => {
+      const workspaceObject = {};
+      workspaceObject['name'] = value.metadata.name,
+      workspaceObject[value.kind] = {
+        spec: value.spec
+      }
+      newWorkspace.push(workspaceObject);
+    })
+  }
   return newWorkspace;
 }
 

@@ -47,6 +47,22 @@ export interface Params {
   description?: string;
   name: string;
 }
+
+export interface VCT {
+  kind: string;
+  metadata: {
+    name: string;
+  };
+  spec: {
+    accessModes: string[];
+    resources: {
+      requests: {
+        storage: string;
+      };
+    };
+    volumeMode?: string;
+  };
+}
   
 export interface StartObject {
   name: string;
@@ -64,6 +80,7 @@ export interface StartObject {
     workspaces: Workspaces[];
   };
   commandId?: string;
+  volumeClaimTemplate?: VCT[];
 }
   
 export interface Trigger {

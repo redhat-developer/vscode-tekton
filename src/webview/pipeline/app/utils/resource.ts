@@ -89,6 +89,28 @@ export function createPVC(name: string, accessMode: string, size: string, inputS
   });
 }
 
+export function removePvcName(name: string, initialValue: PipelineStart): void {
+  const newWorkSpace = initialValue.workspaces.filter((value) => value.name !== name);
+  initialValue.workspaces = newWorkSpace;
+}
+
+export function createVCT(name: string, accessMode: string, size: string, inputSize: string, initialValue: PipelineStart): void {
+  initialValue.volumeClaimTemplate.push({
+    kind: 'volumeClaimTemplate',
+    metadata: {
+      name: name
+    },
+    spec: {
+      resources: {
+        requests: {
+          storage: `${inputSize}${size}`
+        }
+      },
+      accessModes: [accessMode]
+    }
+  });
+}
+
 
 export function storePvcName(name: string, workspaceName: string, initialValue: PipelineStart): void {
   initialValue.workspaces.forEach(val => {

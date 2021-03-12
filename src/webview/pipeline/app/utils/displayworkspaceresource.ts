@@ -29,6 +29,7 @@ function dropdownForWorkspaceType(event: Node & ParentNode, editId: string, sect
   event.appendChild(workspacesOp.getElement());
   if (VolumeTypes[select.value] === VolumeTypes.PersistentVolumeClaim) {
     selectText(event.querySelectorAll(`[id^=${sectionId}]`), `Create a new ${VolumeTypes[select.value]}`, false, 'create-new-PersistentVolumeClaim-entry');
+    selectText(event.querySelectorAll(`[id^=${sectionId}]`), 'Create a new VolumeClaimTemplate', false, 'create-new-VolumeClaimTemplate-entry');
   } else {
     selectText(event.querySelectorAll(`[id^=${sectionId}]`), `Select a ${VolumeTypes[select.value]}`, (index === undefined) ?? true, 'select-workspace-option');
   }

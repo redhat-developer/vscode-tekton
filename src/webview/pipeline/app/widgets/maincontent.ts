@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { createDiv } from '../../../common/dom-util';
+import { createDivWithID } from '../../../common/dom-util';
 import { debounce } from 'debounce';
 import { Listener, BaseWidget, Widget } from '../../../common/widget';
 
 export class LabelItem extends BaseWidget {
   constructor(title: string, id?: string) {
     super();
-    this.element = createDiv('editorLabel');
+    this.element = createDivWithID('editorLabel');
     this.element.id = id ?? '';
     this.element.innerText = title;
   }
@@ -25,7 +25,7 @@ export class EditItem extends BaseWidget {
     elementId?: string,
     label?: boolean) {
     super();
-    this.element = createDiv(className ?? 'editItem');
+    this.element = createDivWithID(className ?? 'editItem');
     this.element.id = elementId ?? '';
     !label ? this.element.appendChild(new LabelItem(title, id).getElement()) : undefined;
     this.element.appendChild(input.getElement());
@@ -36,7 +36,7 @@ export class GroupItem extends BaseWidget {
   public label: HTMLLabelElement;
   constructor(private title: string, idName?: string) {
     super();
-    this.element = createDiv('editorGroup');
+    this.element = createDivWithID('editorGroup');
     this.label = document.createElement('label');
     this.label.innerText = title;
     this.element.id = idName ?? '';

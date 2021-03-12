@@ -161,6 +161,22 @@ export interface PVC {
   };
 }
 
+export interface VCT {
+  kind: string;
+  metadata: {
+    name: string;
+  };
+  spec: {
+    accessModes: string[];
+    resources: {
+      requests: {
+        storage: string;
+      };
+    };
+    volumeMode?: string;
+  };
+}
+
 export interface PipelineStart {
   name: string;
   resources: Resources[];
@@ -173,6 +189,7 @@ export interface PipelineStart {
   newPvc?: PVC[];
   serviceAccount: string;
   commandId?: string;
+  volumeClaimTemplate?: VCT[];
 }
 
 export interface Item {

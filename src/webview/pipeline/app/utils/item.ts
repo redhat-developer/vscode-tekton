@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { selectText } from './util';
-import { createDiv } from '../../../common/dom-util';
+import { createDivWithID } from '../../../common/dom-util';
 import { PipelineStart, Trigger, Item } from './types';
 import { SelectWidget } from '../widgets/selectwidget';
 import { EditItem } from '../widgets/maincontent';
@@ -21,7 +21,7 @@ export function createItem(event: Node & ParentNode, optionId: string, selectVal
 
 export function addItem(event: Node & ParentNode, optionId: string, newDivClass: string, selectItemOp: EditItem, selectValue: string, initialValue: PipelineStart, trigger: Trigger, item?: Item): void {
   if (event.lastElementChild.id === 'Add-New-Items') event.lastChild.remove();
-  event.appendChild(createDiv(null, newDivClass));
+  event.appendChild(createDivWithID(null, newDivClass));
   event.lastChild.appendChild(selectItemOp.getElement());
   event.lastChild.appendChild(new InputWidget('Enter a path', item ? null : 'editor-input-box-disable', initialValue, item ? false : true, 'enable-input-box-workspace', item ? null : 'disabled', item ? null : 'disabled', item ? item.path : null).getElement());
   event.lastChild.appendChild(new ButtonsPanel(null, 'close-button-div', 'close-button', null, null, null, null, initialValue).getElement());

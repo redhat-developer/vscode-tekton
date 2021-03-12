@@ -11,6 +11,13 @@ export function createDiv(...className: string[]): HTMLDivElement {
   return element;
 }
 
+export function createDivWithID(className: string, id?: string): HTMLDivElement {
+  const element = document.createElement('div');
+  if (className) element.classList.add(className);
+  if (id) element.id = id;
+  return element;
+}
+
 export function createSpan(...classNames: string[]): HTMLSpanElement {
   const element = document.createElement('span');
   if (classNames){
