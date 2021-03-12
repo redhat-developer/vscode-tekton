@@ -9,9 +9,10 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { initializeTknEditing, TknDefinitionProvider } from '../../src/yaml-support/tkn-editing';
+import { initializeTknEditing } from '../../src/yaml-support/tkn-editing';
 import { tektonYaml, TektonYamlType } from '../../src/yaml-support/tkn-yaml';
 import { TestTextDocument } from '../text-document-mock';
+import { TknDefinitionProvider } from '../../src/yaml-support/tkn-definition-providers';
 
 const expect = chai.expect;
 chai.use(sinonChai);

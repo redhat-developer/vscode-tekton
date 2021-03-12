@@ -3,7 +3,8 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { TknElement, TknElementType, TknArray, TknBaseRootElement, NodeTknElement, TknStringElement, TknValueElement, TknParam } from '../common';
+import { TknElement, TknArray, TknBaseRootElement, NodeTknElement, TknStringElement, TknValueElement, TknParam, TknKeyElement } from '../common';
+import { TknElementType } from '../element-type';
 import { YamlMap, YamlSequence, YamlNode, isSequence } from '../../yaml-support/yaml-locator';
 import { pipelineYaml, getYamlMappingValue, findNodeByKey } from '../../yaml-support/tkn-yaml';
 import { EmbeddedTask } from './task-model';
@@ -220,7 +221,7 @@ export class PipelineTask extends NodeTknElement {
 
       const taskRefNode = pipelineYaml.getTaskRef(this.node as YamlMap);
       if (taskRefNode) {
-        this._taskRef = new PipelineTaskRef(this, taskRefNode);
+        this._taskRef = new PipelineTaskRef(this, taskRefNode[0], taskRefNode[1]);
       }
     }
     return this._taskRef;
@@ -340,14 +341,19 @@ export class PipelineTaskRef extends NodeTknElement {
 
   private _name: TknStringElement;
   private _kind: TknValueElement<PipelineTaskKind>;
+  keyNode: TknElement
 
-  constructor(parent: PipelineTask, node: YamlMap) {
+  constructor(parent: PipelineTask, keyNode: YamlNode, node: YamlMap) {
     super(parent, node);
+    this.keyNode = new TknKeyElement(parent, keyNode);
   }
 
   get name(): TknStringElement {
     if (!this._name) {
-      this._name = new TknStringElement(this, findNodeByKey('name', this.node as YamlMap))
+      const nameVal: YamlNode = findNodeByKey('name', this.node as YamlMap);
+      if (nameVal){
+        this._name = new TknStringElement(this, nameVal)
+      }
     }
     return this._name;
   }
@@ -441,7 +447,10 @@ export class WorkspacePipelineDeclaration extends NodeTknElement {
 
   get name(): TknStringElement {
     if (!this._name) {
-      this._name = new TknStringElement(this, findNodeByKey('name', this.node as YamlMap))
+      const nameNode = findNodeByKey<YamlNode>('name', this.node as YamlMap);
+      if (nameNode){
+        this._name = new TknStringElement(this, nameNode);
+      }
     }
     return this._name;
   }

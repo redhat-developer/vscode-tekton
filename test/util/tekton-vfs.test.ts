@@ -28,19 +28,19 @@ suite('Tekton VFS Provider', () => {
     test('tektonFSUri should return uri', () => {
       const uri = tektonFSUri('pipeline', 'foo', 'yaml', 'c85f064e-fbea-45cc-8e5c-167733cd3198');
       expect(uri).is.not.undefined;
-      expect(uri.toString()).equal('tekton://kubernetes/pipeline/foo-c85f064e.yaml');
+      expect(uri.toString()).equal('tekton://kubernetes/pipeline/foo%40c85f064e.yaml');
     });
 
     test('tektonFSUri should return uri with readonly scheme for pipelinerun', () => {
       const uri = tektonFSUri('pipelinerun', 'foo', 'yaml', 'c85f064e-fbea-45cc-8e5c-167733cd3198');
       expect(uri).is.not.undefined;
-      expect(uri.toString()).equal('tekton-ro://kubernetes/pipelinerun/foo-c85f064e.yaml');
+      expect(uri.toString()).equal('tekton-ro://kubernetes/pipelinerun/foo%40c85f064e.yaml');
     });
 
     test('tektonFSUri should return uri with readonly scheme for taskrun', () => {
       const uri = tektonFSUri('taskrun', 'foo', 'yaml', 'c85f064e-fbea-45cc-8e5c-167733cd3198');
       expect(uri).is.not.undefined;
-      expect(uri.toString()).equal('tekton-ro://kubernetes/taskrun/foo-c85f064e.yaml');
+      expect(uri.toString()).equal('tekton-ro://kubernetes/taskrun/foo%40c85f064e.yaml');
     })
   });
 

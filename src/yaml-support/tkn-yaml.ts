@@ -5,7 +5,7 @@
 import * as vscode from 'vscode';
 import { yamlLocator, YamlMap, YamlSequence, YamlNode, YamlDocument, VirtualDocument } from './yaml-locator';
 import * as _ from 'lodash';
-import { TknElementType } from '../model/common';
+import { TknElementType } from '../model/element-type';
 import { PipelineTask, PipelineTaskCondition } from '../model/pipeline/pipeline-model';
 
 const TEKTON_API = 'tekton.dev/';
@@ -215,8 +215,8 @@ export class PipelineYaml {
     return result;
   }
 
-  getTaskRef(task: YamlMap): YamlMap {
-    return findNodeByKey<YamlMap>('taskRef', task);
+  getTaskRef(task: YamlMap): [YamlNode, YamlMap] {
+    return findNodeAndKeyByKeyValue<YamlNode, YamlMap>('taskRef', task);
   }
 
 
@@ -440,7 +440,7 @@ function toDeclaredTask(taskNode: YamlMap): DeclaredTask {
     decTask.position = nameValue.startPosition;
   }
 
-  const taskRef = pipelineYaml.getTaskRef(taskNode);
+  const [, taskRef] = pipelineYaml.getTaskRef(taskNode) ?? [];
   if (taskRef) {
     const taskRefName = findNodeByKey<YamlNode>('name', taskRef);
     decTask.taskRef = taskRefName.raw.trim();
@@ -668,9 +668,21 @@ function getTasksSeq(specMap: YamlMap): YamlSequence | undefined {
   return findNodeByKey<YamlSequence>('tasks', specMap);
 }
 
-export function findNodeByKey<T>(key: string, yamlMap: YamlMap): T | undefined {
+export function findNodeAndKeyByKeyValue<K, T>(key: string, yamlMap: YamlMap): [K, T] | undefined {
   if (!yamlMap) {
     return;
+  }
+  const mapItem = yamlMap.mappings.find(item => item.key.raw === key);
+  if (mapItem) {
+    return [mapItem.key as unknown as K, mapItem.value as unknown as T];
+  }
+
+  return undefined;
+}
+
+export function findNodeByKey<T>(key: string, yamlMap: YamlMap): T | undefined {
+  if (!yamlMap || !yamlMap.mappings) {
+    return undefined;
   }
   const mapItem = yamlMap.mappings.find(item => item.key.raw === key);
   if (mapItem) {

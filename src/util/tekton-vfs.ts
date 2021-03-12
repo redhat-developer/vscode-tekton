@@ -10,12 +10,15 @@ import * as os from 'os'
 import * as fsx from 'fs-extra';
 import { VirtualDocument } from '../yaml-support/yaml-locator';
 import { TektonItem } from '../tekton/tektonitem';
-import { newFileName } from './filename';
+import { originalFileName, newFileName } from './filename';
 import { getStderrString } from './stderrstring';
 
 export const TKN_RESOURCE_SCHEME = 'tekton';
 export const TKN_RESOURCE_SCHEME_READONLY = 'tekton-ro';
 const readonlyRegex = /(taskrun|pipelinerun|pipelineRunFinished|tr)/ as RegExp;
+
+const pipelineRunFinishedRegex = RegExp(`^${ContextType.PIPELINERUNCHILDNODE}/`);
+const taskRegex = RegExp(`^${ContextType.TASK}/`);
 
 /**
  * Create Uri for Tekton VFS 
@@ -93,10 +96,7 @@ export class TektonVFSProvider implements FileSystemProvider {
   }
 
   private loadK8sResource(resource: string, outputFormat: string, uid = true): Promise<CliExitData> {
-    const id = new RegExp('-[A-Za-z0-9]+$');
-    let newResourceName = (uid) ? resource.replace(id, '') : resource;
-    const pipelineRunFinishedRegex = RegExp(`^${ContextType.PIPELINERUNCHILDNODE}/`);
-    const taskRegex = RegExp(`^${ContextType.TASK}/`);
+    let newResourceName = (uid) ? originalFileName(resource) : resource;
     if (pipelineRunFinishedRegex.test(newResourceName)) {
       newResourceName = newResourceName.replace(`${ContextType.PIPELINERUNCHILDNODE}/`, `${ContextType.PIPELINERUN}/`);
     }

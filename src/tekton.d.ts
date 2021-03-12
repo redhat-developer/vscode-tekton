@@ -50,6 +50,11 @@ export interface TknMetadata {
   uid?: string;
   resourceVersion?: string;
   labels?: {[key: string]: string};
+  managedFields?: unknown[];
+  selfLink?: string;
+  creationTimestamp?: string;
+  ownerReferences?: unknown[];
+  annotations?: {[key: string]: string};
 }
 
 export interface TknParams {

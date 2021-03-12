@@ -6,44 +6,7 @@
 import { YamlNode, YamlMap, YamlSequence, isSequence, YamlScalar } from '../yaml-support/yaml-locator';
 import { tektonYaml, findNodeByKey } from '../yaml-support/tkn-yaml';
 import * as _ from 'lodash';
-
-export enum TknElementType {
-  DOCUMENT,
-  PIPELINE,
-  METADATA,
-  PARAM,
-  PARAMS,
-  PIPELINE_SPEC,
-  PIPELINE_RESOURCES,
-  PIPELINE_RESOURCE,
-  PIPELINE_TASKS,
-  PIPELINE_TASK,
-  PIPELINE_TASK_REF,
-  VALUE,
-  PARAM_SPECS,
-  PARAM_SPEC,
-  STRING_ARRAY,
-  PIPELINE_WORKSPACES,
-  PIPELINE_WORKSPACE,
-  PIPELINE_TASK_CONDITIONS,
-  PIPELINE_TASK_CONDITION,
-  PIPELINE_TASK_INPUT_RESOURCES,
-  PIPELINE_TASK_INPUT_RESOURCE,
-  PIPELINE_TASK_INPUT_RESOURCE_FROM,
-  PIPELINE_TASK_RUN_AFTER,
-  PIPELINE_TASK_RESOURCES,
-  PIPELINE_TASK_OUTPUTS_RESOURCE,
-  PIPELINE_TASK_OUTPUTS_RESOURCES,
-  PIPELINE_TASK_PARAMS,
-  PIPELINE_TASK_WORKSPACE,
-  PIPELINE_TASK_WORKSPACES,
-  PIPELINE_TASK_WHEN,
-  PIPELINE_TASK_WHEN_VALUES,
-  EMBEDDED_TASK,
-  PIPELINE_TASK_METADATA,
-  TASK_RESULT,
-  TASK_RESULTS,
-}
+import { TknElementType } from './element-type';
 
 export function insideElement(element: TknElement, pos: number): boolean {
   return element.startPosition <= pos && element.endPosition > pos;
@@ -84,7 +47,7 @@ export abstract class TknElement {
 
   get startPosition(): number {
     if (!this.node) {
-      console.error(this);
+      throw new Error('Can\'t find AST node');
     }
     return this.node.startPosition;
   }
@@ -103,6 +66,22 @@ export abstract class LeafTknElement extends TknElement {
   }
 
   findElement(pos: number): TknElement | undefined {
+    if (insideElement(this, pos)) {
+      return this;
+    }
+    return undefined;
+  }
+
+}
+
+export class TknKeyElement extends LeafTknElement {
+  type = TknElementType.KEY;
+
+  constructor(parent: TknElement, node: YamlNode) {
+    super(parent, node);
+  }
+
+  findElement(pos: number): TknElement {
     if (insideElement(this, pos)) {
       return this;
     }
