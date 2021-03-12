@@ -131,7 +131,7 @@ class PipelineCodeActionProvider implements vscode.CodeActionProvider {
       if (task.metadata.ownerReferences){
         delete task.metadata.ownerReferences;
       }
-      if (task.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration']){
+      if (task.metadata.annotations && task.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration']){
         delete task.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration'];
       }
     }
