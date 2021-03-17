@@ -8,7 +8,7 @@
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
-import { TknImpl, Command, ContextType } from '../../src/tkn';
+import { TknImpl, ContextType } from '../../src/tkn';
 import { PipelineResource } from '../../src/tekton/pipelineresource';
 import { TestItem } from './testTektonitem';
 import { TektonItem } from '../../src/tekton/tektonitem';

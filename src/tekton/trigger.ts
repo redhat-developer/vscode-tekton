@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { TektonNode, Command } from '../tkn';
+import { TektonNode } from '../tkn';
 import * as cliInstance from '../cli';
 import { PipelineWizard } from '../pipeline/wizard';
 import { ViewColumn, window } from 'vscode';
@@ -13,6 +13,7 @@ import { TektonItem } from './tektonitem';
 import { multiStepInput } from '../util/MultiStepInput';
 import { addTriggerToPipeline } from './addtrigger';
 import { telemetryLogError } from '../telemetry';
+import { Command } from '../util/command';
 
 
 export async function addTrigger(pipeline: TektonNode, commandId?: string): Promise<string> {

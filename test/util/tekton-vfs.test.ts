@@ -12,7 +12,7 @@ import * as fsx from 'fs-extra';
 import * as path from 'path';
 import { cli } from '../../src/cli';
 import { teardown } from 'mocha';
-import { newK8sCommand } from '../../src/tkn';
+import { newK8sCommand } from '../../src/cli_command';
 
 const expect = chai.expect;
 chai.use(sinonChai);

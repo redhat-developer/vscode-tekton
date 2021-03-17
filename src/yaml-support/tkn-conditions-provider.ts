@@ -3,7 +3,8 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { tkn, Command } from '../tkn';
+import { tkn } from '../tkn';
+import { Command } from '../util/command';
 
 
 export async function getTknConditionsSnippets(): Promise<string[]> {

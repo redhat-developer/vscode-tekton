@@ -8,11 +8,12 @@
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
-import { TknImpl, Command, ContextType } from '../../src/tkn';
+import { TknImpl, ContextType } from '../../src/tkn';
 import { Task } from '../../src/tekton/task';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
+import { Command } from '../../src/util/command';
 
 const expect = chai.expect;
 chai.use(sinonChai);

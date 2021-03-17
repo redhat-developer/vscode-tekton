@@ -6,11 +6,11 @@
 import { Progress } from '../util/progress';
 import * as cliInstance from '../cli';
 import { TektonItem } from './tektonitem';
-import { Command } from '../tkn';
 import { TknPipelineTrigger } from '../tekton';
 import { Trigger, PipelineContent } from './pipelinecontent';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 import { window } from 'vscode';
+import { Command } from '../util/command';
 
 export async function startTask(taskName: string, commandId?: string): Promise<string> {
   if (!taskName) return null;

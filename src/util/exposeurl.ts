@@ -4,7 +4,8 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as _ from 'lodash';
-import { Command, tkn } from '../tkn';
+import { tkn } from '../tkn';
+import { Command } from './command';
 
 
 

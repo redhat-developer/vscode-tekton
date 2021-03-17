@@ -7,6 +7,7 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as tkn from '../src/tkn';
 import { k8sCommands } from '../src/kubernetes';
+import { Command } from '../src/util/command';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -25,13 +26,13 @@ suite('kubernetes', () => {
     });
 
     test('k8s.tekton.run.logs should call showTaskRunLogs if context is taskruns', () => {
-      const command = tkn.Command.showTaskRunLogs('foo');
+      const command = Command.showTaskRunLogs('foo');
       k8sCommands.showLogs({ name: 'foo', nodeType: 'resource', kind: { abbreviation: 'taskruns' } });
       expect(executeInTerminalStub).calledOnceWith(command);
     });
 
     test('k8s.tekton.run.logs should call showPipelineRunLogs if context is pipelineruns', () => {
-      const command = tkn.Command.showPipelineRunLogs('foo');
+      const command = Command.showPipelineRunLogs('foo');
       k8sCommands.showLogs({ name: 'foo', nodeType: 'resource', kind: { abbreviation: 'pipelineruns' } });
       expect(executeInTerminalStub).calledOnceWith(command);
     });
@@ -47,13 +48,13 @@ suite('kubernetes', () => {
     });
 
     test('k8s.tekton.run.followLogs should call showTaskRunLogs if context is taskruns', () => {
-      const command = tkn.Command.showTaskRunFollowLogs('foo');
+      const command = Command.showTaskRunFollowLogs('foo');
       k8sCommands.followLogs({ name: 'foo', nodeType: 'resource', kind: { abbreviation: 'taskruns' } });
       expect(executeInTerminalStub).calledOnceWith(command);
     });
 
     test('k8s.tekton.run.followLogs should call showPipelineRunLogs if context is pipelineruns', () => {
-      const command = tkn.Command.showPipelineRunFollowLogs('foo');
+      const command = Command.showPipelineRunFollowLogs('foo');
       k8sCommands.followLogs({ name: 'foo', nodeType: 'resource', kind: { abbreviation: 'pipelineruns' } });
       expect(executeInTerminalStub).calledOnceWith(command);
     });

@@ -6,7 +6,8 @@
 import { window } from 'vscode';
 import { CliExitData } from '../cli';
 import { telemetryLogError } from '../telemetry';
-import { Command, ContextType, TektonNode, tkn } from '../tkn';
+import { ContextType, TektonNode, tkn } from '../tkn';
+import { Command } from '../util/command';
 
 
 export async function showDiagnosticData(diagnostic: TektonNode, commandId?: string): Promise<void> {

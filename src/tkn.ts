@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { CliCommand, CliExitData, cli, createCliCommand, cliCommandToString, WatchProcess } from './cli';
+import { CliCommand, CliExitData, cli, cliCommandToString, WatchProcess } from './cli';
 import { ProviderResult, TreeItemCollapsibleState, Terminal, Uri, workspace, TreeItem, QuickPickItem } from 'vscode';
 import { WindowUtil } from './util/windowUtils';
 import * as path from 'path';
@@ -18,6 +18,7 @@ import { RunState } from './yaml-support/tkn-yaml';
 import { version } from './util/tknversion';
 import { pipelineTriggerStatus, watchResources } from './util/watchResources';
 import { getStderrString } from './util/stderrstring';
+import { Command } from './util/command';
 
 export const humanizer = humanize.humanizer(createConfig());
 

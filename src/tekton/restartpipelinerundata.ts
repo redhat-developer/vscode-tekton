@@ -3,10 +3,11 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { TektonNode, Command } from '../tkn';
+import { TektonNode } from '../tkn';
 import { TknResourceItem, TknPipelineRun } from './webviewstartpipeline';
 import { TektonItem } from './tektonitem';
 import { TknSpec } from '../tekton';
+import { Command } from '../util/command';
 
 interface PipelineData {
   params: {};

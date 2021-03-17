@@ -20,6 +20,7 @@ import * as path from 'path';
 import { TektonNode } from '../src/tkn';
 import { StartObject, Resources, Params } from '../src/tekton/pipelinecontent';
 import { PipelineRunData } from '../src/tekton';
+import { Command } from '../src/util/command';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -180,7 +181,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.startPipeline(startPipelineObj);
 
-      expect(execStub).calledOnceWith(tkn.Command.startPipeline(startPipelineObj));
+      expect(execStub).calledOnceWith(Command.startPipeline(startPipelineObj));
       expect(result).equals('condition-pipeline-run-svht8');
     });
 
@@ -211,7 +212,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getPipelines(pipelineNodeItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listPipelines());
+      expect(execStub).calledOnceWith(Command.listPipelines());
       expect(result.length).equals(3);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelines[i]);
@@ -278,7 +279,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getPipelineRunsList(pipelineRunNodeItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listPipelineRun());
+      expect(execStub).calledOnceWith(Command.listPipelineRun());
       expect(result.length).equals(1);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelineRun[i]);
@@ -321,7 +322,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getConditions(conditionItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listConditions());
+      expect(execStub).calledOnceWith(Command.listConditions());
       expect(result.length).equals(3);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelines[i]);
@@ -365,7 +366,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getTriggerTemplates(triggerTemplatesItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listTriggerTemplates());
+      expect(execStub).calledOnceWith(Command.listTriggerTemplates());
       expect(result.length).equals(3);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelines[i]);
@@ -396,7 +397,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getTriggerBinding(triggerBindingItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listTriggerBinding());
+      expect(execStub).calledOnceWith(Command.listTriggerBinding());
       expect(result.length).equals(1);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelines[i]);
@@ -427,7 +428,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getEventListener(eventListenerItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listEventListener());
+      expect(execStub).calledOnceWith(Command.listEventListener());
       expect(result.length).equals(1);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelines[i]);
@@ -464,7 +465,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getTasks(taskNodeItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listTasks());
+      expect(execStub).calledOnceWith(Command.listTasks());
       expect(result.length).equals(2);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknTasks[i]);
@@ -501,7 +502,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getClusterTasks(clustertaskNodeItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listClusterTasks());
+      expect(execStub).calledOnceWith(Command.listClusterTasks());
       expect(result.length).equals(2);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknTasks[i]);
@@ -835,7 +836,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getTaskRunList(taskRunNodeItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listTaskRun());
+      expect(execStub).calledOnceWith(Command.listTaskRun());
       expect(result.length).equals(2);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknTaskRun[i]);
@@ -967,7 +968,7 @@ suite('tkn', () => {
         })
       });
       const result = await tknCli.getTaskRunsForTasks(taskItem);
-      expect(execStub).calledWith(tkn.Command.listTaskRunsForTasks(taskItem.getName()));
+      expect(execStub).calledWith(Command.listTaskRunsForTasks(taskItem.getName()));
       expect(result.length).equals(2);
       for (let i = 0; i < result.length; i++) {
         expect(result[i].getName()).equals(tknTaskRuns[i]);
@@ -1100,7 +1101,7 @@ suite('tkn', () => {
         })
       });
       const result = await tknCli.getTaskRunsForTasks(clustertaskItem);
-      expect(execStub).calledWith(tkn.Command.listTaskRunsForTasks(clustertaskItem.getName()));
+      expect(execStub).calledWith(Command.listTaskRunsForTasks(clustertaskItem.getName()));
       expect(result.length).equals(2);
       for (let i = 0; i < result.length; i++) {
         expect(result[i].getName()).equals(tknTaskRuns[i]);
@@ -1129,7 +1130,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getRawClusterTasks();
 
-      expect(execStub).calledOnceWith(tkn.Command.listClusterTasks());
+      expect(execStub).calledOnceWith(Command.listClusterTasks());
       expect(result.length).equals(2);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].metadata.name).equals(tknTasks[i]);
@@ -1157,7 +1158,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getRawTasks();
 
-      expect(execStub).calledOnceWith(tkn.Command.listTasks());
+      expect(execStub).calledOnceWith(Command.listTasks());
       expect(result.length).equals(2);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].metadata.name).equals(tknTasks[i]);

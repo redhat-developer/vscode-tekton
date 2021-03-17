@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { TektonItem } from './tektonitem';
-import { TektonNode } from '../tkn';
-import { CliCommand } from '../cli';
-import { Command } from '../util/command';
+import { CliCommand, createCliCommand } from './cli';
 
-export class ClusterTriggerBinding extends TektonItem {
-  static getDeleteCommand(item: TektonNode): CliCommand {
-    return Command.deleteClusterTriggerBinding(item.getName());
-  }
+
+export function newTknCommand(...tknArguments: string[]): CliCommand {
+  return createCliCommand('tkn', ...tknArguments);
+}
+
+export function newK8sCommand(...k8sArguments): CliCommand {
+  return createCliCommand('kubectl', ...k8sArguments);
 }

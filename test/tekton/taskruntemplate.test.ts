@@ -11,8 +11,9 @@ import * as sinon from 'sinon';
 import { cli } from '../../src/cli';
 import * as taskRunTemplate from '../../src/tekton/taskruntemplate'
 import { TestItem } from './testTektonitem';
-import { ContextType, newK8sCommand, TknImpl } from '../../src/tkn';
+import { ContextType, TknImpl } from '../../src/tkn';
 import { EndOfLine, TextDocument, window, workspace } from 'vscode';
+import { newK8sCommand } from '../../src/cli_command';
 
 
 const expect = chai.expect;

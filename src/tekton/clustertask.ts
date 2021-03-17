@@ -4,8 +4,9 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command } from '../tkn';
+import { TektonNode } from '../tkn';
 import { CliCommand } from '../cli';
+import { Command } from '../util/command';
 
 export class ClusterTask extends TektonItem {
 

@@ -5,10 +5,11 @@
 
 import * as vscode from 'vscode';
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command, tkn } from '../tkn';
+import { TektonNode, tkn } from '../tkn';
 import { CliCommand } from '../cli';
 import { getExposeURl } from '../util/exposeurl';
 import { telemetryLogCommand } from '../telemetry';
+import { Command } from '../util/command';
 
 export class TriggerTemplate extends TektonItem {
 
