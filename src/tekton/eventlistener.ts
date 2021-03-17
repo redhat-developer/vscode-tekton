@@ -4,9 +4,9 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TektonItem } from './tektonitem';
-import { TektonNode } from '../tkn';
 import { CliCommand } from '../cli';
 import { Command } from '../util/command';
+import { TektonNode } from '../tree-view/tekton-node';
 
 export class EventListener extends TektonItem {
 

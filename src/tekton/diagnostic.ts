@@ -5,8 +5,10 @@
 
 import { window } from 'vscode';
 import { CliExitData } from '../cli';
+import { ContextType } from '../context-type';
+import { TektonNode } from '../tree-view/tekton-node';
 import { telemetryLogError } from '../telemetry';
-import { ContextType, TektonNode, tkn } from '../tkn';
+import { tkn } from '../tkn';
 import { Command } from '../util/command';
 
 

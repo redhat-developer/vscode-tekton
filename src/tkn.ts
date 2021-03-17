@@ -4,13 +4,12 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { CliCommand, CliExitData, cli, cliCommandToString, WatchProcess } from './cli';
-import { ProviderResult, TreeItemCollapsibleState, Terminal, Uri, workspace, TreeItem, QuickPickItem } from 'vscode';
+import { TreeItemCollapsibleState, Terminal, workspace } from 'vscode';
 import { WindowUtil } from './util/windowUtils';
 import * as path from 'path';
 import { ToolsConfig } from './tools';
-import format = require('string-format');
 import humanize = require('humanize-duration');
-import { TknPipelineResource, TknTask, PipelineRunData, TaskRun as RawTaskRun, PipelineRunConditionCheckStatus, TaskRunStatus, ConditionCheckStatus } from './tekton';
+import { TknPipelineResource, TknTask, PipelineRunData, TaskRunStatus, ConditionCheckStatus, PipelineTaskRunData } from './tekton';
 import { kubectl } from './kubectl';
 import { pipelineExplorer } from './pipeline/pipelineExplorer';
 import { StartObject } from './tekton/pipelinecontent';
@@ -19,6 +18,11 @@ import { version } from './util/tknversion';
 import { pipelineTriggerStatus, watchResources } from './util/watchResources';
 import { getStderrString } from './util/stderrstring';
 import { Command } from './util/command';
+import { ContextType } from './context-type';
+import { TektonNode, TektonNodeImpl } from './tree-view/tekton-node';
+import { TaskRun } from './tree-view/task-run-node';
+import { PipelineRun } from './tree-view/pipelinerun-node';
+import { MoreNode } from './tree-view/expand-node';
 
 export const humanizer = humanize.humanizer(createConfig());
 
@@ -41,20 +45,6 @@ function createConfig(): humanize.HumanizerOptions {
     largest: 2,
     conjunction: ' '
   };
-}
-
-
-export interface TektonNode extends QuickPickItem {
-  getChildren(): ProviderResult<TektonNode[]>;
-  getParent(): TektonNode | undefined;
-  getName(): string;
-  refresh(): Promise<void>;
-  contextValue?: string;
-  creationTime?: string;
-  state?: string;
-  visibleChildren?: number;
-  collapsibleState?: TreeItemCollapsibleState;
-  uid?: string;
 }
 
 interface NameId {
@@ -727,201 +717,6 @@ export function getPipelineRunTaskState(status: TaskRunStatus | ConditionCheckSt
   return result;
 }
 
-export abstract class BaseTaskRun extends TektonNodeImpl {
-  constructor(parent: TektonNode,
-    name: string,
-    protected shortName: string,
-    contextType: ContextType,
-    tkn: Tkn,
-    collapsibleState: TreeItemCollapsibleState,
-    uid: string,
-    creationTime: string,
-    protected finished: string | undefined,
-    status: TaskRunStatus | ConditionCheckStatus) {
-    super(parent, name, contextType, tkn, collapsibleState, uid, creationTime, getPipelineRunTaskState(status));
-  }
-
-  get label(): string {
-    return this.shortName ? this.shortName : this.name;
-  }
-
-  get description(): string {
-    let r = '';
-    if (this.getParent().contextValue === ContextType.TASK) {
-      if (this.creationTime) {
-        r = 'started ' + humanizer(Date.now() - Date.parse(this.creationTime)) + ' ago, finished in ' + humanizer(Date.parse(this.finished) - Date.parse(this.creationTime));
-      } else {
-        r = 'started ' + humanizer(Date.now() - Date.parse(this.creationTime)) + ' ago, running for ' + humanizer(Date.now() - Date.parse(this.creationTime));
-      }
-    } else {
-      if (this.finished) {
-        r = 'finished in ' + humanizer(Date.parse(this.finished) - Date.parse(this.creationTime));
-      } else {
-        r = 'running for ' + humanizer(Date.now() - Date.parse(this.creationTime));
-      }
-    }
-    return r;
-  }
-
-  get iconPath(): Uri {
-    if (this.state) {
-      let filePath = IMAGES;
-      if (this.state) {
-        switch (this.state) {
-          case 'Failed': {
-            filePath = ERROR_PATH;
-            break;
-          }
-          case 'Finished': {
-            filePath = IMAGES;
-            break;
-          }
-          case 'Cancelled':
-            filePath = ERROR_PATH;
-            break;
-
-          case 'Started':
-            return Uri.file(path.join(__dirname, IMAGES, 'running.gif'));
-
-          case 'Unknown':
-          default:
-            filePath = PENDING_PATH;
-            break;
-        }
-      }
-      return Uri.file(path.join(__dirname, filePath, this.CONTEXT_DATA[this.contextValue].icon));
-    }
-    return super.iconPath;
-  }
-}
-
-export class ConditionRun extends BaseTaskRun {
-  constructor(parent: TektonNode, name: string, shortName: string, tkn: Tkn, item: PipelineRunConditionCheckStatus, uid: string) {
-    super(parent, name, shortName, ContextType.CONDITIONTASKRUN, tkn, TreeItemCollapsibleState.None, uid, item.status?.startTime, item.status?.completionTime, item.status)
-  }
-}
-
-export class TaskRunFromPipeline extends BaseTaskRun {
-  constructor(parent: TektonNode, name: string, shortName: string, tkn: Tkn, private rawTaskRun: RawTaskRun, uid: string) {
-    super(parent,
-      name,
-      shortName,
-      ContextType.TASKRUN,
-      tkn,
-      rawTaskRun.conditionChecks ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None,
-      uid,
-      rawTaskRun.status?.startTime,
-      rawTaskRun.status?.completionTime,
-      rawTaskRun.status);
-  }
-
-  getChildren(): ProviderResult<TektonNode[]> {
-    if (this.rawTaskRun.conditionChecks) {
-      const result = []
-      for (const conditionName in this.rawTaskRun.conditionChecks) {
-        const rawCondition = this.rawTaskRun.conditionChecks[conditionName];
-        result.push(new ConditionRun(this, conditionName, rawCondition.conditionName, this.tkn, rawCondition, this.uid));
-      }
-      return result.sort(compareTimeNewestFirst);
-    } else {
-      return super.getChildren();
-    }
-  }
-}
-
-export class PipelineRun extends TektonNodeImpl {
-  private started: string;
-  private finished: string;
-  private item: PipelineRunData;
-  private reason: string;
-  constructor(parent: TektonNode,
-    name: string,
-    tkn: Tkn,
-    item: PipelineRunData,
-    collapsibleState: TreeItemCollapsibleState) {
-    super(parent, name, (item?.status?.completionTime) ? ContextType.PIPELINERUNCHILDNODE : ContextType.PIPELINERUN, tkn, collapsibleState, item.metadata?.uid, item.metadata.creationTimestamp, item.status ? item.status.conditions[0].status : '');
-    this.started = item.metadata.creationTimestamp;
-    this.finished = item.status?.completionTime;
-    this.reason = item.status?.conditions[0] ? `(${item.status?.conditions[0].reason})` : '';
-    this.item = item;
-  }
-
-  get label(): string {
-    return this.name;
-  }
-
-  get tooltip(): string {
-    return format(`${this.CONTEXT_DATA[this.contextValue].tooltip} ${this.reason}`, this);
-  }
-
-  get description(): string {
-    let r = '';
-    if (this.finished) {
-      r = `started ${humanizer(Date.now() - Date.parse(this.started))} ago, finished in ${humanizer(Date.parse(this.finished) - Date.parse(this.started))}`;
-    } else {
-      r = `running for ${humanizer(Date.now() - Date.parse(this.started))}`;
-    }
-    return r;
-  }
-
-  getChildren(): ProviderResult<TektonNode[]> {
-    const result = [];
-    const tasks = this.item.status?.taskRuns;
-    if (!tasks) {
-      return result;
-    }
-    for (const task in tasks) {
-      const taskRun = tasks[task];
-      result.push(new TaskRunFromPipeline(this, task, taskRun.pipelineTaskName, this.tkn, taskRun, this.uid));
-    }
-
-    return result.sort(compareTimeNewestFirst);
-  }
-
-  async refresh(): Promise<void> {
-    const newItem = await this.tkn.getRawPipelineRun(this.item.metadata.name);
-    if (newItem) {
-      this.item = newItem;
-    }
-  }
-}
-
-export class MoreNode extends TreeItem implements TektonNode {
-  contextValue: string;
-  creationTime?: string;
-  state?: string;
-  detail?: string;
-  picked?: boolean;
-  alwaysShow?: boolean;
-  label: string;
-  tooltip: string;
-  description: string;
-
-  constructor(private showNext: number,
-    private totalCount: number,
-    private parent: TektonNode) {
-    super('more', TreeItemCollapsibleState.None);
-    this.command = { command: '_tekton.explorer.more', title: `more ${this.showNext}`, arguments: [this.showNext, this.parent] };
-    this.tooltip = `${this.showNext} more from ${this.totalCount}`;
-    this.description = `${this.showNext} from ${this.totalCount}`;
-
-  }
-
-  getChildren(): ProviderResult<TektonNode[]> {
-    throw new Error('Method not implemented.');
-  }
-  getParent(): TektonNode {
-    return this.parent;
-  }
-  getName(): string {
-    return this.label;
-  }
-
-  refresh(): Promise<void> {
-    return Promise.resolve();
-  }
-}
-
 export interface Tkn {
   getPipelineNodes(): Promise<TektonNode[]>;
   startPipeline(pipeline: StartObject): Promise<string>;
@@ -957,7 +752,7 @@ function compareNodes(a, b): number {
   return t ? t : a.label.localeCompare(b.label);
 }
 
-function compareTimeNewestFirst(a: TektonNode, b: TektonNode): number {
+export function compareTimeNewestFirst(a: TektonNode, b: TektonNode): number {
   const aTime = Date.parse(a.creationTime);
   const bTime = Date.parse(b.creationTime);
   return aTime < bTime ? 1 : -1;

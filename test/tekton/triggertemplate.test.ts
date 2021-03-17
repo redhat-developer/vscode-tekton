@@ -12,8 +12,9 @@ import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
 import { EventListenerKind } from '../../src/tekton';
 import { TriggerTemplate } from '../../src/tekton/triggertemplate';
-import { ContextType, TknImpl } from '../../src/tkn';
+import { TknImpl } from '../../src/tkn';
 import { TestItem } from './testTektonitem';
+import { ContextType } from '../../src/context-type';
 
 const expect = chai.expect;
 chai.use(sinonChai);

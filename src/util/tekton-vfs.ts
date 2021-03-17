@@ -4,7 +4,6 @@
  *-----------------------------------------------------------------------------------------------*/
 import { FileSystemProvider, EventEmitter, FileChangeEvent, Event, Uri, Disposable, FileStat, FileType, FileChangeType } from 'vscode';
 import { CliExitData, cli } from '../cli';
-import { ContextType } from '../tkn';
 import * as path from 'path';
 import * as os from 'os'
 import * as fsx from 'fs-extra';
@@ -13,6 +12,7 @@ import { TektonItem } from '../tekton/tektonitem';
 import { originalFileName, newFileName } from './filename';
 import { getStderrString } from './stderrstring';
 import { newK8sCommand } from '../cli_command';
+import { ContextType } from '../context-type';
 
 export const TKN_RESOURCE_SCHEME = 'tekton';
 export const TKN_RESOURCE_SCHEME_READONLY = 'tekton-ro';

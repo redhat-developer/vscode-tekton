@@ -21,10 +21,12 @@ import { Pipeline } from '../src/tekton/pipeline';
 import { Task } from '../src/tekton/task';
 import { ClusterTask } from '../src/tekton/clustertask';
 import packagejson = require('../package.json');
-import { TknImpl, tkn, TektonNodeImpl, ContextType } from '../src/tkn';
+import { TknImpl, tkn } from '../src/tkn';
 import { PipelineExplorer } from '../src/pipeline/pipelineExplorer';
 import { TektonItem } from '../src/tekton/tektonitem';
 import { ToolsConfig } from '../src/tools';
+import { ContextType } from '../src/context-type';
+import { TektonNodeImpl } from '../src/tree-view/tekton-node';
 
 const expect = chai.expect;
 chai.use(sinonChai);

@@ -3,13 +3,15 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Tkn, tkn as tknImpl, TektonNode, ContextType } from '../tkn';
+import { Tkn, tkn as tknImpl } from '../tkn';
 import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { workspace, window } from 'vscode';
 import { tektonFSUri } from '../util/tekton-vfs';
 import { TknResourceItem } from './webviewstartpipeline';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 import { Command } from '../util/command';
+import { ContextType } from '../context-type';
+import { TektonNode } from '../tree-view/tekton-node';
 
 export const errorMessage = {
   Pipeline: 'You need at least one Pipeline available. Please create new Tekton Pipeline and try again.',

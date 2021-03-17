@@ -6,17 +6,18 @@
 import * as os from 'os';
 import * as path from 'path';
 import { TektonItem } from './tektonitem';
-import { TektonNode, PipelineTaskRunData, ContextType } from '../tkn';
 import { window, workspace } from 'vscode';
 import { cli, CliCommand } from '../cli';
 import { showLogInEditor } from '../util/log-in-editor';
-import { TknTaskRun } from '../tekton';
+import { PipelineTaskRunData, TknTaskRun } from '../tekton';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 import { getStderrString } from '../util/stderrstring';
 import { Command } from '../util/command';
+import { ContextType } from '../context-type';
+import { TektonNode } from '../tree-view/tekton-node';
 
 export class TaskRun extends TektonItem {
 

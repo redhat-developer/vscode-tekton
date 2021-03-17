@@ -8,8 +8,8 @@ import { previewManager, PreviewSettings } from './preview-manager';
 import { CommandContext, setCommandContext } from '../commands';
 import { calculatePipelineGraph, calculatePipelineRunGraph, askToSelectPipeline } from './pipeline-graph';
 import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
-import { ContextType } from '../tkn';
 import { telemetryLogCommand } from '../telemetry';
+import { ContextType } from '../context-type';
 
 export async function showPipelinePreview(commandId?: string): Promise<void> {
   const document = vscode.window.activeTextEditor?.document;

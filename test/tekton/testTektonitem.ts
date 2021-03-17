@@ -3,7 +3,8 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { TektonNode, ContextType } from '../../src/tkn';
+import { ContextType } from '../../src/context-type';
+import { TektonNode } from '../../src/tree-view/tekton-node';
 
 export class TestItem implements TektonNode {
 
