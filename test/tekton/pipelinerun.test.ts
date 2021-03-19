@@ -12,7 +12,7 @@ import * as sinon from 'sinon';
 import { TknImpl, Command, ContextType } from '../../src/tkn';
 import { PipelineRun } from '../../src/tekton/pipelinerun';
 import { TestItem } from './testTektonitem';
-import { TektonItem } from '../../src/tekton/tektonitem';
+import { errorMessage, TektonItem } from '../../src/tekton/tektonitem';
 import * as logInEditor from '../../src/util/log-in-editor';
 
 const expect = chai.expect;
@@ -66,7 +66,7 @@ suite('Tekton/PipelineRun', () => {
         try {
           await PipelineRun.list(null);
         } catch (err) {
-          expect(err.message).equals('You need at least one PipelineRun available. Please create new Tekton PipelineRun and try again.');
+          expect(err.message).equals(errorMessage.Pipeline);
           return;
         }
       });
