@@ -3,8 +3,6 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-
-
 export enum ContextType {
   TASK = 'task',
   TASKRUN = 'taskrun',

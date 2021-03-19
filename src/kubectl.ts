@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { CliCommand, cli} from './cli';
-import { newK8sCommand } from './cli_command';
+import { newK8sCommand } from './cli-command';
 import { PipelineRunData, TknTaskRun } from './tekton';
 
 export const KubectlCommands = {

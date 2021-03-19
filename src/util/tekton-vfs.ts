@@ -11,7 +11,7 @@ import { VirtualDocument } from '../yaml-support/yaml-locator';
 import { TektonItem } from '../tekton/tektonitem';
 import { originalFileName, newFileName } from './filename';
 import { getStderrString } from './stderrstring';
-import { newK8sCommand } from '../cli_command';
+import { newK8sCommand } from '../cli-command';
 import { ContextType } from '../context-type';
 
 export const TKN_RESOURCE_SCHEME = 'tekton';

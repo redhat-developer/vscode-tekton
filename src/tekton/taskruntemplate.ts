@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { Task, TaskRunTemplate } from '../tekton';
 import { cli } from '../cli';
 import { telemetryLogCommand } from '../telemetry';
-import { newK8sCommand } from '../cli_command';
+import { newK8sCommand } from '../cli-command';
 import { TektonNode } from '../tree-view/tekton-node';
 
 async function getTask(name: string): Promise<Task> {

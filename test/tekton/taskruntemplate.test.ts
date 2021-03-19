@@ -13,7 +13,7 @@ import * as taskRunTemplate from '../../src/tekton/taskruntemplate'
 import { TestItem } from './testTektonitem';
 import { TknImpl } from '../../src/tkn';
 import { EndOfLine, TextDocument, window, workspace } from 'vscode';
-import { newK8sCommand } from '../../src/cli_command';
+import { newK8sCommand } from '../../src/cli-command';
 import { ContextType } from '../../src/context-type';
 
 

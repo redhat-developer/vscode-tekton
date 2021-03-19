@@ -5,7 +5,7 @@
 
 import { workspace } from 'vscode';
 import { CliCommand } from '../cli';
-import { newK8sCommand, newTknCommand } from '../cli_command';
+import { newK8sCommand, newTknCommand } from '../cli-command';
 import { StartObject } from '../tekton/pipelinecontent';
 
 function verbose(_target: unknown, key: string, descriptor: any): void {

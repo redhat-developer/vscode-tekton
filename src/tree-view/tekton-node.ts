@@ -5,9 +5,10 @@
 
 import { ProviderResult, QuickPickItem, TreeItemCollapsibleState, Uri } from 'vscode';
 import { ContextType } from '../context-type';
-import { ERROR_PATH, IMAGES, Tkn } from '../tkn';
+import { Tkn } from '../tkn';
 import format = require('string-format');
 import * as path from 'path';
+import { IMAGES, ERROR_PATH } from '../icon-path';
 
 export interface TektonNode extends QuickPickItem {
   getChildren(): ProviderResult<TektonNode[]>;
