@@ -10,7 +10,7 @@ import { tektonFSUri } from '../util/tekton-vfs';
 import { TknResourceItem } from './webviewstartpipeline';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 
-const errorMessage = {
+export const errorMessage = {
   Pipeline: 'You need at least one Pipeline available. Please create new Tekton Pipeline and try again.',
   PipelineRun: 'You need at least one PipelineRun available. Please create new Tekton PipelineRun and try again.',
   PipelineResource: 'You need at least one PipelineResource available. Please create new Tekton PipelineResource and try again.',
