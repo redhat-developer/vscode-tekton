@@ -469,6 +469,11 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "CustomResource": {
+      "properties": {},
+      "additionalProperties": false,
+      "type": "object"
+    },
     "DownwardAPIProjection": {
       "properties": {
         "items": {
@@ -752,6 +757,10 @@
         "podTemplate": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/PodTemplate"
+        },
+        "namespaceSelector": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/NamespaceSelector"
         },
         "resources": {
           "$schema": "http://json-schema.org/draft-04/schema#",
@@ -1303,6 +1312,18 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "NamespaceSelector": {
+      "properties": {
+        "matchNames": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "NodeAffinity": {
       "properties": {
         "requiredDuringSchedulingIgnoredDuringExecution": {
@@ -1536,7 +1557,17 @@
           "type": "string"
         },
         "value": {
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ]
         }
       },
       "additionalProperties": false,
@@ -2131,6 +2162,10 @@
         "kubernetesResource": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/KubernetesResource"
+        },
+        "customResource": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/CustomResource"
         }
       },
       "additionalProperties": false,
@@ -2430,19 +2465,6 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "TriggerBindingSpec": {
-      "properties": {
-        "params": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/Param"
-          },
-          "type": "array"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
     "TriggerInterceptor": {
       "properties": {
         "webhook": {
@@ -2488,10 +2510,6 @@
         "kind": {
           "type": "string"
         },
-        "spec": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/TriggerBindingSpec"
-        },
         "apiversion": {
           "type": "string"
         }
@@ -2500,13 +2518,7 @@
       "type": "object"
     },
     "TriggerSpecTemplate": {
-      "required": [
-        "name"
-      ],
       "properties": {
-        "name": {
-          "type": "string"
-        },
         "ref": {
           "type": "string"
         },
@@ -2810,6 +2822,7 @@
         },
         "header": {
           "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
             "$ref": "#/definitions/Param"
           },
           "type": "array"
