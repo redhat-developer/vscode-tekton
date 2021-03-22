@@ -45,8 +45,6 @@
     "onCommand:tekton.pipelinerun.cancel",
     "onCommand:tekton.pipelineresource.list",
     "onCommand:tekton.pipelineresource.describe",
-    "onCommand:tekton.pipelineresource.create",
-    "onCommand:tekton.pipelineresource.create.palette",
     "onCommand:tekton.task.start",
     "onCommand:tekton.task.list",
     "onCommand:tekton.clustertask.list",
@@ -279,18 +277,6 @@
       {
         "command": "tekton.pipelineresource.list",
         "title": "List PipelineResources",
-        "category": "Tekton",
-        "enablement": "tekton:tkn"
-      },
-      {
-        "command": "tekton.pipelineresource.create",
-        "title": "Create",
-        "category": "Tekton",
-        "enablement": "tekton:tkn"
-      },
-      {
-        "command": "tekton.pipelineresource.create.palette",
-        "title": "Create Pipeline Resource",
         "category": "Tekton",
         "enablement": "tekton:tkn"
       },
@@ -603,10 +589,6 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
-          "command": "tekton.pipelineresource.create",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
-        },
-        {
           "command": "tekton.pipelinerun.describe",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -750,11 +732,6 @@
           "command": "tekton.customView.delete",
           "when": "view =~ /^tekton(CustomTree)View/",
           "group": "c2"
-        },
-        {
-          "command": "tekton.pipelineresource.create",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelineresourcenode",
-          "group": "c1"
         },
         {
           "command": "tekton.pipelineresource.list",

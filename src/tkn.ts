@@ -375,9 +375,6 @@ export class Command {
   static showTaskRunFollowLogs(name: string): CliCommand {
     return newTknCommand('taskrun', 'logs', name, '-f');
   }
-  static createPipelineResource(yamlFile: string): CliCommand {
-    return newTknCommand('resource', 'create', '-f', yamlFile);
-  }
   static checkTekton(): CliCommand {
     return newK8sCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'kubectl', 'get', 'pipeline.tekton.dev');
   }
