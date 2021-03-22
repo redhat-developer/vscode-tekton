@@ -4,11 +4,12 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as yaml from 'js-yaml';
-import { newK8sCommand, TektonNode } from '../tkn';
 import * as vscode from 'vscode';
 import { Task, TaskRunTemplate } from '../tekton';
 import { cli } from '../cli';
 import { telemetryLogCommand } from '../telemetry';
+import { newK8sCommand } from '../cli-command';
+import { TektonNode } from '../tree-view/tekton-node';
 
 async function getTask(name: string): Promise<Task> {
   const task = await cli.execute(newK8sCommand(`get task ${name} -o json`));

@@ -6,11 +6,11 @@
 import * as vscode from 'vscode';
 import { tektonYaml, pipelineYaml, pipelineRunYaml, TektonYamlType, DeclaredTask, PipelineRunTask } from '../yaml-support/tkn-yaml';
 import { YamlDocument, VirtualDocument } from '../yaml-support/yaml-locator';
-import { ContextType, humanizer, getPipelineRunTaskState } from '../tkn';
-
+import { humanizer, getPipelineRunTaskState } from '../tkn';
 import { NodeOrEdge, NodeData, EdgeData } from '../webview/pipeline-preview/model';
 import { PipelineRunData, TaskRuns, TaskRun, PipelineRunConditionCheckStatus } from '../tekton';
 import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
+import { ContextType } from '../context-type';
 
 export interface GraphProvider {
   (document: vscode.TextDocument | VirtualDocument, pipelineRun?: PipelineRunData): Promise<NodeOrEdge[]>;

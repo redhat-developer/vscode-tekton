@@ -7,13 +7,14 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { tkn, Command } from '../../src/tkn';
+import { tkn } from '../../src/tkn';
 import { installTask } from '../../src/hub/install-task';
 import { DownloadUtil } from '../../src/util/download';
 import * as os from 'os';
 import * as fs from 'fs-extra'; 
 import * as path from 'path';
 import { ResourceVersionData } from '../../src/tekton-hub-client';
+import { Command } from '../../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);

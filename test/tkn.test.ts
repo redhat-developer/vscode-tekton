@@ -17,9 +17,13 @@ import { Terminal, TreeItemCollapsibleState } from 'vscode';
 import { TestItem } from './tekton/testTektonitem';
 import { ExecException } from 'child_process';
 import * as path from 'path';
-import { TektonNode } from '../src/tkn';
 import { StartObject, Resources, Params } from '../src/tekton/pipelinecontent';
 import { PipelineRunData } from '../src/tekton';
+import { ContextType } from '../src/context-type';
+import { TektonNode, TektonNodeImpl } from '../src/tree-view/tekton-node';
+import { PipelineRun } from '../src/tree-view/pipelinerun-node';
+import { MoreNode } from '../src/tree-view/expand-node';
+import { Command } from '../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -117,24 +121,24 @@ suite('tkn', () => {
   suite('item listings', () => {
     let execStub: sinon.SinonStub;
     let getPipelines: sinon.SinonStub;
-    const pipelineNodeItem = new TestItem(tkn.TknImpl.ROOT, 'pipelinenode', tkn.ContextType.PIPELINENODE);
-    const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', tkn.ContextType.PIPELINE);
-    const pipelineItem2 = new TestItem(pipelineNodeItem, 'pipeline2', tkn.ContextType.PIPELINE);
-    const pipelineItem3 = new TestItem(pipelineNodeItem, 'pipeline3', tkn.ContextType.PIPELINE);
-    const pipelinerunItem = new TestItem(pipelineItem1, 'pipelinerun1', tkn.ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
-    const taskrunItem = new TestItem(pipelinerunItem, 'taskrun1', tkn.ContextType.TASKRUN, undefined, '2019-07-25T12:03:01Z', 'True');
-    const taskrunItem2 = new TestItem(pipelinerunItem, 'taskrun2', tkn.ContextType.TASKRUN, undefined, '2019-07-25T12:03:02Z', 'True');
-    const taskNodeItem = new TestItem(tkn.TknImpl.ROOT, 'tasknode', tkn.ContextType.TASKNODE);
-    const taskItem = new TestItem(taskNodeItem, 'task1', tkn.ContextType.TASK);
-    const taskItem2 = new TestItem(taskNodeItem, 'task2', tkn.ContextType.TASK);
-    const clustertaskNodeItem = new TestItem(tkn.TknImpl.ROOT, 'clustertasknode', tkn.ContextType.CLUSTERTASKNODE);
-    const clustertaskItem = new TestItem(clustertaskNodeItem, 'clustertask1', tkn.ContextType.CLUSTERTASK);
-    const triggerTemplatesItem = new TestItem(tkn.TknImpl.ROOT, 'triggertemplates', tkn.ContextType.TRIGGERTEMPLATES);
-    const triggerBindingItem = new TestItem(tkn.TknImpl.ROOT, 'triggerbinding', tkn.ContextType.TRIGGERBINDING);
-    const eventListenerItem = new TestItem(tkn.TknImpl.ROOT, 'eventlistener', tkn.ContextType.EVENTLISTENER);
-    const conditionItem = new TestItem(tkn.TknImpl.ROOT, 'condition', tkn.ContextType.CONDITIONS);
-    const pipelineRunNodeItem = new TestItem(tkn.TknImpl.ROOT, 'PipelineRun', tkn.ContextType.PIPELINERUNNODE);
-    const taskRunNodeItem = new TestItem(tkn.TknImpl.ROOT, 'TaskRun', tkn.ContextType.TASKRUNNODE);
+    const pipelineNodeItem = new TestItem(tkn.TknImpl.ROOT, 'pipelinenode', ContextType.PIPELINENODE);
+    const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', ContextType.PIPELINE);
+    const pipelineItem2 = new TestItem(pipelineNodeItem, 'pipeline2', ContextType.PIPELINE);
+    const pipelineItem3 = new TestItem(pipelineNodeItem, 'pipeline3', ContextType.PIPELINE);
+    const pipelinerunItem = new TestItem(pipelineItem1, 'pipelinerun1', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
+    const taskrunItem = new TestItem(pipelinerunItem, 'taskrun1', ContextType.TASKRUN, undefined, '2019-07-25T12:03:01Z', 'True');
+    const taskrunItem2 = new TestItem(pipelinerunItem, 'taskrun2', ContextType.TASKRUN, undefined, '2019-07-25T12:03:02Z', 'True');
+    const taskNodeItem = new TestItem(tkn.TknImpl.ROOT, 'tasknode', ContextType.TASKNODE);
+    const taskItem = new TestItem(taskNodeItem, 'task1', ContextType.TASK);
+    const taskItem2 = new TestItem(taskNodeItem, 'task2', ContextType.TASK);
+    const clustertaskNodeItem = new TestItem(tkn.TknImpl.ROOT, 'clustertasknode', ContextType.CLUSTERTASKNODE);
+    const clustertaskItem = new TestItem(clustertaskNodeItem, 'clustertask1', ContextType.CLUSTERTASK);
+    const triggerTemplatesItem = new TestItem(tkn.TknImpl.ROOT, 'triggertemplates', ContextType.TRIGGERTEMPLATES);
+    const triggerBindingItem = new TestItem(tkn.TknImpl.ROOT, 'triggerbinding', ContextType.TRIGGERBINDING);
+    const eventListenerItem = new TestItem(tkn.TknImpl.ROOT, 'eventlistener', ContextType.EVENTLISTENER);
+    const conditionItem = new TestItem(tkn.TknImpl.ROOT, 'condition', ContextType.CONDITIONS);
+    const pipelineRunNodeItem = new TestItem(tkn.TknImpl.ROOT, 'PipelineRun', ContextType.PIPELINERUNNODE);
+    const taskRunNodeItem = new TestItem(tkn.TknImpl.ROOT, 'TaskRun', ContextType.TASKRUNNODE);
 
     setup(() => {
       execStub = sandbox.stub(tknCli, 'execute');
@@ -180,7 +184,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.startPipeline(startPipelineObj);
 
-      expect(execStub).calledOnceWith(tkn.Command.startPipeline(startPipelineObj));
+      expect(execStub).calledOnceWith(Command.startPipeline(startPipelineObj));
       expect(result).equals('condition-pipeline-run-svht8');
     });
 
@@ -211,7 +215,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getPipelines(pipelineNodeItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listPipelines());
+      expect(execStub).calledOnceWith(Command.listPipelines());
       expect(result.length).equals(3);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelines[i]);
@@ -278,7 +282,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getPipelineRunsList(pipelineRunNodeItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listPipelineRun());
+      expect(execStub).calledOnceWith(Command.listPipelineRun());
       expect(result.length).equals(1);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelineRun[i]);
@@ -321,7 +325,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getConditions(conditionItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listConditions());
+      expect(execStub).calledOnceWith(Command.listConditions());
       expect(result.length).equals(3);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelines[i]);
@@ -365,7 +369,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getTriggerTemplates(triggerTemplatesItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listTriggerTemplates());
+      expect(execStub).calledOnceWith(Command.listTriggerTemplates());
       expect(result.length).equals(3);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelines[i]);
@@ -396,7 +400,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getTriggerBinding(triggerBindingItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listTriggerBinding());
+      expect(execStub).calledOnceWith(Command.listTriggerBinding());
       expect(result.length).equals(1);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelines[i]);
@@ -427,7 +431,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getEventListener(eventListenerItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listEventListener());
+      expect(execStub).calledOnceWith(Command.listEventListener());
       expect(result.length).equals(1);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelines[i]);
@@ -464,7 +468,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getTasks(taskNodeItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listTasks());
+      expect(execStub).calledOnceWith(Command.listTasks());
       expect(result.length).equals(2);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknTasks[i]);
@@ -501,7 +505,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getClusterTasks(clustertaskNodeItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listClusterTasks());
+      expect(execStub).calledOnceWith(Command.listClusterTasks());
       expect(result.length).equals(2);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknTasks[i]);
@@ -649,7 +653,7 @@ suite('tkn', () => {
     test('getPipelineRuns returns "more" item', async () => {
       const tknPipelinesRuns = ['pipelinerun2', 'more'];
       sandbox.replace(tknCli as any, 'defaultPageSize', 1);
-      const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', tkn.ContextType.PIPELINE);
+      const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', ContextType.PIPELINE);
 
 
 
@@ -716,7 +720,7 @@ suite('tkn', () => {
     test('getPipelineRuns set visible item default', async () => {
       const tknPipelinesRuns = ['pipelinerun2', 'more'];
       sandbox.replace(tknCli as any, 'defaultPageSize', 42);
-      const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', tkn.ContextType.PIPELINE);
+      const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', ContextType.PIPELINE);
 
 
 
@@ -835,7 +839,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getTaskRunList(taskRunNodeItem);
 
-      expect(execStub).calledOnceWith(tkn.Command.listTaskRun());
+      expect(execStub).calledOnceWith(Command.listTaskRun());
       expect(result.length).equals(2);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknTaskRun[i]);
@@ -967,7 +971,7 @@ suite('tkn', () => {
         })
       });
       const result = await tknCli.getTaskRunsForTasks(taskItem);
-      expect(execStub).calledWith(tkn.Command.listTaskRunsForTasks(taskItem.getName()));
+      expect(execStub).calledWith(Command.listTaskRunsForTasks(taskItem.getName()));
       expect(result.length).equals(2);
       for (let i = 0; i < result.length; i++) {
         expect(result[i].getName()).equals(tknTaskRuns[i]);
@@ -1100,7 +1104,7 @@ suite('tkn', () => {
         })
       });
       const result = await tknCli.getTaskRunsForTasks(clustertaskItem);
-      expect(execStub).calledWith(tkn.Command.listTaskRunsForTasks(clustertaskItem.getName()));
+      expect(execStub).calledWith(Command.listTaskRunsForTasks(clustertaskItem.getName()));
       expect(result.length).equals(2);
       for (let i = 0; i < result.length; i++) {
         expect(result[i].getName()).equals(tknTaskRuns[i]);
@@ -1129,7 +1133,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getRawClusterTasks();
 
-      expect(execStub).calledOnceWith(tkn.Command.listClusterTasks());
+      expect(execStub).calledOnceWith(Command.listClusterTasks());
       expect(result.length).equals(2);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].metadata.name).equals(tknTasks[i]);
@@ -1157,7 +1161,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getRawTasks();
 
-      expect(execStub).calledOnceWith(tkn.Command.listTasks());
+      expect(execStub).calledOnceWith(Command.listTasks());
       expect(result.length).equals(2);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].metadata.name).equals(tknTasks[i]);
@@ -1187,39 +1191,39 @@ suite('tkn', () => {
   });
 
   suite('more node', () => {
-    const pipelineNodeItem = new TestItem(tkn.TknImpl.ROOT, 'pipelinenode', tkn.ContextType.PIPELINENODE);
-    const pipelineItem = new TestItem(pipelineNodeItem, 'pipeline1', tkn.ContextType.PIPELINE);
+    const pipelineNodeItem = new TestItem(tkn.TknImpl.ROOT, 'pipelinenode', ContextType.PIPELINENODE);
+    const pipelineItem = new TestItem(pipelineNodeItem, 'pipeline1', ContextType.PIPELINE);
 
     test('more node has command', () => {
-      const more = new tkn.MoreNode(4, 10, pipelineItem);
+      const more = new MoreNode(4, 10, pipelineItem);
       const moreCommand = more.command;
       assert.equal(moreCommand.command, '_tekton.explorer.more');
     });
 
     test('more node has command arguments', () => {
-      const more = new tkn.MoreNode(4, 10, pipelineItem);
+      const more = new MoreNode(4, 10, pipelineItem);
       const moreCommand = more.command;
       assert.deepEqual(moreCommand.arguments, [4, pipelineItem]);
     });
 
     test('more node has name', () => {
-      const more = new tkn.MoreNode(4, 10, pipelineItem);
+      const more = new MoreNode(4, 10, pipelineItem);
       assert.equal(more.getName(), 'more');
     });
 
     test('more node has description', () => {
-      const more = new tkn.MoreNode(4, 10, pipelineItem);
+      const more = new MoreNode(4, 10, pipelineItem);
       assert.equal(more.description, '4 from 10');
     });
   });
 
   suite('PipelineRun node', () => {
-    const pipelineItem = new TestItem(null, 'pipeline', tkn.ContextType.PIPELINE);
+    const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
 
     test('PipelineRun should use pipelinerun JSON to create TaskRun nodes', () => {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const json = require(path.join('..', '..', 'test', 'pipelinerun.json')) as PipelineRunData;
-      const pipelineRun = new tkn.PipelineRun(pipelineItem, json.metadata.name, undefined, json, TreeItemCollapsibleState.Expanded);
+      const pipelineRun = new PipelineRun(pipelineItem, json.metadata.name, undefined, json, TreeItemCollapsibleState.Expanded);
 
       expect(pipelineRun.label).equal('condtional-pr');
       const children = pipelineRun.getChildren();
@@ -1231,14 +1235,14 @@ suite('tkn', () => {
     test('TaskRun should contains condition run node', () => {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const json = require(path.join('..', '..', 'test', 'pipelinerun.json')) as PipelineRunData;
-      const pipelineRun = new tkn.PipelineRun(pipelineItem, json.metadata.name, undefined, json, TreeItemCollapsibleState.Expanded);
+      const pipelineRun = new PipelineRun(pipelineItem, json.metadata.name, undefined, json, TreeItemCollapsibleState.Expanded);
 
       expect(pipelineRun.label).equal('condtional-pr');
-      const children = pipelineRun.getChildren() as tkn.TektonNodeImpl[];
+      const children = pipelineRun.getChildren() as TektonNodeImpl[];
       expect(children).to.have.lengthOf(2);
       expect(children[0].label).eq('then-check');
 
-      const conditionRun = children[0].getChildren() as tkn.TektonNodeImpl[];
+      const conditionRun = children[0].getChildren() as TektonNodeImpl[];
       expect(conditionRun).not.undefined;
       expect(conditionRun).to.have.lengthOf(1);
       expect(conditionRun[0].name).eq('condtional-pr-then-check-mr5dp-file-exists-bhxgl');

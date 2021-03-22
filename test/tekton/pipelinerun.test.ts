@@ -9,11 +9,13 @@ import * as vscode from 'vscode';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
-import { TknImpl, Command, ContextType } from '../../src/tkn';
+import { TknImpl } from '../../src/tkn';
 import { PipelineRun } from '../../src/tekton/pipelinerun';
 import { TestItem } from './testTektonitem';
 import { errorMessage, TektonItem } from '../../src/tekton/tektonitem';
 import * as logInEditor from '../../src/util/log-in-editor';
+import { ContextType } from '../../src/context-type';
+import { Command } from '../../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);

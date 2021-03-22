@@ -4,7 +4,6 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command } from '../tkn';
 import { window, ViewColumn, workspace } from 'vscode';
 import { CliCommand } from '../cli';
 import { showPipelineRunPreview } from '../pipeline/pipeline-preview';
@@ -12,6 +11,8 @@ import { pipelineRunData } from './restartpipelinerundata';
 import { PipelineWizard } from '../pipeline/wizard';
 import { startPipeline } from './startpipeline';
 import { showLogInEditor } from '../util/log-in-editor';
+import { TektonNode } from '../tree-view/tekton-node';
+import { Command } from '../cli-command';
 
 export class PipelineRun extends TektonItem {
 

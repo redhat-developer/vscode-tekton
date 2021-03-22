@@ -14,11 +14,13 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { TestItem } from './testTektonitem';
 import { TaskRun } from '../../src/tekton/taskrun';
-import { TknImpl, Command, ContextType } from '../../src/tkn';
+import { TknImpl } from '../../src/tkn';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { cli, CliExitData } from '../../src/cli';
 import * as logInEditor from '../../src/util/log-in-editor';
 import { Platform } from '../../src/util/platform';
+import { ContextType } from '../../src/context-type';
+import { Command } from '../../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);

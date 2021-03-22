@@ -9,10 +9,11 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import sinon = require('sinon');
 import { TektonItem } from '../../src/tekton/tektonitem';
-import { TknImpl, ContextType } from '../../src/tkn';
+import { TknImpl } from '../../src/tkn';
 import { TestItem } from './testTektonitem';
 import { fail } from 'assert';
 import { workspace, EndOfLine, TextDocument, window } from 'vscode';
+import { ContextType } from '../../src/context-type';
 
 const expect = chai.expect;
 chai.use(sinonChai);

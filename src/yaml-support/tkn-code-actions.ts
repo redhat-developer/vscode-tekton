@@ -6,13 +6,13 @@ import * as vscode from 'vscode';
 import { TknElementType } from '../model/element-type';
 import { TknDocument } from '../model/document';
 import { PipelineTask } from '../model/pipeline/pipeline-model';
-import { ContextType } from '../tkn';
 import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
 import { TektonYamlType } from './tkn-yaml';
 import { VirtualDocument, yamlLocator } from './yaml-locator';
 import * as jsYaml from 'js-yaml';
 import { Task } from '../tekton';
 import { telemetryLogError } from '../telemetry';
+import { ContextType } from '../context-type';
 
 interface ProviderMetadata {
   getProviderMetadata(): vscode.CodeActionProviderMetadata;

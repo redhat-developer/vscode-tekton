@@ -274,6 +274,32 @@ export interface TaskRuns {
   [key: string]: TaskRun;
 }
 
+export interface PipelineTaskRunData {
+  metadata?: {
+    creationTimestamp: string;
+    name: string;
+    uid: string;
+    labels: {
+      'tekton.dev/pipelineTask': string;
+      'tekton.dev/pipelineRun': string;
+      'tekton.dev/task': string;
+      'tekton.dev/conditionCheck'?: string;
+    };
+  };
+  status?: {
+    completionTime: string;
+    conditions: [{
+      status: string;
+    }];
+  };
+  spec: {
+    taskRef: {
+      name: string;
+      kind: string;
+    };
+  };
+}
+
 export interface ConditionCheckStatus {
   startTime?: string;
   completionTime?: string;

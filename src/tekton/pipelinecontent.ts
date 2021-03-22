@@ -4,11 +4,11 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { multiStepInput } from '../util/MultiStepInput';
-import { Command } from '../tkn';
 import { TektonItem } from './tektonitem';
 import { TknPipelineResource } from '../tekton';
 import { QuickPickItem } from 'vscode';
 import { Secret, ConfigMap, PVC } from './webviewstartpipeline';
+import { Command } from '../cli-command';
 
 export interface Ref {
   name: string;

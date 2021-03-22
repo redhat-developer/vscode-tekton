@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { newK8sCommand } from './tkn';
 import { CliCommand, cli} from './cli';
+import { newK8sCommand } from './cli-command';
 import { PipelineRunData, TknTaskRun } from './tekton';
 
 export const KubectlCommands = {

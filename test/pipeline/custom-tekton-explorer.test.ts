@@ -10,7 +10,8 @@ import { CustomTektonExplorer } from '../../src/pipeline/customTektonExplorer';
 import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { TestItem } from '../tekton/testTektonitem';
 import * as tkn from '../../src/tkn';
-import { TektonNode } from '../../src/tkn';
+import { ContextType } from '../../src/context-type';
+import { TektonNode } from '../../src/tree-view/tekton-node';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -19,10 +20,10 @@ suite('Custom explorer test', () => {
   const sandbox = sinon.createSandbox();
   let createTreeViewStub: sinon.SinonStub;
   let pipelineExpStub: sinon.SinonStub;
-  const pipelineNodeItem = new TestItem(tkn.TknImpl.ROOT, 'pipelinenode', tkn.ContextType.PIPELINENODE);
-  const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', tkn.ContextType.PIPELINE);
-  const pipelinerunItem = new TestItem(pipelineItem1, 'pipelinerun1', tkn.ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
-  const taskrunItem = new TestItem(pipelinerunItem, 'taskrun1', tkn.ContextType.TASKRUN, undefined, '2019-07-25T12:03:01Z', 'True');
+  const pipelineNodeItem = new TestItem(tkn.TknImpl.ROOT, 'pipelinenode', ContextType.PIPELINENODE);
+  const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', ContextType.PIPELINE);
+  const pipelinerunItem = new TestItem(pipelineItem1, 'pipelinerun1', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
+  const taskrunItem = new TestItem(pipelinerunItem, 'taskrun1', ContextType.TASKRUN, undefined, '2019-07-25T12:03:01Z', 'True');
 
   setup(() => {
     createTreeViewStub = sandbox.stub(vscode.window, 'createTreeView');

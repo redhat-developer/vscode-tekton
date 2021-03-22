@@ -6,9 +6,10 @@
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import { PipelineExplorer } from '../src/pipeline/pipelineExplorer';
-import { TknImpl, ContextType } from '../src/tkn';
+import { TknImpl } from '../src/tkn';
 import { TestItem } from './tekton/testTektonitem';
 import sinon = require('sinon');
+import { ContextType } from '../src/context-type';
 
 const expect = chai.expect;
 chai.use(sinonChai);

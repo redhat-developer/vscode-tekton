@@ -5,8 +5,10 @@
 
 
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command } from '../tkn';
 import { CliCommand } from '../cli';
+import { TektonNode } from '../tree-view/tekton-node';
+import { Command } from '../cli-command';
+
 
 export class TriggerBinding extends TektonItem {
 

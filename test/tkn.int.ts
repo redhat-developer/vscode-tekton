@@ -9,10 +9,11 @@ import * as assert from 'assert';
 import * as sinon from 'sinon';
 import { TestItem } from './tekton/testTektonitem';
 import { Pipeline } from '../src/tekton/pipeline';
+import { ContextType } from '../src/context-type';
 
 suite('tkn integration', () => {
   const tk: tkn.Tkn = tkn.tkn;
-  const pipelineItem = new TestItem(null, 'pipeline', tkn.ContextType.PIPELINE);
+  const pipelineItem = new TestItem(null, 'pipeline', ContextType.PIPELINE);
   const sb = sinon.createSandbox();
 
   setup(() => {

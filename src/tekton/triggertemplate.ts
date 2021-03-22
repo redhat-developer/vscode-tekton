@@ -5,10 +5,13 @@
 
 import * as vscode from 'vscode';
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command, tkn } from '../tkn';
+import { tkn } from '../tkn';
 import { CliCommand } from '../cli';
 import { getExposeURl } from '../util/exposeurl';
 import { telemetryLogCommand } from '../telemetry';
+import { TektonNode } from '../tree-view/tekton-node';
+import { Command } from '../cli-command';
+
 
 export class TriggerTemplate extends TektonItem {
 

@@ -3,10 +3,11 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Command, tkn } from '../tkn';
+import { tkn } from '../tkn';
 import { HubTaskUninstall } from './hub-common';
 import * as vscode from 'vscode';
 import { getStderrString } from '../util/stderrstring';
+import { Command } from '../cli-command';
 
 const uninstallTaskEmitter = new vscode.EventEmitter<HubTaskUninstall>();
 export const uninstallTaskEvent = uninstallTaskEmitter.event;

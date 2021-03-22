@@ -4,7 +4,6 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command } from '../tkn';
 import { Progress } from '../util/progress';
 import { window, ViewColumn } from 'vscode';
 import * as cliInstance from '../cli';
@@ -16,6 +15,8 @@ import { pipelineData } from './webviewstartpipeline';
 import { startPipeline } from './startpipeline';
 import { triggerDetection } from '../util/detection';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
+import { TektonNode } from '../tree-view/tekton-node';
+import { Command } from '../cli-command';
 
 export class Pipeline extends TektonItem {
 

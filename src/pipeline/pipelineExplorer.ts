@@ -4,8 +4,10 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TreeDataProvider, TreeView, Event, EventEmitter, TreeItem, ProviderResult, Disposable, window, extensions, commands, Uri, version } from 'vscode';
+import { TektonNode } from '../tree-view/tekton-node';
 import { telemetryLogCommand } from '../telemetry';
-import { TektonNode, MoreNode, tkn } from '../tkn';
+import { tkn } from '../tkn';
+import { MoreNode } from '../tree-view/expand-node';
 import { Platform } from '../util/platform';
 import { watchResources } from '../util/watchResources';
 

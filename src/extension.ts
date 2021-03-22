@@ -15,7 +15,6 @@ import fsx = require('fs-extra');
 import * as k8s from 'vscode-kubernetes-tools-api';
 import { ClusterTask } from './tekton/clustertask';
 import { PipelineResource } from './tekton/pipelineresource';
-import { TektonNode } from './tkn';
 import { registerYamlSchemaSupport } from './yaml-support/tkn-yaml-schema';
 import { setCommandContext, CommandContext, enterZenMode, exitZenMode, refreshCustomTree, removeItemFromCustomTree } from './commands';
 import { customTektonExplorer } from './pipeline/customTektonExplorer';
@@ -37,6 +36,7 @@ import { openTaskRunTemplate } from './tekton/taskruntemplate';
 import sendTelemetry, { telemetryLogError, TelemetryProperties } from './telemetry';
 import { cli, createCliCommand } from './cli';
 import { getVersion, tektonVersionType } from './util/tknversion';
+import { TektonNode } from './tree-view/tekton-node';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;

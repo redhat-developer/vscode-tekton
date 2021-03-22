@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Command, tkn as tkn } from './tkn';
+import { tkn as tkn } from './tkn';
 import * as cliInstance from './cli';
 import { TektonItem } from './tekton/tektonitem';
 import { TknPipelineTrigger } from './tekton';
@@ -13,6 +13,7 @@ import { PipelineWizard } from './pipeline/wizard';
 import { ViewColumn, window } from 'vscode';
 import { startTask } from './tekton/starttask';
 import { telemetryLogError } from './telemetry';
+import { Command } from './cli-command';
 
 interface K8sClusterExplorerItem {
   nodeType: 'resource';

@@ -5,7 +5,8 @@
 
 import { TektonItem } from './tektonitem';
 import { TknPipelineTrigger, TknResource, TknParams, TknPipelineResource, TknWorkspaces } from '../tekton';
-import { Command } from '../tkn';
+import { Command } from '../cli-command';
+
 
 interface KubectlMetadata {
   name: string;

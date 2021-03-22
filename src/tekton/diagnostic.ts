@@ -5,8 +5,11 @@
 
 import { window } from 'vscode';
 import { CliExitData } from '../cli';
+import { ContextType } from '../context-type';
+import { TektonNode } from '../tree-view/tekton-node';
 import { telemetryLogError } from '../telemetry';
-import { Command, ContextType, TektonNode, tkn } from '../tkn';
+import { tkn } from '../tkn';
+import { Command } from '../cli-command';
 
 
 export async function showDiagnosticData(diagnostic: TektonNode, commandId?: string): Promise<void> {

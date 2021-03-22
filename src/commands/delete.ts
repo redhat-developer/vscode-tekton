@@ -7,7 +7,7 @@ import { customTektonExplorer } from '../pipeline/customTektonExplorer'
 import { pipelineExplorer } from '../pipeline/pipelineExplorer'
 import { Pipeline } from '../tekton/pipeline';
 import { CliCommand } from '../cli';
-import { TektonNode, tkn, ContextType } from '../tkn';
+import { tkn } from '../tkn';
 import { Condition } from '../tekton/condition';
 import { PipelineResource } from '../tekton/pipelineresource';
 import { PipelineRun } from '../tekton/pipelinerun';
@@ -21,6 +21,8 @@ import { window } from 'vscode';
 import { Progress } from '../util/progress';
 import { ClusterTriggerBinding } from '../tekton/clustertriggerbunding';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
+import { ContextType } from '../context-type';
+import { TektonNode } from '../tree-view/tekton-node';
 
 interface Refreshable {
   refresh(): void;

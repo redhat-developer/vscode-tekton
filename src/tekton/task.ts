@@ -4,10 +4,12 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command } from '../tkn';
 import { window } from 'vscode';
 import * as cliInstance from '../cli';
 import { startTask } from './starttask';
+import { TektonNode } from '../tree-view/tekton-node';
+import { Command } from '../cli-command';
+
 
 export class Task extends TektonItem {
 

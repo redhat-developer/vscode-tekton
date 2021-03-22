@@ -12,9 +12,10 @@ import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
 import { TestItem } from './testTektonitem';
-import { TknImpl, ContextType } from '../../src/tkn';
+import { TknImpl } from '../../src/tkn';
 import { addTrigger } from '../../src/tekton/trigger';
 import { multiStepInput } from '../../src/util/MultiStepInput';
+import { ContextType } from '../../src/context-type';
 
 
 const expect = chai.expect;

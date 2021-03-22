@@ -8,7 +8,7 @@
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
-import { TknImpl, Command, ContextType } from '../../src/tkn';
+import { TknImpl } from '../../src/tkn';
 import { Pipeline } from '../../src/tekton/pipeline';
 import { PipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { TektonItem } from '../../src/tekton/tektonitem';
@@ -16,6 +16,8 @@ import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
 import { cliCommandToString } from '../../src/cli';
 import { Trigger, StartObject, NameType, Resources, Params, PipelineContent } from '../../src/tekton/pipelinecontent';
+import { ContextType } from '../../src/context-type';
+import { Command } from '../../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);

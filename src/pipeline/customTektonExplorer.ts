@@ -4,7 +4,8 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TreeDataProvider, Disposable, TreeView, window, Event, ProviderResult, TreeItem, EventEmitter, TreeItemCollapsibleState } from 'vscode';
-import { TektonNode, MoreNode } from '../tkn';
+import { TektonNode } from '../tree-view/tekton-node';
+import { MoreNode } from '../tree-view/expand-node';
 import { pipelineExplorer } from './pipelineExplorer';
 
 export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Disposable {

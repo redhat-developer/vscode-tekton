@@ -12,7 +12,6 @@ import * as vscode from 'vscode';
 import * as fs from 'fs-extra';
 import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind, EventListenerKind, PipelineRunWorkspace } from '../tekton';
 import { TektonItem } from './tektonitem';
-import { Command } from '../tkn';
 import { AddTriggerFormValues, Pipeline, TriggerBindingKind, Resources, Param, Workspaces } from './triggertype';
 import { K8sKind, PipelineRunKind, RouteKind } from './k8s-type';
 import * as yaml from 'js-yaml';
@@ -26,6 +25,7 @@ import { getExposeURl } from '../util/exposeurl';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 import { getStderrString } from '../util/stderrstring';
 import { VCT } from './pipelinecontent';
+import { Command } from '../cli-command';
 
 export const TriggerTemplateModel = {
   apiGroup: 'triggers.tekton.dev',

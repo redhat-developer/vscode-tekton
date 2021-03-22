@@ -4,8 +4,9 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TektonItem } from './tektonitem';
-import { TektonNode, Command } from '../tkn';
 import { CliCommand } from '../cli';
+import { TektonNode } from '../tree-view/tekton-node';
+import { Command } from '../cli-command';
 
 export class ClusterTriggerBinding extends TektonItem {
   static getDeleteCommand(item: TektonNode): CliCommand {

@@ -12,12 +12,12 @@ import * as fs from 'fs-extra';
 import * as vscode from 'vscode';
 import { cli } from '../../src/cli';
 import * as sinonChai from 'sinon-chai';
-import { Command } from '../../src/tkn';
 import { updateTektonResource } from '../../src/tekton/deploy';
 import { contextGlobalState } from '../../src/extension';
 import { tektonYaml } from '../../src/yaml-support/tkn-yaml';
 import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { Platform } from '../../src/util/platform';
+import { Command } from '../../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);
