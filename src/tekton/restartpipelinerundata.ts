@@ -6,8 +6,8 @@
 import { TknResourceItem, TknPipelineRun } from './webviewstartpipeline';
 import { TektonItem } from './tektonitem';
 import { TknSpec } from '../tekton';
-import { Command } from '../util/command';
 import { TektonNode } from '../tree-view/tekton-node';
+import { Command } from '../cli-command';
 
 interface PipelineData {
   params: {};

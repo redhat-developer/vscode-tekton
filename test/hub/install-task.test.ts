@@ -14,7 +14,7 @@ import * as os from 'os';
 import * as fs from 'fs-extra'; 
 import * as path from 'path';
 import { ResourceVersionData } from '../../src/tekton-hub-client';
-import { Command } from '../../src/util/command';
+import { Command } from '../../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);

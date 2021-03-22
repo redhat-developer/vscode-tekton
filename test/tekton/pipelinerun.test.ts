@@ -14,8 +14,8 @@ import { PipelineRun } from '../../src/tekton/pipelinerun';
 import { TestItem } from './testTektonitem';
 import { errorMessage, TektonItem } from '../../src/tekton/tektonitem';
 import * as logInEditor from '../../src/util/log-in-editor';
-import { Command } from '../../src/util/command';
 import { ContextType } from '../../src/context-type';
+import { Command } from '../../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);

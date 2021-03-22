@@ -13,7 +13,7 @@ import * as fs from 'fs-extra';
 import { DownloadUtil } from '../util/download';
 import * as jsYaml from 'js-yaml';
 import { getStderrString } from '../util/stderrstring';
-import { Command } from '../util/command';
+import { Command } from '../cli-command';
 
 const installEventEmitter = new vscode.EventEmitter<HubTaskInstallation>()
 export const installEvent = installEventEmitter.event;

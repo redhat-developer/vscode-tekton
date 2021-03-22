@@ -13,8 +13,8 @@ import { ClusterTask } from '../../src/tekton/clustertask';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
-import { Command } from '../../src/util/command';
 import { ContextType } from '../../src/context-type';
+import { Command } from '../../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);

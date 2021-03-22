@@ -4,9 +4,8 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as _ from 'lodash';
+import { Command } from '../cli-command';
 import { tkn } from '../tkn';
-import { Command } from './command';
-
 
 
 export async function getExposeURl(name: string): Promise<string> {

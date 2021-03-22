@@ -13,7 +13,7 @@ import { PipelineWizard } from './pipeline/wizard';
 import { ViewColumn, window } from 'vscode';
 import { startTask } from './tekton/starttask';
 import { telemetryLogError } from './telemetry';
-import { Command } from './util/command';
+import { Command } from './cli-command';
 
 interface K8sClusterExplorerItem {
   nodeType: 'resource';

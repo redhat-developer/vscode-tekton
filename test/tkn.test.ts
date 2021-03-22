@@ -19,11 +19,11 @@ import { ExecException } from 'child_process';
 import * as path from 'path';
 import { StartObject, Resources, Params } from '../src/tekton/pipelinecontent';
 import { PipelineRunData } from '../src/tekton';
-import { Command } from '../src/util/command';
 import { ContextType } from '../src/context-type';
 import { TektonNode, TektonNodeImpl } from '../src/tree-view/tekton-node';
 import { PipelineRun } from '../src/tree-view/pipelinerun-node';
 import { MoreNode } from '../src/tree-view/expand-node';
+import { Command } from '../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);

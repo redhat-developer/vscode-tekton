@@ -15,8 +15,8 @@ import { pipelineData } from './webviewstartpipeline';
 import { startPipeline } from './startpipeline';
 import { triggerDetection } from '../util/detection';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
-import { Command } from '../util/command';
 import { TektonNode } from '../tree-view/tekton-node';
+import { Command } from '../cli-command';
 
 export class Pipeline extends TektonItem {
 

@@ -17,12 +17,12 @@ import { RunState } from './yaml-support/tkn-yaml';
 import { version } from './util/tknversion';
 import { pipelineTriggerStatus, watchResources } from './util/watchResources';
 import { getStderrString } from './util/stderrstring';
-import { Command } from './util/command';
 import { ContextType } from './context-type';
 import { TektonNode, TektonNodeImpl } from './tree-view/tekton-node';
 import { TaskRun } from './tree-view/task-run-node';
 import { PipelineRun } from './tree-view/pipelinerun-node';
 import { MoreNode } from './tree-view/expand-node';
+import { Command } from './cli-command';
 
 export const humanizer = humanize.humanizer(createConfig());
 

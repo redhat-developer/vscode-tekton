@@ -12,8 +12,8 @@ import * as sinon from 'sinon';
 import { TknImpl } from '../../src/tkn';
 import { showDiagnosticData } from '../../src/tekton/diagnostic';
 import { TestItem } from './testTektonitem';
-import { Command } from '../../src/util/command';
 import { ContextType } from '../../src/context-type';
+import { Command } from '../../src/cli-command';
 
 
 const expect = chai.expect;

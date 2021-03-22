@@ -11,8 +11,8 @@ import { pipelineRunData } from './restartpipelinerundata';
 import { PipelineWizard } from '../pipeline/wizard';
 import { startPipeline } from './startpipeline';
 import { showLogInEditor } from '../util/log-in-editor';
-import { Command } from '../util/command';
 import { TektonNode } from '../tree-view/tekton-node';
+import { Command } from '../cli-command';
 
 export class PipelineRun extends TektonItem {
 

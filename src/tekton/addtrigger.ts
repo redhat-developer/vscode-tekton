@@ -25,7 +25,7 @@ import { getExposeURl } from '../util/exposeurl';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 import { getStderrString } from '../util/stderrstring';
 import { VCT } from './pipelinecontent';
-import { Command } from '../util/command';
+import { Command } from '../cli-command';
 
 export const TriggerTemplateModel = {
   apiGroup: 'triggers.tekton.dev',

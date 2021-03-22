@@ -17,7 +17,7 @@ import { contextGlobalState } from '../../src/extension';
 import { tektonYaml } from '../../src/yaml-support/tkn-yaml';
 import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { Platform } from '../../src/util/platform';
-import { Command } from '../../src/util/command';
+import { Command } from '../../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);

@@ -16,8 +16,8 @@ import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
 import { cliCommandToString } from '../../src/cli';
 import { Trigger, StartObject, NameType, Resources, Params, PipelineContent } from '../../src/tekton/pipelinecontent';
-import { Command } from '../../src/util/command';
 import { ContextType } from '../../src/context-type';
+import { Command } from '../../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);

@@ -19,8 +19,8 @@ import { TektonItem } from '../../src/tekton/tektonitem';
 import { cli, CliExitData } from '../../src/cli';
 import * as logInEditor from '../../src/util/log-in-editor';
 import { Platform } from '../../src/util/platform';
-import { Command } from '../../src/util/command';
 import { ContextType } from '../../src/context-type';
+import { Command } from '../../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);

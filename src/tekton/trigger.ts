@@ -12,8 +12,8 @@ import { TektonItem } from './tektonitem';
 import { multiStepInput } from '../util/MultiStepInput';
 import { addTriggerToPipeline } from './addtrigger';
 import { telemetryLogError } from '../telemetry';
-import { Command } from '../util/command';
 import { TektonNode } from '../tree-view/tekton-node';
+import { Command } from '../cli-command';
 
 
 export async function addTrigger(pipeline: TektonNode, commandId?: string): Promise<string> {

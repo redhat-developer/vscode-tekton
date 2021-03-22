@@ -9,8 +9,9 @@ import { tkn } from '../tkn';
 import { CliCommand } from '../cli';
 import { getExposeURl } from '../util/exposeurl';
 import { telemetryLogCommand } from '../telemetry';
-import { Command } from '../util/command';
 import { TektonNode } from '../tree-view/tekton-node';
+import { Command } from '../cli-command';
+
 
 export class TriggerTemplate extends TektonItem {
 

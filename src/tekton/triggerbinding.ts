@@ -6,8 +6,9 @@
 
 import { TektonItem } from './tektonitem';
 import { CliCommand } from '../cli';
-import { Command } from '../util/command';
 import { TektonNode } from '../tree-view/tekton-node';
+import { Command } from '../cli-command';
+
 
 export class TriggerBinding extends TektonItem {
 

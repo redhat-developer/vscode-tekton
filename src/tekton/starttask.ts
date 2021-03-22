@@ -10,7 +10,8 @@ import { TknPipelineTrigger } from '../tekton';
 import { Trigger, PipelineContent } from './pipelinecontent';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 import { window } from 'vscode';
-import { Command } from '../util/command';
+import { Command } from '../cli-command';
+
 
 export async function startTask(taskName: string, commandId?: string): Promise<string> {
   if (!taskName) return null;

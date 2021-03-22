@@ -5,9 +5,9 @@
 
 import { window } from 'vscode';
 import { cli } from '../cli';
+import { Command } from '../cli-command';
 import { PipelineRunWorkspace, TknPipelineTrigger } from '../tekton';
 import { telemetryLogError } from '../telemetry';
-import { Command } from '../util/command';
 import { k8sCreate, PipelineRunModel } from './addtrigger';
 import { PipelineRunKind } from './k8s-type';
 import { Params, Resources, StartObject, VCT, Workspaces } from './pipelinecontent';

@@ -15,9 +15,10 @@ import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 import { getStderrString } from '../util/stderrstring';
-import { Command } from '../util/command';
 import { ContextType } from '../context-type';
 import { TektonNode } from '../tree-view/tekton-node';
+import { Command } from '../cli-command';
+
 
 export class TaskRun extends TektonItem {
 

@@ -9,7 +9,7 @@ import { ContextType } from '../context-type';
 import { TektonNode } from '../tree-view/tekton-node';
 import { telemetryLogError } from '../telemetry';
 import { tkn } from '../tkn';
-import { Command } from '../util/command';
+import { Command } from '../cli-command';
 
 
 export async function showDiagnosticData(diagnostic: TektonNode, commandId?: string): Promise<void> {

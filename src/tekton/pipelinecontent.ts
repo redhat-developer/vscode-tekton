@@ -8,7 +8,7 @@ import { TektonItem } from './tektonitem';
 import { TknPipelineResource } from '../tekton';
 import { QuickPickItem } from 'vscode';
 import { Secret, ConfigMap, PVC } from './webviewstartpipeline';
-import { Command } from '../util/command';
+import { Command } from '../cli-command';
 
 export interface Ref {
   name: string;

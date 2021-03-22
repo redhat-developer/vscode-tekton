@@ -7,7 +7,8 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as tkn from '../src/tkn';
 import { k8sCommands } from '../src/kubernetes';
-import { Command } from '../src/util/command';
+import { Command } from '../src/cli-command';
+
 
 const expect = chai.expect;
 chai.use(sinonChai);

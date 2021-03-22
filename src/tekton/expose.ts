@@ -7,7 +7,7 @@ import { TektonItem } from './tektonitem';
 import { EventListenerKind } from '../tekton';
 import { RouteKind, K8sKind } from './k8s-type';
 import { EventListenerModel, apiVersionForModel, k8sCreate } from './addtrigger';
-import { Command } from '../util/command';
+import { Command } from '../cli-command';
 
 export const RouteModel: K8sKind = {
   label: 'Route',

@@ -14,7 +14,7 @@ import { tektonYaml } from '../yaml-support/tkn-yaml';
 import { pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { Platform } from '../util/platform';
 import { getStderrString } from '../util/stderrstring';
-import { Command } from '../util/command';
+import { Command } from '../cli-command';
 
 function checkDeploy(): boolean {
   return vscode.workspace
