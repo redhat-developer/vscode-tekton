@@ -68,8 +68,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.explorerView.delete', (context) => deleteFromExplorer(context, 'tekton.explorerView.delete')),
     vscode.commands.registerCommand('tekton.customView.delete', (context) => deleteFromCustom(context), 'tekton.customView.delete'),
     vscode.commands.registerCommand('tekton.pipelineresource.list', (context) => execute(PipelineResource.list, context)),
-    vscode.commands.registerCommand('tekton.pipelineresource.create', (context) => execute(PipelineResource.create, context, 'tekton.pipelineresource.create')),
-    vscode.commands.registerCommand('tekton.pipelineresource.create.palette', (context) => execute(PipelineResource.create, context, 'tekton.pipelineresource.create.palette')),
     vscode.commands.registerCommand('tekton.pipelineresource.describe', (context) => execute(PipelineResource.describe, context)),
     vscode.commands.registerCommand('tekton.pipelineresource.describe.palette', (context) => execute(PipelineResource.describe, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.list', (context) => execute(PipelineRun.list, context)),

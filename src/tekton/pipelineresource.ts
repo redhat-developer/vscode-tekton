@@ -5,53 +5,10 @@
 
 import { TektonItem } from './tektonitem';
 import { TektonNode, Command } from '../tkn';
-import { Progress } from '../util/progress';
 import { window } from 'vscode';
 import { CliCommand } from '../cli';
-import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 
 export class PipelineResource extends TektonItem {
-
-  static async create(context: TektonNode, commandId?: string): Promise<string> {
-    const document = window.activeTextEditor ? window.activeTextEditor.document : undefined;
-    const pleaseSave = 'Please save your changes before executing \'Tekton: Create\' command.';
-    let message: string;
-
-    if (!document || !document.fileName.endsWith('.yaml')) {
-      message = '\'Tekton: Create\' command requires .yaml file opened in editor.';
-    }
-
-    if (!message && document.isUntitled) {
-      message = pleaseSave;
-    }
-
-    if (!message && document.isDirty) {
-      const save = 'Save';
-      const action = await window.showInformationMessage('Editor has unsaved changes.', save);
-      if (action !== save) {
-        message = pleaseSave;
-      } else {
-        await document.save();
-      }
-    }
-
-    if (message) {
-      window.showWarningMessage(message);
-    } else {
-      return Progress.execFunctionWithProgress('Creating PipelineResource', () =>
-        PipelineResource.tkn.execute(Command.createPipelineResource(document.fileName)))
-        .then(() => PipelineResource.explorer.refresh(context ? context : undefined))
-        .then(() => {
-          const message = 'PipelineResources were successfully created.';
-          telemetryLogCommand(commandId, message);
-          return message;
-        })
-        .catch((err) => {
-          telemetryLogError(commandId, err);
-          return Promise.reject(`Failed to Create PipelineResources with error: ${err}`)
-        });
-    }
-  }
 
   static async describe(pipelineResource: TektonNode): Promise<void> {
     if (!pipelineResource) {
