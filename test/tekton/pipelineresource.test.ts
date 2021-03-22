@@ -13,6 +13,8 @@ import { PipelineResource } from '../../src/tekton/pipelineresource';
 import { TestItem } from './testTektonitem';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { window } from 'vscode';
+import { ContextType } from '../../src/context-type';
+import { Command } from '../../src/cli-command';
 
 const expect = chai.expect;
 chai.use(sinonChai);
