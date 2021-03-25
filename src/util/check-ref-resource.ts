@@ -28,7 +28,7 @@ export async function getTaskRunResourceList(): Promise<PipelineTaskRunData[]> {
 export function referenceOfTaskAndClusterTaskInCluster(item: TektonNode, taskRunList: PipelineTaskRunData[]): boolean{
   if (taskRunList.length !== 0 && (item.contextValue === ContextType.TASK || item.contextValue === ContextType.CLUSTERTASK)) {
     const found = taskRunList.some((value) => {
-      if (value.spec.taskRef.name === item.getName()) {
+      if (value?.spec?.taskRef?.name === item.getName()) {
         return true;
       }
     });
