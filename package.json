@@ -128,7 +128,7 @@
           "title": "Show reference resource notification",
           "type": "boolean",
           "default": true,
-          "description": "Enable/disable reference resource notification"
+          "description": "Enable/disable to check Task and ClusterTask Reference Resource"
         }
       }
     },
