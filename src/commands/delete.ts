@@ -23,6 +23,7 @@ import { ClusterTriggerBinding } from '../tekton/clustertriggerbunding';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 import { ContextType } from '../context-type';
 import { TektonNode } from '../tree-view/tekton-node';
+import { checkRefResource, getTaskRunResourceList, referenceOfTaskAndClusterTaskInCluster } from '../util/check-ref-resource';
 
 interface Refreshable {
   refresh(): void;
@@ -52,6 +53,9 @@ function getItemToDelete(contextItem: TektonNode, selectedItems: TektonNode[]): 
 }
 
 async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?: string): Promise<void | string> {
+  const taskRunList = await getTaskRunResourceList();
+  let message: string;
+  let refResource = true;
   if (items) {
     const toDelete = new Map<TektonNode, CliCommand>();
     for (const item of items) {
@@ -59,12 +63,22 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
       if (deleteCommand) {
         toDelete.set(item, deleteCommand);
       }
+      if (refResource && checkRefResource()) {
+        if (referenceOfTaskAndClusterTaskInCluster(item, taskRunList)) {
+          refResource = false;
+        }
+      }
     }
     if (toDelete.size === 0) {
       return;
     }
     if (toDelete.size > 1) {
-      const value = await window.showWarningMessage(`Do you want to delete ${toDelete.size} items?`, 'Yes', 'Cancel');
+      if (refResource) {
+        message = `Do you want to delete ${toDelete.size} items?`;
+      } else {
+        message = `Do you want to delete ${toDelete.size} items?. You have selected Task or ClusterTask which is being used in some other resource.`;
+      }
+      const value = await window.showWarningMessage(message, 'Yes', 'Cancel');
       if (value === 'Yes') {
         return Progress.execFunctionWithProgress('Deleting...', async () => {
           for (const del of toDelete.values()) {
@@ -89,7 +103,12 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
 
     } else {
       const name = toDelete.keys().next().value.getName();
-      const value = await window.showWarningMessage(`Do you want to delete the '${name}'?`, 'Yes', 'Cancel');
+      if (refResource) {
+        message = `Do you want to delete the '${name}'?`;
+      } else {
+        message = `Do you want to delete the ${toDelete.keys().next().value.contextValue}: '${name}' which is used in some other resource?`;
+      }
+      const value = await window.showWarningMessage(message, 'Yes', 'Cancel');
       if (value === 'Yes') {
         return Progress.execFunctionWithProgress(`Deleting the '${name}'.`, () =>
           tkn.execute(toDelete.values().next().value))
