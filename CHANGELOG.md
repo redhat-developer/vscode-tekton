@@ -1,5 +1,19 @@
 # Change Log
 
+## 0.13.0 (March 25, 2021)
+
+This release brings to you:
+
+* [#297](https://github.com/redhat-developer/vscode-tekton/issues/297) Reorganize Tekton tree related code.
+* [#486](https://github.com/redhat-developer/vscode-tekton/issues/486) Refactor referenced Task or ClusterTask to inline.
+* [#487](https://github.com/redhat-developer/vscode-tekton/issues/487) Find references of tasks inside the cluster.
+* [#488](https://github.com/redhat-developer/vscode-tekton/issues/488) Support for volume claim templates for workspaces.
+* [#509](https://github.com/redhat-developer/vscode-tekton/issues/509) Support custom tasks in pipeline diagram.
+* [#525](https://github.com/redhat-developer/vscode-tekton/issues/525) Remove create pipelineResource command.
+* [#529](https://github.com/redhat-developer/vscode-tekton/pull/529) Fix bug for listing pipelineRun from command palette.
+* [#531](https://github.com/redhat-developer/vscode-tekton/pull/531) Update schemas to Tekton Triggers 0.12.1.
+* [#527](https://github.com/redhat-developer/vscode-tekton/issues/527) Update tkn cli to latest version `0.17.0`.
+
 ## 0.12.0 (March 04, 2021)
 
 This release brings to you:
