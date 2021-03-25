@@ -276,10 +276,10 @@ export interface TaskRuns {
 
 export interface PipelineTaskRunData {
   metadata?: {
-    creationTimestamp: string;
+    creationTimestamp?: string;
     name: string;
-    uid: string;
-    labels: {
+    uid?: string;
+    labels?: {
       'tekton.dev/pipelineTask': string;
       'tekton.dev/pipelineRun': string;
       'tekton.dev/task': string;

@@ -23,7 +23,7 @@ import { ClusterTriggerBinding } from '../tekton/clustertriggerbunding';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 import { ContextType } from '../context-type';
 import { TektonNode } from '../tree-view/tekton-node';
-import { checkRefResource, getTaskRunList, referenceOfTaskAndClusterTaskInCluster } from '../util/check-ref-resource';
+import { checkRefResource, getTaskRunResourceList, referenceOfTaskAndClusterTaskInCluster } from '../util/check-ref-resource';
 
 interface Refreshable {
   refresh(): void;
@@ -53,7 +53,7 @@ function getItemToDelete(contextItem: TektonNode, selectedItems: TektonNode[]): 
 }
 
 async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?: string): Promise<void | string> {
-  const taskRunList = await getTaskRunList();
+  const taskRunList = await getTaskRunResourceList();
   let message: string;
   let refResource = true;
   if (items) {
@@ -76,7 +76,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
       if (refResource) {
         message = `Do you want to delete ${toDelete.size} items?`;
       } else {
-        message = `Do you want to delete ${toDelete.size} items?. You have selected Task/ClusterTask which is used in some other resource.`;
+        message = `Do you want to delete ${toDelete.size} items?. You have selected Task or ClusterTask which is being used in some other resource.`;
       }
       const value = await window.showWarningMessage(message, 'Yes', 'Cancel');
       if (value === 'Yes') {

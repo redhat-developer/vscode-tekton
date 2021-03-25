@@ -10,7 +10,7 @@ import { PipelineTaskRunData } from '../tekton';
 import { TektonNode } from '../tree-view/tekton-node';
 import * as vscode from 'vscode';
 
-export async function getTaskRunList(): Promise<PipelineTaskRunData[]> {
+export async function getTaskRunResourceList(): Promise<PipelineTaskRunData[]> {
   const result = await cli.execute(Command.listTaskRun());
   if (result.error) {
     // ignore
