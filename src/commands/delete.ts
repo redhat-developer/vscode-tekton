@@ -6,8 +6,7 @@
 import { customTektonExplorer } from '../pipeline/customTektonExplorer'
 import { pipelineExplorer } from '../pipeline/pipelineExplorer'
 import { Pipeline } from '../tekton/pipeline';
-import { CliCommand } from '../cli';
-import { tkn } from '../tkn';
+import { cli, CliCommand } from '../cli';
 import { Condition } from '../tekton/condition';
 import { PipelineResource } from '../tekton/pipelineresource';
 import { PipelineRun } from '../tekton/pipelinerun';
@@ -53,10 +52,10 @@ function getItemToDelete(contextItem: TektonNode, selectedItems: TektonNode[]): 
 }
 
 async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?: string): Promise<void | string> {
-  const taskRunList = await getTaskRunResourceList();
-  let message: string;
-  let refResource = true;
   if (items) {
+    const taskRunList = await getTaskRunResourceList();
+    let message: string;
+    let refResource = true;
     const toDelete = new Map<TektonNode, CliCommand>();
     for (const item of items) {
       const deleteCommand = getDeleteCommand(item);
@@ -83,7 +82,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
         return Progress.execFunctionWithProgress('Deleting...', async () => {
           for (const del of toDelete.values()) {
             try {
-              await tkn.execute(del);
+              await cli.execute(del);
             } catch (err) {
               console.error(err);
             }
@@ -111,7 +110,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
       const value = await window.showWarningMessage(message, 'Yes', 'Cancel');
       if (value === 'Yes') {
         return Progress.execFunctionWithProgress(`Deleting the '${name}'.`, () =>
-          tkn.execute(toDelete.values().next().value))
+          cli.execute(toDelete.values().next().value))
           .then(() => toRefresh.refresh())
           .then(() => {
             telemetryLogCommand(commandId, 'Successfully deleted.');
@@ -119,7 +118,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
           })
           .catch((err) => {
             telemetryLogError(commandId, err);
-            return Promise.reject(`Failed to delete the '${name}': '${err}'.`)
+            return window.showErrorMessage(`Failed to delete the '${name}': '${err}'.`)
           });
       }
     }
