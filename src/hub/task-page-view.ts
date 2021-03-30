@@ -10,7 +10,7 @@ import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
 import { ResourceData } from '../tekton-hub-client';
 import { getTaskByVersion, getVersions } from './hub-client';
-import { installTask } from './install-task';
+import { installEvent, installTask } from './install-task';
 import { uninstallTask } from './uninstall-task';
 import { HubTask, HubTaskInstallation, HubTaskUninstall, InstalledTask, isInstalledTask } from './hub-common';
 
@@ -45,6 +45,14 @@ export class TaskPageView extends Disposable {
     this.webviewPanel = webview;
     this.register(this.webviewPanel.onDidDispose(() => {
       this.dispose();
+    }));
+
+    this.register(installEvent(e => {
+      if (this.task.name === e.name) {
+        (this.task as InstalledTask).installedVersion = e.taskVersion;
+        (this.task as InstalledTask).clusterTask = e.asClusterTask;
+        this.sendTask();
+      }
     }));
 
 
