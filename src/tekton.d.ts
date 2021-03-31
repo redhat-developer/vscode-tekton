@@ -178,10 +178,31 @@ export interface TknTask {
   spec: TknTaskSpec;
 }
 
+interface TaskSpec {
+  name?: string;
+  params?: Param;
+  taskRef?: {
+    kind: string;
+    name: string;
+  };
+}
+
+interface KubectlPipelineSpec {
+  params?: Param;
+  tasks?: TaskSpec[];
+}
+
+export interface Pipeline {
+  kind: string;
+  metadata: TknMetadata;
+  spec: KubectlPipelineSpec;
+}
+
 // JSON types
 
 export interface Param {
   name?: string;
+  value?: string;
 }
 
 export type VolumeTypeSecret = {

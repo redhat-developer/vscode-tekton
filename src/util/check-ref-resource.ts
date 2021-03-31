@@ -6,16 +6,22 @@
 import { cli } from '../cli';
 import { Command } from '../cli-command';
 import { ContextType } from '../context-type';
-import { PipelineTaskRunData } from '../tekton';
+import { Pipeline } from '../tekton';
 import { TektonNode } from '../tree-view/tekton-node';
 import * as vscode from 'vscode';
 
-export async function getTaskRunResourceList(): Promise<PipelineTaskRunData[]> {
-  const result = await cli.execute(Command.listTaskRun());
+const tektonResource = {
+  task: 'Task',
+  clustertask: 'ClusterTask'
+}
+
+
+export async function getPipelineResourceList(): Promise<Pipeline[]> {
+  const result = await cli.execute(Command.listPipeline());
   if (result.error) {
     // ignore
   }
-  let data: PipelineTaskRunData[] = [];
+  let data: Pipeline[] = [];
   try {
     const r = JSON.parse(result.stdout);
     data = r.items ? r.items : data;
@@ -24,18 +30,22 @@ export async function getTaskRunResourceList(): Promise<PipelineTaskRunData[]> {
   }
   return data;
 }
-  
-export function referenceOfTaskAndClusterTaskInCluster(item: TektonNode, taskRunList: PipelineTaskRunData[]): boolean{
-  if (taskRunList.length !== 0 && (item.contextValue === ContextType.TASK || item.contextValue === ContextType.CLUSTERTASK)) {
-    const found = taskRunList.some((value) => {
-      if (value?.spec?.taskRef?.name === item.getName()) {
-        return true;
+
+export function referenceOfTaskAndClusterTaskInCluster(item: TektonNode, pipelineList: Pipeline[]): boolean {
+  if (pipelineList.length !== 0 && (item.contextValue === ContextType.TASK || item.contextValue === ContextType.CLUSTERTASK)) {
+    const found = pipelineList.some((value) => {
+      if (value?.spec?.tasks) {
+        return value?.spec?.tasks.some((task) => {
+          if (task?.taskRef?.kind === tektonResource[item.contextValue] && task?.taskRef?.name === item.getName()) {
+            return true;
+          }
+        })
       }
     });
     return found;
   }
 }
-  
+
 export function checkRefResource(): boolean {
   return vscode.workspace
     .getConfiguration('vs-tekton')

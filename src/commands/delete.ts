@@ -22,7 +22,7 @@ import { ClusterTriggerBinding } from '../tekton/clustertriggerbunding';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 import { ContextType } from '../context-type';
 import { TektonNode } from '../tree-view/tekton-node';
-import { checkRefResource, getTaskRunResourceList, referenceOfTaskAndClusterTaskInCluster } from '../util/check-ref-resource';
+import { checkRefResource, getPipelineResourceList, referenceOfTaskAndClusterTaskInCluster } from '../util/check-ref-resource';
 
 interface Refreshable {
   refresh(): void;
@@ -53,7 +53,6 @@ function getItemToDelete(contextItem: TektonNode, selectedItems: TektonNode[]): 
 
 async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?: string): Promise<void | string> {
   if (items) {
-    const taskRunList = await getTaskRunResourceList();
     let message: string;
     let refResource = true;
     const toDelete = new Map<TektonNode, CliCommand>();
@@ -63,6 +62,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
         toDelete.set(item, deleteCommand);
       }
       if (refResource && checkRefResource()) {
+        const taskRunList = await getPipelineResourceList();
         if (referenceOfTaskAndClusterTaskInCluster(item, taskRunList)) {
           refResource = false;
         }
