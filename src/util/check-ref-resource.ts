@@ -16,7 +16,7 @@ const tektonResource = {
 }
 
 
-export async function getPipelineResourceList(): Promise<Pipeline[]> {
+export async function getPipelineList(): Promise<Pipeline[]> {
   const result = await cli.execute(Command.listPipeline());
   if (result.error) {
     // ignore
