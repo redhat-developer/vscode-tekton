@@ -7,7 +7,7 @@ import * as sinon from 'sinon';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import { CliImpl } from '../../src/cli';
-import { getPipelineResourceList, referenceOfTaskAndClusterTaskInCluster } from '../../src/util/check-ref-resource';
+import { getPipelineList, referenceOfTaskAndClusterTaskInCluster } from '../../src/util/check-ref-resource';
 import { Command } from '../../src/cli-command';
 import { TestItem } from '../tekton/testTektonitem';
 import { TknImpl } from '../../src/tkn';
@@ -78,7 +78,7 @@ suite('Reference Task/ClusterTask', () => {
         'items': pipelineList
       })
     });
-    const result = await getPipelineResourceList();
+    const result = await getPipelineList();
 
     expect(execStub).calledOnceWith(Command.listPipeline());
     expect(result.length).equals(2);
