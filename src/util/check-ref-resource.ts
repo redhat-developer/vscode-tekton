@@ -5,7 +5,7 @@
 
 import { cli } from '../cli';
 import { Command } from '../cli-command';
-import { Pipeline } from '../tekton';
+import { TknPipeline } from '../tekton';
 import { TektonNode } from '../tree-view/tekton-node';
 import * as vscode from 'vscode';
 
@@ -15,9 +15,9 @@ const tektonResource = {
 }
 
 
-export async function getPipelineList(): Promise<Pipeline[]> {
+export async function getPipelineList(): Promise<TknPipeline[]> {
   const result = await cli.execute(Command.listPipeline());
-  let data: Pipeline[] = [];
+  let data: TknPipeline[] = [];
   try {
     const r = JSON.parse(result.stdout);
     data = r.items ? r.items : data;
@@ -27,7 +27,7 @@ export async function getPipelineList(): Promise<Pipeline[]> {
   return data;
 }
 
-export function referenceOfTaskAndClusterTaskInCluster(item: TektonNode, pipelineList: Pipeline[]): boolean {
+export function referenceOfTaskAndClusterTaskInCluster(item: TektonNode, pipelineList: TknPipeline[]): boolean {
   const found = pipelineList.some((value) => {
     if (value?.spec?.tasks) {
       return value?.spec?.tasks.some((task) => {

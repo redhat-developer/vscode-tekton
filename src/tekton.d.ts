@@ -192,7 +192,7 @@ interface KubectlPipelineSpec {
   tasks?: TaskSpec[];
 }
 
-export interface Pipeline {
+export interface TknPipeline {
   kind: string;
   metadata: TknMetadata;
   spec: KubectlPipelineSpec;
