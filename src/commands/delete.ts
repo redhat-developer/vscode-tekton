@@ -54,17 +54,17 @@ function getItemToDelete(contextItem: TektonNode, selectedItems: TektonNode[]): 
 async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?: string): Promise<void | string> {
   if (items) {
     let message: string;
-    let refResource = true;
+    let hasAnyReference = true;
+    const pipelineList = await getPipelineList();
     const toDelete = new Map<TektonNode, CliCommand>();
     for (const item of items) {
       const deleteCommand = getDeleteCommand(item);
       if (deleteCommand) {
         toDelete.set(item, deleteCommand);
       }
-      if (refResource && checkRefResource()) {
-        const pipelineList = await getPipelineList();
-        if (referenceOfTaskAndClusterTaskInCluster(item, pipelineList)) {
-          refResource = false;
+      if (hasAnyReference && checkRefResource() && pipelineList.length !== 0) {
+        if (referenceOfTaskAndClusterTaskInCluster(item, pipelineList) && (item.contextValue === ContextType.TASK || item.contextValue === ContextType.CLUSTERTASK)) {
+          hasAnyReference = false;
         }
       }
     }
@@ -72,7 +72,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
       return;
     }
     if (toDelete.size > 1) {
-      if (refResource) {
+      if (hasAnyReference) {
         message = `Do you want to delete ${toDelete.size} items?`;
       } else {
         message = `Do you want to delete ${toDelete.size} items?. You have selected Task or ClusterTask which is being used in some other resource.`;
@@ -102,7 +102,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
 
     } else {
       const name = toDelete.keys().next().value.getName();
-      if (refResource) {
+      if (hasAnyReference) {
         message = `Do you want to delete the '${name}'?`;
       } else {
         message = `Do you want to delete the ${toDelete.keys().next().value.contextValue}: '${name}' which is used in some other resource?`;
