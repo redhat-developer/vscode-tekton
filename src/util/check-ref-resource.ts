@@ -3,8 +3,6 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { cli } from '../cli';
-import { Command } from '../cli-command';
 import { TknPipeline } from '../tekton';
 import { TektonNode } from '../tree-view/tekton-node';
 import * as vscode from 'vscode';
@@ -12,19 +10,6 @@ import * as vscode from 'vscode';
 const tektonResource = {
   task: 'Task',
   clustertask: 'ClusterTask'
-}
-
-
-export async function getPipelineList(): Promise<TknPipeline[]> {
-  const result = await cli.execute(Command.listPipeline());
-  let data: TknPipeline[] = [];
-  try {
-    const r = JSON.parse(result.stdout);
-    data = r.items ? r.items : data;
-  } catch (ignore) {
-    // ignore
-  }
-  return data;
 }
 
 export function referenceOfTaskAndClusterTaskInCluster(item: TektonNode, pipelineList: TknPipeline[]): boolean {

@@ -358,10 +358,6 @@ export class Command {
     return newK8sCommand('get', 'taskrun', '-o', 'json');
   }
 
-  static listPipeline(): CliCommand {
-    return newK8sCommand('get', 'pipeline', '-o', 'json');
-  }
-
   static listConditions(): CliCommand {
     return newK8sCommand('get', 'conditions', '-o', 'json');
   }

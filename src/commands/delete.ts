@@ -22,8 +22,9 @@ import { ClusterTriggerBinding } from '../tekton/clustertriggerbunding';
 import { telemetryLogCommand, telemetryLogError } from '../telemetry';
 import { ContextType } from '../context-type';
 import { TektonNode } from '../tree-view/tekton-node';
-import { checkRefResource, getPipelineList, referenceOfTaskAndClusterTaskInCluster } from '../util/check-ref-resource';
+import { checkRefResource, referenceOfTaskAndClusterTaskInCluster } from '../util/check-ref-resource';
 import { TknPipeline } from '../tekton';
+import { getPipelineList } from '../util/list-tekton-resource';
 
 interface Refreshable {
   refresh(): void;
@@ -56,10 +57,12 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
   if (items) {
     let message: string;
     let hasAnyReference = false;
-    let pipelineList: TknPipeline[];
-    const hasAnyTaskOrClusterTask = items.some(item => item.contextValue === ContextType.TASK || item.contextValue === ContextType.CLUSTERTASK);
-    if (hasAnyTaskOrClusterTask) {
-      pipelineList = await getPipelineList();
+    let pipelineList: TknPipeline[] = [];
+    if (checkRefResource()) {
+      const hasAnyTaskOrClusterTask = items.some(item => item.contextValue === ContextType.TASK || item.contextValue === ContextType.CLUSTERTASK);
+      if (hasAnyTaskOrClusterTask) {
+        pipelineList = await getPipelineList();
+      }
     }
     const toDelete = new Map<TektonNode, CliCommand>();
     for (const item of items) {
@@ -67,7 +70,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
       if (deleteCommand) {
         toDelete.set(item, deleteCommand);
       }
-      if (!hasAnyReference && checkRefResource() && pipelineList?.length !== 0 && (item.contextValue === ContextType.TASK || item.contextValue === ContextType.CLUSTERTASK)) {
+      if (!hasAnyReference && checkRefResource() && pipelineList.length !== 0 && (item.contextValue === ContextType.TASK || item.contextValue === ContextType.CLUSTERTASK)) {
         hasAnyReference = referenceOfTaskAndClusterTaskInCluster(item, pipelineList);
       }
     }

@@ -34,9 +34,11 @@ suite('tkn', () => {
   let startPipelineObj: StartObject;
   const sandbox = sinon.createSandbox();
   const errorMessage = 'Error';
+  let execStubCli: sinon.SinonStub;
 
   setup(() => {
     sandbox.stub(ToolsConfig, 'getVersion').resolves('0.2.0');
+    execStubCli = sandbox.stub(CliImpl.prototype, 'execute').resolves();
   });
 
   teardown(() => {
@@ -44,44 +46,43 @@ suite('tkn', () => {
   });
 
   suite('command execution', () => {
-    let execStub: sinon.SinonStub, toolsStub: sinon.SinonStub;
+    let toolsStub: sinon.SinonStub;
     const command = createCliCommand('tkn', 'do', 'whatever', 'you', 'do');
 
     setup(() => {
-      execStub = sandbox.stub(CliImpl.prototype, 'execute');
       toolsStub = sandbox.stub(ToolsConfig, 'detectOrDownload').resolves();
     });
 
     test('execute calls the given command in shell', async () => {
       const data = { stdout: 'done', error: null };
-      execStub.resolves(data);
+      execStubCli.resolves(data);
       const result = await tknCli.execute(command);
 
-      expect(execStub).calledOnceWith(command);
+      expect(execStubCli).calledOnceWith(command);
       expect(result).deep.equals(data);
     });
 
     test('execute calls command with its detected location', async () => {
       const toolPath = 'path/to/tool/tool';
-      execStub.resolves({ stdout: 'done', error: null });
+      execStubCli.resolves({ stdout: 'done', error: null });
       toolsStub.resolves(toolPath);
       await tknCli.execute(command);
       // eslint-disable-next-line require-atomic-updates
       command.cliCommand = command.cliCommand.replace('tkn', `"${toolPath}"`);
-      expect(execStub).calledOnceWith(command);
+      expect(execStubCli).calledOnceWith(command);
     });
 
     test('execute allows to set its working directory', async () => {
-      execStub.resolves({ stdout: 'done', error: null });
+      execStubCli.resolves({ stdout: 'done', error: null });
       const cwd = 'path/to/some/dir';
       await tknCli.execute(command, cwd);
 
-      expect(execStub).calledOnceWith(command, { cwd: cwd });
+      expect(execStubCli).calledOnceWith(command, { cwd: cwd });
     });
 
     test('execute rejects if an error occurs in the shell command', async () => {
       const err: ExecException = { message: 'ERROR', name: 'err' };
-      execStub.resolves({ error: err, stdout: '' });
+      execStubCli.resolves({ error: err, stdout: '' });
       try {
         await tknCli.execute(command);
         expect.fail();
@@ -92,7 +93,7 @@ suite('tkn', () => {
 
     test('execute can be set to pass errors through exit data', async () => {
       const err: ExecException = { message: 'ERROR', name: 'err' };
-      execStub.resolves({ error: err, stdout: '' });
+      execStubCli.resolves({ error: err, stdout: '' });
       const result = await tknCli.execute(command, null, false);
 
       expect(result).deep.equals({ error: err, stdout: '' });
@@ -190,7 +191,7 @@ suite('tkn', () => {
 
     test('getPipelines returns items from tkn pipeline list command', async () => {
       const tknPipelines = ['pipeline1', 'pipeline2', 'pipeline3'];
-      execStub.resolves({
+      execStubCli.onFirstCall().resolves({
         error: null, stdout: JSON.stringify({
           'items': [{
             'kind': 'Pipeline',
@@ -215,7 +216,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getPipelines(pipelineNodeItem);
 
-      expect(execStub).calledOnceWith(Command.listPipelines());
+      expect(execStubCli).calledOnceWith(Command.listPipelines());
       expect(result.length).equals(3);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelines[i]);

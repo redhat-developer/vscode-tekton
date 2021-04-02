@@ -23,6 +23,7 @@ import { TaskRun } from './tree-view/task-run-node';
 import { PipelineRun } from './tree-view/pipelinerun-node';
 import { MoreNode } from './tree-view/expand-node';
 import { Command } from './cli-command';
+import { getPipelineList } from './util/list-tekton-resource';
 
 export const humanizer = humanize.humanizer(createConfig());
 
@@ -352,18 +353,8 @@ export class TknImpl implements Tkn {
   }
 
   async _getPipelines(pipeline: TektonNode): Promise<TektonNode[]> {
-    let data: TknTask[] = [];
-    const result = await this.execute(Command.listPipelines(), process.cwd(), false);
-    if (result.error) {
-      console.log(result + ' Std.err when processing pipelines');
-      return [new TektonNodeImpl(pipeline, getStderrString(result.error), ContextType.PIPELINE, this, TreeItemCollapsibleState.Expanded)];
-    }
-    try {
-      data = JSON.parse(result.stdout).items;
-    } catch (ignore) {
-      //show no pipelines if output is not correct json
-    }
-    let pipelines: NameId[] = data.map((value) => {
+    const pipelineList = await getPipelineList();
+    let pipelines: NameId[] = pipelineList.map((value) => {
       return {
         name: value.metadata.name,
         uid: value.metadata.uid

@@ -16,6 +16,7 @@ import { errorMessage, TektonItem } from '../../src/tekton/tektonitem';
 import * as logInEditor from '../../src/util/log-in-editor';
 import { ContextType } from '../../src/context-type';
 import { Command } from '../../src/cli-command';
+import { CliImpl } from '../../src/cli';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -31,6 +32,7 @@ suite('Tekton/PipelineRun', () => {
 
   setup(() => {
     sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
+    sandbox.stub(CliImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     sandbox.stub(TknImpl.prototype, 'getPipelineRuns').resolves([pipelineRunItem]);
     sandbox.stub(TknImpl.prototype, 'getPipelineRunsList').resolves([pipelineRunItem]);
     showQuickPickStub = sandbox.stub(vscode.window, 'showQuickPick').resolves(undefined);
