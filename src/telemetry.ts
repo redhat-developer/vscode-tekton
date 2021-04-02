@@ -46,13 +46,25 @@ export function createTrackingEvent(name: string, properties = {}): TelemetryEve
   }
 }
 
-export function telemetryLogCommand(commandId: string, message?: string): void {
+function createTelemetryProperties(commandId: string, message?: string): TelemetryProperties {
+  const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
+  if (message) telemetryProps['message'] = hideClusterInfo(message);
+  return telemetryProps;
+}
+
+export function telemetryClusterInfo(commandId: string, message?: string): void {
   if (commandId) {
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
-    if (message) telemetryProps['message'] = message;
+    const telemetryProps: TelemetryProperties = createTelemetryProperties(commandId, message);
     sendTelemetry(commandId, telemetryProps);
   }
-} 
+}
+
+export function telemetryLogCommand(commandId: string, message?: string): void {
+  if (commandId) {
+    const telemetryProps: TelemetryProperties = createTelemetryProperties(commandId, message);
+    sendTelemetry(commandId, telemetryProps);
+  }
+}
 
 export default async function sendTelemetry(actionName: string, properties?: TelemetryProperties): Promise<void> {
   const service = await getTelemetryServiceInstance();
