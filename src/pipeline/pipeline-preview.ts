@@ -8,7 +8,7 @@ import { previewManager, PreviewSettings } from './preview-manager';
 import { CommandContext, setCommandContext } from '../commands';
 import { calculatePipelineGraph, calculatePipelineRunGraph, askToSelectPipeline } from './pipeline-graph';
 import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
-import { telemetryLogCommand } from '../telemetry';
+import { telemetryLog } from '../telemetry';
 import { ContextType } from '../context-type';
 
 export async function showPipelinePreview(commandId?: string): Promise<void> {
@@ -16,7 +16,7 @@ export async function showPipelinePreview(commandId?: string): Promise<void> {
   if (!document) {
     return;
   }
-  telemetryLogCommand(commandId, 'Pipeline preview command click')
+  telemetryLog(commandId, 'Pipeline preview command click')
   const resourceColumn = (vscode.window.activeTextEditor && vscode.window.activeTextEditor.viewColumn) || vscode.ViewColumn.One;
   const pipelines = tektonYaml.getTektonDocuments(document, TektonYamlType.Pipeline)
   if (pipelines?.length > 0) {

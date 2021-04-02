@@ -24,6 +24,7 @@ import { PipelineRun } from './tree-view/pipelinerun-node';
 import { MoreNode } from './tree-view/expand-node';
 import { Command } from './cli-command';
 import { getPipelineList } from './util/list-tekton-resource';
+import { telemetryLog, telemetryLogError } from './telemetry';
 
 export const humanizer = humanize.humanizer(createConfig());
 
@@ -139,25 +140,25 @@ export class TknImpl implements Tkn {
     const kubectlCheck = RegExp('kubectl:\\s*command not found');
     if (kubectlCheck.test(getStderrString(result.error))) {
       const tknMessage = 'Please install kubectl.';
-      telemetryClusterInfo('kubeclt_not_found', tknMessage);
+      telemetryLog('kubeclt_not_found', tknMessage);
       watchResources.disableWatch();
       return [new TektonNodeImpl(null, tknMessage, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)]
     }
     if (result.stdout.trim() === 'no') {
       const tknPrivilegeMsg = 'The current user doesn\'t have the privileges to interact with tekton resources.';
-      telemetryClusterInfo('tekton_resource_privileges', tknPrivilegeMsg);
+      telemetryLog('tekton_resource_privileges', tknPrivilegeMsg);
       watchResources.disableWatch();
       return [new TektonNodeImpl(null, tknPrivilegeMsg, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
     }
     if (result.error && getStderrString(result.error).indexOf('You must be logged in to the server (Unauthorized)') > -1) {
       const tknMessage = 'Please login to the server.';
-      telemetryClusterInfo('login', tknMessage);
+      telemetryLog('login', tknMessage);
       watchResources.disableWatch();
       return [new TektonNodeImpl(null, tknMessage, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)]
     }
     if (result.error && getStderrString(result.error).indexOf('the server doesn\'t have a resource type \'pipeline\'') > -1) {
       const message = 'Please install the Pipelines Operator.';
-      telemetryClusterInfo('install_pipeline_operator', message);
+      telemetryLog('install_pipeline_operator', message);
       watchResources.disableWatch();
       return [new TektonNodeImpl(null, message, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
     }

@@ -13,7 +13,7 @@ import { PipelineTaskRunData, TknTaskRun } from '../tekton';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
-import { telemetryLogCommand, telemetryLogError } from '../telemetry';
+import { telemetryLog, telemetryLogError } from '../telemetry';
 import { getStderrString } from '../util/stderrstring';
 import { ContextType } from '../context-type';
 import { TektonNode } from '../tree-view/tekton-node';
@@ -62,7 +62,7 @@ export class TaskRun extends TektonItem {
       return false;
     } else {
       const message = 'TaskRun successfully restarted';
-      telemetryLogCommand(commandId, message);
+      telemetryLog(commandId, message);
       window.showInformationMessage(message);
     }
     await fs.unlink(fsPath);

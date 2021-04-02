@@ -8,7 +8,7 @@ import * as cliInstance from '../cli';
 import { TektonItem } from './tektonitem';
 import { TknPipelineTrigger } from '../tekton';
 import { Trigger, PipelineContent } from './pipelinecontent';
-import { telemetryLogCommand, telemetryLogError } from '../telemetry';
+import { telemetryLog, telemetryLogError } from '../telemetry';
 import { window } from 'vscode';
 import { Command } from '../cli-command';
 
@@ -54,7 +54,7 @@ export async function startTask(taskName: string, commandId?: string): Promise<s
     TektonItem.tkn.startTask(inputStartTask)
       .then(() => TektonItem.explorer.refresh())
       .then(() => {
-        telemetryLogCommand(commandId, 'Task successfully started');
+        telemetryLog(commandId, 'Task successfully started');
         window.showInformationMessage(`Task '${inputStartTask.name}' successfully started`);
       })
       .catch((error) => {

@@ -38,7 +38,7 @@ suite('tkn', () => {
   let execStubCli: sinon.SinonStub;
 
   setup(() => {
-    sandbox.stub(telemetry, 'telemetryClusterInfo');
+    sandbox.stub(telemetry, 'telemetryLog');
     sandbox.stub(telemetry, 'telemetryLogError');
     sandbox.stub(ToolsConfig, 'getVersion').resolves('0.2.0');
     execStubCli = sandbox.stub(CliImpl.prototype, 'execute').resolves();

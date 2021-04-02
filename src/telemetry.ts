@@ -25,12 +25,12 @@ export function telemetryProperties(commandId: string): TelemetryProperties {
   }
 }
 
-export async function telemetryLogError(commandId: string, result: string | Error): Promise<void> {
-  if (commandId) {
-    const telemetryProps: TelemetryProperties = telemetryProperties(`${commandId}_error`);
+export async function telemetryLogError(identifier: string, result: string | Error): Promise<void> {
+  if (identifier) {
+    const telemetryProps: TelemetryProperties = telemetryProperties(`${identifier}_error`);
     const message = getStderrString(result);
     telemetryProps.error = hideClusterInfo(message);
-    sendTelemetry(`${commandId}_error`, telemetryProps);
+    sendTelemetry(`${identifier}_error`, telemetryProps);
   }
 }
 
@@ -46,25 +46,13 @@ export function createTrackingEvent(name: string, properties = {}): TelemetryEve
   }
 }
 
-function createTelemetryProperties(commandId: string, message?: string): TelemetryProperties {
-  const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
-  if (message) telemetryProps['message'] = hideClusterInfo(message);
-  return telemetryProps;
-}
-
-export function telemetryClusterInfo(commandId: string, message?: string): void {
-  if (commandId) {
-    const telemetryProps: TelemetryProperties = createTelemetryProperties(commandId, message);
-    sendTelemetry(commandId, telemetryProps);
+export function telemetryLog(identifier: string, message?: string): void {
+  if (identifier) {
+    const telemetryProps: TelemetryProperties = telemetryProperties(identifier);
+    if (message) telemetryProps['message'] = message;
+    sendTelemetry(identifier, telemetryProps);
   }
-}
-
-export function telemetryLogCommand(commandId: string, message?: string): void {
-  if (commandId) {
-    const telemetryProps: TelemetryProperties = createTelemetryProperties(commandId, message);
-    sendTelemetry(commandId, telemetryProps);
-  }
-}
+} 
 
 export default async function sendTelemetry(actionName: string, properties?: TelemetryProperties): Promise<void> {
   const service = await getTelemetryServiceInstance();

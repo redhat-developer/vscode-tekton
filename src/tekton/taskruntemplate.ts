@@ -7,7 +7,7 @@ import * as yaml from 'js-yaml';
 import * as vscode from 'vscode';
 import { Task, TaskRunTemplate } from '../tekton';
 import { cli } from '../cli';
-import { telemetryLogCommand } from '../telemetry';
+import { telemetryLog } from '../telemetry';
 import { newK8sCommand } from '../cli-command';
 import { TektonNode } from '../tree-view/tekton-node';
 
@@ -85,7 +85,7 @@ export async function openTaskRunTemplate(context: TektonNode, commandId?: strin
   serviceAccountName(taskRunTemplate);
   taskRef(context.getName(), taskRunTemplate);
   const taskRunYaml = yaml.dump(taskRunTemplate);
-  telemetryLogCommand(commandId, 'Open taskRun template');
+  telemetryLog(commandId, 'Open taskRun template');
   vscode.workspace.openTextDocument({content: taskRunYaml, language: 'yaml'}).then(doc => {
     vscode.window.showTextDocument(doc, {preview: false})
   })
