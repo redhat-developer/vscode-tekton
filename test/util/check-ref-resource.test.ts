@@ -7,11 +7,12 @@ import * as sinon from 'sinon';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import { CliImpl } from '../../src/cli';
-import { getTaskRunResourceList, referenceOfTaskAndClusterTaskInCluster } from '../../src/util/check-ref-resource';
+import { referenceOfTaskAndClusterTaskInCluster } from '../../src/util/check-ref-resource';
 import { Command } from '../../src/cli-command';
 import { TestItem } from '../tekton/testTektonitem';
 import { TknImpl } from '../../src/tkn';
 import { ContextType } from '../../src/context-type';
+import { getPipelineList } from '../../src/util/list-tekton-resource';
 
 
 
@@ -22,34 +23,43 @@ suite('Reference Task/ClusterTask', () => {
   const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
   const taskNode = new TestItem(TknImpl.ROOT, 'Tasks', ContextType.TASK, null);
+  const clusterTaskNode = new TestItem(TknImpl.ROOT, 'ClusterTasks', ContextType.CLUSTERTASKNODE);
   const taskItem = new TestItem(taskNode, 'update-deployment', ContextType.TASK, null);
-  const taskItem1 = new TestItem(taskNode, 'update-deployments', ContextType.TASK, null);
+  const clusterTaskItem = new TestItem(clusterTaskNode, 'update-deployments', ContextType.CLUSTERTASK, null);
 
-  const taskRunList = [
+  const pipelineList = [
     {
-      'kind': 'TaskRun',
-      'apiVersion': 'tekton.dev/v1alpha1',
-      'metadata': {
-        'name': 'taskRun1',
+      kind: 'Pipeline',
+      apiVersion: 'tekton.dev/v1alpha1',
+      metadata: {
+        name: 'Pipeline1',
       },
       spec: {
-        'taskRef': {
-          'kind': 'Task',
-          'name': 'update-deployment'
-        }
+        tasks: [
+          {
+            taskRef: {
+              kind: 'ClusterTask',
+              name: 'git-clone'
+            }
+          }
+        ]
       }
     },
     {
-      'kind': 'TaskRun',
-      'apiVersion': 'tekton.dev/v1alpha1',
-      'metadata': {
-        'name': 'taskrun2',
+      kind: 'Pipeline',
+      apiVersion: 'tekton.dev/v1alpha1',
+      metadata: {
+        name: 'Pipeline2',
       },
       spec: {
-        'taskRef': {
-          'kind': 'Task',
-          'name': 'test'
-        }
+        tasks: [
+          {
+            taskRef: {
+              kind: 'Task',
+              name: 'update-deployment'
+            }
+          }
+        ]
       }
     }
   ];
@@ -66,24 +76,24 @@ suite('Reference Task/ClusterTask', () => {
     execStub.onFirstCall().resolves({
       error: null,
       stdout: JSON.stringify({
-        'items': taskRunList
+        'items': pipelineList
       })
     });
-    const result = await getTaskRunResourceList();
+    const result = await getPipelineList();
 
-    expect(execStub).calledOnceWith(Command.listTaskRun());
+    expect(execStub).calledOnceWith(Command.listPipelines());
     expect(result.length).equals(2);
   });
 
   test('return true if taskRef found', async () => {
 
-    const result = referenceOfTaskAndClusterTaskInCluster(taskItem, taskRunList);
+    const result = referenceOfTaskAndClusterTaskInCluster(taskItem, pipelineList);
     expect(result).equals(true);
   });
 
   test('return false if taskRef found', async () => {
 
-    const result = referenceOfTaskAndClusterTaskInCluster(taskItem1, taskRunList);
+    const result = referenceOfTaskAndClusterTaskInCluster(clusterTaskItem, pipelineList);
     expect(result).equals(false);
   });
 });
