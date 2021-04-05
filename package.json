@@ -548,6 +548,13 @@
         }
       ]
     },
+    "viewsWelcome": [
+      {
+        "view": "tektonPipelineExplorerView",
+        "contents": "Cluster is not accessible. Use install tool to start Cluster \n[Kind](https://kubernetes.io/docs/tasks/tools/#kind)\n[minikube](https://kubernetes.io/docs/tasks/tools/#minikube)\n[Red Hat CodeReady Containers](https://developers.redhat.com/products/codeready-containers/overview)",
+        "when": "tekton.cluster"
+      }
+    ],
     "menus": {
       "commandPalette": [
         {
