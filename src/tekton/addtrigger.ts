@@ -22,7 +22,7 @@ import { cli } from '../cli';
 import { TknVersion, version } from '../util/tknversion';
 import { NewPvc } from './createpvc';
 import { getExposeURl } from '../util/exposeurl';
-import { telemetryLogCommand, telemetryLogError } from '../telemetry';
+import { telemetryLog, telemetryLogError } from '../telemetry';
 import { getStderrString } from '../util/stderrstring';
 import { VCT } from './pipelinecontent';
 import { Command } from '../cli-command';
@@ -107,12 +107,12 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
   }
   if (trigger.kind === RouteModel.kind && !result.error) {
     const url = await getExposeURl(trigger.metadata.name);
-    telemetryLogCommand(commandId, 'Trigger successfully created');
+    telemetryLog(commandId, 'Trigger successfully created');
     vscode.window.showInformationMessage(`Trigger successfully created. Expose URL: ${url}`);
   }
   if (kind === PipelineRunModel.kind && !result.error) {
     const message = 'Pipeline successfully started';
-    telemetryLogCommand(commandId, message);
+    telemetryLog(commandId, message);
     vscode.window.showInformationMessage(message);
   }
   await fs.unlink(fsPath);

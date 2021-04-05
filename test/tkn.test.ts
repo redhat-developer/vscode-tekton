@@ -24,6 +24,7 @@ import { TektonNode, TektonNodeImpl } from '../src/tree-view/tekton-node';
 import { PipelineRun } from '../src/tree-view/pipelinerun-node';
 import { MoreNode } from '../src/tree-view/expand-node';
 import { Command } from '../src/cli-command';
+import * as telemetry from '../src/telemetry';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -37,6 +38,8 @@ suite('tkn', () => {
   let execStubCli: sinon.SinonStub;
 
   setup(() => {
+    sandbox.stub(telemetry, 'telemetryLog');
+    sandbox.stub(telemetry, 'telemetryLogError');
     sandbox.stub(ToolsConfig, 'getVersion').resolves('0.2.0');
     execStubCli = sandbox.stub(CliImpl.prototype, 'execute').resolves();
   });
@@ -1184,10 +1187,10 @@ suite('tkn', () => {
       assert.equal(result[0].getName(), 'The current user doesn\'t have the privileges to interact with tekton resources.');
     });
 
-    test('show warning message if OpenShift pipelines operator is not installed', async () => {
+    test('show warning message if pipelines operator is not installed', async () => {
       execStub.onFirstCall().resolves({ error: 'error: the server doesn\'t have a resource type \'pipeline\'', stdout: '' });
       const result = await tknCli.getPipelineNodes();
-      assert.equal(result[0].getName(), 'Please install the OpenShift Pipelines Operator.');
+      assert.equal(result[0].getName(), 'Please install the Pipelines Operator.');
     });
   });
 

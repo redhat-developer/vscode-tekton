@@ -8,7 +8,7 @@ import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer
 import { workspace, window } from 'vscode';
 import { tektonFSUri } from '../util/tekton-vfs';
 import { TknResourceItem } from './webviewstartpipeline';
-import { telemetryLogCommand, telemetryLogError } from '../telemetry';
+import { telemetryLog, telemetryLogError } from '../telemetry';
 import { ContextType } from '../context-type';
 import { TektonNode } from '../tree-view/tekton-node';
 import { Command } from '../cli-command';
@@ -118,7 +118,7 @@ export abstract class TektonItem {
     const uri = tektonFSUri(type, name, outputFormat, uid);
     workspace.openTextDocument(uri).then((doc) => {
       if (doc) {
-        telemetryLogCommand(commandId, 'successfully open in editor');
+        telemetryLog(commandId, 'successfully open in editor');
         window.showTextDocument(doc, { preserveFocus: true, preview: true });
       }
     }, (err) => {

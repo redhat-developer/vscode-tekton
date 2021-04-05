@@ -19,7 +19,7 @@ import { TaskRun } from '../tekton/taskrun';
 import { window } from 'vscode';
 import { Progress } from '../util/progress';
 import { ClusterTriggerBinding } from '../tekton/clustertriggerbunding';
-import { telemetryLogCommand, telemetryLogError } from '../telemetry';
+import { telemetryLog, telemetryLogError } from '../telemetry';
 import { ContextType } from '../context-type';
 import { TektonNode } from '../tree-view/tekton-node';
 import { checkRefResource, referenceOfTaskAndClusterTaskInCluster } from '../util/check-ref-resource';
@@ -97,7 +97,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
           .then(() => toRefresh.refresh())
           .then(() => {
             const message = 'All items successfully deleted.';
-            telemetryLogCommand(commandId, message);
+            telemetryLog(commandId, message);
             return window.showInformationMessage(message);
           })
           .catch((err) => {
@@ -119,7 +119,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
           cli.execute(toDelete.values().next().value))
           .then(() => toRefresh.refresh())
           .then(() => {
-            telemetryLogCommand(commandId, 'Successfully deleted.');
+            telemetryLog(commandId, 'Successfully deleted.');
             return window.showInformationMessage(`The '${name}' successfully deleted.`)
           })
           .catch((err) => {

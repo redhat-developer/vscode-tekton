@@ -25,12 +25,12 @@ export function telemetryProperties(commandId: string): TelemetryProperties {
   }
 }
 
-export async function telemetryLogError(commandId: string, result: string | Error): Promise<void> {
-  if (commandId) {
-    const telemetryProps: TelemetryProperties = telemetryProperties(`${commandId}_error`);
+export async function telemetryLogError(identifier: string, result: string | Error): Promise<void> {
+  if (identifier) {
+    const telemetryProps: TelemetryProperties = telemetryProperties(`${identifier}_error`);
     const message = getStderrString(result);
     telemetryProps.error = hideClusterInfo(message);
-    sendTelemetry(`${commandId}_error`, telemetryProps);
+    sendTelemetry(`${identifier}_error`, telemetryProps);
   }
 }
 
@@ -46,11 +46,11 @@ export function createTrackingEvent(name: string, properties = {}): TelemetryEve
   }
 }
 
-export function telemetryLogCommand(commandId: string, message?: string): void {
-  if (commandId) {
-    const telemetryProps: TelemetryProperties = telemetryProperties(commandId);
+export function telemetryLog(identifier: string, message?: string): void {
+  if (identifier) {
+    const telemetryProps: TelemetryProperties = telemetryProperties(identifier);
     if (message) telemetryProps['message'] = message;
-    sendTelemetry(commandId, telemetryProps);
+    sendTelemetry(identifier, telemetryProps);
   }
 } 
 
