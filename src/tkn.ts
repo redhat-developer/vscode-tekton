@@ -156,12 +156,6 @@ export class TknImpl implements Tkn {
       watchResources.disableWatch();
       return [new TektonNodeImpl(null, tknMessage, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)]
     }
-    if (result.error && getStderrString(result.error).indexOf('the server doesn\'t have a resource type \'pipeline\'') > -1) {
-      const message = 'Please install the Pipelines Operator.';
-      telemetryLog('install_pipeline_operator', message);
-      watchResources.disableWatch();
-      return [new TektonNodeImpl(null, message, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
-    }
     const serverCheck = RegExp('Unable to connect to the server');
     if (serverCheck.test(getStderrString(result.error))) {
       const loginError = 'Unable to connect to OpenShift cluster, is it down?';
@@ -169,6 +163,12 @@ export class TknImpl implements Tkn {
       watchResources.disableWatch();
       commands.executeCommand('setContext', 'tekton.cluster', true);
       return [];
+    }
+    if (result.error && getStderrString(result.error).indexOf('the server doesn\'t have a resource type \'pipeline\'') > -1) {
+      const message = 'Please install the Pipelines Operator.';
+      telemetryLog('install_pipeline_operator', message);
+      watchResources.disableWatch();
+      return [new TektonNodeImpl(null, message, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
     }
 
     const tknVersion = await version();

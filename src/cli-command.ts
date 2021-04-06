@@ -335,7 +335,7 @@ export class Command {
   }
 
   static checkTekton(): CliCommand {
-    return newK8sCommand('get', 'pipeline.tekton.dev', '&&', 'kubectl', 'auth', 'can-i', 'create', 'pipeline.tekton.dev');
+    return newK8sCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'kubectl', 'get', 'pipeline.tekton.dev');
   }
 
   static updateYaml(fsPath: string): CliCommand {
