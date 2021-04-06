@@ -1188,7 +1188,7 @@ suite('tkn', () => {
     });
 
     test('show warning message if pipelines operator is not installed', async () => {
-      const commandsStub = sandbox.stub(commands, 'executeCommand')
+      const commandsStub = sandbox.stub(commands, 'executeCommand');
       execStub.onFirstCall().resolves({ error: 'error: the server doesn\'t have a resource type \'pipeline\'', stdout: '' });
       await tknCli.getPipelineNodes();
       expect(commandsStub.calledOnce).true;

@@ -168,7 +168,8 @@ export class TknImpl implements Tkn {
       const message = 'Please install the Pipelines Operator.';
       telemetryLog('install_pipeline_operator', message);
       watchResources.disableWatch();
-      return [new TektonNodeImpl(null, message, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
+      commands.executeCommand('setContext', 'tekton.pipeline', true);
+      return [];
     }
 
     const tknVersion = await version();
