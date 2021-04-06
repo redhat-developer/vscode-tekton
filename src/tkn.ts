@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { CliCommand, CliExitData, cli, cliCommandToString, WatchProcess } from './cli';
-import { TreeItemCollapsibleState, Terminal, workspace } from 'vscode';
+import { TreeItemCollapsibleState, Terminal, workspace, commands } from 'vscode';
 import { WindowUtil } from './util/windowUtils';
 import * as path from 'path';
 import { ToolsConfig } from './tools';
@@ -156,18 +156,19 @@ export class TknImpl implements Tkn {
       watchResources.disableWatch();
       return [new TektonNodeImpl(null, tknMessage, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)]
     }
-    if (result.error && getStderrString(result.error).indexOf('the server doesn\'t have a resource type \'pipeline\'') > -1) {
-      const message = 'Please install the Pipelines Operator.';
-      telemetryLog('install_pipeline_operator', message);
-      watchResources.disableWatch();
-      return [new TektonNodeImpl(null, message, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
-    }
     const serverCheck = RegExp('Unable to connect to the server');
     if (serverCheck.test(getStderrString(result.error))) {
       const loginError = 'Unable to connect to OpenShift cluster, is it down?';
       telemetryLogError('problem_connect_cluster', loginError);
       watchResources.disableWatch();
-      return [new TektonNodeImpl(null, loginError, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
+      commands.executeCommand('setContext', 'tekton.cluster', true);
+      return [];
+    }
+    if (result.error && getStderrString(result.error).indexOf('the server doesn\'t have a resource type \'pipeline\'') > -1) {
+      const message = 'Please install the Pipelines Operator.';
+      telemetryLog('install_pipeline_operator', message);
+      watchResources.disableWatch();
+      return [new TektonNodeImpl(null, message, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
     }
 
     const tknVersion = await version();
