@@ -158,6 +158,24 @@ export class TektonVFSProvider implements FileSystemProvider {
     };
   }
 
+  async saveTektonDocument(doc: VirtualDocument): Promise<void | string> {
+    const tempPath = os.tmpdir();
+    const fsPath = path.join(tempPath, doc.uri.fsPath);
+    try {
+      await fsx.ensureFile(fsPath);
+      await fsx.writeFile(fsPath, doc.getText());
+  
+      const result = await this.updateK8sResource(fsPath);
+      if (result.error) {
+        return getStderrString(result.error);
+      }
+
+    } finally {
+      await fsx.unlink(fsPath);
+    }
+    
+  }
+
 }
 
 export const tektonVfsProvider = new TektonVFSProvider();

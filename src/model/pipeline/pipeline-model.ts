@@ -6,7 +6,7 @@
 import { TknElement, TknArray, TknBaseRootElement, NodeTknElement, TknStringElement, TknValueElement, TknParam, TknKeyElement } from '../common';
 import { TknElementType } from '../element-type';
 import { YamlMap, YamlSequence, YamlNode, isSequence } from '../../yaml-support/yaml-locator';
-import { pipelineYaml, getYamlMappingValue, findNodeByKey } from '../../yaml-support/tkn-yaml';
+import { pipelineYaml, getYamlMappingValue, findNodeByKey, findNodeAndKeyByKeyValue } from '../../yaml-support/tkn-yaml';
 import { EmbeddedTask } from './task-model';
 
 const ephemeralMap: YamlMap = {
@@ -229,9 +229,9 @@ export class PipelineTask extends NodeTknElement {
 
   get taskSpec(): EmbeddedTask {
     if (!this._taskSpec) {
-      const taskSpecNode = findNodeByKey<YamlSequence>('taskSpec', this.node as YamlMap)
+      const taskSpecNode = findNodeAndKeyByKeyValue<YamlNode, YamlSequence>('taskSpec', this.node as YamlMap)
       if (taskSpecNode) {
-        this._taskSpec = new EmbeddedTask(this, taskSpecNode);
+        this._taskSpec = new EmbeddedTask(this, taskSpecNode[0], taskSpecNode[1]);
       }
     }
     return this._taskSpec;
