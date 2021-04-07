@@ -8,12 +8,15 @@ import { HubTaskUninstall } from './hub-common';
 import * as vscode from 'vscode';
 import { getStderrString } from '../util/stderrstring';
 import { Command } from '../cli-command';
+import { CliCommand } from '../cli';
+import { telemetryLog, telemetryLogError } from '../telemetry';
 
 const uninstallTaskEmitter = new vscode.EventEmitter<HubTaskUninstall>();
 export const uninstallTaskEvent = uninstallTaskEmitter.event;
 
 export async function uninstallTask(task: HubTaskUninstall): Promise<void> {
-  let command;
+  let command: CliCommand;
+  let message: string;
   if (task.clusterTask){
     command = Command.deleteClusterTask(task.name);
   } else {
@@ -21,9 +24,13 @@ export async function uninstallTask(task: HubTaskUninstall): Promise<void> {
   }
   const result = await tkn.execute(command);
   if (result.error){
-    vscode.window.showWarningMessage(`Failed to uninstall: : ${getStderrString(result.error)}`);
+    message = `Failed to uninstall: : ${getStderrString(result.error)}`;
+    telemetryLogError('tekton.hub.uninstall', message);
+    vscode.window.showWarningMessage(message);
   } else {
-    vscode.window.showInformationMessage(`Task ${task.name} uninstalled.`);
+    message = `Task ${task.name} uninstalled.`;
+    telemetryLog('tekton.hub.uninstall', message);
+    vscode.window.showInformationMessage(message);
     uninstallTaskEmitter.fire(task);
   }
 }
