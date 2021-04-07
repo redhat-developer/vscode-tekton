@@ -13,7 +13,7 @@ import * as sinonChai from 'sinon-chai';
 import * as assert from 'assert';
 import { ToolsConfig } from '../src/tools';
 import { WindowUtil } from '../src/util/windowUtils';
-import { Terminal, TreeItemCollapsibleState } from 'vscode';
+import { commands, Terminal, TreeItemCollapsibleState } from 'vscode';
 import { TestItem } from './tekton/testTektonitem';
 import { ExecException } from 'child_process';
 import * as path from 'path';
@@ -1188,9 +1188,10 @@ suite('tkn', () => {
     });
 
     test('show warning message if pipelines operator is not installed', async () => {
+      const commandsStub = sandbox.stub(commands, 'executeCommand');
       execStub.onFirstCall().resolves({ error: 'error: the server doesn\'t have a resource type \'pipeline\'', stdout: '' });
-      const result = await tknCli.getPipelineNodes();
-      assert.equal(result[0].getName(), 'Please install the Pipelines Operator.');
+      await tknCli.getPipelineNodes();
+      expect(commandsStub.calledOnce).true;
     });
   });
 
