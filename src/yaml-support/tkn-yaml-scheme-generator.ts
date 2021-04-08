@@ -48,6 +48,21 @@ export function generateScheme(vsDocument: vscode.TextDocument, schemaPath: stri
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function injectTaskSnippets(templateObj: any, snippets: Snippet<{}>[]): {} {
+  snippets.push({
+    label: 'inline task',
+    description: 'Snippet for inline task',
+    body: {
+      name: '$1',
+      taskSpec: {
+        steps: [
+          {
+            name: '$2\n',
+          }
+        ]
+      }
+    },
+
+  })
   templateObj.definitions.PipelineSpec.properties.tasks.defaultSnippets = snippets;
   return templateObj;
 }
@@ -183,7 +198,7 @@ async function generate(doc: vscode.TextDocument, schemaPath: string): Promise<s
 
     const resNames = declaredResources.map(item => item.name);
     const templateObj = JSON.parse(template);
-    let templateWithSnippets = injectTaskSnippets(templateObj, snippets);
+    let templateWithSnippets = injectTaskSnippets(templateObj, [...snippets]);
     const tasksRef = snippets.map(value => value.body.taskRef.name);
     const customTasks = pipelineYaml.getCustomTasks(doc);
     if (customTasks.length > 0){
