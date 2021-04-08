@@ -172,18 +172,18 @@ export class TknImpl implements Tkn {
     }
 
     const tknVersion = await version();
-
+    const resourceUidAtStart = {};
     if (tknVersion && (tknVersion?.trigger === undefined || tknVersion.trigger.trim() === 'unknown')) {
       pipelineTriggerStatus.set('trigger', false);
     }
     if (!pipelineTriggerStatus.get('pipeline')) {
       const resourceList = ['pipeline', 'pipelinerun', 'taskrun', 'task', 'clustertask', 'pipelineresources', 'condition'];
-      watchResources.watchCommand(resourceList);
+      watchResources.watchCommand(resourceList, resourceUidAtStart);
       pipelineTriggerStatus.set('pipeline', true);
     }
     if (!pipelineTriggerStatus.get('trigger') && tknVersion && tknVersion?.trigger !== undefined && tknVersion.trigger.trim() !== 'unknown') {
       const resourceList = ['tt', 'tb', 'el', 'ctb'];
-      watchResources.watchCommand(resourceList);
+      watchResources.watchCommand(resourceList, resourceUidAtStart);
       pipelineTriggerStatus.set('trigger', true);
     }
     return this._getPipelineNodes();
