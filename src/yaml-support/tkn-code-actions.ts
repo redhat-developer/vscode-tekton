@@ -164,7 +164,7 @@ class PipelineCodeActionProvider implements vscode.CodeActionProvider {
   private async resolveExtractTaskAction(action: ExtractTaskAction): Promise<vscode.CodeAction> {
     return vscode.window.withProgress({location: vscode.ProgressLocation.Notification, cancellable: false, title: 'Extracting Task...' }, async (): Promise<vscode.CodeAction> => {
       try {
-        const name = await vscode.window.showInputBox({ignoreFocusOut: false, prompt: 'Provide Task Name' });
+        const name = await vscode.window.showInputBox({ignoreFocusOut: true, prompt: 'Provide Task Name' });
         const type = await vscode.window.showQuickPick(['Task', 'ClusterTask'], {placeHolder: 'Select Task Type:', canPickMany: false});
         const virtDoc = this.getDocForExtractedTask(name, type, action.taskSpecText);
 
