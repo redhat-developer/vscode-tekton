@@ -669,7 +669,7 @@ function getTasksSeq(specMap: YamlMap): YamlSequence | undefined {
 }
 
 export function findNodeAndKeyByKeyValue<K, T>(key: string, yamlMap: YamlMap): [K, T] | undefined {
-  if (!yamlMap) {
+  if (!yamlMap || !yamlMap.mappings) {
     return;
   }
   const mapItem = yamlMap.mappings.find(item => item.key.raw === key);
