@@ -4,8 +4,8 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { findNodeByKey } from '../../yaml-support/tkn-yaml';
-import { YamlMap, YamlSequence } from '../../yaml-support/yaml-locator';
-import { NodeTknElement, TknArray, TknElement, TknStringElement } from '../common';
+import { YamlMap, YamlNode, YamlSequence } from '../../yaml-support/yaml-locator';
+import { NodeTknElement, TknArray, TknElement, TknKeyElement, TknStringElement } from '../common';
 import { TknElementType } from '../element-type';
 
 export class EmbeddedTask extends NodeTknElement {
@@ -23,6 +23,12 @@ export class EmbeddedTask extends NodeTknElement {
   // private _sidecars: TknArray<Sidecar>;
   // private _workspaces: TknArray<WorkspaceDeclaration>;
   private _results: TknArray<TaskResult>;
+  keyNode: TknElement
+
+  constructor(parent: TknElement, keyNode: YamlNode, node: YamlSequence) {
+    super(parent, node);
+    this.keyNode = new TknKeyElement(parent, keyNode);
+  }
 
   get results(): TknArray<TaskResult> {
     if (!this._results) {

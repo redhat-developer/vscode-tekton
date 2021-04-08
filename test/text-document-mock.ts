@@ -15,7 +15,7 @@ export class TestTextDocument implements vscode.TextDocument {
   isDirty: boolean;
   isClosed: boolean;
   
-  private text;
+  private text: string;
 
   constructor(public uri: vscode.Uri, text: string) {
     this.text = text.replace(/\r\n/gm, '\n'); // normalize end of line
@@ -27,11 +27,34 @@ export class TestTextDocument implements vscode.TextDocument {
   eol = vscode.EndOfLine.LF;
   lineCount: number;
 
-  lineAt(position: number | vscode.Position): vscode.TextLine {
-    throw new Error('Method not implemented.');
+  private get lines(): string[] {
+    return this.text.split('\n');
   }
+
+  lineAt(position: number | vscode.Position): vscode.TextLine {
+    const line = typeof position === 'number' ? position : position.line
+    const text = this.lines[line];
+    return {
+      text,
+      range: new vscode.Range(line, 0, line, text.length)
+    } as vscode.TextLine;
+  }
+  
   offsetAt(position: vscode.Position): number {
-    throw new Error('Method not implemented.');
+    const lines = this.text.split('\n');
+    let currentOffSet = 0;
+    for (let i = 0; i < lines.length; i++) {
+      const l = lines[i];
+      if (position.line === i) {
+        if (l.length < position.character) {
+          throw new Error(`Position ${JSON.stringify(position)} is out of range. Line [${i}] only has length ${l.length}.`);
+        }
+        return currentOffSet + position.character;
+      } else {
+        currentOffSet += l.length + 1;
+      }
+    }
+    throw new Error(`Position ${JSON.stringify(position)} is out of range. Document only has ${lines.length} lines.`);
   }
 
   positionAt(offset: number): vscode.Position {
@@ -48,7 +71,11 @@ export class TestTextDocument implements vscode.TextDocument {
     throw new Error('Cannot find position!');
   }
   getText(range?: vscode.Range): string {
-    return this.text;
+    if (!range)
+      return this.text;
+    const offset = this.offsetAt(range.start);
+    const length = this.offsetAt(range.end) - offset;
+    return this.text.substr(offset, length);
   }
   getWordRangeAtPosition(position: vscode.Position, regex?: RegExp): vscode.Range {
     throw new Error('Method not implemented.');
