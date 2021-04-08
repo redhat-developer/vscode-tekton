@@ -105,7 +105,51 @@ suite('Tekton CodeActions', () => {
       const edit = resultAction.edit;
       expect(edit.has(fileUri)).is.true;
       expect(edit.get(fileUri)).has.length(1);
-      expect(edit.get(fileUri)[0]).to.deep.equal(vscode.TextEdit.replace(new vscode.Range(20, 6, 32, 18), 'taskRef:\n        name: foo-name\n        kind: Task'))
+      expect(edit.get(fileUri)[0]).to.deep.equal(vscode.TextEdit.replace(new vscode.Range(20, 6, 40, 18), 'taskRef:\n        name: foo-name\n        kind: Task'))
+    });
+
+    test('Extract Task CodeAction should create proper task', async () => {
+      const yaml = await fs.readFile(path.join(__dirname, '..', '..', '..', 'test', 'yaml-support', 'extract-task-pipeline.yaml'), 'utf8');
+      const fileUri = vscode.Uri.parse('/home/someextract-task-pipeline.yaml');
+      const doc = new TestTextDocument(fileUri, yaml);
+
+      saveTektonDocumentStub.resolves();
+      showInputBoxStub.resolves('foo-name');
+      showQuickPickStub.resolves('Task');
+
+      const result = codeActionProvider.getProvider(TektonYamlType.Pipeline).provideCodeActions(doc, new vscode.Range(24, 17, 24, 17), undefined, undefined) as vscode.CodeAction[];
+      const inlineAction = result.find(it => it.title.startsWith('Extract'));
+      const resultAction = await codeActionProvider.getProvider(TektonYamlType.Pipeline).resolveCodeAction(inlineAction, undefined);
+      const edit = resultAction.edit;
+      expect(edit.has(fileUri)).is.true;
+      expect(edit.get(fileUri)).has.length(1);
+      expect(saveTektonDocumentStub).calledOnce;
+      const taskDoc = saveTektonDocumentStub.getCall(0).args[0];
+      expect(taskDoc.getText()).to.be.equal(`apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: foo-name
+  annotations:
+    manifestival: new
+    tekton.dev/pipelines.minVersion: 0.12.1
+    tekton.dev/tags: cli
+  labels:
+    app.kubernetes.io/version: '0.1'
+    operator.tekton.dev/provider-type: redhat
+spec:
+  workspaces:
+    - name: message-of-the-day
+      optional: true
+  steps:
+    - image: alpine
+      script: |
+        #!/usr/bin/env ash
+        for f in "$(workspaces.message-of-the-day.path)"/* ; do
+          echo "Message from $f:"
+          cat "$f"
+          echo "" # add newline
+        done
+`)
     });
   });
 });

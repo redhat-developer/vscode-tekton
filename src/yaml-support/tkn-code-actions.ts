@@ -13,6 +13,7 @@ import * as jsYaml from 'js-yaml';
 import { Task } from '../tekton';
 import { telemetryLogError } from '../telemetry';
 import { ContextType } from '../context-type';
+import * as _ from 'lodash';
 
 interface ProviderMetadata {
   getProviderMetadata(): vscode.CodeActionProviderMetadata;
@@ -162,12 +163,14 @@ class PipelineCodeActionProvider implements vscode.CodeActionProvider {
   }
 
   private async resolveExtractTaskAction(action: ExtractTaskAction): Promise<vscode.CodeAction> {
+    const name = await vscode.window.showInputBox({ignoreFocusOut: true, prompt: 'Provide Task Name' });
+    const type = await vscode.window.showQuickPick(['Task', 'ClusterTask'], {placeHolder: 'Select Task Type:', canPickMany: false, ignoreFocusOut: true});
+    if (!type || !name) {
+      return;
+    }
     return vscode.window.withProgress({location: vscode.ProgressLocation.Notification, cancellable: false, title: 'Extracting Task...' }, async (): Promise<vscode.CodeAction> => {
       try {
-        const name = await vscode.window.showInputBox({ignoreFocusOut: true, prompt: 'Provide Task Name' });
-        const type = await vscode.window.showQuickPick(['Task', 'ClusterTask'], {placeHolder: 'Select Task Type:', canPickMany: false});
         const virtDoc = this.getDocForExtractedTask(name, type, action.taskSpecText);
-
         const saveError = await tektonVfsProvider.saveTektonDocument(virtDoc);
         if (saveError) {
           console.error(saveError);
@@ -206,7 +209,14 @@ class PipelineCodeActionProvider implements vscode.CodeActionProvider {
       metadataPart = taskPart.metadata;
       delete taskPart['metadata'];
     }
-    const specContent = jsYaml.dump(taskPart);
+
+    let metadataPartStr: string = undefined;
+    if (metadataPart && !_.isEmpty(metadataPart)) {
+      metadataPartStr = jsYaml.dump(metadataPart, {indent: 2});
+      metadataPartStr = metadataPartStr.trimRight().split('\n').map(it => '  ' + it).join('\n');
+    }
+    let specContent = jsYaml.dump(taskPart, {indent: 2, noArrayIndent: false});
+    specContent = specContent.trimRight().split('\n').map(it => '  ' + it).join('\n');
     return {
       version: 1,
       uri: vscode.Uri.file(`file:///extracted/task/${name}.yaml`),
@@ -214,10 +224,9 @@ class PipelineCodeActionProvider implements vscode.CodeActionProvider {
         return `apiVersion: tekton.dev/v1beta1
 kind: ${type}
 metadata:
-  name: ${name}
-  ${metadataPart ? jsYaml.dump(metadataPart) : ''}
+  name: ${name}\n${metadataPartStr ? metadataPartStr : ''}
 spec:
-  ${specContent}
+${specContent}
 `;
       }
     }

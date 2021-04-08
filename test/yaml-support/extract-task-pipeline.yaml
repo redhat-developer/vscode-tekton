@@ -22,6 +22,14 @@ spec:
         workspaces:
           - name: message-of-the-day
             optional: true
+        metadata:
+          annotations:
+            manifestival: new
+            tekton.dev/pipelines.minVersion: 0.12.1
+            tekton.dev/tags: cli
+          labels:
+            app.kubernetes.io/version: '0.1'
+            operator.tekton.dev/provider-type: redhat
         steps:
           - image: alpine
             script: |
