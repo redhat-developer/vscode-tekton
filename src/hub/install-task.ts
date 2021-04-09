@@ -134,10 +134,9 @@ async function doInstallClusterTask(task: HubTaskInstallation): Promise<boolean>
       const result = await tkn.execute(Command.updateYaml(tempFile));
       let message: string;
       await fs.unlink(tempFile);
-      if (result.error){
-        message = `ClusterTask installation failed: ${getStderrString(result.error)}`
-        telemetryLogError('tekton.hub', message);
-        vscode.window.showWarningMessage(message);
+      if (result.error) {
+        telemetryLogError('tekton.hub', result.error.toString().replace(tempFile, 'user path'));
+        vscode.window.showWarningMessage(`ClusterTask installation failed: ${getStderrString(result.error)}`);
       } else {
         message = `ClusterTask ${task.name} installed.`;
         telemetryLog('tekton.hub.install', message);
