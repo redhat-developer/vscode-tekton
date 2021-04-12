@@ -14,6 +14,8 @@ import { DownloadUtil } from '../util/download';
 import * as jsYaml from 'js-yaml';
 import { getStderrString } from '../util/stderrstring';
 import { Command } from '../cli-command';
+import { telemetryLog, telemetryLogError } from '../telemetry';
+import { CliExitData } from '../cli';
 
 const installEventEmitter = new vscode.EventEmitter<HubTaskInstallation>()
 export const installEvent = installEventEmitter.event;
@@ -66,7 +68,8 @@ async function doInstallTask(task: HubTaskInstallation): Promise<boolean> {
         }
       }
       
-      let result;
+      let result: CliExitData;
+      let message: string;
       if (needToUpgrade && installedVersion) {
         if (installedVersion === task.taskVersion.version){
           return true; // we already install this task
@@ -81,13 +84,18 @@ async function doInstallTask(task: HubTaskInstallation): Promise<boolean> {
       }
 
       if (result.error){
-        vscode.window.showWarningMessage(`Task installation failed: ${getStderrString(result.error)}`);
+        message = `Task installation failed: ${getStderrString(result.error)}`;
+        telemetryLogError('tekton.hub', message);
+        vscode.window.showWarningMessage(message);
       } else {
-        vscode.window.showInformationMessage(`Task ${task.name} installed.`);
+        message = `Task ${task.name} installed.`;
+        telemetryLog('tekton.hub.install', message);
+        vscode.window.showInformationMessage(message);
         installEventEmitter.fire(task);
         return true;
       }
     } catch (err) {
+      telemetryLogError('tekton.hub.catch', err.toString());
       vscode.window.showErrorMessage(err.toString());
     }
     return false;
@@ -124,15 +132,20 @@ async function doInstallClusterTask(task: HubTaskInstallation): Promise<boolean>
         }
       }
       const result = await tkn.execute(Command.updateYaml(tempFile));
+      let message: string;
       await fs.unlink(tempFile);
-      if (result.error){
+      if (result.error) {
+        telemetryLogError('tekton.hub', result.error.toString().replace(tempFile, 'user path'));
         vscode.window.showWarningMessage(`ClusterTask installation failed: ${getStderrString(result.error)}`);
       } else {
-        vscode.window.showInformationMessage(`ClusterTask ${task.name} installed.`);
+        message = `ClusterTask ${task.name} installed.`;
+        telemetryLog('tekton.hub.install', message);
+        vscode.window.showInformationMessage(message);
         installEventEmitter.fire(task);
         return true;
       }
     } catch (err) {
+      telemetryLogError('tekton.hub.catch', err.toString());
       vscode.window.showErrorMessage(err.toString());
     }
     return false;
