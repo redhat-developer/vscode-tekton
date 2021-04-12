@@ -80,6 +80,10 @@ export class Command {
     return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/task=${task}`, '-o', 'json');
   }
 
+  static resourceList(resource: string): CliCommand {
+    return newK8sCommand('get', resource, '-o', 'json');
+  }
+
   static getTaskRun(taskRunName: string): CliCommand {
     return newK8sCommand('get', 'taskrun', taskRunName, '-o', 'json');
   }

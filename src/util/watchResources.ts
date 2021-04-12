@@ -10,12 +10,25 @@ import { pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { FileContentChangeNotifier, WatchUtil } from './watch';
 import { window, workspace } from 'vscode';
 import { humanizer } from '../tkn';
+import { getResourceList } from './list-tekton-resource';
+import { telemetryLog } from '../telemetry';
 
 export const pipelineTriggerStatus = new Map<string, boolean>();
 const kubeConfigFolder: string = path.join(Platform.getUserHomePath(), '.kube');
 
 export enum ResourceType {
   pipelineRun = 'PipelineRun'
+}
+
+const telemetryWatchResource = {
+  'Pipeline': true,
+  'Task': true,
+  'ClusterTask': true,
+  'PipelineResource': true,
+  'TriggerTemplate': true,
+  'TriggerBinding': true,
+  'EventListener': true,
+  'ClusterTriggerBinding': true
 }
 
 function checkPipelineRunNotifications(): boolean {
@@ -33,17 +46,28 @@ export class WatchResources {
     this.fsw.emitter.on('file-changed', this.contextChange.bind(this));
   }
 
-  async watchCommand(resourceList: string[]): Promise<void> {
-    for (const resource of resourceList) {
-      this.refreshResources(resource);
+  async collectResourceUidAtStart(resource: string, resourceUidAtStart: { [x: string]: boolean}): Promise<void> {
+    const resourceList = await getResourceList(resource);
+    for (const item of resourceList) {
+      resourceUidAtStart[item.metadata.uid] = true;
     }
   }
 
-  async refreshResources(resourceName: string, id = undefined): Promise<void> {
+  async watchCommand(resourceList: string[], resourceUidAtStart: {}): Promise<void> {
+    for (const resource of resourceList) {
+      await this.collectResourceUidAtStart(resource, resourceUidAtStart);
+      this.refreshResources(resource, resourceUidAtStart);
+    }
+  }
+
+  async refreshResources(resourceName: string, resourceUidAtStart: { [x: string]: boolean}, id = undefined): Promise<void> {
     await kubectl.watchAllResource(KubectlCommands.watchResources(resourceName), (run) => {
-      if (id !== run.metadata.uid) {
+      if (!resourceUidAtStart[run.metadata.uid] && id !== run.metadata.uid) {
+        if (telemetryWatchResource[run.kind]) {
+          telemetryLog(`tekton.watch.create.${run.kind}`, `New tekton resource successfully created ${run.kind}: ${run.metadata.name}`)
+        }
         pipelineExplorer.refresh();
-      } else if (run.status?.completionTime !== undefined) {
+      } else if (run.status?.completionTime !== undefined && !(resourceUidAtStart[run.metadata.uid] && (run.status?.conditions?.[0].status === 'False' || run.status?.conditions?.[0].status === 'True'))) {
         if (checkPipelineRunNotifications()) {
           if (run.kind === ResourceType.pipelineRun) {
             if (run.status.conditions[0].status === 'True') {
