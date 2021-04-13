@@ -28,6 +28,8 @@ import { telemetryLog, telemetryLogError } from './telemetry';
 
 export const humanizer = humanize.humanizer(createConfig());
 
+let tektonResourceCount = {};
+
 function createConfig(): humanize.HumanizerOptions {
   return {
     language: 'shortEn',
@@ -178,6 +180,7 @@ export class TknImpl implements Tkn {
       pipelineTriggerStatus.set('trigger', false);
     }
     if (!pipelineTriggerStatus.get('pipeline')) {
+      tektonResourceCount = {};
       const resourceList = ['pipeline', 'pipelinerun', 'taskrun', 'task', 'clustertask', 'pipelineresources', 'condition'];
       watchResources.watchCommand(resourceList, resourceUidAtStart);
       pipelineTriggerStatus.set('pipeline', true);
@@ -265,7 +268,10 @@ export class TknImpl implements Tkn {
       // eslint-disable-next-line no-empty
     } catch (ignore) {
     }
-
+    if (tektonResourceCount['pipelineRun'] !== data.length) {
+      telemetryLog('tekton.list.pipelineRun', `Total number of pipelineRun: ${data.length}`);
+      tektonResourceCount['pipelineRun'] = data.length
+    }
     return data.map((value) => new PipelineRun(pipelineRun, value.metadata.name, this, value, TreeItemCollapsibleState.None)).sort(compareTimeNewestFirst);
   }
 
@@ -298,7 +304,6 @@ export class TknImpl implements Tkn {
       // eslint-disable-next-line no-empty
     } catch (ignore) {
     }
-
     return data
       .map((value) => new PipelineRun(pipeline, value.metadata.name, this, value, TreeItemCollapsibleState.Collapsed))
       .sort(compareTimeNewestFirst);
@@ -351,7 +356,10 @@ export class TknImpl implements Tkn {
       // eslint-disable-next-line no-empty
     } catch (ignore) {
     }
-
+    if (tektonResourceCount['taskRun'] !== data.length) {
+      telemetryLog('tekton.list.taskRun', `Total number of taskRun: ${data.length}`);
+      tektonResourceCount['taskRun'] = data.length
+    }
     return data.map((value) => new TaskRun(taskRun, value.metadata.name, this, value)).sort(compareTimeNewestFirst);
   }
 
@@ -369,6 +377,10 @@ export class TknImpl implements Tkn {
       }
     });
     pipelines = [...new Set(pipelines)];
+    if (tektonResourceCount['pipeline'] !== pipelineList.length) {
+      telemetryLog('tekton.list.pipeline', `Total number of Pipeline: ${pipelineList.length}`);
+      tektonResourceCount['pipeline'] = pipelineList.length
+    }
     return pipelines.map<TektonNode>((value) => new TektonNodeImpl(pipeline, value.name, ContextType.PIPELINE, this, TreeItemCollapsibleState.Collapsed, value.uid)).sort(compareNodes);
   }
 
@@ -388,13 +400,17 @@ export class TknImpl implements Tkn {
     } catch (ignore) {
       //show no pipelines if output is not correct json
     }
-    const pipelineresources: NameId[] = data.map((value) => {
+    const pipelineResources: NameId[] = data.map((value) => {
       return {
         name: value.metadata.name,
         uid: value.metadata.uid
       }
     });
-    return pipelineresources.map<TektonNode>((value) => new TektonNodeImpl(pipelineResource, value.name, ContextType.PIPELINERESOURCE, this, TreeItemCollapsibleState.None, value.uid)).sort(compareNodes);
+    if (tektonResourceCount['pipelineResource'] !== pipelineResources.length) {
+      telemetryLog('tekton.list.pipelineresource', `Total number of PipelineResource: ${pipelineResources.length}`);
+      tektonResourceCount['pipelineResource'] = pipelineResources.length;
+    }
+    return pipelineResources.map<TektonNode>((value) => new TektonNodeImpl(pipelineResource, value.name, ContextType.PIPELINERESOURCE, this, TreeItemCollapsibleState.None, value.uid)).sort(compareNodes);
   }
 
   async getConditions(conditionsNode: TektonNode): Promise<TektonNode[]> {
@@ -418,31 +434,36 @@ export class TknImpl implements Tkn {
         uid: value.metadata.uid
       }
     });
+    if (tektonResourceCount['condition'] !== condition.length) {
+      telemetryLog('tekton.list.condition', `Total number of Condition: ${condition.length}`);
+      tektonResourceCount['condition'] = condition.length;
+    }
     condition = [...new Set(condition)];
     return condition.map<TektonNode>((value) => new TektonNodeImpl(conditionResource, value.name, conditionContextType, this, TreeItemCollapsibleState.None, value.uid)).sort(compareNodes);
   }
 
   async getTriggerTemplates(triggerTemplatesNode: TektonNode): Promise<TektonNode[]> {
-    return this._getTriggerResource(triggerTemplatesNode, Command.listTriggerTemplates(), ContextType.TRIGGERTEMPLATES);
+    return this._getTriggerResource(triggerTemplatesNode, Command.listTriggerTemplates(), ContextType.TRIGGERTEMPLATES, 'TriggerTemplates');
   }
 
   async getTriggerBinding(triggerBindingNode: TektonNode): Promise<TektonNode[]> {
-    return this._getTriggerResource(triggerBindingNode, Command.listTriggerBinding(), ContextType.TRIGGERBINDING);
+    return this._getTriggerResource(triggerBindingNode, Command.listTriggerBinding(), ContextType.TRIGGERBINDING, 'TriggerBinding');
   }
 
   async getEventListener(eventListenerNode: TektonNode): Promise<TektonNode[]> {
-    return this._getTriggerResource(eventListenerNode, Command.listEventListener(), ContextType.EVENTLISTENER);
+    return this._getTriggerResource(eventListenerNode, Command.listEventListener(), ContextType.EVENTLISTENER, 'EventListener');
   }
 
   async getClusterTriggerBinding(clusterTriggerBindingNode: TektonNode): Promise<TektonNode[]> {
-    return this._getTriggerResource(clusterTriggerBindingNode, Command.listClusterTriggerBinding(), ContextType.CLUSTERTRIGGERBINDING);
+    return this._getTriggerResource(clusterTriggerBindingNode, Command.listClusterTriggerBinding(), ContextType.CLUSTERTRIGGERBINDING, 'ClusterTriggerBinding');
   }
 
-  private async _getTriggerResource(trigerResource: TektonNode, command: CliCommand, triggerContextType: ContextType): Promise<TektonNode[]> {
+  private async _getTriggerResource(trigerResource: TektonNode, command: CliCommand, triggerContextType: ContextType, triggerType: string): Promise<TektonNode[]> {
     let data: TknPipelineResource[] = [];
     const result = await this.execute(command, process.cwd(), false);
     const triggerCheck = RegExp('undefinederror: the server doesn\'t have a resource type');
     if (triggerCheck.test(getStderrString(result.error))) {
+      telemetryLogError(`tekton.list.${triggerType}`, result.error);
       return;
     }
     try {
@@ -457,6 +478,10 @@ export class TknImpl implements Tkn {
       }
     });
     trigger = [...new Set(trigger)];
+    if (tektonResourceCount[triggerType] !== trigger.length) {
+      telemetryLog(`tekton.list.${triggerType}`, `Total number of ${triggerType}: ${trigger.length}`);
+      tektonResourceCount[triggerType] = trigger.length;
+    }
     return trigger.map<TektonNode>((value) => new TektonNodeImpl(trigerResource, value.name, triggerContextType, this, TreeItemCollapsibleState.None, value.uid)).sort(compareNodes);
   }
 
@@ -468,6 +493,7 @@ export class TknImpl implements Tkn {
     let data: TknTask[] = [];
     const result = await this.execute(Command.listTasks());
     if (result.error) {
+      telemetryLogError('tekton.list.task', result.error);
       console.log(result + 'Std.err when processing tasks');
       return [new TektonNodeImpl(task, getStderrString(result.error), ContextType.TASK, this, TreeItemCollapsibleState.Expanded)];
     }
@@ -482,6 +508,10 @@ export class TknImpl implements Tkn {
         uid: value.metadata.uid
       }
     });
+    if (tektonResourceCount['task'] !== tasks.length) {
+      telemetryLog('tekton.list.task', `Total number of Task: ${tasks.length}`);
+      tektonResourceCount['task'] = tasks.length;
+    }
     tasks = [...new Set(tasks)];
     return tasks.map<TektonNode>((value) => new TektonNodeImpl(task, value.name, ContextType.TASK, this, TreeItemCollapsibleState.Collapsed, value.uid)).sort(compareNodes);
   }
@@ -537,6 +567,10 @@ export class TknImpl implements Tkn {
         uid: value.metadata.uid
       }
     });
+    if (tektonResourceCount['ClusterTask'] !== tasks.length) {
+      telemetryLog('tekton.list.clusterTask', `Total number of ClusterTask: ${tasks.length}`);
+      tektonResourceCount['ClusterTask'] = tasks.length;
+    }
     tasks = [...new Set(tasks)];
     return tasks.map<TektonNode>((value) => new TektonNodeImpl(clustertask, value.name, ContextType.CLUSTERTASK, this, TreeItemCollapsibleState.Collapsed, value.uid)).sort(compareNodes);
   }
