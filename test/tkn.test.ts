@@ -1176,8 +1176,10 @@ suite('tkn', () => {
   suite('getPipelineNodes', () => {
 
     let execStub: sinon.SinonStub;
+    let commandsStub: sinon.SinonStub;
 
     setup(() => {
+      commandsStub = sandbox.stub(commands, 'executeCommand');
       execStub = sandbox.stub(tknCli, 'execute');
     });
 
@@ -1188,10 +1190,11 @@ suite('tkn', () => {
     });
 
     test('show warning message if pipelines operator is not installed', async () => {
-      const commandsStub = sandbox.stub(commands, 'executeCommand');
+      commandsStub.onFirstCall().resolves(false);
+      commandsStub.onSecondCall().resolves(true);
       execStub.onFirstCall().resolves({ error: 'error: the server doesn\'t have a resource type \'pipeline\'', stdout: '' });
       await tknCli.getPipelineNodes();
-      expect(commandsStub.calledOnce).true;
+      expect(commandsStub).calledTwice;
     });
   });
 

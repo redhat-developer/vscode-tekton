@@ -163,6 +163,7 @@ export class TknImpl implements Tkn {
       const loginError = 'Unable to connect to OpenShift cluster, is it down?';
       telemetryLogError('problem_connect_cluster', loginError);
       watchResources.disableWatch();
+      commands.executeCommand('setContext', 'tekton.pipeline', false);
       commands.executeCommand('setContext', 'tekton.cluster', true);
       return [];
     }
@@ -170,6 +171,7 @@ export class TknImpl implements Tkn {
       const message = 'Please install the Pipelines Operator.';
       telemetryLog('install_pipeline_operator', message);
       watchResources.disableWatch();
+      commands.executeCommand('setContext', 'tekton.cluster', false);
       commands.executeCommand('setContext', 'tekton.pipeline', true);
       return [];
     }
