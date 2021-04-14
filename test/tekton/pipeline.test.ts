@@ -14,7 +14,6 @@ import { PipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
-import { cliCommandToString } from '../../src/cli';
 import { Trigger, StartObject, NameType, Resources, Params, PipelineContent } from '../../src/tekton/pipelinecontent';
 import { ContextType } from '../../src/context-type';
 import { Command } from '../../src/cli-command';
@@ -158,7 +157,6 @@ suite('Tekton/Pipeline', () => {
       sandbox.stub(Pipeline, 'start').withArgs(pipelineItem).resolves('Pipeline \'pipeline\' successfully created');
       const result = await Pipeline.start(pipelineItem);
       expect(result).equals(`Pipeline '${startPipelineObj.name}' successfully created`);
-      expect('tkn pipeline start pipeline --resource test-resource1=resource1 --resource test-resource2=resource1 --param test-param1=package --param test-param2=package').equals(cliCommandToString(Command.startPipeline(startPipelineObj)));
     });
 
     test('returns null if no pipeline selected', async () => {

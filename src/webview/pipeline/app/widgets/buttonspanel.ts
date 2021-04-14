@@ -7,7 +7,7 @@ import { BaseWidget } from '../../../common/widget';
 import { Trigger, PipelineStart } from '../utils/types';
 import { createItem } from '../utils/item';
 import { vscode } from '../index';
-import { addItemInWorkspace, collectParameterData, collectServiceAccountData, collectTriggerData, createPVC, createVCT, removePvcName, storePvcName } from '../utils/resource';
+import { addItemInWorkspace, collectParameterData, collectServiceAccountData, collectTriggerData, collectWorkspaceData, createPVC, createVCT, removePvcName, storePvcName } from '../utils/resource';
 import { disableRemoveButton, blockStartButton } from '../utils/disablebutton';
 import { TknResourceType } from '../utils/const';
 
@@ -40,21 +40,17 @@ export class ButtonsPanel extends BaseWidget {
   addItem(event: Node & ParentNode): void {
     try {
       if (event.lastElementChild.firstElementChild.className === 'startButton') {
-        this.storeItemData(event.querySelectorAll('[id^=items-section-workspace-new-item]'));
         this.storeParamData(event.querySelectorAll(`[id^=${TknResourceType.Params}-input-field-content-data]`));
         this.storeTriggerData(event.querySelectorAll('[id^=Webhook-add-trigger-webhook]'));
         this.storeNewPvcData(event.querySelectorAll('[id^=List-new-PVC-items-webview]'));
         this.storePvcContent(event.querySelectorAll('[id^=PersistentVolumeClaim-Workspaces]'));
         this.storeVolumeClaimTemplate(event.querySelectorAll('[id^=List-new-VCT-items-webview]'));
+        this.storeWorkspaceResourceName(event.querySelectorAll('[id^=items-section-workspace-new-item]'));
+        this.storeItemData(event.querySelectorAll('[id^=items-section-workspace-new-item]'));
         this.storeServiceAccountData(event.querySelectorAll('[id^=Service-account-name-input-field-content-data]'));
-        if (!this.trigger.trigger && this.initialValue.volumeClaimTemplate.length === 0) {
+        if (!this.trigger.trigger) {
           vscode.postMessage({
             type: 'startPipeline',
-            body: this.initialValue
-          });
-        } else if (!this.trigger.trigger && this.initialValue.volumeClaimTemplate.length !== 0) {
-          vscode.postMessage({
-            type: 'startPipeline_yaml',
             body: this.initialValue
           });
         } else {
@@ -79,6 +75,16 @@ export class ButtonsPanel extends BaseWidget {
       createItem(event, this.optionId, this.selectOption, this.initialValue, this.trigger);
     }
     blockStartButton();
+  }
+
+  storeWorkspaceResourceName(data: unknown[] | NodeListOf<Element>): void {
+    if (data.length !== 0) {
+      data.forEach(val => {
+        const workspaceResourceName = val.parentElement.children[1].children[0].value;
+        const name = val.parentElement.parentElement.firstElementChild.id;
+        collectWorkspaceData(name, undefined, this.initialValue, workspaceResourceName);
+      })
+    }
   }
 
   storePvcContent(data: unknown[] | NodeListOf<Element>): void {

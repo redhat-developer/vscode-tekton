@@ -88,7 +88,6 @@ export function getPipelineRunTaskState(status: TaskRunStatus | ConditionCheckSt
 
 export interface Tkn {
   getPipelineNodes(): Promise<TektonNode[]>;
-  startPipeline(pipeline: StartObject): Promise<string>;
   startTask(task: StartObject): Promise<TektonNode[]>;
   restartPipeline(pipeline: TektonNode): Promise<void>;
   getPipelines(pipeline?: TektonNode): Promise<TektonNode[]>;
@@ -591,11 +590,6 @@ export class TknImpl implements Tkn {
     }
 
     return data;
-  }
-
-  async startPipeline(pipeline: StartObject): Promise<string> {
-    const result = await this.execute(Command.startPipeline(pipeline));
-    return result.stdout.match(/Pipelinerun|PipelineRun started:\s+([a-z0-9A-Z-]+)/)[1];
   }
 
   async startTask(task: StartObject): Promise<TektonNode[]> {
