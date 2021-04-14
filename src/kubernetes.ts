@@ -8,12 +8,12 @@ import * as cliInstance from './cli';
 import { TektonItem } from './tekton/tektonitem';
 import { TknPipelineTrigger } from './tekton';
 import { pipelineData } from './tekton/webviewstartpipeline';
-import { startPipeline } from './tekton/startpipeline';
 import { PipelineWizard } from './pipeline/wizard';
 import { ViewColumn, window } from 'vscode';
 import { startTask } from './tekton/starttask';
 import { telemetryLogError } from './telemetry';
 import { Command } from './cli-command';
+import { startPipelineFromJson } from './tekton/start-pipeline-from-json';
 
 interface K8sClusterExplorerItem {
   nodeType: 'resource';
@@ -68,7 +68,8 @@ class K8sCommands extends TektonItem {
     const trigger = await pipelineData(data);
     if (commandId) trigger.commandId = commandId;
     if (!trigger.workspaces && !trigger.resources && !trigger.params) {
-      await startPipeline(trigger);
+      delete trigger.serviceAccount;
+      await startPipelineFromJson(trigger);
     } else {
       PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, 'Start Pipeline', trigger.name);
     }

@@ -148,50 +148,6 @@ suite('tkn', () => {
       execStub = sandbox.stub(tknCli, 'execute');
     });
 
-    test('startPipeline returns items from tkn pipeline start command', async () => {
-
-      const testResources: Resources[] = [
-        {
-          name: 'test-resource1',
-          resourceRef: 'resource1'
-        },
-        {
-          name: 'test-resource2',
-          resourceRef: 'resource1'
-        }
-      ];
-      const testParams: Params[] = [
-        {
-          default: 'package',
-          description: 'Param test description',
-          name: 'test-param1'
-        },
-        {
-          default: 'package',
-          description: 'Param test description',
-          name: 'test-param2'
-        }
-      ];
-
-      startPipelineObj = {
-        name: 'pipeline',
-        resources: testResources,
-        params: testParams,
-        workspaces: [],
-        serviceAccount: undefined
-      };
-      execStub.resolves({
-        error: null,
-        stdout: `
-        PipelineRun started: condition-pipeline-run-svht8\\n\\nIn order to track the PipelineRun progress run:\\ntkn pipelinerun logs condition-pipeline-run-svht8 -f -n pipelines-tutorial\\n
-        `
-      });
-      const result = await tknCli.startPipeline(startPipelineObj);
-
-      expect(execStub).calledOnceWith(Command.startPipeline(startPipelineObj));
-      expect(result).equals('condition-pipeline-run-svht8');
-    });
-
     test('getPipelines returns items from tkn pipeline list command', async () => {
       const tknPipelines = ['pipeline1', 'pipeline2', 'pipeline3'];
       execStubCli.onFirstCall().resolves({

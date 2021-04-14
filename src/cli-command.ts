@@ -94,40 +94,6 @@ export class Command {
   }
 
   @verbose
-  static startPipeline(pipelineData: StartObject): CliCommand {
-    const resources: string[] = [];
-    if (!pipelineData.workspaces && !pipelineData.resources && !pipelineData.params) {
-      return newTknCommand('pipeline', 'start', pipelineData.name);
-    }
-    const svcAcct: string[] = pipelineData.serviceAccount ? ['-s ', pipelineData.serviceAccount] : [];
-    pipelineData.resources.forEach(element => {
-      resources.push('--resource');
-      resources.push(element.name + '=' + element.resourceRef);
-    });
-
-    if (pipelineData.params.length === 0) {
-      if (pipelineData.workspaces.length === 0) {
-        return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...svcAcct);
-      } else {
-        const workspace = tknWorkspace(pipelineData);
-        return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...workspace, ...svcAcct);
-      }
-    } else {
-      const params: string[] = [];
-      pipelineData.params.forEach(element => {
-        params.push('--param');
-        params.push(element.name + '=' + element.default);
-      });
-      if (pipelineData.workspaces.length === 0) {
-        return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...params, ...svcAcct);
-      } else {
-        const workspace = tknWorkspace(pipelineData);
-        return newTknCommand('pipeline', 'start', pipelineData.name, ...resources, ...params, ...workspace, ...svcAcct);
-      }
-    }
-  }
-
-  @verbose
   static startTask(taskData: StartObject): CliCommand {
     const resources: string[] = [];
     const params: string[] = [];
