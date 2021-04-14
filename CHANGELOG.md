@@ -1,5 +1,21 @@
 # Change Log
 
+## 0.14.0 (April 14, 2021)
+
+This release brings to you:
+
+* [#501](https://github.com/redhat-developer/vscode-tekton/issues/501) Refresh task page after task installation.
+* [#511](https://github.com/redhat-developer/vscode-tekton/issues/511) Refactor inline Task to referenced Task or ClusterTask.
+* [#512](https://github.com/redhat-developer/vscode-tekton/issues/512) Code completion for inline tasks.
+* [#522](https://github.com/redhat-developer/vscode-tekton/issues/522) Provide links to docks for how to run k8s locally.
+* [#523](https://github.com/redhat-developer/vscode-tekton/issues/523) Provide a link to Tekton installation.
+* [#524](https://github.com/redhat-developer/vscode-tekton/issues/524) telemetry support for tektonHub.
+* [#526](https://github.com/redhat-developer/vscode-tekton/issues/526) Collect cluster information for telemetry.
+* [#528](https://github.com/redhat-developer/vscode-tekton/issues/528) Use kubectl to start pipeline.
+* [#542](https://github.com/redhat-developer/vscode-tekton/pull/542) Fix bug on finding reference resource while deleting.
+* [#547](https://github.com/redhat-developer/vscode-tekton/issues/547) Send telemetry data when user click on treeview.
+* [#548](https://github.com/redhat-developer/vscode-tekton/issues/548) Add telemetry support on watch feature.
+
 ## 0.13.0 (March 26, 2021)
 
 This release brings to you:
