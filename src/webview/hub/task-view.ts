@@ -262,8 +262,13 @@ export class TaskView {
   }
 
   setErrorState(message: string): void {
+    this.loader.hide();
     this.searchInput.disable();
     this.taskList.setErrorMessage(message);
+    if (!this.mainContainer.contains(this.taskList.getElement())){
+      this.mainContainer.removeChild(this.welcomeList.getElement());
+      this.mainContainer.appendChild(this.taskList.getElement());
+    }
   }
 
   showTasks(tasks: ResourceData[]): void {
