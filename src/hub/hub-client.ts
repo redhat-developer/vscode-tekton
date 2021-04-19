@@ -4,6 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as hubApi from '../tekton-hub-client';
+import * as vscode from 'vscode';
 
 export enum TektonHubStatusEnum {
   Ok = 'ok',
@@ -17,7 +18,8 @@ export interface TektonHubStatus {
 
 export async function getTektonHubStatus(): Promise<TektonHubStatus> {
   try {
-    const result = await new hubApi.StatusApi().statusStatus();
+    const hubUrl = vscode.workspace.getConfiguration('vs-tekton').get<string>('tekton-hub-url');
+    const result = await new hubApi.StatusApi({basePath: hubUrl}).statusStatus();
     for (const service of result.data.services) {
       if (service.status !== hubApi.HubServiceStatusEnum.Ok){
         return {status: TektonHubStatusEnum.Error, error: service.error};
@@ -33,7 +35,7 @@ export async function getTektonHubStatus(): Promise<TektonHubStatus> {
 
 export async function searchTask(name: string): Promise<hubApi.ResourceData[]> {
   try {
-    const resApi = new hubApi.ResourceApi();
+    const resApi = createResourceApi();
     const result = await resApi.resourceQuery(name);
     return result.data.data;
   } catch (err) {
@@ -48,31 +50,36 @@ export async function searchTask(name: string): Promise<hubApi.ResourceData[]> {
 }
 
 export async function getVersions(id: number): Promise<hubApi.Versions> {
-  const restApi = new hubApi.ResourceApi();
+  const restApi = createResourceApi();
   const result = await restApi.resourceVersionsByID(id);
   return result.data.data;
 }
 
 export async function getTaskByVersion(taskId: number): Promise<hubApi.ResourceVersionData> {
-  const restApi = new hubApi.ResourceApi();
+  const restApi = createResourceApi();
   const result = await restApi.resourceByVersionId(taskId);
   return result.data.data;
 }
 
 export async function getTaskByNameAndVersion(catalog: string, name: string, version: string): Promise<hubApi.ResourceVersionData> {
-  const restApi = new hubApi.ResourceApi();
+  const restApi = createResourceApi();
   const result = await restApi.resourceByCatalogKindNameVersion(catalog, 'task', name, version);
   return result.data.data;
 }
 
 export async function getTaskById(taskId: number): Promise<hubApi.ResourceData> {
-  const restApi = new hubApi.ResourceApi();
+  const restApi = createResourceApi();
   const result = await restApi.resourceById(taskId);
   return result.data.data;
 }
 
 export async function getTopRatedTasks(limit: number): Promise<hubApi.ResourceData[]> {
-  const restApi = new hubApi.ResourceApi();
+  const restApi = createResourceApi();
   const result = await restApi.resourceList(limit);
   return result.data.data;
+}
+
+function createResourceApi(): hubApi.ResourceApi {
+  const hubUrl = vscode.workspace.getConfiguration('vs-tekton').get<string>('tekton-hub-url');
+  return new hubApi.ResourceApi({basePath: hubUrl});
 }
