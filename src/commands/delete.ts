@@ -25,6 +25,7 @@ import { TektonNode } from '../tree-view/tekton-node';
 import { checkRefResource, referenceOfTaskAndClusterTaskInCluster } from '../util/check-ref-resource';
 import { TknPipeline } from '../tekton';
 import { getPipelineList } from '../util/list-tekton-resource';
+import { tkn } from '../tkn';
 
 interface Refreshable {
   refresh(): void;
@@ -87,23 +88,18 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
       if (value === 'Yes') {
         return Progress.execFunctionWithProgress('Deleting...', async () => {
           for (const del of toDelete.values()) {
-            try {
-              await cli.execute(del);
-            } catch (err) {
-              console.error(err);
+            const result = await cli.execute(del);
+            if (result.error) {
+              telemetryLogError(commandId, result.error);
+              window.showErrorMessage(`Failed to delete: '${result.error}'.`)
+            } else {
+              toRefresh.refresh();
+              const message = `${del.cliArguments[1]}: ${del.cliArguments[2]} successfully deleted.`;
+              telemetryLog(commandId, message);
+              window.showInformationMessage(message);
             }
           }
         })
-          .then(() => toRefresh.refresh())
-          .then(() => {
-            const message = 'All items successfully deleted.';
-            telemetryLog(commandId, message);
-            return window.showInformationMessage(message);
-          })
-          .catch((err) => {
-            telemetryLogError(commandId, err);
-            return Promise.reject(`Failed to delete: '${err}'.`);
-          });
       }
 
     } else {
@@ -116,7 +112,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
       const value = await window.showWarningMessage(message, 'Yes', 'Cancel');
       if (value === 'Yes') {
         return Progress.execFunctionWithProgress(`Deleting the '${name}'.`, () =>
-          cli.execute(toDelete.values().next().value))
+          tkn.execute(toDelete.values().next().value))
           .then(() => toRefresh.refresh())
           .then(() => {
             telemetryLog(commandId, 'Successfully deleted.');
