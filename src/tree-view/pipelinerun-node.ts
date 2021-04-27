@@ -10,7 +10,7 @@ import format = require('string-format');
 import { TektonNode, TektonNodeImpl } from './tekton-node';
 import { compareTimeNewestFirst, Tkn } from '../tkn';
 import { TaskRunFromPipeline } from './taskrun-for-pipeline-node';
-import { humanizer } from '../util/humanizer';
+import { humanizer } from '../humanizer';
 
 
 export class PipelineRun extends TektonNodeImpl {

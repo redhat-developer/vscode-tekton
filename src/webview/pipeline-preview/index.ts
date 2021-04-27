@@ -98,7 +98,7 @@ function startUpdatingState(): void {
 
   cy.on('pan zoom resize', () => {
     if (taskInfoPopup) {
-      taskInfoPopup.update(cy.zoom());
+      taskInfoPopup.update();
     }
   });
 

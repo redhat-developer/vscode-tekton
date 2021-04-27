@@ -8,7 +8,7 @@ import { StepData } from './model';
 import { BaseWidget} from '../common/widget';
 import {createDiv} from '../common/dom-util';
 import './popup.css';
-import {humanizer} from '../../util/humanizer';
+import {humanizer} from '../../humanizer';
 
 export class TaskPopup extends BaseWidget {
   private popper: Popper;
@@ -57,11 +57,8 @@ export class TaskPopup extends BaseWidget {
     this.element.remove();
   }
 
-  update(zoom?: number): void {
+  update(): void {
     this.popper.update();
-    // if (zoom) {
-    //   this.element.style.zoom = '' + zoom;
-    // }
   }
 
   private renderSteps(steps: StepData[], renderLoader = true): void {

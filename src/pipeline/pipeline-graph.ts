@@ -11,7 +11,7 @@ import { NodeOrEdge, NodeData, EdgeData, StepData } from '../webview/pipeline-pr
 import { PipelineRunData, TaskRuns, TaskRun, PipelineRunConditionCheckStatus } from '../tekton';
 import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
 import { ContextType } from '../context-type';
-import { humanizer } from '../util/humanizer';
+import { humanizer } from '../humanizer';
 
 export interface GraphProvider {
   getGraph(document: vscode.TextDocument | VirtualDocument, pipelineRun?: PipelineRunData): Promise<NodeOrEdge[]>;
@@ -228,13 +228,6 @@ async function getPipelineTaskSteps(document: vscode.TextDocument | VirtualDocum
     return;
   }
 
-  // if (task.type === 'Condition') {
-
-  // }
-
-  // if (task.type === 'When') {
-    
-  // }
   return undefined;
 }
 

@@ -11,7 +11,7 @@ import { FileContentChangeNotifier, WatchUtil } from './watch';
 import { window, workspace } from 'vscode';
 import { getResourceList } from './list-tekton-resource';
 import { telemetryLog } from '../telemetry';
-import { humanizer } from './humanizer';
+import { humanizer } from '../humanizer';
 
 export const pipelineTriggerStatus = new Map<string, boolean>();
 const kubeConfigFolder: string = path.join(Platform.getUserHomePath(), '.kube');

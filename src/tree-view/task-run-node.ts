@@ -10,7 +10,7 @@ import { ConditionCheckStatus, PipelineTaskRunData, TaskRunStatus } from '../tek
 import { TektonNode, TektonNodeImpl } from './tekton-node';
 import { getPipelineRunTaskState, Tkn } from '../tkn';
 import { IMAGES, ERROR_PATH, PENDING_PATH } from '../icon-path';
-import { humanizer } from '../util/humanizer';
+import { humanizer } from '../humanizer';
 
 
 export class TaskRun extends TektonNodeImpl {
