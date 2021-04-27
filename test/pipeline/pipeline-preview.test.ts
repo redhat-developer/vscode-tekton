@@ -12,7 +12,7 @@ import { tektonYaml } from '../../src/yaml-support/tkn-yaml';
 import * as preview from '../../src/pipeline/preview-manager';
 import { showPipelinePreview } from '../../src/pipeline/pipeline-preview';
 import { TektonYamlType } from '../../src/yaml-support/tkn-yaml';
-import { calculatePipelineGraph } from '../../src/pipeline/pipeline-graph';
+import { calculatePipelineGraph, pipelineGraph } from '../../src/pipeline/pipeline-graph';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -50,7 +50,7 @@ suite('pipeline preview', () => {
     tknDocuments.returns([{}]);
 
     showPipelinePreview();
-    expect(previewManager.calledOnceWith(doc, { resourceColumn: vscode.ViewColumn.One, previewColumn: vscode.ViewColumn.One + 1, graphProvider: calculatePipelineGraph })).true;
+    expect(previewManager).calledOnceWith(doc, { resourceColumn: vscode.ViewColumn.One, previewColumn: vscode.ViewColumn.One + 1, graphProvider: pipelineGraph });
   });
 
 });
