@@ -4,14 +4,17 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as cytoscape from 'cytoscape';
-import { NodeOrEdge, CyTheme, NodeData } from './model';
+import { NodeOrEdge, CyTheme, NodeData, StepData } from './model';
 import * as dagre from 'cytoscape-dagre';
 import { debounce } from 'debounce';
+import * as popper from 'cytoscape-popper';
+import { TaskPopup } from './task-popup';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare let acquireVsCodeApi: any;
 const vscode = acquireVsCodeApi();
 cytoscape.use(dagre); // register extension
+cytoscape.use(popper);
 
 let cy: cytoscape.Core;
 const saveState = debounce(() => {
@@ -24,8 +27,10 @@ if (previousState) {
   restore(previousState);
 }
 
-let highlightedSourceEdges: cytoscape.Collection;
-let highlightedTargetEdges: cytoscape.Collection;
+let highlightedSourceEdges: cytoscape.EdgeCollection;
+let highlightedTargetEdges: cytoscape.EdgeCollection;
+let taskInfoPopup: TaskPopup;
+let hoveredId: string;
 
 window.addEventListener('message', event => {
 
@@ -39,6 +44,11 @@ window.addEventListener('message', event => {
     case 'removeHighlight':
       removeHighlight();
       break;
+    case 'showSteps':
+      showSteps(event.data.data);
+      break;
+    default:
+      console.error(`Cannot handle: ${event.data.type}!`);
   }
 }, false);
 
@@ -69,7 +79,11 @@ function highlightNode(nodeId: string): void {
   previousHighlightNode = cy.$(`#${nodeId}`);
   previousHighlightNode.data('editing', 'true');
 }
-
+function showSteps(steps: StepData[] | undefined): void {
+  if (taskInfoPopup) {
+    taskInfoPopup.setSteps(steps);
+  }
+}
 function startUpdatingState(): void {
   cy.on('render', () => saveState());
   cy.on('tap', 'node', function (evt) {
@@ -79,6 +93,12 @@ function startUpdatingState(): void {
         type: 'onDidClick',
         body: node
       });
+    }
+  });
+
+  cy.on('pan zoom resize', () => {
+    if (taskInfoPopup) {
+      taskInfoPopup.update(cy.zoom());
     }
   });
 
@@ -97,6 +117,24 @@ function startUpdatingState(): void {
     targetEdges.style('line-color', theme.targetEdgesColor);
     targetEdges.style('target-arrow-color', theme.targetEdgesColor);
     targetEdges.style('z-index', '100');
+    const nodeData = node.data();
+    if (taskInfoPopup) {
+      taskInfoPopup.hide();
+      taskInfoPopup = undefined;
+    }
+    if (nodeData.steps) {
+      taskInfoPopup = new TaskPopup(node);
+      hoveredId = node.data().id;
+    } else {
+      if (nodeData.type !== 'Condition' && nodeData.type !== 'When') {
+        taskInfoPopup = new TaskPopup(node);
+        hoveredId = node.data().id;
+        vscode.postMessage({
+          type: 'getSteps',
+          body: nodeData
+        });
+      }
+    }
   });
 
   cy.on('mouseout', 'node', () => {
@@ -110,6 +148,11 @@ function startUpdatingState(): void {
       highlightedTargetEdges.removeStyle('z-index');
       highlightedTargetEdges.removeStyle('target-arrow-color');
     }
+    if (taskInfoPopup) {
+      taskInfoPopup.hide();
+      taskInfoPopup = undefined;
+    }
+    hoveredId = undefined;
   });
 }
 
@@ -120,7 +163,10 @@ function restore(state: object): void {
 }
 
 function render(data: NodeOrEdge[]): void {
-
+  if (taskInfoPopup) {
+    taskInfoPopup.hide();
+    taskInfoPopup = undefined;
+  }
   cy = cytoscape({
     container: document.getElementById('cy'), // container to render in
     elements: data,
@@ -139,6 +185,11 @@ function render(data: NodeOrEdge[]): void {
   });
 
   startUpdatingState();
+  if (hoveredId) {
+    const node = cy.$(`#${hoveredId}`);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    taskInfoPopup = new TaskPopup(node as any);
+  }
 }
 
 function updateStyle(): void {
@@ -213,6 +264,12 @@ function getStyle(style: CyTheme): cytoscape.Stylesheet[] {
     },
     {
       selector: 'node[type = "ClusterTask"]',
+      style: {
+        'shape': 'round-rectangle',
+      },
+    },
+    {
+      selector: 'node[type = "TaskSpec"]',
       style: {
         'shape': 'round-rectangle',
       },

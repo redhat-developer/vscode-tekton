@@ -13,6 +13,7 @@ import { kubectl } from '../kubectl';
 import { PipelineRunData } from '../tekton';
 import { NodeData } from '../webview/pipeline-preview/model';
 import { VirtualDocument } from '../yaml-support/yaml-locator';
+import { telemetryLogError } from '../telemetry';
 
 export interface PipelinePreviewInput {
   readonly document: vscode.TextDocument | VirtualDocument;
@@ -73,6 +74,11 @@ export class PipelinePreview extends Disposable {
         case 'onDidClick':
           this.onDidClick(e.body);
           break;
+        case 'getSteps': 
+          this.handleGetSteps(e.body);
+          break;
+        default:
+          console.error(`Cannot handle message: ${e.type}`);
       }
     }));
 
@@ -154,6 +160,17 @@ export class PipelinePreview extends Disposable {
 
   }
 
+  private async handleGetSteps(node: NodeData): Promise<void> {
+    try {
+      const steps = await this.graphProvider.getTaskSteps(this.document, node);
+      this.postMessage({type: 'showSteps', data: steps});
+    } catch (err) {
+      console.error(err);
+      telemetryLogError('Pipeline Diagram', err);
+    }
+  
+  }
+
   private isPreviewOf(resource: vscode.Uri): boolean {
     return this.document.uri.fsPath === resource.fsPath;
   }
@@ -166,7 +183,7 @@ export class PipelinePreview extends Disposable {
     this.setContent(html);
 
     try {
-      const graph = await this.graphProvider(this.document);
+      const graph = await this.graphProvider.getGraph(this.document);
       this.postMessage({ type: 'showData', data: graph });
     } catch (err) {
       console.error(err);
@@ -175,7 +192,7 @@ export class PipelinePreview extends Disposable {
 
   private async updatePipelineRun(run: PipelineRunData): Promise<void> {
     try {
-      const graph = await this.graphProvider(this.document, run);
+      const graph = await this.graphProvider.getGraph(this.document, run);
       this.postMessage({ type: 'showData', data: graph });
     } catch (err) {
       console.error(err);
@@ -191,7 +208,6 @@ export class PipelinePreview extends Disposable {
   private setContent(html: string): void {
     const fileName = path.basename(this.document.uri.fsPath);
     this.editor.title = `Preview ${fileName}`;
-    // this.editor.iconPath = this.iconPath; //TODO: implement
     this.editor.webview.options = getWebviewOptions();
     this.editor.webview.html = html;
   }
@@ -199,7 +215,6 @@ export class PipelinePreview extends Disposable {
   private getHmlContent(): string {
     const nonce = new Date().getTime() + '' + new Date().getMilliseconds();
     const rule = this.editor.webview.cspSource;
-    //<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' AllowScriptsAndAllContent https: data: http://localhost:* http://127.0.0.1:*; media-src 'self' AllowScriptsAndAllContent https: data: http://localhost:* http://127.0.0.1:*; script-src 'unsafe-eval' 'nonce-${nonce}'; style-src 'self' AllowScriptsAndAllContent 'unsafe-inline' https: data: http://localhost:* http://127.0.0.1:*; font-src 'self' AllowScriptsAndAllContent https: data: http://localhost:* http://127.0.0.1:*;">
     return `<!DOCTYPE html>
 			<html>
 			<head>
@@ -240,13 +255,6 @@ export class PipelinePreview extends Disposable {
 				nonce="${nonce}"
 				charset="UTF-8"></script>`);
     return out.join('\n');
-  }
-
-  private getImagesUri(): { [key: string]: string } {
-    const result: { [key: string]: string } = Object.create(null);
-    result['task'] = this.editor.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, 'images', 'T.svg'))).toString();
-    result['clustertask'] = this.editor.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, 'images', 'CT.svg'))).toString();
-    return result;
   }
 
 }

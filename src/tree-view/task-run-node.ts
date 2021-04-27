@@ -8,8 +8,9 @@ import { TreeItemCollapsibleState, Uri } from 'vscode';
 import { ContextType } from '../context-type';
 import { ConditionCheckStatus, PipelineTaskRunData, TaskRunStatus } from '../tekton';
 import { TektonNode, TektonNodeImpl } from './tekton-node';
-import { getPipelineRunTaskState, humanizer, Tkn } from '../tkn';
+import { getPipelineRunTaskState, Tkn } from '../tkn';
 import { IMAGES, ERROR_PATH, PENDING_PATH } from '../icon-path';
+import { humanizer } from '../util/humanizer';
 
 
 export class TaskRun extends TektonNodeImpl {

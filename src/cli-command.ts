@@ -258,6 +258,10 @@ export class Command {
     return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/pipelineRun=${pipelineRunName}`);
   }
 
+  static getTask(name: string, type: 'clustertask' | 'task.tekton'): CliCommand {
+    return newK8sCommand('get', type, name, '-o', 'json');
+  }
+
   @verbose
   static deleteTask(name: string): CliCommand {
     return newTknCommand('task', 'delete', name, '-f');

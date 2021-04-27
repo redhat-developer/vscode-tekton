@@ -1,0 +1,10 @@
+.popup-container {
+  border: 1px solid var(--vscode-focusBorder);
+  background-color: var(--vscode-input-background);
+  padding: 3px;
+}
+
+.steps-container {
+  margin: 0;
+  padding-left: 20px;
+}

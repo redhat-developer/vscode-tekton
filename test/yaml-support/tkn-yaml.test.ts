@@ -260,7 +260,30 @@ suite('Tekton yaml', () => {
       const tasks = pipelineYaml.getPipelineTasks(docs[0]);
       expect(tasks).is.not.empty;
       const task = tasks.find(t => t.name === 'build-skaffold-web');
-      expect(task.kind).eq('Task');
+      expect(task.kind).eq('TaskSpec');
+    });
+
+    test('should add steps name for taskSpec tasks', ()=> {
+      const yaml = `
+      apiVersion: tekton.dev/v1alpha1
+      kind: Pipeline
+      metadata:
+        name: pipeline-with-when
+      spec:
+        tasks:
+          - name: build-skaffold-web
+            taskSpec:
+              steps:
+                - name: echo
+                  image: ubuntu
+                  script: exit 1
+      `
+      const docs = tektonYaml.getTektonDocuments({ getText: () => yaml.toString(), version: 2, uri: vscode.Uri.parse('file:///pipeline/task-spec-pipeline.yaml') } as vscode.TextDocument, TektonYamlType.Pipeline);
+      const tasks = pipelineYaml.getPipelineTasks(docs[0]);
+      expect(tasks).is.not.empty;
+      const task = tasks.find(t => t.name === 'build-skaffold-web');
+      expect(task.kind).eq('TaskSpec');
+      expect(task.steps).deep.eq([{name: 'echo'}]);
     });
   });
 
