@@ -45,3 +45,20 @@ export function getVersion(tektonVersion: string): TknVersion {
     return tknVersion;
   }
 }
+
+export function compareVersion(a: string, b: string): boolean {
+  const x = a.split('.').map(e => parseInt(e))
+  const y = b.split('.').map(e => parseInt(e));
+
+  for (const i in x) {
+    y[i] = y[i] || 0;
+    if (x[i] === y[i]) {
+      continue;
+    } else if (x[i] > y[i]) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  return true;
+}

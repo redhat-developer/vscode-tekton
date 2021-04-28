@@ -19,7 +19,7 @@ import { Platform } from '../util/platform';
 import { exposeRoute, RouteModel } from './expose';
 import { Progress } from '../util/progress';
 import { cli } from '../cli';
-import { TknVersion, version } from '../util/tknversion';
+import { compareVersion, TknVersion, version } from '../util/tknversion';
 import { NewPvc } from './createpvc';
 import { getExposeURl } from '../util/exposeurl';
 import { telemetryLog, telemetryLogError } from '../telemetry';
@@ -283,14 +283,14 @@ export async function createEventListener(triggerBindings: TriggerBindingKind[],
       triggers: [
         {
           bindings: triggerBindings.map(({ kind, metadata: { name } }) => {
-            if ('0.5.0' >= getNewELSupport.trigger) {
+            if (compareVersion('0.5.0', getNewELSupport.trigger)) {
               return ({ kind, name });
             } else {
               const Ref = name;
               return ({ kind, Ref });
             }
           }),
-          template: { name: triggerTemplate.metadata.name },
+          template: compareVersion('0.5.0', getNewELSupport.trigger) ? { name: triggerTemplate.metadata.name } : { ref: triggerTemplate.metadata.name },
         },
       ],
     },
