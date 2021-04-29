@@ -33,14 +33,20 @@ export class TaskPopup extends BaseWidget {
 
   private getStateDescription(step: StepData): [string, string, string] {
     if (step.running) {
-      return ['Running',undefined, `running for ${humanizer(Date.now() - Date.parse(step.running.startedAt))}`];
+      return ['Started', undefined, ` ${humanizer(Date.now() - Date.parse(step.running.startedAt))}`];
     }
     if (step.waiting) {
       return ['Waiting', `${step.waiting.reason}`, undefined];
     }
 
     if (step.terminated) {
-      return ['Terminated',`${step.terminated.message ?? step.terminated.reason}`, `started ${humanizer(Date.now() - Date.parse(step.terminated.startedAt))} ago, finished in ${humanizer(Date.parse(step.terminated.finishedAt) - Date.parse(step.terminated.startedAt))}`];
+      let status = 'Finished';
+      if (step.terminated.reason === 'Error') {
+        status = 'Error';
+      } else if (step.terminated.reason === 'TaskRunCancelled') {
+        status = 'Cancelled'
+      }
+      return [status, undefined, ` ${humanizer(Date.parse(step.terminated.finishedAt) - Date.parse(step.terminated.startedAt))}`];
     }
 
     return [undefined, undefined, undefined];
@@ -64,7 +70,7 @@ export class TaskPopup extends BaseWidget {
   private renderSteps(steps: StepData[], renderLoader = true): void {
     this.element.innerHTML = '';
     if (steps) {
-      const stepsContainer = document.createElement('ol');
+      const stepsContainer = document.createElement('ul');
       stepsContainer.classList.add('steps-container');
       for (const step of steps) {
         const stepElement = document.createElement('li');
@@ -74,24 +80,20 @@ export class TaskPopup extends BaseWidget {
           content += ` ${description[0]}`;
         }
         if (description[1]){
-          content += ` with: ${description[1]}`;
+          content += `: ${description[1]}`;
         }
         if (description[2]){
-          content += ` - ${description[2]}`
+          content += ` ${description[2]}`
         }
         stepElement.textContent = content;
         stepsContainer.appendChild(stepElement);
       }
-      const titleElement = createDiv();
-      titleElement.textContent = 'Steps:'
-      this.element.appendChild(titleElement);
       this.element.appendChild(stepsContainer);
     } else {
       if (renderLoader) {
         this.element.innerText = 'Loading...';
       } else {
         this.hide();
-        // this.element.innerText = 'No steps!';
       }
     }
   }
