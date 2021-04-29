@@ -199,3 +199,10 @@ html, body {
 .list-action-bar .action-label:hover {
   background-color: var(--vscode-extensionButton-prominentHoverBackground);
 }
+
+.cluster-task-label {
+  color: var(--vscode-badge-foreground);
+  background-color: var(--vscode-badge-background);
+  border-radius: 4px;
+  padding: 0 4px;
+}

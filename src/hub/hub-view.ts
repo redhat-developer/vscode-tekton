@@ -168,6 +168,7 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
     if (isInstalledTask(task)) {
       const taskData: InstalledTask = await getTaskById(task.id);
       taskData.installedVersion = task.installedVersion;
+      taskData.clusterTask = task.clusterTask;
       task = taskData;
     }
     taskPageManager.showTaskPageView(task, this.tknVersion);

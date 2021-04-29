@@ -305,3 +305,12 @@ html, body {
   background-color: var(--vscode-menu-selectionBackground);
   color: var(--vscode-menu-selectionForeground);
 }
+
+.cluster-task-label {
+  color: var(--vscode-badge-foreground);
+  background-color: var(--vscode-badge-background);
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 13px;
+  font-weight: 400;
+}
