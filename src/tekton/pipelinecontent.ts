@@ -110,15 +110,25 @@ export class PipelineContent extends TektonItem {
     return pipeResources;
   }
 
-  static async inputResources(Ref: Ref[], message: string, item: QuickPickItem): Promise<string> {
+  static async inputResources(Ref: Ref[], item: QuickPickItem): Promise<string> {
+    let resourceName: QuickPickItem | string;
+    const createPipelineResource = '$(plus) Create Pipeline Resource.'
     const RefName: QuickPickItem[] = Ref.map<QuickPickItem>(label => ({ label: label.name }));
+    RefName.unshift({label: createPipelineResource})
     const name = item['resourceGitImageType'].charAt(0).toUpperCase() + item['resourceGitImageType'].slice(1)
-    const pick = await multiStepInput.showQuickPick({
+    resourceName = await multiStepInput.showQuickPick({
       title: `${name} Resource: ${item['label']}`,
-      placeholder: `Select ${message} Resources`,
+      placeholder: 'Select Pipeline Resources',
       items: RefName,
     });
-    return pick.label;
+    if (resourceName.label === createPipelineResource) {
+      resourceName = await multiStepInput.showInputBox({
+        title: `${name} Resource: ${item['label']}`,
+        prompt: 'Please provide Name/URL',
+        validate: PipelineContent.validateInput,
+      });
+    }
+    return (resourceName['label']) ? resourceName['label'] : resourceName;
   }
 
   static async inputParameters(context: Trigger[], params: QuickPickItem[], message: string): Promise<Params[]> {
@@ -126,25 +136,14 @@ export class PipelineContent extends TektonItem {
     for (const item of params) {
       const selectedParam = context[0].params.find(x => x.name === item.label);
       const title = `Params: ${item['label']}`;
-      const paramVal = await PipelineContent.getParamValues(selectedParam.name);
       if (!selectedParam.default) {
-        const pick = await multiStepInput.showQuickPick({
+        const inputVal = await multiStepInput.showInputBox({
           title,
-          placeholder: `Select ${message} Parameter`,
-          items: paramVal,
+          prompt: `Input ${message} default Value`,
+          validate: PipelineContent.validateInput,
         });
-        if (pick.label === selectedParam.name) {
-          const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: selectedParam.default };
-          paramData.push(parameter);
-        } else {
-          const inputVal = await multiStepInput.showInputBox({
-            title,
-            prompt: `Input ${message} default Value`,
-            validate: PipelineContent.validateInput,
-          });
-          const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: inputVal };
-          paramData.push(parameter);
-        }
+        const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: inputVal };
+        paramData.push(parameter);
       } else {
         const parameter: Params = { name: selectedParam.name, description: selectedParam.description, default: selectedParam.default };
         paramData.push(parameter);
@@ -153,14 +152,9 @@ export class PipelineContent extends TektonItem {
     return paramData;
   }
 
-  static async getParamValues(paramName: string): Promise<QuickPickItem[]> | null {
-    return ['$(plus) Input New Param Value', paramName]
-      .map(label => ({ label }));
-  }
-
   static async validateInput(name: string): Promise<undefined | 'invalid'> {
-    const alphaNumHyph = new RegExp(/^[a-zA-Z0-9-_]+$/);
-    return name.match(alphaNumHyph) ? undefined : 'invalid';
+    const alphaNum = new RegExp(/^[a-zA-Z0-9-_]+$/);
+    return name.match(alphaNum) ? undefined : 'invalid';
   }
 
   static async getServiceAcct(inputStart: StartObject): Promise<QuickPickItem[]> | null {
@@ -200,7 +194,7 @@ export class PipelineContent extends TektonItem {
     const workspaceData = [];
 
     for (const item of workspacesList) {
-      let key: string, value: string, subPath: string, workspaceName: QuickPickItem | string, emptyDir: string;
+      let key: string, value: string, subPath: string, workspaceName: QuickPickItem | string;
       const workspaceList = [{label: 'PersistentVolumeClaim'}, {label: 'EmptyDir'}, {label: 'ConfigMap'}, {label: 'Secret'}];
       const workspaceType = await multiStepInput.showQuickPick({
         title: `Workspace ${count}: ${item['label']}`,
@@ -217,19 +211,11 @@ export class PipelineContent extends TektonItem {
         } catch (ignore) {
         }
         const workspacesName: QuickPickItem[] | undefined = data ? data.map<QuickPickItem>(label => ({ label: label['metadata'].name })) : undefined;
-        if (workspacesName) workspacesName.unshift({label: '$(plus) Add new workspace name.'})
         workspaceName = await multiStepInput.showQuickPick({
           title: `Workspace ${count}: ${item['label']}`,
           placeholder: `Select ${workspaceType.label}`,
           items: workspacesName,
         });
-        if (workspaceName.label === '$(plus) Add new workspace name.') {
-          workspaceName = await multiStepInput.showInputBox({
-            title: `Workspace ${count}: ${item['label']}`,
-            prompt: `Provide new ${workspaceType.label} name`,
-            validate: PipelineContent.validateInput,
-          });
-        }
         if (workspaceType.label === 'ConfigMap') {
           key = await multiStepInput.showInputBox({
             title: `Workspace ${count}: ${item['label']}`,
@@ -250,21 +236,14 @@ export class PipelineContent extends TektonItem {
           });
         }
       }
-      if (workspaceType.label === 'EmptyDir') {
-        emptyDir = await multiStepInput.showInputBox({
-          title: `Workspace ${count}: ${item['label']}`,
-          prompt: 'Provide EmptyDir name',
-          validate: PipelineContent.validateInput,
-        });
-      }
+
       const selectedWorkspace: Workspaces = {
         name: item['label'],
-        workspaceName: workspaceName['label'] ? workspaceName['label'] : workspaceName,
+        workspaceName: workspaceName?.['label'] ? workspaceName['label'] : workspaceName,
         workspaceType: workspaceType.label,
         key: key ? key : undefined,
         value: value ? value : undefined,
-        subPath: subPath ? subPath : undefined,
-        emptyDir: emptyDir ? emptyDir : undefined
+        subPath: subPath ? subPath : undefined
       };
       workspaceData.push(selectedWorkspace);
       count++;
@@ -291,7 +270,7 @@ export class PipelineContent extends TektonItem {
         const selectedResource: Resources = {
           name: item['label'],
           resourceType: item['resourceType'],
-          resourceRef: await PipelineContent.inputResources(Ref, message, item),
+          resourceRef: await PipelineContent.inputResources(Ref, item),
         };
         inputStart.resources.push(selectedResource);
       }

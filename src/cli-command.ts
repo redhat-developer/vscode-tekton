@@ -69,7 +69,7 @@ function tknWorkspace(pipelineData: StartObject): string[] {
         workspace.push(`-w name=${element.name},secret=${element.workspaceName}`);
       }
     } else if (element.workspaceType === 'EmptyDirectory' || element.workspaceType === 'EmptyDir') {
-      workspace.push(`-w name=${element.name},emptyDir=${element.emptyDir ?? '""'}`);
+      workspace.push(`-w name=${element.name},emptyDir=''`);
     }
   });
   return workspace;
