@@ -12,7 +12,7 @@ import { BaseWidget, Listener, Widget } from '../common/widget';
 import { CollapsibleList, CollapsibleListState, ListWidget } from '../common/list-widget';
 import { createDiv, createSpan } from '../common/dom-util';
 import * as semver from 'semver';
-import { HubTask, HubTaskInstallation, InstalledTask } from '../../hub/hub-common';
+import { HubTask, HubTaskInstallation, InstalledTask, isInstalledTask } from '../../hub/hub-common';
 import { Loader } from '../common/loader';
 
 
@@ -122,6 +122,8 @@ export class TaskItem extends BaseWidget {
     const actionContainer = document.createElement('ul');
     actionContainer.classList.add('actions-container');
 
+    this.addIsClusterTask(actionContainer);
+
     if (this.tknVersion){
       this.addVersionCheck(actionContainer);
     }
@@ -175,6 +177,17 @@ export class TaskItem extends BaseWidget {
         container.appendChild(versionWarning);
     
       }
+    }
+  }
+
+  private addIsClusterTask(container: HTMLUListElement): void {
+    if (isInstalledTask(this.task) && this.task.clusterTask) {
+      const clusterTaskContainer = document.createElement('li');
+      clusterTaskContainer.classList.add('action-item');
+      const clusterTaskLabel = createSpan('cluster-task-label');
+      clusterTaskLabel.textContent = 'ClusterTask';
+      clusterTaskContainer.appendChild(clusterTaskLabel);
+      container.appendChild(clusterTaskContainer);
     }
   }
 

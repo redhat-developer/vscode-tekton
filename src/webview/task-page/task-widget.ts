@@ -184,6 +184,15 @@ export class TaskWidget extends BaseWidget {
       this.addVersionCheck(actionsContainer);
     }
 
+    if (isInstalledTask(this.task) && this.task.clusterTask) {
+      const clusterTaskContainer = document.createElement('li');
+      clusterTaskContainer.classList.add('action-item');
+      const clusterTaskLabel = createSpan('cluster-task-label');
+      clusterTaskLabel.textContent = 'ClusterTask';
+      clusterTaskContainer.appendChild(clusterTaskLabel);
+      actionsContainer.appendChild(clusterTaskContainer);
+    }
+
     details.appendChild(actions);
 
   }
