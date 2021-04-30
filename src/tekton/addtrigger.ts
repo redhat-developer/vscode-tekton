@@ -19,13 +19,14 @@ import { Platform } from '../util/platform';
 import { exposeRoute, RouteModel } from './expose';
 import { Progress } from '../util/progress';
 import { cli } from '../cli';
-import { compareVersion, TknVersion, version } from '../util/tknversion';
+import { TknVersion, version } from '../util/tknversion';
 import { NewPvc } from './createpvc';
 import { getExposeURl } from '../util/exposeurl';
 import { telemetryLog, telemetryLogError } from '../telemetry';
 import { getStderrString } from '../util/stderrstring';
 import { VCT } from './pipelinecontent';
 import { Command } from '../cli-command';
+import semver = require('semver');
 
 export const TriggerTemplateModel = {
   apiGroup: 'triggers.tekton.dev',
@@ -272,6 +273,7 @@ export function apiVersionForModel(model: K8sKind): string {
 
 export async function createEventListener(triggerBindings: TriggerBindingKind[], triggerTemplate: TriggerTemplateKind): Promise<EventListenerKind> {
   const getNewELSupport: TknVersion = await version();
+  const compareVersion = semver.satisfies('0.5.0', `>=${getNewELSupport.trigger}`);
   return {
     apiVersion: apiVersionForModel(EventListenerModel),
     kind: EventListenerModel.kind,
@@ -283,14 +285,14 @@ export async function createEventListener(triggerBindings: TriggerBindingKind[],
       triggers: [
         {
           bindings: triggerBindings.map(({ kind, metadata: { name } }) => {
-            if (compareVersion('0.5.0', getNewELSupport.trigger)) {
+            if (compareVersion) {
               return ({ kind, name });
             } else {
               const Ref = name;
               return ({ kind, Ref });
             }
           }),
-          template: compareVersion('0.5.0', getNewELSupport.trigger) ? { name: triggerTemplate.metadata.name } : { ref: triggerTemplate.metadata.name },
+          template: compareVersion ? { name: triggerTemplate.metadata.name } : { ref: triggerTemplate.metadata.name },
         },
       ],
     },
