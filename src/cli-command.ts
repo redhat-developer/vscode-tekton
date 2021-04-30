@@ -16,6 +16,7 @@ export function newK8sCommand(...k8sArguments: string[]): CliCommand {
   return createCliCommand('kubectl', ...k8sArguments);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function verbose(_target: unknown, key: string, descriptor: any): void {
   let fnKey: string | undefined;
   let fn: Function;
@@ -256,6 +257,10 @@ export class Command {
 
   static listTaskRunsForPipelineRunInTerminal(pipelineRunName: string): CliCommand {
     return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/pipelineRun=${pipelineRunName}`);
+  }
+
+  static getTask(name: string, type: 'clustertask' | 'task.tekton'): CliCommand {
+    return newK8sCommand('get', type, name, '-o', 'json');
   }
 
   @verbose

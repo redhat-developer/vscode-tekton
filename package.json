@@ -13,7 +13,8 @@
   },
   "bugs": "https://github.com/redhat-developer/vscode-tekton/issues",
   "engines": {
-    "vscode": "^1.50.0"
+    "vscode": "^1.50.0",
+    "npm": ">=7.0.0"
   },
   "categories": [
     "Snippets",
@@ -930,6 +931,7 @@
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.1.18",
+    "@popperjs/core": "^2.9.2",
     "@types/byline": "^4.2.31",
     "@types/chai": "^4.1.7",
     "@types/collections": "^5.0.0",
@@ -960,6 +962,7 @@
     "css-loader": "^3.6.0",
     "cytoscape": "^3.14.0",
     "cytoscape-dagre": "^2.2.2",
+    "cytoscape-popper": "^2.0.0",
     "decache": "^4.5.1",
     "eslint": "^6.7.2",
     "eslint-plugin-header": "^3.0.0",

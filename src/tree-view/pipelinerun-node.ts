@@ -8,8 +8,9 @@ import { ContextType } from '../context-type';
 import { PipelineRunData } from '../tekton';
 import format = require('string-format');
 import { TektonNode, TektonNodeImpl } from './tekton-node';
-import { compareTimeNewestFirst, humanizer, Tkn } from '../tkn';
+import { compareTimeNewestFirst, Tkn } from '../tkn';
 import { TaskRunFromPipeline } from './taskrun-for-pipeline-node';
+import { humanizer } from '../humanizer';
 
 
 export class PipelineRun extends TektonNodeImpl {

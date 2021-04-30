@@ -7,6 +7,7 @@ import { yamlLocator, YamlMap, YamlSequence, YamlNode, YamlDocument, VirtualDocu
 import * as _ from 'lodash';
 import { TknElementType } from '../model/element-type';
 import { PipelineTask, PipelineTaskCondition } from '../model/pipeline/pipeline-model';
+import { TaskRunSteps, TaskStep } from '../tekton';
 
 const TEKTON_API = 'tekton.dev/';
 const TRIGGER_API = 'triggers.tekton.dev';
@@ -35,9 +36,10 @@ export interface DeclaredTask {
   name: string;
   taskRef: string;
   runAfter: string[];
-  kind: 'Task' | 'ClusterTask' | 'Condition' | 'When' | string;
+  kind: 'Task' | 'ClusterTask' | 'Condition' | 'When' | 'TaskSpec' | string;
   position?: number;
   final?: boolean;
+  steps?: TaskStep[];
 }
 
 export type RunState = 'Cancelled' | 'Finished' | 'Started' | 'Failed' | 'Unknown';
@@ -48,6 +50,7 @@ export interface PipelineRunTask extends DeclaredTask {
   completionTime?: string;
   stepsCount?: number;
   finishedSteps?: number;
+  steps?: TaskRunSteps[] | TaskStep[];
 }
 
 
@@ -320,6 +323,15 @@ export class PipelineYaml {
     }
     return undefined;
   }
+
+  // findTaskByNameInTaskSpec(document: vscode.TextDocument, name: string): DeclaredTask {
+  //   const yamlDocuments = yamlLocator.getYamlDocuments(document);
+  //   for (const doc of yamlDocuments) {
+  //     if (tektonYaml.getTektonYamlType(doc) === TektonYamlType.Pipeline) {
+        
+  //     }
+  //   }
+  // }
 }
 
 
@@ -451,9 +463,19 @@ function toDeclaredTask(taskNode: YamlMap): DeclaredTask {
       decTask.kind = 'Task';
     }
   } else {
-    const taskSpec = findNodeByKey('taskSpec', taskNode);
+    const taskSpec = findNodeByKey<YamlMap>('taskSpec', taskNode);
     if (taskSpec) {
-      decTask.kind = 'Task'
+      decTask.kind = 'TaskSpec';
+      const steps = findNodeByKey<YamlSequence>('steps', taskSpec);
+      if (steps) {
+        decTask.steps = [];
+        for (const step of steps.items) {
+          const name = findNodeByKey<YamlNode>('name', step as YamlMap);
+          if (name) {
+            decTask.steps.push({name: name.raw});
+          }
+        }
+      }
     }
 
   }

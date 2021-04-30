@@ -9,9 +9,9 @@ import { kubectl, KubectlCommands } from '../kubectl';
 import { pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { FileContentChangeNotifier, WatchUtil } from './watch';
 import { window, workspace } from 'vscode';
-import { humanizer } from '../tkn';
 import { getResourceList } from './list-tekton-resource';
 import { telemetryLog } from '../telemetry';
+import { humanizer } from '../humanizer';
 
 export const pipelineTriggerStatus = new Map<string, boolean>();
 const kubeConfigFolder: string = path.join(Platform.getUserHomePath(), '.kube');

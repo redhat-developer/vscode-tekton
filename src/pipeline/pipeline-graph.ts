@@ -6,22 +6,33 @@
 import * as vscode from 'vscode';
 import { tektonYaml, pipelineYaml, pipelineRunYaml, TektonYamlType, DeclaredTask, PipelineRunTask } from '../yaml-support/tkn-yaml';
 import { YamlDocument, VirtualDocument } from '../yaml-support/yaml-locator';
-import { humanizer, getPipelineRunTaskState } from '../tkn';
-import { NodeOrEdge, NodeData, EdgeData } from '../webview/pipeline-preview/model';
+import { getPipelineRunTaskState, tkn } from '../tkn';
+import { NodeOrEdge, NodeData, EdgeData, StepData } from '../webview/pipeline-preview/model';
 import { PipelineRunData, TaskRuns, TaskRun, PipelineRunConditionCheckStatus } from '../tekton';
 import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
 import { ContextType } from '../context-type';
+import { humanizer } from '../humanizer';
 
 export interface GraphProvider {
-  (document: vscode.TextDocument | VirtualDocument, pipelineRun?: PipelineRunData): Promise<NodeOrEdge[]>;
+  getGraph(document: vscode.TextDocument | VirtualDocument, pipelineRun?: PipelineRunData): Promise<NodeOrEdge[]>;
   getElementBySelection?(document: vscode.TextDocument, selection: vscode.Selection): string | undefined;
+  getTaskSteps(document: vscode.TextDocument | VirtualDocument, task: NodeData): Promise<StepData[]>;
+}
+export const pipelineGraph: GraphProvider = {
+  getGraph: calculatePipelineGraph,
+  getElementBySelection,
+  getTaskSteps: getPipelineTaskSteps
 }
 
+export const pipelineRunGraph: GraphProvider = {
+  getGraph: calculatePipelineRunGraph,
+  getTaskSteps: getPipelineRunTaskSteps
+}
 export async function calculatePipelineGraph(document: vscode.TextDocument): Promise<NodeOrEdge[]> {
 
   const doc: YamlDocument = await getPipelineDocument(document, TektonYamlType.Pipeline);
   if (!doc) {
-    return []; // TODO: throw error there
+    return [];
   }
 
   const tasks = pipelineYaml.getPipelineTasks(doc);
@@ -29,15 +40,14 @@ export async function calculatePipelineGraph(document: vscode.TextDocument): Pro
   return convertTasksToNode(tasks);
 }
 
-calculatePipelineGraph.getElementBySelection = function (document: vscode.TextDocument, selection: vscode.Selection): string | undefined {
-
+export function getElementBySelection(document: vscode.TextDocument, selection: vscode.Selection): string | undefined {
   return pipelineYaml.findTask(document, selection.start);
 }
 
 export async function calculatePipelineRunGraph(document: VirtualDocument, pipelineRun?: PipelineRunData): Promise<NodeOrEdge[]> {
   const doc: YamlDocument = await getPipelineDocument(document, TektonYamlType.PipelineRun);
   if (!doc) {
-    return []; // TODO: throw error there
+    return [];
   }
   let tasks: DeclaredTask[];
   const refOrSpec = pipelineRunYaml.getTektonPipelineRefOrSpec(doc);
@@ -110,7 +120,7 @@ function convertTasksToNode(tasks: PipelineRunTask[], includePositions = true): 
   tasks.forEach((task: DeclaredTask) => tasksMap.set( task.id, task));
 
   for (const task of tasks) {
-    result.push({ data: { id: task.id, label: getLabel(task), type: task.kind, taskRef: task.taskRef, state: task.state, yamlPosition: includePositions ? task.position : undefined, final: task.final } as NodeData });
+    result.push({ data: { id: task.id, label: getLabel(task), type: task.kind, taskRef: task.taskRef, state: task.state, yamlPosition: includePositions ? task.position : undefined, final: task.final, steps: task.steps ?? undefined } as NodeData });
     for (const after of task.runAfter ?? []) {
       if (tasksMap.has(after)) {
         result.push({ data: { source: after, target: task.id, id: `${after}-${ task.id}`, state: tasksMap.get(after).state } as EdgeData });
@@ -161,6 +171,7 @@ function updatePipelineRunTasks(pipelineRun: PipelineRunData, tasks: DeclaredTas
       const steps = (taskRun as TaskRun).status?.steps;
       if (steps) {
         runTask.stepsCount = steps.length;
+        runTask.steps = steps;
         let finishedSteps = 0;
         for (const step of steps) {
           const terminated = step.terminated;
@@ -200,4 +211,36 @@ function findConditionInTaskRun(name: string, taskRuns: TaskRuns): PipelineRunCo
       }
     }
   }
+}
+
+async function getPipelineTaskSteps(document: vscode.TextDocument | VirtualDocument, task: NodeData): Promise<StepData[] | undefined> {
+  if (task.type === 'Task' || task.type === 'ClusterTask') {
+    try {
+      const rawTask = await tkn.getRawTask(task.taskRef, task.type);
+      return rawTask.spec?.steps.map(it => { return {name: it.name}});
+    } catch (err) {
+      console.error(err);
+      return undefined;
+    }
+  }
+  if (task.type === 'TaskSpec') {
+    // task steps should be provided by initial parsing if present
+    return;
+  }
+
+  return undefined;
+}
+
+async function getPipelineRunTaskSteps(document: vscode.TextDocument | VirtualDocument, task: NodeData): Promise<StepData[]| undefined> {
+
+  if (task.type === 'Task' || task.type === 'ClusterTask') {
+    try {
+      const rawTask = await tkn.getRawTask(task.taskRef, task.type);
+      return rawTask.spec?.steps.map(it => { return {name: it.name}});
+    } catch (err) {
+      console.error(err);
+      return undefined;
+    }
+  }
+  return undefined;
 }

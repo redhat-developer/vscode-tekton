@@ -123,8 +123,12 @@ export interface Inputs {
 export interface TknTaskSpec {
   inputs?: TknInputs;
   outputs?: TknOutputs;
-  steps: Array;
+  steps: TknTaskStep[];
   results?: TaskResult[];
+}
+
+export interface TknTaskStep {
+  name: string;
 }
 
 export interface TaskResult {
@@ -357,8 +361,11 @@ export interface PipelineRunConditions {
   type: string;
 }
 
-export interface TaskRunSteps extends ContainerState {
+export interface TaskStep {
   name: string;
+}
+
+export interface TaskRunSteps extends TaskStep, ContainerState {
   container: string;
 }
 

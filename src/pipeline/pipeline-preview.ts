@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 import { TektonYamlType, tektonYaml, pipelineRunYaml } from '../yaml-support/tkn-yaml';
 import { previewManager, PreviewSettings } from './preview-manager';
 import { CommandContext, setCommandContext } from '../commands';
-import { calculatePipelineGraph, calculatePipelineRunGraph, askToSelectPipeline } from './pipeline-graph';
+import { askToSelectPipeline, pipelineGraph, pipelineRunGraph } from './pipeline-graph';
 import { tektonFSUri, tektonVfsProvider } from '../util/tekton-vfs';
 import { telemetryLog } from '../telemetry';
 import { ContextType } from '../context-type';
@@ -20,7 +20,7 @@ export async function showPipelinePreview(commandId?: string): Promise<void> {
   const resourceColumn = (vscode.window.activeTextEditor && vscode.window.activeTextEditor.viewColumn) || vscode.ViewColumn.One;
   const pipelines = tektonYaml.getTektonDocuments(document, TektonYamlType.Pipeline)
   if (pipelines?.length > 0) {
-    previewManager.showPipelinePreview(document, { resourceColumn, previewColumn: resourceColumn + 1, graphProvider: calculatePipelineGraph });
+    previewManager.showPipelinePreview(document, { resourceColumn, previewColumn: resourceColumn + 1, graphProvider: pipelineGraph });
     return;
   }
 
@@ -37,7 +37,7 @@ export async function showPipelinePreview(commandId?: string): Promise<void> {
       previewManager.showPipelinePreview(document, {
         resourceColumn,
         previewColumn: resourceColumn + 1,
-        graphProvider: calculatePipelineRunGraph,
+        graphProvider: pipelineRunGraph,
         pipelineRunName: pipelineRunYaml.getPipelineRunName(pipelineRunDoc),
         pipelineRunStatus: pipelineRunYaml.getPipelineRunStatus(pipelineRunDoc)
       } as PreviewSettings);
@@ -57,7 +57,7 @@ export async function showPipelineRunPreview(name: string, uid?: string): Promis
   previewManager.createPipelinePreview(pipelineRunDoc, {
     resourceColumn: vscode.ViewColumn.Active,
     previewColumn: vscode.ViewColumn.Active,
-    graphProvider: calculatePipelineRunGraph,
+    graphProvider: pipelineRunGraph,
     pipelineRunName: name,
     pipelineRunStatus: pipelineRunYaml.getPipelineRunStatus(pipelineRun[0])
   } as PreviewSettings);

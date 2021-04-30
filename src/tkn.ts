@@ -8,7 +8,6 @@ import { TreeItemCollapsibleState, Terminal, workspace, commands } from 'vscode'
 import { WindowUtil } from './util/windowUtils';
 import * as path from 'path';
 import { ToolsConfig } from './tools';
-import humanize = require('humanize-duration');
 import { TknPipelineResource, TknTask, PipelineRunData, TaskRunStatus, ConditionCheckStatus, PipelineTaskRunData } from './tekton';
 import { kubectl } from './kubectl';
 import { pipelineExplorer } from './pipeline/pipelineExplorer';
@@ -26,30 +25,8 @@ import { Command } from './cli-command';
 import { getPipelineList } from './util/list-tekton-resource';
 import { telemetryLog, telemetryLogError } from './telemetry';
 
-export const humanizer = humanize.humanizer(createConfig());
 
 let tektonResourceCount = {};
-
-function createConfig(): humanize.HumanizerOptions {
-  return {
-    language: 'shortEn',
-    languages: {
-      shortEn: {
-        y: () => 'y',
-        mo: () => 'mo',
-        w: () => 'w',
-        d: () => 'd',
-        h: () => 'h',
-        m: () => 'm',
-        s: () => 's',
-        ms: () => 'ms',
-      }
-    },
-    round: true,
-    largest: 2,
-    conjunction: ' '
-  };
-}
 
 interface NameId {
   name: string;
@@ -612,6 +589,22 @@ export class TknImpl implements Tkn {
 
   async restartPipeline(pipeline: TektonNode): Promise<void> {
     await this.executeInTerminal(Command.restartPipeline(pipeline.getName()));
+  }
+
+  async getRawTask(name: string, type: 'Task' | 'ClusterTask' = 'Task'): Promise<TknTask | undefined> {
+    let data: TknTask;
+    const result = await this.execute(Command.getTask(name, type === 'Task' ? 'task.tekton' : 'clustertask'));
+    if (result.error) {
+      console.log(result + 'Std.err when processing tasks');
+      return data;
+    }
+    try {
+      data = JSON.parse(result.stdout);
+      // eslint-disable-next-line no-empty
+    } catch (ignore) {
+    }
+
+    return data;
   }
 
   async executeInTerminal(command: CliCommand, cwd: string = process.cwd(), name = 'Tekton'): Promise<void> {
