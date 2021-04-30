@@ -29,10 +29,17 @@ suite('PipelineContent', () => {
     let showShowInputBox: sinon.SinonStub<unknown[], unknown>;
     const pipelineTrigger: Trigger[] = [{
       name: 'build-and-deploy',
-      params: [{
-        description: 'name of the deployment to be patched',
-        name: 'deployment-name',
-      }],
+      params: [
+        {
+          description: 'name of the deployment to be patched',
+          name: 'deployment-name',
+        },
+        {
+          description: 'name of the deployment to be patched',
+          name: 'test',
+          default: 'value'
+        }
+      ],
       resources: [{
         name: 'git-repo',
         type: 'git'
@@ -67,6 +74,9 @@ suite('PipelineContent', () => {
         },
         {
           name: 'shared-data'
+        },
+        {
+          name: 'test'
         }
       ]
     }]
@@ -126,16 +136,22 @@ suite('PipelineContent', () => {
     test('returns pipeline start object', async () => {
       execStub.onFirstCall().resolves({error: undefined, stdout: resourceData});
       showQuickPickStub.onFirstCall().resolves({label: 'api-repo'});
-      showQuickPickStub.onSecondCall().resolves({label: 'api-image'})
-      showQuickPickStub.onThirdCall().resolves({label: 'deployment-name'});
+      showQuickPickStub.onSecondCall().resolves({label: '$(plus) Create Pipeline Resource.'})
+      showShowInputBox.onFirstCall().resolves({label: 'api-image'});
+      showShowInputBox.onSecondCall().resolves('params-data');
       const result = await PipelineContent.startObject(pipelineTrigger, 'pipeline');
       expect(result).deep.equals({
         name: 'build-and-deploy',
         params: [
           {
-            default: undefined,
+            default: 'params-data',
             description: 'name of the deployment to be patched',
             name: 'deployment-name'
+          },
+          {
+            default: 'value',
+            description: 'name of the deployment to be patched',
+            name: 'test'
           }
         ],
         resources: [
@@ -159,18 +175,20 @@ suite('PipelineContent', () => {
       execStub.onFirstCall().resolves({error: undefined, stdout: resourceData});
       showQuickPickStub.onFirstCall().resolves({label: 'api-repo'});
       showQuickPickStub.onSecondCall().resolves({label: 'api-image'})
-      showQuickPickStub.onThirdCall().resolves({label: '$(plus) Input New Param Value'});
-      showShowInputBox.onFirstCall().resolves({label: 'params-data'})
+      showShowInputBox.onFirstCall().resolves('params-data')
       const result = await PipelineContent.startObject(pipelineTrigger, 'pipeline');
       expect(result).deep.equals({
         name: 'build-and-deploy',
         params: [
           {
-            default: {
-              label: 'params-data'
-            },
+            default: 'params-data',
             description: 'name of the deployment to be patched',
             name: 'deployment-name'
+          },
+          {
+            default: 'value',
+            description: 'name of the deployment to be patched',
+            name: 'test'
           }
         ],
         resources: [
@@ -228,15 +246,15 @@ suite('PipelineContent', () => {
         }
       )});
       showQuickPickStub.onFirstCall().resolves({label: 'Secret'});
-      showQuickPickStub.onSecondCall().resolves({label: 'secret-password'})
+      showQuickPickStub.onSecondCall().resolves({label: 'secret-password'});
       showQuickPickStub.onThirdCall().resolves({label: 'ConfigMap'});
       showQuickPickStub.onCall(3).resolves({label: 'sensitive-recipe-storage'});
-      showShowInputBox.onFirstCall().resolves('brownies')
-      showShowInputBox.onSecondCall().resolves('recipe.txt')
+      showShowInputBox.onFirstCall().resolves('brownies');
+      showShowInputBox.onSecondCall().resolves('recipe.txt');
       showQuickPickStub.onCall(4).resolves({label: 'PersistentVolumeClaim'});
-      showQuickPickStub.onCall(5).resolves({label: '$(plus) Add new workspace name.'});
-      showShowInputBox.onThirdCall().resolves({label: 'shared-task-storage'});
-      showShowInputBox.onCall(3).resolves({label: 'path'});
+      showQuickPickStub.onCall(5).resolves({label: 'shared-task-storage'});
+      showShowInputBox.onThirdCall().resolves('path');
+      showQuickPickStub.onCall(6).resolves({label: 'EmptyDir'});
       const result = await PipelineContent.startObject(workspace, 'pipeline');
       expect(result).deep.equals({
         name: 'fetch-and-print-recipe',
@@ -245,7 +263,6 @@ suite('PipelineContent', () => {
         serviceAccount: undefined,
         workspaces: [
           {
-            emptyDir: undefined,
             key: undefined,
             name: 'password-vault',
             subPath: undefined,
@@ -254,7 +271,6 @@ suite('PipelineContent', () => {
             workspaceType: 'Secret'
           },
           {
-            emptyDir:undefined,
             key: 'brownies',
             name: 'recipe-store',
             subPath: undefined,
@@ -263,18 +279,43 @@ suite('PipelineContent', () => {
             workspaceType: 'ConfigMap'
           },
           {
-            emptyDir: undefined,
             key: undefined,
             name: 'shared-data',
-            subPath: {
-              label: 'path'
-            },
+            subPath: 'path',
             value: undefined,
             workspaceName: 'shared-task-storage',
             workspaceType: 'PersistentVolumeClaim'
+          },
+          {
+            key: undefined,
+            name: 'test',
+            subPath: undefined,
+            value: undefined,
+            workspaceName: undefined,
+            workspaceType: 'EmptyDir'
           }
         ]
       });
+    });
+
+    test('return error if input is wrong', async () => {
+      const result = await PipelineContent.validateInput('s@');
+      expect(result).equals('invalid');
+    });
+
+    test('return undefined if input is correct', async () => {
+      const result = await PipelineContent.validateInput('text');
+      expect(result).equals(undefined);
+    });
+
+    test('return invalid if input text is wrong', async () => {
+      const result = await PipelineContent.validateTextAndFileName('s@');
+      expect(result).equals('invalid');
+    });
+
+    test('return undefined if input text is valid', async () => {
+      const result = await PipelineContent.validateTextAndFileName('path');
+      expect(result).equals(undefined);
     });
 
     test('returns service to start pipeline', async () => {
