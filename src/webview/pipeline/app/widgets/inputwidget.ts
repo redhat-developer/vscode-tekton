@@ -31,16 +31,30 @@ export class InputWidget extends BaseWidget {
     this.input.placeholder = text ?? '';
     this.input.value = inputValue ?? '';
     this.input.type = number ?? 'text';
+    if (number) {
+      this.input.min = '0';
+    }
     this.input.id = inputId ?? '';
     this.input.disabled = disabledType ?? false;
     this.input.title = inputTitle ?? '';
     this.element = editorInput;
     const wrapper = createDivWithID('wrapper', wrapperId);
     wrapper.appendChild(this.input);
+    this.input.onkeydown = (event) => this.blockNegativeNumber(event, this.input);
     this.input.oninput = () => this.getValue(this.input);
     this.input.onblur = () => this.validator();
     this.input.onfocus = () => this.removeError();
     editorInput.appendChild(wrapper);
+  }
+
+  blockNegativeNumber(event: KeyboardEvent, input: HTMLInputElement): boolean {
+    if (input?.id === 'size-for-pvc-create-webview') {
+      const matchInputNumber = new RegExp('[0-9]|(Backspace)');
+      if (!event.key.match(matchInputNumber)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   removeError(): void {
