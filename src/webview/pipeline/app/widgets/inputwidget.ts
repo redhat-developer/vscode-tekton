@@ -49,7 +49,7 @@ export class InputWidget extends BaseWidget {
 
   blockNegativeNumber(event: KeyboardEvent, input: HTMLInputElement): boolean {
     if (input?.id === 'size-for-pvc-create-webview') {
-      const matchInputNumber = new RegExp('[0-9]|(Backspace)');
+      const matchInputNumber = new RegExp('[0-9]|(Backspace|ArrowUp|ArrowDown|ArrowLeft|ArrowRight)');
       if (!event.key.match(matchInputNumber)) {
         return false;
       }
