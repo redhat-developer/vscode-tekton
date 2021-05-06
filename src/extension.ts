@@ -150,7 +150,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const configurationApi = await k8s.extension.configuration.v1_1;
   if (configurationApi.available) {
     const confApi = configurationApi.api;
-    confApi.onDidChangeContext(async () => {
+    confApi.onDidChangeContext(() => {
       checkClusterStatus(true);
       pipelineExplorer.refresh();
     });
