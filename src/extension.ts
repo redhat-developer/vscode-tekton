@@ -37,6 +37,7 @@ import sendTelemetry, { telemetryLogError, TelemetryProperties } from './telemet
 import { cli, createCliCommand } from './cli';
 import { getVersion, tektonVersionType } from './util/tknversion';
 import { TektonNode } from './tree-view/tekton-node';
+import { checkClusterStatus } from './util/check-cluster-status';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -122,6 +123,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   detectTknCli().then(() => {
     triggerDetection();
   });
+  checkClusterStatus(true); // watch Tekton resources when all required dependency are installed
   setCommandContext(CommandContext.TreeZenMode, false);
   setCommandContext(CommandContext.PipelinePreview, false);
 
@@ -148,7 +150,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const configurationApi = await k8s.extension.configuration.v1_1;
   if (configurationApi.available) {
     const confApi = configurationApi.api;
-    confApi.onDidChangeContext(() => {
+    confApi.onDidChangeContext(async () => {
+      checkClusterStatus(true);
       pipelineExplorer.refresh();
     });
   }
