@@ -199,12 +199,6 @@
         }
       },
       {
-        "command": "tekton.about",
-        "title": "About",
-        "category": "Tekton",
-        "enablement": "tekton:tkn"
-      },
-      {
         "command": "tekton.output",
         "title": "Show Output Channel",
         "category": "Tekton",
@@ -474,6 +468,16 @@
         }
       },
       {
+        "command": "tekton.about",
+        "title": "Tekton version",
+        "category": "Tekton",
+        "enablement": "tekton:tkn",
+        "icon": {
+          "dark": "images/dark/versions.svg",
+          "light": "images/light/versions.svg"
+        }
+      },
+      {
         "command": "tekton.explorer.enterZenMode",
         "title": "Select Tekton resources (use Shift to multi-select)",
         "category": "Tekton",
@@ -673,6 +677,11 @@
         {
           "command": "tekton.explorer.refresh",
           "when": "view == tektonPipelineExplorerView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "tekton.about",
+          "when": "view == tektonPipelineExplorerView",
           "group": "navigation@3"
         },
         {
@@ -761,11 +770,6 @@
           "command": "tekton.pipelineresource.describe",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/  && viewItem == pipelineresource",
           "group": "c1@3"
-        },
-        {
-          "command": "tekton.about",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/",
-          "group": "c3"
         },
         {
           "command": "tekton.output",
