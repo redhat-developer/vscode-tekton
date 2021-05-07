@@ -1,26 +1,4 @@
 <?xml version="1.0" ?>
-<!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>
-<svg enable-background="new 0 0 48 48" height="48px" version="1.1" viewBox="0 0 48 48" width="48px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <g id="Expanded">
-        <g>
-            <g>
-                <path d="M41,48H7V7h34V48z M9,46h30V9H9V46z"/>
-            </g>
-            <g>
-                <path d="M35,9H13V1h22V9z M15,7h18V3H15V7z"/>
-            </g>
-            <g>
-                <path d="M16,41c-0.553,0-1-0.447-1-1V15c0-0.553,0.447-1,1-1s1,0.447,1,1v25C17,40.553,16.553,41,16,41z"/>
-            </g>
-            <g>
-                <path d="M24,41c-0.553,0-1-0.447-1-1V15c0-0.553,0.447-1,1-1s1,0.447,1,1v25C25,40.553,24.553,41,24,41z"/>
-            </g>
-            <g>
-                <path d="M32,41c-0.553,0-1-0.447-1-1V15c0-0.553,0.447-1,1-1s1,0.447,1,1v25C33,40.553,32.553,41,32,41z"/>
-            </g>
-            <g>
-                <rect height="2" width="48" y="7"/>
-            </g>
-        </g>
-    </g>
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M10.0002 3H12.0002H13.0002V4H12.0002V13L11.0002 14H4.00024L3.00024 13V4H2.00024V3H5.00024V2C5.00024 1.73478 5.10555 1.48038 5.29309 1.29285C5.48063 1.10531 5.73503 1 6.00024 1H9.00024C9.26546 1 9.51986 1.10531 9.7074 1.29285C9.89493 1.48038 10.0002 1.73478 10.0002 2V3ZM9.00024 2H6.00024V3H9.00024V2ZM4.00024 13H11.0002V4H4.00024V13ZM6.00024 5H5.00024V12H6.00024V5ZM7.00024 5H8.00024V12H7.00024V5ZM9.00024 5H10.0002V12H9.00024V5Z" fill="#424242"/>
 </svg>
