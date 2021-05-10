@@ -1006,7 +1006,7 @@
     "humanize-duration": "^3.21.0",
     "js-yaml": "^3.13.1",
     "jstream": "^1.1.1",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "mkdirp": "^0.5.1",
     "node-cache": "^5.1.2",
     "node-yaml-parser": "0.0.9",
