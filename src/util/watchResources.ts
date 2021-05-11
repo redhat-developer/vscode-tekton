@@ -73,7 +73,7 @@ export class WatchResources {
             if (run.status.conditions[0].status === 'True') {
               window.showInformationMessage(`PipelineRun: ${run.metadata.name} is successfully completed. Duration to complete the execution 'Time: ${humanizer(Date.parse(run.status.completionTime) - Date.parse(run.status.startTime))}'`);
             } else if (run.status.conditions[0].status === 'False') {
-              window.showErrorMessage(`PipelineRun: ${run.metadata.name} fails. Reason: ${run.status.conditions[0].reason} and Message: ${run.status.conditions[0].message}`);
+              window.showErrorMessage(`PipelineRun: ${run.metadata.name} fails. Reason: ${run.status.conditions?.[0].reason} and Message: ${run.status.conditions?.[0].message}`);
             }
           }
         }
