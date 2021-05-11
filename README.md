@@ -7,6 +7,18 @@
 
 ## Overview
 
+Tekton Pipelines extension provides an end-to-end developer experience for interaction with [Tekton](https://tekton.dev/).
+
+Using this extension:
+
+   * Developer can create Tekton resource easily by using [Deploy resource on save](#deploy-resource-on-save).
+   * Install Task/ClusterTask from TektonHub [TektonHub integration](#TektonHub).
+   * Support for start Pipeline, Workspace and create new PVC(PersistentVolumeClam) [Wizard for Pipeline Start](#Wizard-for-Pipeline-Start).
+   * Show Tekton TaskRun/PipelineRun Logs in Editor [Show logs](#show-tekton-taskrunpipelinerun-logs-in-editor).
+   * Support for [Adding Trigger](#add-trigger-support).
+   * Tekton variables [code completion](#tekton-variables-code-completion).
+   * Pipeline/PipelineRun [preview diagram](#pipelinerun-preview)
+
 ### Tekton version
 
 This extension designed to work with Tekton Pipelines 0.11+
@@ -20,21 +32,38 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 ## New and Noteworthy
 
+### TektonHub
+
+   * TektonHub integration:
+
+      <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/tekton_hub_0.8.0.gif" width="1080" height="675" /></div>
+
+   * Install Task from TektonHub as ClusterTask:
+
+      <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/install_task_as_clustertask_0.9.0.gif" width="800" height="600" /></div>
+
+
+### Wizard for Pipeline Start
+
+   * Start Pipeline:
+
+      <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_wizard_0.4.0.gif" width="800" height="450" /></div>
+
+   * Pipeline with Workspace:
+
+      <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_wizard_ws_0.4.0.gif" width="800" height="450" /></div>
+
+   * Create new PVC:
+
+      <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/create_pvc.gif" width="800" height="450" /></div>
+
 ### Show Tekton TaskRun/PipelineRun Logs in Editor
+
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/logs_in_editor_0.10.0.gif" width="800" height="500" /></div>
 
-### Install Task from TektonHub as ClusterTask
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/install_task_as_clustertask_0.9.0.gif" width="800" height="600" /></div>
-
 ### Tekton variables code completion
+
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/tekton_variables_completion_0.9.0.gif" width="800" height="600" /></div>
-
-### TektonHub integration
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/tekton_hub_0.8.0.gif" width="1080" height="675" /></div>
-
-### Create new pvc support
-
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/create_pvc.gif" width="800" height="450" /></div>
 
 ### Add Trigger support
 
@@ -43,13 +72,6 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 ### Restart pipeline with previous pipelineRun content
 
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/restart_pipeline_run.gif" width="800" height="450" /></div>
-
-### New Wizard for Pipeline Start
-
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_wizard_0.4.0.gif" width="800" height="450" /></div>
-
-Pipeline with Workspace:
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_wizard_ws_0.4.0.gif" width="800" height="450" /></div>
 
 ### Deploy resource on save
 >Note: This is experimental feature, you need to enable it in preferences
@@ -60,21 +82,13 @@ Pipeline with Workspace:
 
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/go_to_definition_0.1.0.gif" width="800" height="651" /></div>
 
-### Workspaces support
-
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_start_with_ws_0.1.0.gif" width="800" height="450" /></div>
-
-
 ### Tekton tree auto refresh and open resource from inline command
 
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/tree_refresh_0.0.8.gif" width="800" height="450" /></div>
 
 ### PipelineRun preview
+
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_run_preview_0.0.7.gif" width="800" height="450" /></div>
-
-### Provides editing support for Pipeline yaml
-<div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/editing-demo.gif" width="800" height="450" /></div>
-
 
 ### Setup kubernetes cluster to use with extension
 
