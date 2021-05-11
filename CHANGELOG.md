@@ -1,5 +1,20 @@
 # Change Log
 
+## 0.15.0 (May 11, 2021)
+
+This release brings to you:
+
+* [#352](https://github.com/redhat-developer/vscode-tekton/issues/352) Display task steps in pipeline diagram.
+* [#443](https://github.com/redhat-developer/vscode-tekton/issues/443) Move the 'About' context menu item to some place where it makes sense.
+* [#510](https://github.com/redhat-developer/vscode-tekton/issues/510) Allow user to configure Tekton Hub API endpoint.
+* [#515](https://github.com/redhat-developer/vscode-tekton/issues/515) Wrong behavior in Tekton Hub when uninstalling resources.
+* [#540](https://github.com/redhat-developer/vscode-tekton/issues/540) Add overview part for extension.
+* [#561](https://github.com/redhat-developer/vscode-tekton/pull/561) Fix add trigger and added test.
+* [#562](https://github.com/redhat-developer/vscode-tekton/issues/562) Prevent writing negative numbers when creating volume claim template.
+* [#564](https://github.com/redhat-developer/vscode-tekton/pull/564) Fix bug for start task and Added test.
+* [#569](https://github.com/redhat-developer/vscode-tekton/pull/569) Watch tekton resources at the activation of extension and send data to telemetry if new resource are created.
+* [#570](https://github.com/redhat-developer/vscode-tekton/pull/570) svg icons stopped working after vscode update to VSCode v1.56.0.
+
 ## 0.14.0 (April 14, 2021)
 
 This release brings to you:
