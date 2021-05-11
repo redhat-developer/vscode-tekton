@@ -10,7 +10,7 @@ import { pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { FileContentChangeNotifier, WatchUtil } from './watch';
 import { window, workspace } from 'vscode';
 import { getResourceList } from './list-tekton-resource';
-import { telemetryLog } from '../telemetry';
+import { telemetryLog, telemetryLogError } from '../telemetry';
 import { humanizer } from '../humanizer';
 
 export const pipelineTriggerStatus = new Map<string, boolean>();
@@ -71,9 +71,13 @@ export class WatchResources {
         if (checkPipelineRunNotifications()) {
           if (run.kind === ResourceType.pipelineRun) {
             if (run.status.conditions[0].status === 'True') {
-              window.showInformationMessage(`PipelineRun: ${run.metadata.name} is successfully completed. Duration to complete the execution 'Time: ${humanizer(Date.parse(run.status.completionTime) - Date.parse(run.status.startTime))}'`);
+              const successfulPipelineRun = `PipelineRun: ${run.metadata.name} is successfully completed. Duration to complete the execution 'Time: ${humanizer(Date.parse(run.status.completionTime) - Date.parse(run.status.startTime))}'`;
+              telemetryLog('watch.pipelineRun.complete.status', successfulPipelineRun);
+              window.showInformationMessage(successfulPipelineRun);
             } else if (run.status.conditions[0].status === 'False') {
-              window.showErrorMessage(`PipelineRun: ${run.metadata.name} fails. Reason: ${run.status.conditions?.[0].reason} and Message: ${run.status.conditions?.[0].message}`);
+              const failPipelineRun = `PipelineRun: ${run.metadata.name} fails. Reason: ${run.status.conditions?.[0].reason} and Message: ${run.status.conditions?.[0].message}`;
+              telemetryLogError('watch.pipelineRun.error', failPipelineRun)
+              window.showErrorMessage(failPipelineRun);
             }
           }
         }
