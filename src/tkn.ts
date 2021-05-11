@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { CliCommand, CliExitData, cli, cliCommandToString, WatchProcess } from './cli';
-import { TreeItemCollapsibleState, Terminal, workspace, commands } from 'vscode';
+import { TreeItemCollapsibleState, Terminal, workspace } from 'vscode';
 import { WindowUtil } from './util/windowUtils';
 import * as path from 'path';
 import { ToolsConfig } from './tools';
@@ -13,8 +13,6 @@ import { kubectl } from './kubectl';
 import { pipelineExplorer } from './pipeline/pipelineExplorer';
 import { StartObject } from './tekton/pipelinecontent';
 import { RunState } from './yaml-support/tkn-yaml';
-import { version } from './util/tknversion';
-import { pipelineTriggerStatus, watchResources } from './util/watchResources';
 import { getStderrString } from './util/stderrstring';
 import { ContextType } from './context-type';
 import { TektonNode, TektonNodeImpl } from './tree-view/tekton-node';
@@ -24,9 +22,10 @@ import { MoreNode } from './tree-view/expand-node';
 import { Command } from './cli-command';
 import { getPipelineList } from './util/list-tekton-resource';
 import { telemetryLog, telemetryLogError } from './telemetry';
+import { checkClusterStatus } from './util/check-cluster-status';
 
 
-let tektonResourceCount = {};
+const tektonResourceCount = {};
 
 interface NameId {
   name: string;
@@ -112,62 +111,8 @@ export class TknImpl implements Tkn {
   defaultPageSize: number = workspace.getConfiguration('vs-tekton').has('treePaginationLimit') ? workspace.getConfiguration('vs-tekton').get('treePaginationLimit') : 5;
 
   async getPipelineNodes(): Promise<TektonNode[]> {
-    const result: CliExitData = await this.execute(
-      Command.checkTekton(), process.cwd(), false
-    );
-    const kubectlCheck = RegExp('kubectl:\\s*command not found');
-    if (kubectlCheck.test(getStderrString(result.error))) {
-      const tknMessage = 'Please install kubectl.';
-      telemetryLog('kubeclt_not_found', tknMessage);
-      watchResources.disableWatch();
-      return [new TektonNodeImpl(null, tknMessage, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)]
-    }
-    if (result.stdout.trim() === 'no') {
-      const tknPrivilegeMsg = 'The current user doesn\'t have the privileges to interact with tekton resources.';
-      telemetryLog('tekton_resource_privileges', tknPrivilegeMsg);
-      watchResources.disableWatch();
-      return [new TektonNodeImpl(null, tknPrivilegeMsg, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
-    }
-    if (result.error && getStderrString(result.error).indexOf('You must be logged in to the server (Unauthorized)') > -1) {
-      const tknMessage = 'Please login to the server.';
-      telemetryLog('login', tknMessage);
-      watchResources.disableWatch();
-      return [new TektonNodeImpl(null, tknMessage, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)]
-    }
-    const serverCheck = RegExp('Unable to connect to the server');
-    if (serverCheck.test(getStderrString(result.error))) {
-      const loginError = 'Unable to connect to OpenShift cluster, is it down?';
-      telemetryLogError('problem_connect_cluster', loginError);
-      watchResources.disableWatch();
-      commands.executeCommand('setContext', 'tekton.pipeline', false);
-      commands.executeCommand('setContext', 'tekton.cluster', true);
-      return [];
-    }
-    if (result.error && getStderrString(result.error).indexOf('the server doesn\'t have a resource type \'pipeline\'') > -1) {
-      const message = 'Please install the Pipelines Operator.';
-      telemetryLog('install_pipeline_operator', message);
-      watchResources.disableWatch();
-      commands.executeCommand('setContext', 'tekton.cluster', false);
-      commands.executeCommand('setContext', 'tekton.pipeline', true);
-      return [];
-    }
-
-    const tknVersion = await version();
-    const resourceUidAtStart = {};
-    if (tknVersion && (tknVersion?.trigger === undefined || tknVersion.trigger.trim() === 'unknown')) {
-      pipelineTriggerStatus.set('trigger', false);
-    }
-    if (!pipelineTriggerStatus.get('pipeline')) {
-      tektonResourceCount = {};
-      const resourceList = ['pipeline', 'pipelinerun', 'taskrun', 'task', 'clustertask', 'pipelineresources', 'condition'];
-      watchResources.watchCommand(resourceList, resourceUidAtStart);
-      pipelineTriggerStatus.set('pipeline', true);
-    }
-    if (!pipelineTriggerStatus.get('trigger') && tknVersion && tknVersion?.trigger !== undefined && tknVersion.trigger.trim() !== 'unknown') {
-      const resourceList = ['tt', 'tb', 'el', 'ctb'];
-      watchResources.watchCommand(resourceList, resourceUidAtStart);
-      pipelineTriggerStatus.set('trigger', true);
-    }
+    const clusterInfo = await checkClusterStatus();
+    if (clusterInfo !== null) return clusterInfo;
     return this._getPipelineNodes();
   }
 
