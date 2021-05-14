@@ -14,6 +14,7 @@ import { telemetryLog, telemetryLogError } from '../telemetry';
 import { humanizer } from '../humanizer';
 
 export const pipelineTriggerStatus = new Map<string, boolean>();
+export const treeRefresh = new Map<string, boolean>();
 const kubeConfigFolder: string = path.join(Platform.getUserHomePath(), '.kube');
 
 export enum ResourceType {
@@ -66,7 +67,10 @@ export class WatchResources {
         if (telemetryWatchResource[run.kind]) {
           telemetryLog(`tekton.watch.create.${run.kind}`, `New tekton resource successfully created ${run.kind}: ${run.metadata.name}`)
         }
-        pipelineExplorer.refresh();
+        if (treeRefresh.get('treeRefresh')) {
+          treeRefresh.set('treeRefresh', false);
+          pipelineExplorer.refresh();
+        }
       } else if (run.status?.completionTime !== undefined && !(resourceUidAtStart[run.metadata.uid] && (run.status?.conditions?.[0].status === 'False' || run.status?.conditions?.[0].status === 'True'))) {
         if (checkPipelineRunNotifications()) {
           if (run.kind === ResourceType.pipelineRun) {
@@ -81,7 +85,10 @@ export class WatchResources {
             }
           }
         }
-        pipelineExplorer.refresh();
+        if (treeRefresh.get('treeRefresh')) {
+          treeRefresh.set('treeRefresh', false);
+          pipelineExplorer.refresh();
+        }
       }
       id = run.metadata.uid;
     });

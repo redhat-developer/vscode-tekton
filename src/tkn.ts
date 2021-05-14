@@ -23,6 +23,7 @@ import { Command } from './cli-command';
 import { getPipelineList } from './util/list-tekton-resource';
 import { telemetryLog, telemetryLogError } from './telemetry';
 import { checkClusterStatus } from './util/check-cluster-status';
+import { treeRefresh } from './util/watchResources';
 
 
 const tektonResourceCount = {};
@@ -113,6 +114,7 @@ export class TknImpl implements Tkn {
   async getPipelineNodes(): Promise<TektonNode[]> {
     const clusterInfo = await checkClusterStatus();
     if (clusterInfo !== null) return clusterInfo;
+    treeRefresh.set('treeRefresh', true);
     return this._getPipelineNodes();
   }
 
