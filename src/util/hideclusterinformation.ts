@@ -16,5 +16,20 @@ export function hideClusterUrl(message: string): string {
   if (urlCheck.test(message)) {
     return message.replace(urlCheck, 'cluster info ');
   }
+  return hidePath(message);
+}
+
+// eslint-disable-next-line no-useless-escape
+const pathMatch = /(?:"([a-zA-Z]\:(\\|\/|\\\\)|\/([^\/]+\/)|.\/|([^\/"]+\/)))([^\\\/\:\*\?\<\>\"\|]+(\\|\/){0,2})+/gm;
+export function hidePath(message: string): string {
+  if (pathMatch.test(message)) {
+    const paths = message.match(pathMatch);
+    if (paths.length !== 0) {
+      paths.forEach((path) => {
+        message = message.replace(path, '"local path');
+      });
+    }
+    return message;
+  }
   return message;
 }
