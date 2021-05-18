@@ -9,6 +9,7 @@ import { TknPipelineResource } from '../tekton';
 import { QuickPickItem } from 'vscode';
 import { Secret, ConfigMap, PVC } from './webviewstartpipeline';
 import { Command } from '../cli-command';
+import { NewPipelineResources, NewPvc } from './create-resources';
 
 export interface Ref {
   name: string;
@@ -67,6 +68,8 @@ export interface VCT {
 export interface StartObject {
   name: string;
   resources?: Resources[];
+  newPvc?: NewPvc[];
+  newPipelineResource?: NewPipelineResources[];
   params?: Params[] | undefined;
   workspaces?: Workspaces[];
   serviceAccount: string | undefined;

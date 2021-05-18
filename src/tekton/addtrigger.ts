@@ -20,7 +20,7 @@ import { exposeRoute, RouteModel } from './expose';
 import { Progress } from '../util/progress';
 import { cli } from '../cli';
 import { TknVersion, version } from '../util/tknversion';
-import { NewPvc } from './createpvc';
+import { NewPvc } from './create-resources';
 import { getExposeURl } from '../util/exposeurl';
 import { telemetryLog, telemetryLogError } from '../telemetry';
 import { getStderrString } from '../util/stderrstring';

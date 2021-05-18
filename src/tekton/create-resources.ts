@@ -24,9 +24,27 @@ export interface NewPvc {
   };
 }
 
-export async function createPvc(PersistentVolumeClaim: NewPvc[]): Promise<boolean> {
-  if (PersistentVolumeClaim.length === 0) return null;
-  for (const pvc of PersistentVolumeClaim) {
-    await k8sCreate(pvc);
+export interface NewPipelineResources {
+  apiVersion: string;
+  kind: string;
+  metadata: {
+    name?: string;
+    generateName?: string;
+  };
+  spec: {
+    params: [
+      {
+        name: string;
+        value: string;
+      }
+    ];
+    type: string;
+  };
+}
+
+export async function createNewResource(resources: NewPvc[] | NewPipelineResources[]): Promise<boolean> {
+  if (resources.length === 0) return null;
+  for (const resource of resources) {
+    await k8sCreate(resource);
   }
 }

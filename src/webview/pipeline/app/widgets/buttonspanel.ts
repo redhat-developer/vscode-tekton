@@ -7,7 +7,7 @@ import { BaseWidget } from '../../../common/widget';
 import { Trigger, PipelineStart } from '../utils/types';
 import { createItem } from '../utils/item';
 import { vscode } from '../index';
-import { addItemInWorkspace, collectParameterData, collectServiceAccountData, collectTriggerData, collectWorkspaceData, createNewPipelineResource, createPVC, createVCT, removePvcName, storePvcName } from '../utils/resource';
+import { addItemInWorkspace, collectParameterData, collectResourceData, collectServiceAccountData, collectTriggerData, collectWorkspaceData, createNewPipelineResource, createPVC, createVCT, getRandomChars, removePvcName, storePvcName } from '../utils/resource';
 import { disableRemoveButton, blockStartButton } from '../utils/disablebutton';
 import { TknResourceType } from '../utils/const';
 
@@ -163,10 +163,16 @@ export class ButtonsPanel extends BaseWidget {
         if (val.parentElement?.['value'] === 'Create Pipeline Resource') {
           const value = val.parentElement.parentElement.parentElement.querySelector('[id^=create-new-pipeline-resource-name]').value;
           const resourceType = val.parentElement.parentElement.parentElement.parentElement.firstElementChild.innerText;
+          const name = val.parentElement.parentElement.parentElement.firstElementChild.id;
+          let resourceName: string;
           if (resourceType === TknResourceType.GitResource) {
-            createNewPipelineResource(value, 'git', this.initialValue);
+            resourceName = `git-${getRandomChars(7)}`;
+            createNewPipelineResource(value, 'git', this.initialValue, resourceName);
+            collectResourceData(name, resourceName, this.initialValue);
           } else if (resourceType === TknResourceType.ImageResource) {
-            createNewPipelineResource(value, 'image', this.initialValue);
+            resourceName = `image-${getRandomChars(7)}`;
+            createNewPipelineResource(value, 'image', this.initialValue, resourceName);
+            collectResourceData(name, resourceName, this.initialValue);
           }
         }
       })
