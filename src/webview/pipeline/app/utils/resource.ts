@@ -89,6 +89,13 @@ export function createPVC(name: string, accessMode: string, size: string, inputS
   });
 }
 
+export function createNewPipelineResource(name: string, type: string, initialValue: PipelineStart): void {
+  initialValue.newPipelineResource.push({
+    name: name,
+    resourceType: type
+  });
+}
+
 export function removePvcName(name: string, initialValue: PipelineStart): void {
   const newWorkSpace = initialValue.workspaces.filter((value) => value.name !== name);
   initialValue.workspaces = newWorkSpace;

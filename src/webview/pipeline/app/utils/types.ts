@@ -33,7 +33,7 @@ export interface TriggerType {
 
 export interface Resources {
   name: string;
-  resourceRef: string;
+  resourceRef?: string;
   resourceType?: string;
 }
 
@@ -187,6 +187,7 @@ export interface PipelineStart {
     resource: TriggerBindingKind;
   };
   newPvc?: PVC[];
+  newPipelineResource?: Resources[];
   serviceAccount: string;
   commandId?: string;
   volumeClaimTemplate?: VCT[];

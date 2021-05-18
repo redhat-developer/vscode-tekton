@@ -18,6 +18,7 @@ export const initialResourceFormValues = {
   workspaces: [],
   trigger: undefined,
   newPvc: [],
+  newPipelineResource: [],
   serviceAccount: undefined,
   commandId: undefined,
   volumeClaimTemplate: []

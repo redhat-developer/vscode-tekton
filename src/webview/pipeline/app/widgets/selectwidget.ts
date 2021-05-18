@@ -35,7 +35,7 @@ export class SelectWidget extends BaseWidget {
     this.triggerWebhook(event.querySelector('[id^=Add-Trigger-WebHook]'))
     this.enableInputBox(event.parentNode.querySelector('[id^=enable-input-box-workspace]'), event.parentElement);
     if (select.value.trim() === 'Create Pipeline Resource' && event.lastElementChild.id.trim() !== 'input-resource') {
-      const input = new EditItem('URL', new InputWidget('Please provide Name/URL', null, this.initialValue), 'input-resource', 'inner-editItem');
+      const input = new EditItem('URL', new InputWidget('Please provide Name/URL', null, this.initialValue, null, null, 'create-new-pipeline-resource-name'), 'input-resource', 'inner-editItem');
       event.appendChild(input.getElement());
     } else if (event.lastElementChild.firstElementChild.id.trim() === 'input-resource') {
       event.lastElementChild.remove();
