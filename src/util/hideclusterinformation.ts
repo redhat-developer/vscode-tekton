@@ -14,7 +14,7 @@ export function hideClusterInfo(message: string): string {
 const urlCheck = /(https?:\/\/[^\s]+)/g;
 export function hideClusterUrl(message: string): string {
   if (urlCheck.test(message)) {
-    return message.replace(urlCheck, 'cluster info ');
+    message = message.replace(urlCheck, 'cluster info ');
   }
   return hidePath(message);
 }
@@ -29,7 +29,32 @@ export function hidePath(message: string): string {
         message = message.replace(path, '"local path');
       });
     }
-    return message;
+  }
+  return hideIPAddress(message);
+}
+
+const IpAddress = /(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)+/gm;
+export function hideIPAddress(message: string): string {
+  if (IpAddress.test(message)) {
+    const ipAddress = message.match(IpAddress);
+    if (ipAddress.length !== 0) {
+      ipAddress.forEach((data) => {
+        message = message.replace(data, 'IP Address ');
+      });
+    }
+  }
+  return hideIPV6Address(message);
+}
+
+const IPV6Address = /((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*|((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4})){7}/gm
+export function hideIPV6Address(message: string): string {
+  if (IPV6Address.test(message)) {
+    const ipv6Address = message.match(IPV6Address);
+    if (ipv6Address.length !== 0) {
+      ipv6Address.forEach((data) => {
+        message = message.replace(data, 'IPV6 Address ');
+      });
+    }
   }
   return message;
 }
