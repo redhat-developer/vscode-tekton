@@ -246,6 +246,11 @@ export class Command {
     return newK8sCommand('get', 'task.tekton', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
   }
 
+  @verbose
+  static listTasksInTerminal(namespace?: string): CliCommand {
+    return newTknCommand('task', 'list', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
+  }
+
   static listTaskRunsForPipelineRun(pipelineRunName: string): CliCommand {
     return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/pipelineRun=${pipelineRunName}`, '-o', 'json');
   }

@@ -42,4 +42,27 @@ suite('Tekton/Task', () => {
   setup(() => {
     termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal').resolves();
   });
+
+  suite('called from \'Tekton Pipelines Explorer\'', () => {
+
+    test('executes the list tkn command in terminal', async () => {
+      await Task.list();
+      expect(termStub).calledOnceWith(Command.listTasksInTerminal());
+    });
+
+  });
+
+  suite('called from command palette', () => {
+
+    test('calls the appropriate error message when no task found', async () => {
+      getTaskStub.restore();
+      sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([]);
+      try {
+        await Task.list();
+      } catch (err) {
+        expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
+        return;
+      }
+    });
+  });
 });
