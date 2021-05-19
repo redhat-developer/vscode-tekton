@@ -126,7 +126,7 @@ export class Command {
 
   @verbose
   static deletePipeline(name: string): CliCommand {
-    return newTknCommand('pipeline', 'delete', name, '-f');
+    return newK8sCommand('delete', 'Pipeline', name);
   }
 
   @verbose
@@ -149,7 +149,7 @@ export class Command {
   }
 
   static deleteClusterTriggerBinding(name: string): CliCommand {
-    return newTknCommand('clustertriggerbinding', 'delete', name, '-f');
+    return newK8sCommand('delete', 'ClusterTriggerBinding', name);
   }
 
   @verbose
@@ -158,19 +158,19 @@ export class Command {
   }
 
   static deleteTriggerTemplate(name: string): CliCommand {
-    return newTknCommand('triggertemplate', 'delete', name, '-f');
+    return newK8sCommand('delete', 'TriggerTemplate', name);
   }
 
   static deleteTriggerBinding(name: string): CliCommand {
-    return newTknCommand('triggerbinding', 'delete', name, '-f');
+    return newK8sCommand('delete', 'TriggerBinding', name);
   }
 
   static deleteCondition(name: string): CliCommand {
-    return newTknCommand('condition', 'delete', name, '-f');
+    return newK8sCommand('delete', 'Condition', name);
   }
 
   static deleteEventListeners(name: string): CliCommand {
-    return newTknCommand('eventlistener', 'delete', name, '-f');
+    return newK8sCommand('delete', 'EventListener', name);
   }
 
   @verbose
@@ -185,7 +185,7 @@ export class Command {
 
   @verbose
   static deletePipelineResource(name: string): CliCommand {
-    return newTknCommand('resource', 'delete', name, '-f');
+    return newK8sCommand('delete', 'PipelineResource', name);
   }
 
   @verbose
@@ -225,7 +225,7 @@ export class Command {
 
   @verbose
   static deletePipelineRun(name: string): CliCommand {
-    return newTknCommand('pipelinerun', 'delete', name, '-f');
+    return newK8sCommand('delete', 'PipelineRun', name);
   }
 
   @verbose
@@ -265,7 +265,7 @@ export class Command {
 
   @verbose
   static deleteTask(name: string): CliCommand {
-    return newTknCommand('task', 'delete', name, '-f');
+    return newK8sCommand('delete', 'Task', name);
   }
 
   @verbose
@@ -279,7 +279,7 @@ export class Command {
 
   @verbose
   static deleteClusterTask(name: string): CliCommand {
-    return newTknCommand('clustertask', 'delete', name, '-f');
+    return newK8sCommand('delete', 'ClusterTask', name);
   }
 
   @verbose
@@ -289,7 +289,7 @@ export class Command {
 
   @verbose
   static deleteTaskRun(name: string): CliCommand {
-    return newTknCommand('taskrun', 'delete', name, '-f');
+    return newK8sCommand('delete', 'TaskRun', name);
   }
 
   @verbose
@@ -303,10 +303,6 @@ export class Command {
 
   static showTaskRunFollowLogs(name: string): CliCommand {
     return newTknCommand('taskrun', 'logs', name, '-f');
-  }
-
-  static createPipelineResource(yamlFile: string): CliCommand {
-    return newTknCommand('resource', 'create', '-f', yamlFile);
   }
 
   static checkTekton(): CliCommand {

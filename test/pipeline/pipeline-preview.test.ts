@@ -12,7 +12,7 @@ import { tektonYaml } from '../../src/yaml-support/tkn-yaml';
 import * as preview from '../../src/pipeline/preview-manager';
 import { showPipelinePreview } from '../../src/pipeline/pipeline-preview';
 import { TektonYamlType } from '../../src/yaml-support/tkn-yaml';
-import { calculatePipelineGraph, pipelineGraph } from '../../src/pipeline/pipeline-graph';
+import { pipelineGraph } from '../../src/pipeline/pipeline-graph';
 
 const expect = chai.expect;
 chai.use(sinonChai);
