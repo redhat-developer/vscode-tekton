@@ -26,7 +26,6 @@
     "Addressable": {
       "properties": {
         "url": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/URL"
         },
         "hostname": {
@@ -748,19 +747,16 @@
           },
           "type": "array"
         },
-        "serviceType": {
-          "type": "string"
-        },
         "replicas": {
           "type": "integer"
-        },
-        "podTemplate": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/PodTemplate"
         },
         "namespaceSelector": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/NamespaceSelector"
+        },
+        "labelSelector": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/LabelSelector"
         },
         "resources": {
           "$schema": "http://json-schema.org/draft-04/schema#",
@@ -1170,6 +1166,53 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "InterceptorParams": {
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/JSON"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "InterceptorRef": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "apiVersion": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "JSON": {
+      "required": [
+        "Raw"
+      ],
+      "properties": {
+        "Raw": {
+          "type": "string",
+          "media": {
+            "binaryEncoding": "base64"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "KeyToPath": {
       "required": [
         "key",
@@ -1191,6 +1234,9 @@
     },
     "KubernetesResource": {
       "properties": {
+        "replicas": {
+          "type": "integer"
+        },
         "serviceType": {
           "type": "string"
         },
@@ -1647,7 +1693,6 @@
       ],
       "properties": {
         "labelSelector": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/LabelSelector"
         },
         "namespaces": {
@@ -1871,6 +1916,7 @@
         },
         "tolerations": {
           "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
             "$ref": "#/definitions/Toleration"
           },
           "type": "array"
@@ -1935,27 +1981,6 @@
         "spec": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/PodSpec"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "PodTemplate": {
-      "properties": {
-        "tolerations": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/Toleration"
-          },
-          "type": "array"
-        },
-        "nodeSelector": {
-          "patternProperties": {
-            ".*": {
-              "type": "string"
-            }
-          },
-          "type": "object"
         }
       },
       "additionalProperties": false,
@@ -2466,7 +2491,24 @@
       "type": "object"
     },
     "TriggerInterceptor": {
+      "required": [
+        "ref"
+      ],
       "properties": {
+        "name": {
+          "type": "string"
+        },
+        "ref": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/InterceptorRef"
+        },
+        "params": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/InterceptorParams"
+          },
+          "type": "array"
+        },
         "webhook": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/WebhookInterceptor"
@@ -2488,11 +2530,6 @@
           "$ref": "#/definitions/BitbucketInterceptor"
         }
       },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "TriggerResourceTemplate": {
-      "properties": {},
       "additionalProperties": false,
       "type": "object"
     },
@@ -2544,8 +2581,9 @@
         },
         "resourcetemplates": {
           "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/TriggerResourceTemplate"
+            "properties": {},
+            "additionalProperties": true,
+            "type": "object"
           },
           "type": "array"
         }
@@ -2819,6 +2857,10 @@
         "objectRef": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/ObjectReference"
+        },
+        "url": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/URL"
         },
         "header": {
           "items": {
