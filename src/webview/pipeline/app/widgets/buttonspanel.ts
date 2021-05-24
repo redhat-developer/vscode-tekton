@@ -7,7 +7,7 @@ import { BaseWidget } from '../../../common/widget';
 import { Trigger, PipelineStart } from '../utils/types';
 import { createItem } from '../utils/item';
 import { vscode } from '../index';
-import { addItemInWorkspace, collectParameterData, collectServiceAccountData, collectTriggerData, collectWorkspaceData, createPVC, createVCT, removePvcName, storePvcName } from '../utils/resource';
+import { addItemInWorkspace, collectParameterData, collectResourceData, collectServiceAccountData, collectTriggerData, collectWorkspaceData, createNewPipelineResource, createPVC, createVCT, getRandomChars, removePvcName, storePvcName } from '../utils/resource';
 import { disableRemoveButton, blockStartButton } from '../utils/disablebutton';
 import { TknResourceType } from '../utils/const';
 
@@ -48,6 +48,7 @@ export class ButtonsPanel extends BaseWidget {
         this.storeWorkspaceResourceName(event.querySelectorAll('[id^=items-section-workspace-new-item]'));
         this.storeItemData(event.querySelectorAll('[id^=items-section-workspace-new-item]'));
         this.storeServiceAccountData(event.querySelectorAll('[id^=Service-account-name-input-field-content-data]'));
+        this.storeNewResourceData(event.querySelectorAll('[id^=Create-Pipeline-Resource-new-url]'));
         if (!this.trigger.trigger) {
           vscode.postMessage({
             type: 'startPipeline',
@@ -153,6 +154,28 @@ export class ButtonsPanel extends BaseWidget {
         const name = val.getElementsByTagName('input')[0].value;
         collectServiceAccountData(name, this.initialValue);
       });
+    }
+  }
+
+  storeNewResourceData(data: unknown[] | NodeListOf<Element>): void {
+    if (data.length !== 0) {
+      data.forEach(val => {
+        if (val.parentElement?.['value'] === 'Create Pipeline Resource') {
+          const value = val.parentElement.parentElement.parentElement.querySelector('[id^=create-new-pipeline-resource-name]').value;
+          const resourceType = val.parentElement.parentElement.parentElement.parentElement.firstElementChild.innerText;
+          const name = val.parentElement.parentElement.parentElement.firstElementChild.id;
+          let resourceName: string;
+          if (resourceType === TknResourceType.GitResource) {
+            resourceName = `git-${getRandomChars(7)}`;
+            createNewPipelineResource(value, 'git', this.initialValue, resourceName);
+            collectResourceData(name, resourceName, this.initialValue);
+          } else if (resourceType === TknResourceType.ImageResource) {
+            resourceName = `image-${getRandomChars(7)}`;
+            createNewPipelineResource(value, 'image', this.initialValue, resourceName);
+            collectResourceData(name, resourceName, this.initialValue);
+          }
+        }
+      })
     }
   }
 

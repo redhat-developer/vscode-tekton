@@ -3,8 +3,6 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { disableButtonInput } from '../index';
-
 export function disableRemoveButton(event: Node & ParentNode): void {
   const selectedItem = event.querySelectorAll('[id^=items-section-workspace-new-item]');
   if (selectedItem.length === 1) {
@@ -37,12 +35,29 @@ export function disableSelection(nodeList: HTMLCollectionOf<HTMLSelectElement>):
   return true;
 }
 
+export function disableButtonInput(nodeList: HTMLCollectionOf<HTMLInputElement>): boolean {
+  let startButton = document.querySelector('.startButton');
+  if (!startButton) {
+    startButton = document.querySelector('.startButton-disable')
+  }
+  for (let element = 0; element < nodeList.length; element++) {
+    const serviceAccount = nodeList[element].parentElement.parentElement.parentElement.id.trim();
+    if ((nodeList[element].type === 'text' || nodeList[element].type === 'number') && nodeList[element].value === '' && nodeList[element].id.trim() !== 'disabled' && serviceAccount !== 'Service-account-name-input-field-content-data') {
+      startButton.className = 'startButton-disable';    // Disable the button.
+      return false;
+    } else {
+      startButton.className = 'startButton';    // Enable the button.
+    }
+  }
+}
+
 export function blockStartButton(): void {
   const disableButtonSection = disableSelection(document.getElementsByTagName('select'));
   if (disableButtonSection) {
     try {
       disableButtonInput(document.getElementsByTagName('input'));
     } catch (err) {
+      console.log(err);
       // ignore if fails to find input
     }
   }

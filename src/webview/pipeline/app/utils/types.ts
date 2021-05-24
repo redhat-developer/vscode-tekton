@@ -33,7 +33,7 @@ export interface TriggerType {
 
 export interface Resources {
   name: string;
-  resourceRef: string;
+  resourceRef?: string;
   resourceType?: string;
 }
 
@@ -177,6 +177,24 @@ export interface VCT {
   };
 }
 
+export interface PipelineResources {
+  apiVersion: string;
+  kind: string;
+  metadata: {
+    name?: string;
+    generateName?: string;
+  };
+  spec: {
+    params: [
+      {
+        name: string;
+        value: string;
+      }
+    ];
+    type: string;
+  };
+}
+
 export interface PipelineStart {
   name: string;
   resources: Resources[];
@@ -187,6 +205,7 @@ export interface PipelineStart {
     resource: TriggerBindingKind;
   };
   newPvc?: PVC[];
+  newPipelineResource?: PipelineResources[];
   serviceAccount: string;
   commandId?: string;
   volumeClaimTemplate?: VCT[];

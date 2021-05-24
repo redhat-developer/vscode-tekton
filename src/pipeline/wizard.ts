@@ -10,8 +10,8 @@ import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
 import { TknResourceItem } from '../tekton/webviewstartpipeline';
 import { addTriggerToPipeline } from '../tekton/addtrigger';
-import { createPvc } from '../tekton/createpvc';
 import { startPipelineFromJson } from '../tekton/start-pipeline-from-json';
+import { createNewResource } from '../tekton/create-resources';
 
 export interface PipelineWizardInput {
   readonly resourceColumn: vscode.ViewColumn;
@@ -57,14 +57,15 @@ export class PipelineWizard extends Disposable {
           // eslint-disable-next-line no-case-declarations
           const inputStartPipeline = e.body;
           this.dispose();
-          if (inputStartPipeline.newPvc.length !== 0) {
-            await createPvc(inputStartPipeline.newPvc);
-          }
+          if (inputStartPipeline.newPvc.length !== 0) await createNewResource(inputStartPipeline.newPvc);
+          if (inputStartPipeline.newPipelineResource.length !== 0) await createNewResource(inputStartPipeline.newPipelineResource);
           return await startPipelineFromJson(inputStartPipeline);
         case 'Add Trigger':
           // eslint-disable-next-line no-case-declarations
           const inputAddTrigger = e.body;
           this.dispose();
+          if (inputStartPipeline.newPvc.length !== 0) await createNewResource(inputStartPipeline.newPvc);
+          if (inputStartPipeline.newPipelineResource.length !== 0) await createNewResource(inputStartPipeline.newPipelineResource);
           return await addTriggerToPipeline(inputAddTrigger);
       }
     }));

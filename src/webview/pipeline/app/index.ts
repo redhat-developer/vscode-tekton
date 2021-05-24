@@ -12,6 +12,8 @@ import { initialResourceFormValues, workspaceResource } from './utils/const';
 import { triggerSelectedWorkspaceType } from './utils/displayworkspaceresource';
 import { createItem } from './utils/item';
 import { blockStartButton } from './utils/disablebutton';
+import { EditItem } from './widgets/maincontent';
+import { InputWidget } from './widgets/inputwidget';
 
 declare const acquireVsCodeApi: () => ({ getState(): Trigger; setState(data: Trigger): void; postMessage: (msg: unknown) => void });
 export const vscode = acquireVsCodeApi();
@@ -22,10 +24,10 @@ window.addEventListener('message', event => {
   switch (event.data.type) {
     case 'trigger':
       rootElement.appendChild(new PipelineRunEditor(event.data.data).getElement());
-      // disableButtonInput(document.getElementsByTagName('input'));
-      selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource');
+      selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource', null, 'Create-Pipeline-Resource-new-url');
       displayWorkspaceContent(document.querySelectorAll('[id^=Workspaces-volume]'), event.data.data);
       selectText(document.querySelectorAll('[id^=Add-Trigger-WebHook]'), 'Select Git Provider Type', true);
+      createPipelineResource(document.querySelectorAll('[id^=Create-Pipeline-Resource-new-url]'));
       blockStartButton();
       vscode.setState(event.data.data); // TODO: fix this, store real state
       break;
@@ -38,29 +40,26 @@ if (previousState) {
   restore(previousState);
 }
 
-function restore(state: Trigger): void {
-  rootElement.appendChild(new PipelineRunEditor(state).getElement());
-  // disableButtonInput(document.getElementsByTagName('input'));
-  selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource');
-  displayWorkspaceContent(document.querySelectorAll('[id^=Workspaces-volume]'), state);
-  selectText(document.querySelectorAll('[id^=Add-Trigger-WebHook]'), 'Select Git Provider Type', true);
-  blockStartButton();
+function createPipelineResource(event: NodeListOf<Element>): void {
+  if (event) {
+    event.forEach((val) => {
+      if (val.parentElement?.['value'] === 'Create Pipeline Resource') {
+        const initialValue: PipelineStart = initialResourceFormValues;
+        const event = val.parentElement.parentElement.parentElement;
+        const input = new EditItem('URL', new InputWidget('Please provide Name/URL', null, initialValue, null, null, 'create-new-pipeline-resource-name'), 'input-resource', 'inner-editItem');
+        event.appendChild(input.getElement());
+      }
+    });
+  }
 }
 
-export function disableButtonInput(nodeList: HTMLCollectionOf<HTMLInputElement>): boolean {
-  let startButton = document.querySelector('.startButton');
-  if (!startButton) {
-    startButton = document.querySelector('.startButton-disable')
-  }
-  for (let element = 0; element < nodeList.length; element++) {
-    const serviceAccount = nodeList[element].parentElement.parentElement.parentElement.id.trim();
-    if ((nodeList[element].type === 'text' || nodeList[element].type === 'number') && nodeList[element].value === '' && nodeList[element].id.trim() !== 'disabled' && serviceAccount !== 'Service-account-name-input-field-content-data') {
-      startButton.className = 'startButton-disable';    // Disable the button.
-      return false;
-    } else {
-      startButton.className = 'startButton';    // Enable the button.
-    }
-  }
+function restore(state: Trigger): void {
+  rootElement.appendChild(new PipelineRunEditor(state).getElement());
+  selectText(document.querySelectorAll('[id^=Resources]'), 'Create Pipeline Resource', null, 'Create-Pipeline-Resource-new-url');
+  displayWorkspaceContent(document.querySelectorAll('[id^=Workspaces-volume]'), state);
+  selectText(document.querySelectorAll('[id^=Add-Trigger-WebHook]'), 'Select Git Provider Type', true);
+  createPipelineResource(document.querySelectorAll('[id^=Create-Pipeline-Resource-new-url]'));
+  blockStartButton();
 }
 
 function displayWorkspaceContent(event: NodeListOf<Element>, trigger: Trigger): void {

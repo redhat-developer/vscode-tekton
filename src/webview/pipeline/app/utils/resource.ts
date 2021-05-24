@@ -89,6 +89,32 @@ export function createPVC(name: string, accessMode: string, size: string, inputS
   });
 }
 
+export const getRandomChars = (len = 7): string => {
+  return Math.random()
+    .toString(36)
+    .replace(/[^a-z0-9]+/g, '')
+    .substr(1, len);
+}
+
+export function createNewPipelineResource(name: string, type: string, initialValue: PipelineStart, resourceName: string): void {
+  initialValue.newPipelineResource.push({
+    apiVersion: 'tekton.dev/v1alpha1',
+    kind: 'PipelineResource',
+    metadata: {
+      name: resourceName
+    },
+    spec: {
+      params: [
+        {
+          name: 'url',
+          value: name
+        }
+      ],
+      type: type
+    }
+  });
+}
+
 export function removePvcName(name: string, initialValue: PipelineStart): void {
   const newWorkSpace = initialValue.workspaces.filter((value) => value.name !== name);
   initialValue.workspaces = newWorkSpace;
