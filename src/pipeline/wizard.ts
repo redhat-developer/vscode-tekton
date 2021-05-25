@@ -64,8 +64,8 @@ export class PipelineWizard extends Disposable {
           // eslint-disable-next-line no-case-declarations
           const inputAddTrigger = e.body;
           this.dispose();
-          if (inputStartPipeline.newPvc.length !== 0) await createNewResource(inputStartPipeline.newPvc);
-          if (inputStartPipeline.newPipelineResource.length !== 0) await createNewResource(inputStartPipeline.newPipelineResource);
+          if (inputAddTrigger?.newPvc.length !== 0) await createNewResource(inputAddTrigger.newPvc);
+          if (inputAddTrigger?.newPipelineResource.length !== 0) await createNewResource(inputAddTrigger.newPipelineResource);
           return await addTriggerToPipeline(inputAddTrigger);
       }
     }));
