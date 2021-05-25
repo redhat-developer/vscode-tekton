@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.16.1 (May 25, 2021)
+
+This release brings to you:
+
+* [#587](https://github.com/redhat-developer/vscode-tekton/pull/587) Fix bug for Add Trigger.
+
 ## 0.16.0 (May 25, 2021)
 
 This release brings to you:
