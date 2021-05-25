@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.16.0 (May 25, 2021)
+
+This release brings to you:
+
+* [#553](https://github.com/redhat-developer/vscode-tekton/issues/553) Property apiVersion is not allowed in TriggerTemplate.
+* [#563](https://github.com/redhat-developer/vscode-tekton/issues/563) Create new pipeline resource when user select `Create Pipeline Resource` in start pipeline wizard or in start task.
+* [#565](https://github.com/redhat-developer/vscode-tekton/issues/565) Improve load time of the Tekton tree.
+* [#576](https://github.com/redhat-developer/vscode-tekton/pull/576) Hide Ip address for telemetry.
+* [#578](https://github.com/redhat-developer/vscode-tekton/pull/578) Hide user local path for Telemetry.
+* [#579](https://github.com/redhat-developer/vscode-tekton/issues/579) Unable to delete PipelineRun.
+
 ## 0.15.0 (May 11, 2021)
 
 This release brings to you:
