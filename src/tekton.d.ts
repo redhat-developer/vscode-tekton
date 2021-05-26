@@ -9,9 +9,21 @@ import { K8sResourceKind } from './tekton/triggertype';
 
 //Contains set JSON representation of tkn JSON objects
 
+interface KubectlTaskSpec {
+  params?: TknParams[];
+  resources?: Resource[];
+  workspaces?: TknWorkspaces[];
+  serviceAccountName?: string;
+}
+
+interface KubectlTask {
+  metadata: TknMetadata;
+  spec: KubectlTaskSpec;
+}
+
 interface TknTaskRunSpec {
   params?: Param[];
-  resources?: Resource;
+  resources?: Resource[];
   workspaces?: PipelineRunWorkspace[];
   serviceAccountName?: string;
 }
@@ -67,6 +79,7 @@ export interface TknParams {
 export interface TknResource {
   name: string;
   type: string;
+  resourceType?: string;
 }
 
 export interface TknSpec {

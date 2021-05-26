@@ -8,7 +8,7 @@ import { contextGlobalState } from '../extension';
 import * as path from 'path';
 import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
-import { TknResourceItem } from '../tekton/webviewstartpipeline';
+import { TknResourceItem } from '../tekton/collect-data-for-wizard';
 import { addTriggerToPipeline } from '../tekton/addtrigger';
 import { startPipelineFromJson } from '../tekton/start-pipeline-from-json';
 import { createNewResource } from '../tekton/create-resources';

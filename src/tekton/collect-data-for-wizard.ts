@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TektonItem } from './tektonitem';
-import { TknPipelineTrigger, TknResource, TknParams, TknPipelineResource, TknWorkspaces } from '../tekton';
+import { TknResource, TknParams, TknPipelineResource, TknWorkspaces } from '../tekton';
 import { Command } from '../cli-command';
 
 
@@ -60,14 +60,15 @@ export interface TknResourceItem {
   PipelineRunName?: string;
   pipelineRun?: TknPipelineRun;
   commandId?: string;
+  startTask?: boolean;
 }
 
-export async function pipelineData(pipeline: TknPipelineTrigger, trigger?: boolean | undefined): Promise<TknResourceItem> {
+export async function collectWizardContent(name: string, params: TknParams[], resources: TknResource[], workspaces: TknWorkspaces[], trigger: boolean | undefined): Promise<TknResourceItem> {
   const pipelineData: TknResourceItem = {
-    name: pipeline.metadata.name,
-    resources: pipeline.spec.resources,
-    params: pipeline.spec.params,
-    workspaces: pipeline.spec.workspaces,
+    name: name,
+    resources: resources,
+    params: params,
+    workspaces: workspaces,
     serviceAccount: 'Start-Pipeline',
     pipelineResource: undefined,
     Secret: undefined,
@@ -78,9 +79,10 @@ export async function pipelineData(pipeline: TknPipelineTrigger, trigger?: boole
     triggerLabel: [{
       name: 'Git Provider Type'
     }],
-    triggerContent: undefined
+    triggerContent: undefined,
+    startTask: false
   };
-  if (pipeline.spec.workspaces) await TektonItem.workspaceData(pipelineData);
+  if (workspaces) await TektonItem.workspaceData(pipelineData);
   if (trigger) {
     await addTrigger(pipelineData);
   }

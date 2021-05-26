@@ -13,19 +13,28 @@ export function collectServiceAccountData(name: string, initialValue: PipelineSt
   initialValue.serviceAccount = name;
 }
 
-export function collectResourceData(resourceName: string, resourceReference: string, initialValue: PipelineStart): void {
+export function collectResourceData(resourceName: string, resourceReference: string, initialValue: PipelineStart, resourceType?: string): void {
   if (initialValue.resources.length === 0) {
-    initialValue.resources.push({name: resourceName, resourceRef: resourceReference});
+    storeResourceData(resourceName, resourceReference, initialValue, resourceType);
   } else {
     const found = initialValue.resources.some(value => {
       if (value.name === resourceName) {
         value.resourceRef = resourceReference;
+        if (initialValue.startTask) value.resourceType = resourceType;
         return true;
       }
     });
     if (!found) {
-      initialValue.resources.push({name: resourceName, resourceRef: resourceReference});
+      storeResourceData(resourceName, resourceReference, initialValue, resourceType);
     }
+  }
+}
+
+function storeResourceData(resourceName: string, resourceReference: string, initialValue: PipelineStart, resourceType?: string): void {
+  if (initialValue.startTask) {
+    initialValue.resources.push({name: resourceName, resourceRef: resourceReference, resourceType: resourceType});
+  } else {
+    initialValue.resources.push({name: resourceName, resourceRef: resourceReference});
   }
 }
 

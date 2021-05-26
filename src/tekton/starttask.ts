@@ -3,64 +3,45 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { Progress } from '../util/progress';
 import * as cliInstance from '../cli';
 import { TektonItem } from './tektonitem';
-import { TknPipelineTrigger } from '../tekton';
-import { Trigger, PipelineContent } from './pipelinecontent';
-import { telemetryLog, telemetryLogError } from '../telemetry';
-import { window } from 'vscode';
+import { ViewColumn, window } from 'vscode';
 import { Command } from '../cli-command';
+import { KubectlTask, TknResource } from '../tekton';
+import { collectWizardContent } from './collect-data-for-wizard';
+import { PipelineWizard } from '../pipeline/wizard';
 
 
 export async function startTask(taskName: string, commandId?: string): Promise<string> {
   if (!taskName) return null;
-  const result: cliInstance.CliExitData = await TektonItem.tkn.execute(Command.listTasks(), process.cwd(), false);
-  let data: TknPipelineTrigger[] = [];
+  let task: KubectlTask;
+  const result: cliInstance.CliExitData = await TektonItem.tkn.execute(Command.getTask(taskName, 'task.tekton'), process.cwd(), false);
   if (result.error) {
-    telemetryLogError(commandId, result.error);
-    return window.showErrorMessage(`${result.error} Std.err when processing task`)
+    return window.showErrorMessage(`Fail to fetch task info reason: ${result.error}`);
   }
   try {
-    data = JSON.parse(result.stdout).items;
-  } catch (ignore) {
-    // ignore
+    task = JSON.parse(result.stdout);
+    // eslint-disable-next-line no-empty
+  } catch (err) {
+    return window.showErrorMessage(`Fail to parse Json data for ${taskName}, error: ${err}`);
   }
 
-  const taskTrigger = data.filter((obj) => {
-    return obj.metadata.name === taskName;
-  }).map<Trigger>(value => ({
-    name: value.metadata.name,
-    resources: value.spec.resources,
-    workspaces: value.spec.workspaces,
-    params: value.spec.params ? value.spec.params : undefined,
-    serviceAcct: value.spec.serviceAccount ? value.spec.serviceAccount : undefined
-  }));
-
-  if (taskTrigger[0].resources) {
-    const resource = [];
-    Object.keys(taskTrigger[0].resources).map(label => {
-      taskTrigger[0].resources[label].map((value) => {
+  const resource: TknResource[] = [];
+  if (task.spec.resources) {
+    Object.keys(task.spec.resources).map(label => {
+      task.spec.resources[label].map((value) => {
         value.resourceType = label;
         resource.push(value);
       });
     });
-    taskTrigger[0].resources = resource;
   }
-
-  const inputStartTask = await PipelineContent.startObject(taskTrigger, 'Task');
-
-  return Progress.execFunctionWithProgress(`Starting Task '${inputStartTask.name}'.`, () =>
-    TektonItem.tkn.startTask(inputStartTask)
-      .then(() => TektonItem.explorer.refresh())
-      .then(() => {
-        telemetryLog(commandId, 'Task successfully started');
-        window.showInformationMessage(`Task '${inputStartTask.name}' successfully started`);
-      })
-      .catch((error) => {
-        telemetryLogError(commandId, error);
-        window.showErrorMessage(`Failed to start Task with error '${error}'`)
-      })
-  );
+  const trigger = await collectWizardContent(task.metadata.name, task.spec.params, (resource.length !== 0) ? resource : undefined, task.spec.workspaces, false);
+  if (commandId) trigger.commandId = commandId;
+  if (!trigger.workspaces && !trigger.resources && !trigger.params) {
+    delete trigger.serviceAccount;
+    // await startPipelineFromJson(trigger);
+  } else {
+    trigger.startTask = true;
+    PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, 'Start Task', trigger.name);
+  }
 }
-

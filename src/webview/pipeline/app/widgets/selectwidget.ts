@@ -178,7 +178,7 @@ export class SelectWidget extends BaseWidget {
     return this;
   }
 
-  pipelineResource(items: TknPipelineResource[], resource: NameType): Widget {
+  pipelineResource(items: TknPipelineResource[], resource: NameType, task: boolean): Widget {
     items.forEach(val => {
       if (val.spec.type === resource.type) {
         const op = document.createElement('option');
@@ -194,7 +194,12 @@ export class SelectWidget extends BaseWidget {
         this.select.appendChild(op);
       }
     });
-    collectResourceData(resource.name, this.select.value, this.initialValue);
+    if (task) {
+      collectResourceData(resource.name, this.select.value, this.initialValue, resource.resourceType);
+    } else {
+      collectResourceData(resource.name, this.select.value, this.initialValue);
+    }
+    console.log(this.initialValue);
     return this;
   }
 

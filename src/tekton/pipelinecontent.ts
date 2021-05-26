@@ -7,7 +7,7 @@ import { multiStepInput } from '../util/MultiStepInput';
 import { TektonItem } from './tektonitem';
 import { TknPipelineResource } from '../tekton';
 import { QuickPickItem } from 'vscode';
-import { Secret, ConfigMap, PVC } from './webviewstartpipeline';
+import { Secret, ConfigMap, PVC } from './collect-data-for-wizard';
 import { Command } from '../cli-command';
 import { NewPipelineResources, NewPvc } from './create-resources';
 

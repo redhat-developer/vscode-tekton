@@ -42,6 +42,7 @@ export class PipelineRunEditor implements Widget {
   createElement(title: string, resourceType?: Params[] | PipelineRunWorkspaces[] | Workspaces[], serviceAccount?: string): void {
     const resourceGroup = new GroupItem(title, `${title}-vscode-webview-pipeline`);
     this.initialValue.name = this.trigger.name;
+    if (this.trigger.startTask) this.initialValue.startTask = true;
     if (this.trigger.commandId) this.initialValue.commandId = this.trigger.commandId;
     let element: Widget;
     let elementId: string;
@@ -63,7 +64,7 @@ export class PipelineRunEditor implements Widget {
         } else if (title === TknResourceType.Workspaces) {
           element = new SelectWidget('Workspaces-volume', this.trigger, null, this.initialValue).workspaces(VolumeTypes, resource);
         } else if (title === TknResourceType.GitResource || title === TknResourceType.ImageResource) {
-          element = new SelectWidget('Resources', null, null, this.initialValue).pipelineResource(this.trigger.pipelineResource, resource);
+          element = new SelectWidget('Resources', null, null, this.initialValue).pipelineResource(this.trigger.pipelineResource, resource, this.trigger.startTask);
         }
         resourceGroup.addEditItem(new EditItem(resource.name, element, resource.name, null, elementId));
         //TODO: complete this
