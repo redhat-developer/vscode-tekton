@@ -199,7 +199,6 @@ export class SelectWidget extends BaseWidget {
     } else {
       collectResourceData(resource.name, this.select.value, this.initialValue);
     }
-    console.log(this.initialValue);
     return this;
   }
 

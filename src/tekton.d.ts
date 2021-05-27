@@ -101,7 +101,86 @@ export interface TaskRunTemplate {
 
 export interface Params {
   name: string;
-  value: string;
+  value?: string;
+  default?: string;
+  description?: string;
+}
+
+export interface Ref {
+  name: string;
+  type: string;
+}
+
+export interface NameType {
+  name: string;
+  type: string;
+}
+
+export interface ItemPath {
+  key?: string;
+  path?: string;
+}
+
+export interface Workspaces {
+  name: string;
+  item?: ItemPath[];
+  workspaceName?: string;
+  workspaceType?: string;
+  key?: string;
+  value?: string;
+  subPath?: string;
+  emptyDir?: string;
+}
+
+export interface Resources {
+  name: string;
+  resourceRef?: string;
+  resourceType?: string;
+}
+
+export interface VCT {
+  kind: string;
+  metadata: {
+    name: string;
+  };
+  spec: {
+    accessModes: string[];
+    resources: {
+      requests: {
+        storage: string;
+      };
+    };
+    volumeMode?: string;
+  };
+}
+
+export interface StartObject {
+  name: string;
+  resources?: Resources[];
+  newPvc?: NewPvc[];
+  newPipelineResource?: NewPipelineResources[];
+  params?: Params[] | undefined;
+  workspaces?: Workspaces[];
+  serviceAccount: string | undefined;
+  pipelineResource?: TknPipelineResource[];
+  Secret?: Secret[];
+  ConfigMap?: ConfigMap[];
+  PersistentVolumeClaim?: PVC[];
+  pipelineRun?: {
+    params: Params[] | undefined;
+    resources: Resources[];
+    workspaces: Workspaces[];
+  };
+  commandId?: string;
+  volumeClaimTemplate?: VCT[];
+}
+
+export interface Trigger {
+  name: string;
+  resources: NameType[];
+  params?: Params[];
+  workspaces?: Workspaces[];
+  serviceAcct: string | undefined;
 }
 
 export interface Task {

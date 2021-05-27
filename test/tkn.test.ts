@@ -17,7 +17,6 @@ import { commands, Terminal, TreeItemCollapsibleState } from 'vscode';
 import { TestItem } from './tekton/testTektonitem';
 import { ExecException } from 'child_process';
 import * as path from 'path';
-import { StartObject, Resources, Params } from '../src/tekton/pipelinecontent';
 import { PipelineRunData } from '../src/tekton';
 import { ContextType } from '../src/context-type';
 import { TektonNode, TektonNodeImpl } from '../src/tree-view/tekton-node';
@@ -32,7 +31,6 @@ chai.use(sinonChai);
 // This needs to be edited to actually make sense wrt Tasks/TaskRuns in particular and nesting of resources
 suite('tkn', () => {
   const tknCli: tkn.Tkn = tkn.tkn;
-  let startPipelineObj: StartObject;
   const sandbox = sinon.createSandbox();
   const errorMessage = 'Error';
   let execStubCli: sinon.SinonStub;

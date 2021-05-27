@@ -7,12 +7,14 @@ import * as cliInstance from '../cli';
 import { TektonItem } from './tektonitem';
 import { ViewColumn, window } from 'vscode';
 import { Command } from '../cli-command';
-import { KubectlTask, TknResource } from '../tekton';
+import { KubectlTask, StartObject, TknResource } from '../tekton';
 import { collectWizardContent } from './collect-data-for-wizard';
 import { PipelineWizard } from '../pipeline/wizard';
+import { Progress } from '../util/progress';
+import { telemetryLog, telemetryLogError } from '../telemetry';
 
 
-export async function startTask(taskName: string, commandId?: string): Promise<string> {
+export async function createWizardForTask(taskName: string, commandId?: string): Promise<string> {
   if (!taskName) return null;
   let task: KubectlTask;
   const result: cliInstance.CliExitData = await TektonItem.tkn.execute(Command.getTask(taskName, 'task.tekton'), process.cwd(), false);
@@ -44,4 +46,19 @@ export async function startTask(taskName: string, commandId?: string): Promise<s
     trigger.startTask = true;
     PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, 'Start Task', trigger.name);
   }
+}
+
+export function startTask(taskContent: StartObject): Promise<string> {
+  return Progress.execFunctionWithProgress(`Starting Task '${taskContent.name}'.`, () =>
+    TektonItem.tkn.startTask(taskContent)
+      .then(() => TektonItem.explorer.refresh())
+      .then(() => {
+        if (taskContent.commandId) telemetryLog(taskContent.commandId, 'Task successfully started');
+        window.showInformationMessage(`Task '${taskContent.name}' successfully started`);
+      })
+      .catch((error) => {
+        if (taskContent.commandId) telemetryLogError(taskContent.commandId, error);
+        window.showErrorMessage(`Failed to start Task with error '${error}'`)
+      })
+  );
 }

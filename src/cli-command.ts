@@ -5,7 +5,7 @@
 
 import { workspace } from 'vscode';
 import { CliCommand, createCliCommand } from './cli';
-import { StartObject } from './tekton/pipelinecontent';
+import { StartObject } from './tekton';
 
 
 export function newTknCommand(...tknArguments: string[]): CliCommand {

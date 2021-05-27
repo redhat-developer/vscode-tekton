@@ -10,7 +10,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as fs from 'fs-extra';
-import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind, EventListenerKind, PipelineRunWorkspace } from '../tekton';
+import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind, EventListenerKind, PipelineRunWorkspace, VCT } from '../tekton';
 import { TektonItem } from './tektonitem';
 import { AddTriggerFormValues, Pipeline, TriggerBindingKind, Resources, Param, Workspaces } from './triggertype';
 import { K8sKind, PipelineRunKind, RouteKind } from './k8s-type';
@@ -24,7 +24,6 @@ import { NewPvc } from './create-resources';
 import { getExposeURl } from '../util/exposeurl';
 import { telemetryLog, telemetryLogError } from '../telemetry';
 import { getStderrString } from '../util/stderrstring';
-import { VCT } from './pipelinecontent';
 import { Command } from '../cli-command';
 import semver = require('semver');
 

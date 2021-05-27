@@ -12,6 +12,7 @@ import { TknResourceItem } from '../tekton/collect-data-for-wizard';
 import { addTriggerToPipeline } from '../tekton/addtrigger';
 import { startPipelineFromJson } from '../tekton/start-pipeline-from-json';
 import { createNewResource } from '../tekton/create-resources';
+import { startTask } from '../tekton/start-task';
 
 export interface PipelineWizardInput {
   readonly resourceColumn: vscode.ViewColumn;
@@ -67,6 +68,13 @@ export class PipelineWizard extends Disposable {
           if (inputAddTrigger?.newPvc.length !== 0) await createNewResource(inputAddTrigger.newPvc);
           if (inputAddTrigger?.newPipelineResource.length !== 0) await createNewResource(inputAddTrigger.newPipelineResource);
           return await addTriggerToPipeline(inputAddTrigger);
+        case 'startTask':
+          // eslint-disable-next-line no-case-declarations
+          const inputStartTask = e.body;
+          this.dispose();
+          if (inputStartTask?.newPvc.length !== 0) await createNewResource(inputStartTask.newPvc);
+          if (inputStartTask?.newPipelineResource.length !== 0) await createNewResource(inputStartTask.newPipelineResource);
+          return await startTask(inputStartTask);
       }
     }));
 

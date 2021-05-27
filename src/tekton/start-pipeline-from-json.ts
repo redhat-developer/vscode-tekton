@@ -6,11 +6,10 @@
 import { window } from 'vscode';
 import { cli } from '../cli';
 import { Command } from '../cli-command';
-import { PipelineRunWorkspace, TknPipelineTrigger } from '../tekton';
+import { Params, PipelineRunWorkspace, Resources, StartObject, TknPipelineTrigger, VCT, Workspaces } from '../tekton';
 import { telemetryLogError } from '../telemetry';
 import { k8sCreate, PipelineRunModel } from './addtrigger';
 import { PipelineRunKind } from './k8s-type';
-import { Params, Resources, StartObject, VCT, Workspaces } from './pipelinecontent';
 
 export async function startPipelineFromJson(formValue: StartObject): Promise<void> {
   const pipelineRunJson = await getPipelineRun(formValue, formValue.commandId);

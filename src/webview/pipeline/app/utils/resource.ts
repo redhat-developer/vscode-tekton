@@ -20,7 +20,7 @@ export function collectResourceData(resourceName: string, resourceReference: str
     const found = initialValue.resources.some(value => {
       if (value.name === resourceName) {
         value.resourceRef = resourceReference;
-        if (initialValue.startTask) value.resourceType = resourceType;
+        if (initialValue.startTask && resourceType) value.resourceType = resourceType;
         return true;
       }
     });
