@@ -17,15 +17,18 @@ interface KubectlTaskSpec {
 }
 
 interface KubectlTask {
+  apiVersion?: string;
+  kind?: string;
   metadata: TknMetadata;
   spec: KubectlTaskSpec;
 }
 
 interface TknTaskRunSpec {
   params?: Param[];
-  resources?: Resource[];
-  workspaces?: PipelineRunWorkspace[];
+  resources?: Resource;
+  workspaces?: Workspace[];
   serviceAccountName?: string;
+  taskRef?: { name: string };
 }
 
 interface Resource {
@@ -42,6 +45,7 @@ interface InputAndOutput {
 
 
 export interface TknTaskRun {
+  apiVersion?: string;
   kind?: string;
   metadata: ObjectMetadata;
   spec: TknTaskRunSpec;
@@ -161,7 +165,7 @@ export interface StartObject {
   newPipelineResource?: NewPipelineResources[];
   params?: Params[] | undefined;
   workspaces?: Workspaces[];
-  serviceAccount: string | undefined;
+  serviceAccount: string | null | undefined;
   pipelineResource?: TknPipelineResource[];
   Secret?: Secret[];
   ConfigMap?: ConfigMap[];
@@ -345,7 +349,7 @@ export interface VolumeTypeClaim {
   };
 }
 
-export interface PipelineRunWorkspace extends Param {
+export interface Workspace extends Param {
   [volumeType: string]: VolumeTypeSecret | VolumeTypeConfigMaps | VolumeTypePVC | VolumeTypeClaim | {};
 }
 
@@ -372,7 +376,7 @@ export interface PipelineRunData extends K8sResourceKind {
       name: string;
     };
     params?: PipelineRunParam[];
-    workspaces?: PipelineRunWorkspace[];
+    workspaces?: Workspace[];
     resources?: PipelineRunResource[];
     serviceAccountName?: string;
   };

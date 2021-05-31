@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { VolumeTypeSecret, VolumeTypeConfigMaps, VolumeTypePVC, PipelineRunWorkspace, Params, VCT, ItemPath } from '../tekton';
+import { VolumeTypeSecret, VolumeTypeConfigMaps, VolumeTypePVC, Workspace, Params, VCT, ItemPath } from '../tekton';
 
 export interface TriggerFormValues {
   selectedTrigger: string;
@@ -71,7 +71,7 @@ export interface CommonPipelineModalFormikValues {
   name: string;
   params: Params[] | undefined;
   resources: PipelineModalFormResource[];
-  workspaces?: PipelineRunWorkspace[];
+  workspaces?: Workspace[];
   serviceAccount?: string;
 }
 

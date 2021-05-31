@@ -10,7 +10,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as fs from 'fs-extra';
-import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind, EventListenerKind, PipelineRunWorkspace, VCT } from '../tekton';
+import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind, EventListenerKind, Workspace, VCT, TknTaskRun } from '../tekton';
 import { TektonItem } from './tektonitem';
 import { AddTriggerFormValues, Pipeline, TriggerBindingKind, Resources, Param, Workspaces } from './triggertype';
 import { K8sKind, PipelineRunKind, RouteKind } from './k8s-type';
@@ -26,24 +26,7 @@ import { telemetryLog, telemetryLogError } from '../telemetry';
 import { getStderrString } from '../util/stderrstring';
 import { Command } from '../cli-command';
 import semver = require('semver');
-
-export const TriggerTemplateModel = {
-  apiGroup: 'triggers.tekton.dev',
-  apiVersion: 'v1alpha1',
-  kind: 'TriggerTemplate',
-};
-
-export const EventListenerModel: K8sKind = {
-  apiGroup: 'triggers.tekton.dev',
-  apiVersion: 'v1alpha1',
-  kind: 'EventListener',
-};
-
-export const PipelineRunModel: K8sKind = {
-  apiGroup: 'tekton.dev',
-  apiVersion: 'v1beta1',
-  kind: 'PipelineRun',
-};
+import { EventListenerModel, PipelineRunModel, TaskRunModel, TriggerTemplateModel } from '../util/resource-kind';
 
 export enum WorkspaceResource {
   Secret = 'secret',
@@ -90,7 +73,7 @@ export async function addTrigger(inputAddTrigger: AddTriggerFormValues): Promise
   await exposeRoute(eventListener.metadata.name, inputAddTrigger.commandId);
 }
 
-export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind | RouteKind | NewPvc | PipelineRunKind, commandId?: string, kind?: string): Promise<boolean> {
+export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind | RouteKind | NewPvc | PipelineRunKind | TknTaskRun, commandId?: string, kind?: string): Promise<boolean> {
   const quote = Platform.OS === 'win32' ? '"' : '\'';
   const triggerYaml = yaml.safeDump(trigger, {skipInvalid: true});
   const tempPath = os.tmpdir();
@@ -112,6 +95,11 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
   }
   if (kind === PipelineRunModel.kind && !result.error) {
     const message = 'Pipeline successfully started';
+    telemetryLog(commandId, message);
+    vscode.window.showInformationMessage(message);
+  }
+  if (kind === TaskRunModel.kind && !result.error) {
+    const message = 'Task successfully started';
     telemetryLog(commandId, message);
     vscode.window.showInformationMessage(message);
   }
@@ -153,7 +141,7 @@ export async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues, 
   return await getPipelineRunData(pipelineRunData, options);
 }
 
-export function getPipelineRunWorkspaces(workspaces: Workspaces[], volumeClaimTemplate?: VCT[]): PipelineRunWorkspace[] {
+export function getPipelineRunWorkspaces(workspaces: Workspaces[], volumeClaimTemplate?: VCT[]): Workspace[] {
   const newWorkspace = [];
   if (workspaces && workspaces.length === 0) return newWorkspace;
   workspaces.map((workspaceData: Workspaces) => {

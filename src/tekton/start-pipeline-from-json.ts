@@ -6,9 +6,11 @@
 import { window } from 'vscode';
 import { cli } from '../cli';
 import { Command } from '../cli-command';
-import { Params, PipelineRunWorkspace, Resources, StartObject, TknPipelineTrigger, VCT, Workspaces } from '../tekton';
+import { StartObject, TknPipelineTrigger } from '../tekton';
 import { telemetryLogError } from '../telemetry';
-import { k8sCreate, PipelineRunModel } from './addtrigger';
+import { getParams, getPipelineRunResources, getWorkspaces } from '../util/create-resource-spec';
+import { PipelineRunModel } from '../util/resource-kind';
+import { k8sCreate } from './addtrigger';
 import { PipelineRunKind } from './k8s-type';
 
 export async function startPipelineFromJson(formValue: StartObject): Promise<void> {
@@ -24,9 +26,9 @@ export async function getPipelineRun(formValue: StartObject, commandId?: string)
       pipelineRef: {
         name: formValue.name,
       },
-      params: getPipelineRunParams(formValue.params),
+      params: getParams(formValue.params),
       resources: getPipelineRunResources(formValue.resources),
-      workspaces: getPipelineRunWorkspaces(formValue.workspaces, formValue.volumeClaimTemplate),
+      workspaces: getWorkspaces(formValue.workspaces, formValue.volumeClaimTemplate),
       serviceAccountName: formValue.serviceAccount
     },
   };
@@ -71,65 +73,4 @@ function getPipelineRunData(pipeline: TknPipelineTrigger, pipelineRunData: Pipel
     },
   };
   return newPipelineRun;
-}
-
-function getPipelineRunResources(resources: Resources[]): Resources[] {
-  const newResource = [];
-  if (resources && resources.length !== 0) {
-    resources.map(val => {
-      newResource.push({name: val.name, resourceRef: { name: val.resourceRef}})
-    })
-  }
-  return newResource;
-}
-
-function getPipelineRunParams(params: Params[]): Params[] {
-  if (params && params.length !== 0) {
-    params.map(val => {
-      val['value'] = val.default;
-      delete val.default
-    });
-    return params;
-  } else {
-    return [];
-  }
-}
-
-function getPipelineRunWorkspaces(workspace: Workspaces[], volumeClaimTemplate: VCT[]): PipelineRunWorkspace[] {
-  const newWorkSpace = [];
-  if (workspace && workspace.length !== 0) {
-    workspace.map(value => {
-      const workspaceObject = {};
-      workspaceObject['name'] = value.name;
-      if (value.workspaceType === 'Secret') {
-        workspaceObject['secret'] = {
-          items: value.item,
-          secretName: value.workspaceName
-        }
-      } else if (value.workspaceType === 'ConfigMap') { 
-        workspaceObject['configMap'] = {
-          items: value.item,
-          name: value.workspaceName
-        }
-      } else if (value.workspaceType === 'PersistentVolumeClaim') { 
-        workspaceObject['persistentVolumeClaim'] = {
-          claimName: value.workspaceName
-        }
-      } else if (value.workspaceType === 'EmptyDirectory') { 
-        workspaceObject['emptyDir'] = {}
-      }
-      newWorkSpace.push(workspaceObject);
-    })
-  }
-  if (volumeClaimTemplate && volumeClaimTemplate.length !== 0) {
-    volumeClaimTemplate.map(value => {
-      const workspaceObject = {};
-      workspaceObject['name'] = value.metadata.name,
-      workspaceObject[value.kind] = {
-        spec: value.spec
-      }
-      newWorkSpace.push(workspaceObject);
-    })
-  }
-  return newWorkSpace;
 }

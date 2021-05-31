@@ -7,11 +7,11 @@ import * as cliInstance from '../cli';
 import { TektonItem } from './tektonitem';
 import { ViewColumn, window } from 'vscode';
 import { Command } from '../cli-command';
-import { KubectlTask, StartObject, TknResource } from '../tekton';
+import { KubectlTask, TknResource } from '../tekton';
 import { collectWizardContent } from './collect-data-for-wizard';
 import { PipelineWizard } from '../pipeline/wizard';
-import { Progress } from '../util/progress';
-import { telemetryLog, telemetryLogError } from '../telemetry';
+import { telemetryLogError } from '../telemetry';
+import { startTaskFromJson } from './start-task-from-yaml';
 
 
 export async function createWizardForTask(taskName: string, commandId?: string): Promise<string> {
@@ -23,9 +23,10 @@ export async function createWizardForTask(taskName: string, commandId?: string):
   }
   try {
     task = JSON.parse(result.stdout);
-    // eslint-disable-next-line no-empty
   } catch (err) {
-    return window.showErrorMessage(`Fail to parse Json data for ${taskName}, error: ${err}`);
+    const error = `Fail to parse Json data for ${taskName}, error: ${err}`;
+    if (commandId) telemetryLogError(commandId, error);
+    return window.showErrorMessage(error);
   }
 
   const resource: TknResource[] = [];
@@ -41,24 +42,9 @@ export async function createWizardForTask(taskName: string, commandId?: string):
   if (commandId) trigger.commandId = commandId;
   if (!trigger.workspaces && !trigger.resources && !trigger.params) {
     delete trigger.serviceAccount;
-    // await startPipelineFromJson(trigger);
+    await startTaskFromJson(trigger);
   } else {
     trigger.startTask = true;
     PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, 'Start Task', trigger.name);
   }
-}
-
-export function startTask(taskContent: StartObject): Promise<string> {
-  return Progress.execFunctionWithProgress(`Starting Task '${taskContent.name}'.`, () =>
-    TektonItem.tkn.startTask(taskContent)
-      .then(() => TektonItem.explorer.refresh())
-      .then(() => {
-        if (taskContent.commandId) telemetryLog(taskContent.commandId, 'Task successfully started');
-        window.showInformationMessage(`Task '${taskContent.name}' successfully started`);
-      })
-      .catch((error) => {
-        if (taskContent.commandId) telemetryLogError(taskContent.commandId, error);
-        window.showErrorMessage(`Failed to start Task with error '${error}'`)
-      })
-  );
 }
