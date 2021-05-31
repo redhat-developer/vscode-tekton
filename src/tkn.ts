@@ -8,7 +8,7 @@ import { TreeItemCollapsibleState, Terminal, workspace } from 'vscode';
 import { WindowUtil } from './util/windowUtils';
 import * as path from 'path';
 import { ToolsConfig } from './tools';
-import { TknPipelineResource, TknTask, PipelineRunData, TaskRunStatus, ConditionCheckStatus, PipelineTaskRunData, StartObject } from './tekton';
+import { TknPipelineResource, TknTask, PipelineRunData, TaskRunStatus, ConditionCheckStatus, PipelineTaskRunData } from './tekton';
 import { kubectl } from './kubectl';
 import { pipelineExplorer } from './pipeline/pipelineExplorer';
 import { RunState } from './yaml-support/tkn-yaml';
@@ -64,7 +64,6 @@ export function getPipelineRunTaskState(status: TaskRunStatus | ConditionCheckSt
 
 export interface Tkn {
   getPipelineNodes(): Promise<TektonNode[]>;
-  startTask(task: StartObject): Promise<TektonNode[]>;
   restartPipeline(pipeline: TektonNode): Promise<void>;
   getPipelines(pipeline?: TektonNode): Promise<TektonNode[]>;
   getPipelineRuns(pipelineRun?: TektonNode): Promise<TektonNode[]>;
@@ -513,24 +512,6 @@ export class TknImpl implements Tkn {
     }
 
     return data;
-  }
-
-  async startTask(task: StartObject): Promise<TektonNode[]> {
-    const result = await this.execute(Command.startTask(task));
-    let data: TknTask[] = [];
-    try {
-      data = JSON.parse(result.stdout).items;
-      // eslint-disable-next-line no-empty
-    } catch (ignore) {
-    }
-    let tasks: NameId[] = data.map((value) => {
-      return {
-        name: value.metadata.name,
-        uid: value.metadata.uid
-      }
-    });
-    tasks = [...new Set(tasks)];
-    return tasks.map<TektonNode>((value) => new TektonNodeImpl(undefined, value.name, ContextType.PIPELINE, this, TreeItemCollapsibleState.None, value.uid)).sort(compareNodes);
   }
 
   async restartPipeline(pipeline: TektonNode): Promise<void> {
