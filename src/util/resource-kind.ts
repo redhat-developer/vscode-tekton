@@ -28,3 +28,15 @@ export const TaskRunModel: K8sKind = {
   apiVersion: 'v1beta1',
   kind: 'TaskRun',
 };
+
+export const TaskModel: K8sKind = {
+  apiGroup: 'tekton.dev',
+  apiVersion: 'v1beta1',
+  kind: 'Task',
+};
+
+export const ClusterTaskModel: K8sKind = {
+  apiGroup: 'tekton.dev',
+  apiVersion: 'v1beta1',
+  kind: 'ClusterTask',
+};

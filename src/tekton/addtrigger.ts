@@ -26,7 +26,7 @@ import { telemetryLog, telemetryLogError } from '../telemetry';
 import { getStderrString } from '../util/stderrstring';
 import { Command } from '../cli-command';
 import semver = require('semver');
-import { EventListenerModel, PipelineRunModel, TaskRunModel, TriggerTemplateModel } from '../util/resource-kind';
+import { ClusterTaskModel, EventListenerModel, PipelineRunModel, TaskModel, TriggerTemplateModel } from '../util/resource-kind';
 
 export enum WorkspaceResource {
   Secret = 'secret',
@@ -98,8 +98,8 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
     telemetryLog(commandId, message);
     vscode.window.showInformationMessage(message);
   }
-  if (kind === TaskRunModel.kind && !result.error) {
-    const message = 'Task successfully started';
+  if ((kind === TaskModel.kind || kind === ClusterTaskModel.kind) && !result.error) {
+    const message = `${kind} successfully started`;
     telemetryLog(commandId, message);
     vscode.window.showInformationMessage(message);
   }

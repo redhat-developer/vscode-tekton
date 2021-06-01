@@ -13,8 +13,9 @@ import { TaskRunModel } from '../util/resource-kind';
 import { k8sCreate } from './addtrigger';
 
 export async function startTaskFromJson(formValue: StartObject): Promise<boolean> {
-  const taskRunJson = await getTaskRun(formValue, formValue.commandId);
-  return await k8sCreate(taskRunJson, formValue.commandId, TaskRunModel.kind);
+  const taskRunJson: TknTaskRun = await getTaskRun(formValue, formValue.commandId);
+  if (!taskRunJson) return null;
+  return await k8sCreate(taskRunJson, formValue.commandId, (formValue.startTask) ? 'Task' : 'ClusterTask');
 }
 
 export async function getTaskRun(formValue: StartObject, commandId?: string): Promise<TknTaskRun> {
@@ -27,13 +28,14 @@ export async function getTaskRun(formValue: StartObject, commandId?: string): Pr
       workspaces: getWorkspaces(formValue.workspaces, formValue.volumeClaimTemplate),
       taskRef: {
         name: formValue.name,
+        kind: (formValue.startTask) ? 'Task' : 'ClusterTask'
       },
     },
   };
   if (formValue.serviceAccount) {
     taskRunData.spec.serviceAccountName = formValue.serviceAccount;
   }
-  const result = await cli.execute(Command.getTask(formValue.name, 'task.tekton'));
+  const result = await cli.execute(Command.getTask(formValue.name, (formValue.startTask) ? 'task.tekton' : 'clustertask'));
   let task: KubectlTask;
   if (result.error) {
     telemetryLogError(commandId, result.error.toString())
@@ -43,13 +45,15 @@ export async function getTaskRun(formValue: StartObject, commandId?: string): Pr
   try {
     task = JSON.parse(result.stdout);
   } catch (ignore) {
-    window.showErrorMessage(`fail to Parse Task: ${formValue.name}`)
+    window.showErrorMessage(`fail to Parse Task: ${formValue.name}`);
+    return;
   }
   return getTaskRunData(task, taskRunData);
 }
 
 function getTaskRunData(task: KubectlTask, taskRunData: TknTaskRun): TknTaskRun {
   const taskName = task.metadata.name;
+  const kindType = task.kind;
   const resources = taskRunData?.spec.resources;
   const workspaces = taskRunData?.spec.workspaces;
   const params = taskRunData?.spec.params;
@@ -59,12 +63,12 @@ function getTaskRunData(task: KubectlTask, taskRunData: TknTaskRun): TknTaskRun 
     apiVersion: task.apiVersion,
     kind: TaskRunModel.kind,
     metadata: {
-      generateName: `${taskName}-`,
-      namespace: task.metadata.namespace,
+      generateName: `${taskName}-`
     },
     spec: {
       taskRef: {
         name: taskName,
+        kind: kindType
       },
       resources,
       params,

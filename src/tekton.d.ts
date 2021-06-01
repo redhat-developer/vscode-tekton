@@ -28,7 +28,10 @@ interface TknTaskRunSpec {
   resources?: Resource;
   workspaces?: Workspace[];
   serviceAccountName?: string;
-  taskRef?: { name: string };
+  taskRef?: {
+    name: string;
+    kind: string;
+  };
 }
 
 interface Resource {
@@ -177,6 +180,8 @@ export interface StartObject {
   };
   commandId?: string;
   volumeClaimTemplate?: VCT[];
+  startTask?: boolean;
+  clusterTask?: boolean;
 }
 
 export interface Trigger {

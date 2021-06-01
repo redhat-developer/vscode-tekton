@@ -6,9 +6,10 @@
 import { TektonItem } from './tektonitem';
 import { window } from 'vscode';
 import * as cliInstance from '../cli';
-import { createWizardForTask } from './start-task';
+import { createWizardForTask } from './start-task-or-clustertask';
 import { TektonNode } from '../tree-view/tekton-node';
 import { Command } from '../cli-command';
+import { TaskModel } from '../util/resource-kind';
 
 
 export class Task extends TektonItem {
@@ -18,7 +19,7 @@ export class Task extends TektonItem {
       task = await window.showQuickPick(await Task.getTaskNames(), { placeHolder: 'Select Task to start', ignoreFocusOut: true });
     }
     if (!task) return null;
-    return await createWizardForTask(task.getName(), commandId);
+    return await createWizardForTask(task.getName(), TaskModel.kind ,commandId);
   }
 
   static async list(): Promise<void> {

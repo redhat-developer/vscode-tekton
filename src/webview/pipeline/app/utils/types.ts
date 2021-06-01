@@ -134,6 +134,7 @@ export interface Trigger {
   triggerContent?: object;
   commandId?: string;
   startTask?: boolean;
+  startClusterTask?: boolean;
 }
 
 export type TriggerBindingParam = {
@@ -213,6 +214,7 @@ export interface PipelineStart {
   commandId?: string;
   volumeClaimTemplate?: VCT[];
   startTask?: boolean;
+  startClusterTask?: boolean;
 }
 
 export interface Item {

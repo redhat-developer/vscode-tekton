@@ -49,9 +49,14 @@ export class ButtonsPanel extends BaseWidget {
         this.storeItemData(event.querySelectorAll('[id^=items-section-workspace-new-item]'));
         this.storeServiceAccountData(event.querySelectorAll('[id^=Service-account-name-input-field-content-data]'));
         this.storeNewResourceData(event.querySelectorAll('[id^=Create-Pipeline-Resource-new-url]'));
-        if (!this.trigger.trigger && !this.initialValue.startTask) {
+        if (!this.trigger.trigger && !this.initialValue.startTask && !this.initialValue.startClusterTask) {
           vscode.postMessage({
             type: 'startPipeline',
+            body: this.initialValue
+          });
+        } else if (this.initialValue.startClusterTask) {
+          vscode.postMessage({
+            type: 'clusterTask',
             body: this.initialValue
           });
         } else if (this.initialValue.startTask) {

@@ -61,6 +61,7 @@ export interface TknResourceItem {
   pipelineRun?: TknPipelineRun;
   commandId?: string;
   startTask?: boolean;
+  startClusterTask?: boolean;
 }
 
 export async function collectWizardContent(name: string, params: TknParams[], resources: TknResource[], workspaces: TknWorkspaces[], trigger: boolean | undefined): Promise<TknResourceItem> {
@@ -80,7 +81,8 @@ export async function collectWizardContent(name: string, params: TknParams[], re
       name: 'Git Provider Type'
     }],
     triggerContent: undefined,
-    startTask: false
+    startTask: false,
+    startClusterTask: false
   };
   if (workspaces) await TektonItem.workspaceData(pipelineData);
   if (trigger) {

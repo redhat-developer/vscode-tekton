@@ -75,6 +75,13 @@ export class PipelineWizard extends Disposable {
           if (inputStartTask?.newPvc.length !== 0) await createNewResource(inputStartTask.newPvc);
           if (inputStartTask?.newPipelineResource.length !== 0) await createNewResource(inputStartTask.newPipelineResource);
           return await startTaskFromJson(inputStartTask);
+        case 'clusterTask':
+          // eslint-disable-next-line no-case-declarations
+          const inputStartClusterTask = e.body;
+          this.dispose();
+          if (inputStartClusterTask?.newPvc.length !== 0) await createNewResource(inputStartClusterTask.newPvc);
+          if (inputStartClusterTask?.newPipelineResource.length !== 0) await createNewResource(inputStartClusterTask.newPipelineResource);
+          return await startTaskFromJson(inputStartClusterTask);
       }
     }));
 

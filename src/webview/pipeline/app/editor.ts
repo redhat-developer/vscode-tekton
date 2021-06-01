@@ -43,6 +43,7 @@ export class PipelineRunEditor implements Widget {
     const resourceGroup = new GroupItem(title, `${title}-vscode-webview-pipeline`);
     this.initialValue.name = this.trigger.name;
     if (this.trigger.startTask) this.initialValue.startTask = true;
+    if (this.trigger.startClusterTask) this.initialValue.startClusterTask = true;
     if (this.trigger.commandId) this.initialValue.commandId = this.trigger.commandId;
     let element: Widget;
     let elementId: string;

@@ -12,12 +12,13 @@ import { collectWizardContent } from './collect-data-for-wizard';
 import { PipelineWizard } from '../pipeline/wizard';
 import { telemetryLogError } from '../telemetry';
 import { startTaskFromJson } from './start-task-from-yaml';
+import { ClusterTaskModel, TaskModel } from '../util/resource-kind';
 
 
-export async function createWizardForTask(taskName: string, commandId?: string): Promise<string> {
+export async function createWizardForTask(taskName: string, kind: string, commandId?: string): Promise<string> {
   if (!taskName) return null;
   let task: KubectlTask;
-  const result: cliInstance.CliExitData = await TektonItem.tkn.execute(Command.getTask(taskName, 'task.tekton'), process.cwd(), false);
+  const result: cliInstance.CliExitData = await TektonItem.tkn.execute(Command.getTask(taskName, (kind === TaskModel.kind) ? 'task.tekton' : 'clustertask'), process.cwd(), false);
   if (result.error) {
     return window.showErrorMessage(`Fail to fetch task info reason: ${result.error}`);
   }
@@ -40,11 +41,15 @@ export async function createWizardForTask(taskName: string, commandId?: string):
   }
   const trigger = await collectWizardContent(task.metadata.name, task.spec.params, (resource.length !== 0) ? resource : undefined, task.spec.workspaces, false);
   if (commandId) trigger.commandId = commandId;
+  if (kind === TaskModel.kind) {
+    trigger.startTask = true;
+  } else if (kind === ClusterTaskModel.kind) {
+    trigger.startClusterTask = true;
+  }
   if (!trigger.workspaces && !trigger.resources && !trigger.params) {
     delete trigger.serviceAccount;
     await startTaskFromJson(trigger);
   } else {
-    trigger.startTask = true;
-    PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, 'Start Task', trigger.name);
+    PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, `Start ${kind}`, trigger.name);
   }
 }
