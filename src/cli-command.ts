@@ -44,6 +44,10 @@ export class Command {
     return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/task=${task}`, '-o', 'json');
   }
 
+  static listTaskRunsForClusterTasks(clusterTask: string): CliCommand {
+    return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/clusterTask=${clusterTask}`, '-o', 'json');
+  }
+
   static resourceList(resource: string): CliCommand {
     return newK8sCommand('get', resource, '-o', 'json');
   }
