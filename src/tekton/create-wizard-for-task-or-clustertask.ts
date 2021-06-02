@@ -7,7 +7,7 @@ import * as cliInstance from '../cli';
 import { TektonItem } from './tektonitem';
 import { ViewColumn, window } from 'vscode';
 import { Command } from '../cli-command';
-import { KubectlTask, TknResource } from '../tekton';
+import { K8sTask, TknResource } from '../tekton';
 import { collectWizardContent } from './collect-data-for-wizard';
 import { PipelineWizard } from '../pipeline/wizard';
 import { telemetryLogError } from '../telemetry';
@@ -15,9 +15,9 @@ import { startTaskOrClusterTaskFromJson } from './start-task-or-clustertask-from
 import { ClusterTaskModel, TaskModel } from '../util/resource-kind';
 
 
-export async function createWizardForTask(taskName: string, kind: string, commandId?: string): Promise<string> {
+export async function createWizardForTaskOrClusterTAsk(taskName: string, kind: string, commandId?: string): Promise<string> {
   if (!taskName) return null;
-  let task: KubectlTask;
+  let task: K8sTask;
   const result: cliInstance.CliExitData = await TektonItem.tkn.execute(Command.getTask(taskName, (kind === TaskModel.kind) ? 'task.tekton' : 'clustertask'), process.cwd(), false);
   if (result.error) {
     return window.showErrorMessage(`Fail to fetch task info reason: ${result.error}`);

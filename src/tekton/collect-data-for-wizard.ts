@@ -88,7 +88,7 @@ export async function collectWizardContent(name: string, params: TknParams[], re
   if (trigger) {
     await addTrigger(pipelineData);
   }
-  await TektonItem.pipelineResourcesList(pipelineData);
+  if (resources && resources.length !== 0) await TektonItem.pipelineResourcesList(pipelineData);
   return pipelineData;
 }
 

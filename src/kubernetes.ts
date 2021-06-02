@@ -10,7 +10,7 @@ import { TknPipelineTrigger } from './tekton';
 import { collectWizardContent } from './tekton/collect-data-for-wizard';
 import { PipelineWizard } from './pipeline/wizard';
 import { ViewColumn, window } from 'vscode';
-import { createWizardForTask } from './tekton/start-task-or-clustertask';
+import { createWizardForTaskOrClusterTAsk } from './tekton/create-wizard-for-task-or-clustertask';
 import { telemetryLogError } from './telemetry';
 import { Command } from './cli-command';
 import { startPipelineFromJson } from './tekton/start-pipeline-from-json';
@@ -77,7 +77,7 @@ class K8sCommands extends TektonItem {
   }
 
   async startTask(context: K8sClusterExplorerItem, commandId?: string): Promise<string> {
-    return await createWizardForTask(context.name, TaskModel.kind, commandId);
+    return await createWizardForTaskOrClusterTAsk(context.name, TaskModel.kind, commandId);
   }
 }
 

@@ -6,7 +6,7 @@
 import { window } from 'vscode';
 import { cli } from '../cli';
 import { Command } from '../cli-command';
-import { KubectlTask, StartObject, TknTaskRun } from '../tekton';
+import { K8sTask, StartObject, TknTaskRun } from '../tekton';
 import { telemetryLogError } from '../telemetry';
 import { getParams, getTaskRunResources, getWorkspaces } from '../util/create-resource-spec';
 import { TaskRunModel } from '../util/resource-kind';
@@ -36,7 +36,7 @@ export async function getTaskRun(formValue: StartObject, commandId?: string): Pr
     taskRunData.spec.serviceAccountName = formValue.serviceAccount;
   }
   const result = await cli.execute(Command.getTask(formValue.name, (formValue.startTask) ? 'task.tekton' : 'clustertask'));
-  let task: KubectlTask;
+  let task: K8sTask;
   if (result.error) {
     telemetryLogError(commandId, result.error.toString())
     window.showErrorMessage(`fail to fetch Task: ${result.error}`);
@@ -51,7 +51,7 @@ export async function getTaskRun(formValue: StartObject, commandId?: string): Pr
   return getTaskRunData(task, taskRunData);
 }
 
-function getTaskRunData(task: KubectlTask, taskRunData: TknTaskRun): TknTaskRun {
+function getTaskRunData(task: K8sTask, taskRunData: TknTaskRun): TknTaskRun {
   const taskName = task.metadata.name;
   const kindType = task.kind;
   const resources = taskRunData?.spec.resources;

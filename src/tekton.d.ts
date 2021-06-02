@@ -11,7 +11,7 @@ import { K8sResourceKind } from './tekton/triggertype';
 
 interface KubectlTaskSpec {
   params?: TknParams[];
-  resources?: Resource[];
+  resources?: Resource;
   workspaces?: TknWorkspaces[];
   serviceAccountName?: string;
 }
@@ -21,6 +21,29 @@ interface KubectlTask {
   kind?: string;
   metadata: TknMetadata;
   spec: KubectlTaskSpec;
+}
+
+interface K8sResources {
+  inputs?: TknResource[];
+  outputs?: TknResource[];
+}
+
+interface K8sWorkspaces {
+  name: string;
+}
+
+interface K8sTaskSpec {
+  params?: TknParams[];
+  resources?: K8sResources;
+  workspaces?: K8sWorkspaces[];
+  serviceAccountName?: string;
+}
+
+interface K8sTask {
+  apiVersion?: string;
+  kind?: string;
+  metadata: TknMetadata;
+  spec: K8sTaskSpec;
 }
 
 interface TknTaskRunSpec {
