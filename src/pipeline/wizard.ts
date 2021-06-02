@@ -12,7 +12,7 @@ import { TknResourceItem } from '../tekton/collect-data-for-wizard';
 import { addTriggerToPipeline } from '../tekton/addtrigger';
 import { startPipelineFromJson } from '../tekton/start-pipeline-from-json';
 import { createNewResource } from '../tekton/create-resources';
-import { startTaskFromJson } from '../tekton/start-task-from-yaml';
+import { startTaskOrClusterTaskFromJson } from '../tekton/start-task-or-clustertask-from-yaml';
 
 export interface PipelineWizardInput {
   readonly resourceColumn: vscode.ViewColumn;
@@ -74,14 +74,14 @@ export class PipelineWizard extends Disposable {
           this.dispose();
           if (inputStartTask?.newPvc.length !== 0) await createNewResource(inputStartTask.newPvc);
           if (inputStartTask?.newPipelineResource.length !== 0) await createNewResource(inputStartTask.newPipelineResource);
-          return await startTaskFromJson(inputStartTask);
+          return await startTaskOrClusterTaskFromJson(inputStartTask);
         case 'clusterTask':
           // eslint-disable-next-line no-case-declarations
           const inputStartClusterTask = e.body;
           this.dispose();
           if (inputStartClusterTask?.newPvc.length !== 0) await createNewResource(inputStartClusterTask.newPvc);
           if (inputStartClusterTask?.newPipelineResource.length !== 0) await createNewResource(inputStartClusterTask.newPipelineResource);
-          return await startTaskFromJson(inputStartClusterTask);
+          return await startTaskOrClusterTaskFromJson(inputStartClusterTask);
       }
     }));
 

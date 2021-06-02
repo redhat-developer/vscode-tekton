@@ -20,7 +20,7 @@ export function collectResourceData(resourceName: string, resourceReference: str
     const found = initialValue.resources.some(value => {
       if (value.name === resourceName) {
         value.resourceRef = resourceReference;
-        if (initialValue.startTask && resourceType) value.resourceType = resourceType;
+        if ((initialValue.startTask || initialValue.startClusterTask) && resourceType) value.resourceType = resourceType;
         return true;
       }
     });
@@ -31,7 +31,7 @@ export function collectResourceData(resourceName: string, resourceReference: str
 }
 
 function storeResourceData(resourceName: string, resourceReference: string, initialValue: PipelineStart, resourceType?: string): void {
-  if (initialValue.startTask) {
+  if ((initialValue.startTask || initialValue.startClusterTask) && resourceType) {
     initialValue.resources.push({name: resourceName, resourceRef: resourceReference, resourceType: resourceType});
   } else {
     initialValue.resources.push({name: resourceName, resourceRef: resourceReference});

@@ -12,7 +12,7 @@ import { getParams, getTaskRunResources, getWorkspaces } from '../util/create-re
 import { TaskRunModel } from '../util/resource-kind';
 import { k8sCreate } from './addtrigger';
 
-export async function startTaskFromJson(formValue: StartObject): Promise<boolean> {
+export async function startTaskOrClusterTaskFromJson(formValue: StartObject): Promise<boolean> {
   const taskRunJson: TknTaskRun = await getTaskRun(formValue, formValue.commandId);
   if (!taskRunJson) return null;
   return await k8sCreate(taskRunJson, formValue.commandId, (formValue.startTask) ? 'Task' : 'ClusterTask');

@@ -65,7 +65,7 @@ export class PipelineRunEditor implements Widget {
         } else if (title === TknResourceType.Workspaces) {
           element = new SelectWidget('Workspaces-volume', this.trigger, null, this.initialValue).workspaces(VolumeTypes, resource);
         } else if (title === TknResourceType.GitResource || title === TknResourceType.ImageResource) {
-          element = new SelectWidget('Resources', null, null, this.initialValue).pipelineResource(this.trigger.pipelineResource, resource, this.trigger.startTask);
+          element = new SelectWidget('Resources', null, null, this.initialValue).pipelineResource(this.trigger.pipelineResource, resource, this.trigger.startTask || this.trigger.startClusterTask);
         }
         resourceGroup.addEditItem(new EditItem(resource.name, element, resource.name, null, elementId));
         //TODO: complete this

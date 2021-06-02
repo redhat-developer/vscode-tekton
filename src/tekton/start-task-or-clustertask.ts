@@ -11,7 +11,7 @@ import { KubectlTask, TknResource } from '../tekton';
 import { collectWizardContent } from './collect-data-for-wizard';
 import { PipelineWizard } from '../pipeline/wizard';
 import { telemetryLogError } from '../telemetry';
-import { startTaskFromJson } from './start-task-from-yaml';
+import { startTaskOrClusterTaskFromJson } from './start-task-or-clustertask-from-yaml';
 import { ClusterTaskModel, TaskModel } from '../util/resource-kind';
 
 
@@ -48,7 +48,7 @@ export async function createWizardForTask(taskName: string, kind: string, comman
   }
   if (!trigger.workspaces && !trigger.resources && !trigger.params) {
     delete trigger.serviceAccount;
-    await startTaskFromJson(trigger);
+    await startTaskOrClusterTaskFromJson(trigger);
   } else {
     PipelineWizard.create({ trigger, resourceColumn: ViewColumn.Active }, ViewColumn.Active, `Start ${kind}`, trigger.name);
   }
