@@ -5,7 +5,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { Disposable } from '../util/disposable';
-import { getTaskById, getTaskByNameAndVersion, getTektonHubStatus, getTopRatedTasks, searchTask, TektonHubStatusEnum } from './hub-client';
+import { getTaskById, getTaskByNameAndVersion, getTektonHubStatus, getTopRatedTasks, listTasks, searchTask, TektonHubStatusEnum } from './hub-client';
 import { ResourceData } from '../tekton-hub-client';
 import { taskPageManager } from './task-page-manager';
 import { installTask, installEvent } from './install-task';
@@ -13,7 +13,10 @@ import { version } from '../util/tknversion';
 import { getRawTasks } from '../yaml-support/tkn-tasks-provider';
 import { InstalledTask, isInstalledTask } from './hub-common';
 import { uninstallTaskEvent } from './uninstall-task';
+import { startDetectingLanguage } from './hub-recommendation';
+import * as fuzzysort from 'fuzzysort';
 
+const MAX_RECOMMENDED_TASK = 7;
 
 export class TektonHubTasksViewProvider extends Disposable implements vscode.WebviewViewProvider {
 
@@ -22,7 +25,7 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
   private installedTasks: InstalledTask[] | undefined;
 
   constructor(
-		private readonly extensionUri: vscode.Uri,
+    private readonly extensionUri: vscode.Uri,
   ) {
     super();
 
@@ -51,20 +54,20 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
       ]
     };
 
-    
+
     const indexJS = webviewView.webview.asWebviewUri(vscode.Uri.file(path.join(this.extensionUri.fsPath, 'out', 'webview', 'tekton-hub', 'index.js')));
 
     webviewView.webview.html = this.getHmlContent().replace('{{init}}', indexJS.toString());
-    
+
     this.register(webviewView.webview.onDidReceiveMessage(e => {
       switch (e.type) {
-        case 'ready': 
+        case 'ready':
           this.handleReady();
           break;
         case 'search':
           this.doSearch(e.data);
           break;
-        case 'openTaskPage': 
+        case 'openTaskPage':
           this.openTaskPage(e.data);
           break;
         case 'installTask':
@@ -96,13 +99,13 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
   }
 
 
-  private sendMessage(message: {type: string; data?: unknown}): void {
+  private sendMessage(message: { type: string; data?: unknown }): void {
     this.webviewView?.webview?.postMessage(message);
   }
 
   private async handleReady(): Promise<void> {
     const hubAvailable = await this.doCheckHub();
-    if (hubAvailable){
+    if (hubAvailable) {
       await this.loadInstalledTasks();
       await this.loadRecommendedTasks();
     }
@@ -111,17 +114,17 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
   private async doCheckHub(): Promise<boolean> {
     const status = await getTektonHubStatus();
     const tknVersions = await version();
-    if (!tknVersions){
-      this.sendMessage({type: 'error', data: 'Cannot detect Tekton Pipelines version' });
+    if (!tknVersions) {
+      this.sendMessage({ type: 'error', data: 'Cannot detect Tekton Pipelines version' });
       return false;
     }
     this.tknVersion = tknVersions.pipeline;
-    
-    if (status.status !== TektonHubStatusEnum.Ok){
-      this.sendMessage({type: 'error', data: status.error});
+
+    if (status.status !== TektonHubStatusEnum.Ok) {
+      this.sendMessage({ type: 'error', data: status.error });
       return false;
     } else {
-      this.sendMessage({type: 'tknVersion', data: tknVersions.pipeline});
+      this.sendMessage({ type: 'tknVersion', data: tknVersions.pipeline });
       return true;
     }
   }
@@ -129,7 +132,7 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
   private async doSearch(value: string): Promise<void> {
     try {
       const tasks = await searchTask(value);
-      this.sendMessage({type: 'showTasks', data: tasks});
+      this.sendMessage({ type: 'showTasks', data: tasks });
     } catch (err) {
       console.error(err);
     }
@@ -138,8 +141,8 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
 
   private async loadInstalledTasks(): Promise<void> {
     const rawTasks = await getRawTasks(true);
-    const installedTasksRaw = rawTasks.filter( task => {
-      if (!task.metadata?.labels){
+    const installedTasksRaw = rawTasks.filter(task => {
+      if (!task.metadata?.labels) {
         return false;
       }
       return task.metadata?.labels['hub.tekton.dev/catalog'] !== undefined;
@@ -160,7 +163,7 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
       }
     }
     this.installedTasks = installedTasks;
-    this.sendMessage({type: 'installedTasks', data: installedTasks});
+    this.sendMessage({ type: 'installedTasks', data: installedTasks });
     return;
   }
 
@@ -176,7 +179,27 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
 
   private async loadRecommendedTasks(): Promise<void> {
     try {
-      const recommendedTasks = await getTopRatedTasks(7);
+      const usedTools = await startDetectingLanguage();
+      const recommendedTasks = [];
+      if (usedTools) {
+        let taskList = await listTasks();
+        taskList = taskList.map(it => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (it as any).displayName = it.latestVersion.displayName;
+          return it;
+        });
+        for (const toolName of usedTools) {
+          const sortResult = fuzzysort
+            .go(toolName, taskList, { keys: ['name', 'displayName'] })
+            .map((resource) => resource.obj);
+          recommendedTasks.push(...sortResult);
+          if (recommendedTasks.length >= MAX_RECOMMENDED_TASK) {
+            break;
+          }
+        }
+      } else {
+        recommendedTasks.push(...await getTopRatedTasks(MAX_RECOMMENDED_TASK));
+      }
       let result = [];
       if (this.installedTasks) {
         const installedId = this.installedTasks.map((it) => it.id);
@@ -190,8 +213,8 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
         result = recommendedTasks;
       }
 
-      this.sendMessage({type: 'recommendedTasks', data: result});
-    } catch (err){
+      this.sendMessage({ type: 'recommendedTasks', data: result });
+    } catch (err) {
       console.error(err);
     }
 

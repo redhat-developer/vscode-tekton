@@ -36,7 +36,7 @@ export async function getTektonHubStatus(): Promise<TektonHubStatus> {
 export async function searchTask(name: string): Promise<hubApi.ResourceData[]> {
   try {
     const resApi = createResourceApi();
-    const result = await resApi.resourceQuery(name);
+    const result = await resApi.resourceQuery(name, undefined, ['task'], undefined, undefined, 'contains');
     return result.data.data;
   } catch (err) {
     if (err instanceof Error ){
@@ -47,6 +47,12 @@ export async function searchTask(name: string): Promise<hubApi.ResourceData[]> {
       throw err;
     }
   }
+}
+
+export async function listTasks(limit = 1000): Promise<hubApi.ResourceData[]> {
+  const restApi = createResourceApi();
+  const result = await restApi.resourceList(limit);
+  return result.data.data;
 }
 
 export async function getVersions(id: number): Promise<hubApi.Versions> {
