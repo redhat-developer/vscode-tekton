@@ -120,7 +120,7 @@ export function removePvcName(name: string, initialValue: PipelineStart): void {
   initialValue.workspaces = newWorkSpace;
 }
 
-export function createVCT(name: string, accessMode: string, size: string, inputSize: string, initialValue: PipelineStart): void {
+export function createVolumeClaimTemplate(name: string, accessMode: string, size: string, inputSize: string, initialValue: PipelineStart): void {
   initialValue.volumeClaimTemplate.push({
     kind: 'volumeClaimTemplate',
     metadata: {

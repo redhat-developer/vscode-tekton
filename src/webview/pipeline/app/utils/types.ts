@@ -82,6 +82,7 @@ export interface PipelineRunWorkspaces {
   configMap?: PipelineRunWorkspacesConfigMap[];
   secret?: PipelineRunWorkspacesSecret[];
   persistentVolumeClaim?: PipelineRunWorkspacesPVC[];
+  volumeClaimTemplate?: VCT;
 }
 
 export interface TknMetadata {

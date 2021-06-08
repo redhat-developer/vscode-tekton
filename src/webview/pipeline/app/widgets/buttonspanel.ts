@@ -7,7 +7,7 @@ import { BaseWidget } from '../../../common/widget';
 import { Trigger, PipelineStart } from '../utils/types';
 import { createItem } from '../utils/item';
 import { vscode } from '../index';
-import { addItemInWorkspace, collectParameterData, collectResourceData, collectServiceAccountData, collectTriggerData, collectWorkspaceData, createNewPipelineResource, createPVC, createVCT, getRandomChars, removePvcName, storePvcName } from '../utils/resource';
+import { addItemInWorkspace, collectParameterData, collectResourceData, collectServiceAccountData, collectTriggerData, collectWorkspaceData, createNewPipelineResource, createPVC, createVolumeClaimTemplate, getRandomChars, removePvcName, storePvcName } from '../utils/resource';
 import { disableRemoveButton, blockStartButton } from '../utils/disablebutton';
 import { TknResourceType } from '../utils/const';
 
@@ -124,7 +124,7 @@ export class ButtonsPanel extends BaseWidget {
         const accessMode = val.querySelectorAll('[id^=Access-Mode-for-Pvc]')[0].value;
         const size = val.querySelectorAll('[id^=Size-for-PVC-Storage]')[0].value;
         const inputSize = val.querySelectorAll('[id^=size-for-pvc-create-webview]')[0].value;
-        createVCT(resourceName, accessMode, size, inputSize, this.initialValue);
+        createVolumeClaimTemplate(resourceName, accessMode, size, inputSize, this.initialValue);
       })
     }
   }
