@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
-import * as path from 'path';
 import { Disposable } from '../util/disposable';
 import { getTaskById, getTaskByNameAndVersion, getTektonHubStatus, getTopRatedTasks, searchTask, TektonHubStatusEnum } from './hub-client';
 import { ResourceData } from '../tekton-hub-client';
@@ -46,13 +45,13 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
       enableScripts: true,
 
       localResourceRoots: [
-        vscode.Uri.parse(path.join(this.extensionUri.fsPath, 'out', 'webview', 'tekton-hub', '/')),
-        vscode.Uri.parse(path.join(this.extensionUri.fsPath, 'out', 'webview', 'assets', '/')),
+        vscode.Uri.joinPath(this.extensionUri, 'out', 'webview', 'tekton-hub', '/'),
+        vscode.Uri.joinPath(this.extensionUri, 'out', 'webview', 'assets', '/'),
       ]
     };
 
     
-    const indexJS = webviewView.webview.asWebviewUri(vscode.Uri.file(path.join(this.extensionUri.fsPath, 'out', 'webview', 'tekton-hub', 'index.js')));
+    const indexJS = webviewView.webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'out', 'webview', 'tekton-hub', 'index.js'));
 
     webviewView.webview.html = this.getHmlContent().replace('{{init}}', indexJS.toString());
     
