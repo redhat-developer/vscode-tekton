@@ -299,6 +299,14 @@ body {
 .size-select-item {
   position: absolute;
   left: 105px;
+  top: 306px;
+  white-space: normal;
+  width: 500px;
+}
+
+.size-select-item-windows {
+  position: absolute;
+  left: 105px;
   top: 290px;
   white-space: normal;
   width: 500px;
@@ -311,6 +319,16 @@ body {
   white-space: normal;
   width: 500px;
 }
+
+.size-select-item-vtc-window {
+  position: absolute;
+  left: 105px;
+  top: 242px;
+  white-space: normal;
+  width: 500px;
+}
+
+
 
 .input {
   text-overflow: ellipsis;
