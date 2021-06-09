@@ -99,7 +99,7 @@ async function addTrigger(pipelineData: TknResourceItem): Promise<void> {
   const listTriggerBinding = JSON.parse(triggerBinding.stdout).items;
   const clusterTriggerBinding = await TektonItem.tkn.execute(Command.listClusterTriggerBinding(), process.cwd(), false);
   const listClusterTriggerBinding = JSON.parse(clusterTriggerBinding.stdout).items;
-  if (listTriggerBinding.length !== 0) {
+  if (listTriggerBinding && listTriggerBinding.length !== 0) {
     listTriggerBinding.forEach(element => {
       if (!binding[element.metadata.name]) {
         binding[element.metadata.name] = { resource: element };
@@ -107,7 +107,7 @@ async function addTrigger(pipelineData: TknResourceItem): Promise<void> {
       }
     });
   }
-  if (listClusterTriggerBinding.length !== 0) {
+  if (listClusterTriggerBinding && listClusterTriggerBinding.length !== 0) {
     listClusterTriggerBinding.forEach(element => {
       if (!binding[element.metadata.name]) {
         binding[element.metadata.name] = { resource: element };

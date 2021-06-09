@@ -40,8 +40,8 @@ export function getTaskRunResources(resources: Resources[]): Resource {
       }
     })
   }
-  if (inputsResource.length !== 0) newResource.inputs = inputsResource;
-  if (outputsResource.length !== 0) newResource.outputs = inputsResource;
+  if (inputsResource && inputsResource.length !== 0) newResource.inputs = inputsResource;
+  if (outputsResource && outputsResource.length !== 0) newResource.outputs = inputsResource;
   return newResource;
 }
 

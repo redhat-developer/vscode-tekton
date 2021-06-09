@@ -124,7 +124,7 @@ export class PipelineRunEditor implements Widget {
   }
 
   paramPipelineRun(): void {
-    if (this.trigger.pipelineRun.params.length !== 0) {
+    if (this.trigger.pipelineRun.params && this.trigger.pipelineRun.params.length !== 0) {
       this.trigger.pipelineRun.params.forEach(val => {
         if (val.value) {
           val.default = val.value;
@@ -161,18 +161,18 @@ export class PipelineRunEditor implements Widget {
           }
         }
       });
-      if (gitResource.length !== 0) {
+      if (gitResource && gitResource.length !== 0) {
         this.createElement(TknResourceType.GitResource, gitResource);
       }
 
-      if (imageResource.length !== 0) {
+      if (imageResource && imageResource.length !== 0) {
         this.createElement(TknResourceType.ImageResource, imageResource);
       }
     }
   }
 
   workspacePipelineRun(): void {
-    if (this.trigger.pipelineRun.workspaces.length !== 0) {
+    if (this.trigger.pipelineRun.workspaces && this.trigger.pipelineRun.workspaces.length !== 0) {
       this.createElement(TknResourceType.Workspaces, this.trigger.pipelineRun.workspaces);
     }
   }
@@ -186,10 +186,10 @@ export class PipelineRunEditor implements Widget {
           imageResource.push(val)
         }
       });
-      if (gitResource.length !== 0) {
+      if (gitResource && gitResource.length !== 0) {
         this.createElement(TknResourceType.GitResource, gitResource);
       }
-      if (imageResource.length !== 0) {
+      if (imageResource && imageResource.length !== 0) {
         this.createElement(TknResourceType.ImageResource, imageResource);
       }
     }

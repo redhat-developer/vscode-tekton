@@ -58,29 +58,29 @@ export class PipelineWizard extends Disposable {
           // eslint-disable-next-line no-case-declarations
           const inputStartPipeline = e.body;
           this.dispose();
-          if (inputStartPipeline.newPvc.length !== 0) await createNewResource(inputStartPipeline.newPvc);
-          if (inputStartPipeline.newPipelineResource.length !== 0) await createNewResource(inputStartPipeline.newPipelineResource);
+          if (inputStartPipeline.newPvc && inputStartPipeline.newPvc.length !== 0) await createNewResource(inputStartPipeline.newPvc);
+          if (inputStartPipeline.newPipelineResource && inputStartPipeline.newPipelineResource.length !== 0) await createNewResource(inputStartPipeline.newPipelineResource);
           return await startPipelineFromJson(inputStartPipeline);
         case 'Add Trigger':
           // eslint-disable-next-line no-case-declarations
           const inputAddTrigger = e.body;
           this.dispose();
-          if (inputAddTrigger?.newPvc.length !== 0) await createNewResource(inputAddTrigger.newPvc);
-          if (inputAddTrigger?.newPipelineResource.length !== 0) await createNewResource(inputAddTrigger.newPipelineResource);
+          if (inputAddTrigger?.newPvc && inputAddTrigger?.newPvc.length !== 0) await createNewResource(inputAddTrigger.newPvc);
+          if (inputAddTrigger?.newPipelineResource && inputAddTrigger?.newPipelineResource.length !== 0) await createNewResource(inputAddTrigger.newPipelineResource);
           return await addTriggerToPipeline(inputAddTrigger);
         case 'startTask':
           // eslint-disable-next-line no-case-declarations
           const inputStartTask = e.body;
           this.dispose();
-          if (inputStartTask?.newPvc.length !== 0) await createNewResource(inputStartTask.newPvc);
-          if (inputStartTask?.newPipelineResource.length !== 0) await createNewResource(inputStartTask.newPipelineResource);
+          if (inputStartTask?.newPvc && inputStartTask?.newPvc.length !== 0) await createNewResource(inputStartTask.newPvc);
+          if (inputStartTask?.newPipelineResource && inputStartTask?.newPipelineResource.length !== 0) await createNewResource(inputStartTask.newPipelineResource);
           return await startTaskOrClusterTaskFromJson(inputStartTask);
         case 'clusterTask':
           // eslint-disable-next-line no-case-declarations
           const inputStartClusterTask = e.body;
           this.dispose();
-          if (inputStartClusterTask?.newPvc.length !== 0) await createNewResource(inputStartClusterTask.newPvc);
-          if (inputStartClusterTask?.newPipelineResource.length !== 0) await createNewResource(inputStartClusterTask.newPipelineResource);
+          if (inputStartClusterTask?.newPvc && inputStartClusterTask?.newPvc.length !== 0) await createNewResource(inputStartClusterTask.newPvc);
+          if (inputStartClusterTask?.newPipelineResource && inputStartClusterTask?.newPipelineResource.length !== 0) await createNewResource(inputStartClusterTask.newPipelineResource);
           return await startTaskOrClusterTaskFromJson(inputStartClusterTask);
       }
     }));

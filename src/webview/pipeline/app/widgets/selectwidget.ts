@@ -53,7 +53,7 @@ export class SelectWidget extends BaseWidget {
     this.createPVC(event, select);
     createVCT(event, select, this.initialValue);
     const pvcSelect = event.lastElementChild.lastElementChild.getElementsByTagName('select');
-    if (pvcSelect.length !== 0) {
+    if (pvcSelect && pvcSelect.length !== 0) {
       this.createPVC(event.lastElementChild, event.lastElementChild.lastElementChild.getElementsByTagName('select')[0]);
     }
     this.removeFieldForVolumeClaim(event, select);

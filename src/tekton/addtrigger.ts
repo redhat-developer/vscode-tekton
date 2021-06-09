@@ -46,10 +46,10 @@ export function addTriggerToPipeline(inputAddTrigger: AddTriggerFormValues): Pro
 }
 
 export async function addTrigger(inputAddTrigger: AddTriggerFormValues): Promise<void> {
-  if (inputAddTrigger.resources.length !== 0) {
+  if (inputAddTrigger.resources && inputAddTrigger.resources.length !== 0) {
     restoreResource(inputAddTrigger.resources);
   }
-  if (inputAddTrigger.params.length !== 0) {
+  if (inputAddTrigger.params && inputAddTrigger.params.length !== 0) {
     newParam(inputAddTrigger.params);
   }
   const triggerBinding = inputAddTrigger.trigger;

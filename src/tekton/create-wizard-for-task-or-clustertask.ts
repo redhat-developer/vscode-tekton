@@ -15,7 +15,7 @@ import { startTaskOrClusterTaskFromJson } from './start-task-or-clustertask-from
 import { ClusterTaskModel, TaskModel } from '../util/resource-kind';
 
 
-export async function createWizardForTaskOrClusterTAsk(taskName: string, kind: string, commandId?: string): Promise<string> {
+export async function createWizardForTaskOrClusterTask(taskName: string, kind: string, commandId?: string): Promise<string> {
   if (!taskName) return null;
   let task: K8sTask;
   const result: cliInstance.CliExitData = await TektonItem.tkn.execute(Command.getTask(taskName, (kind === TaskModel.kind) ? 'task.tekton' : 'clustertask'), process.cwd(), false);
@@ -39,7 +39,7 @@ export async function createWizardForTaskOrClusterTAsk(taskName: string, kind: s
       });
     });
   }
-  const trigger = await collectWizardContent(task.metadata.name, task.spec.params, (resource.length !== 0) ? resource : undefined, task.spec.workspaces, false);
+  const trigger = await collectWizardContent(task.metadata.name, task.spec.params, (resource && resource.length !== 0) ? resource : undefined, task.spec.workspaces, false);
   if (commandId) trigger.commandId = commandId;
   if (kind === TaskModel.kind) {
     trigger.startTask = true;

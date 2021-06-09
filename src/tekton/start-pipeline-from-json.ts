@@ -15,6 +15,7 @@ import { PipelineRunKind } from './k8s-type';
 
 export async function startPipelineFromJson(formValue: StartObject): Promise<void> {
   const pipelineRunJson = await getPipelineRun(formValue, formValue.commandId);
+  if (!pipelineRunJson) return null;
   await k8sCreate(pipelineRunJson, formValue.commandId, PipelineRunModel.kind);
 }
 
