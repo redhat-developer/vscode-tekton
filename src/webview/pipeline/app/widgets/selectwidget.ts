@@ -10,7 +10,7 @@ import { InputWidget } from './inputwidget';
 import { NameType, Trigger, PipelineStart, Workspaces, TknPipelineResource, Item, TriggerType } from '../utils/types';
 import { accessMode, size, TknResourceType, VolumeTypes, workspaceResource, workspaceResourceTypeName } from '../utils/const';
 import { collectResourceData, collectWorkspaceData } from '../utils/resource';
-import { triggerSelectedWorkspaceType, createElementForKeyAndPath } from '../utils/displayworkspaceresource';
+import { triggerSelectedWorkspaceType, createElementForKeyAndPath, createVolumeClaim, createVCT } from '../utils/displayworkspaceresource';
 import { blockStartButton } from '../utils/disablebutton';
 
 export class SelectWidget extends BaseWidget {
@@ -51,7 +51,7 @@ export class SelectWidget extends BaseWidget {
     this.createWorkspaceElement(event, select);
     this.removeExistingVolumeClaim(event, select);
     this.createPVC(event, select);
-    this.createVCT(event, select);
+    createVCT(event, select, this.initialValue);
     const pvcSelect = event.lastElementChild.lastElementChild.getElementsByTagName('select');
     if (pvcSelect.length !== 0) {
       this.createPVC(event.lastElementChild, event.lastElementChild.lastElementChild.getElementsByTagName('select')[0]);
@@ -68,18 +68,11 @@ export class SelectWidget extends BaseWidget {
     }
   }
 
-  createVCT(event: Node & ParentNode, select: HTMLSelectElement): void {
-    if (select[select.selectedIndex].id === 'create-new-VolumeClaimTemplate-entry') {
-      const newDivClass = 'List-new-VCT-items-webview';
-      this.createVolumeClaim(event, null, newDivClass);
-    }
-  }
-
   createPVC(event: Node & ParentNode, select: HTMLSelectElement): void {
     if (select[select.selectedIndex].id === 'create-new-PersistentVolumeClaim-entry') {
       const newDivClass = 'List-new-PVC-items-webview';
       const input = new EditItem('Persistent Volume Claim Name', new InputWidget('Please provide Name', null, this.initialValue, null, null, 'Webview-PVC-Name'), 'input-resource', 'inner-editItem');
-      this.createVolumeClaim(event, input, newDivClass);
+      createVolumeClaim(event, input, newDivClass, this.initialValue);
     }
   }
 
@@ -91,38 +84,27 @@ export class SelectWidget extends BaseWidget {
     }
   }
 
-  createVolumeClaim(event: Node & ParentNode, input: EditItem, newDivClass: string): void {
-    const selectAccessMode = new SelectWidget('editor-select-box-item-select-a-key', null, 'editor-select-box-item', this.initialValue, 'Access-Mode-for-Pvc').selectAccessMode();
-    const selectAccessModeOp = new EditItem('Access Mode', selectAccessMode, 'option-workspace-id', 'inner-editItem');
-    const inputNumber = new EditItem('Size', new InputWidget('', 'number-input-box', this.initialValue, null, null, 'size-for-pvc-create-webview', null, null, 'number'), 'input-resource', 'size-input-item');
-    const selectSize = new SelectWidget('editor-select-box-item-select-a-key', null, 'size-select-box-item', this.initialValue, 'Size-for-PVC-Storage').selectSize();
-    const selectSizeOp = new EditItem('', selectSize, 'option-workspace-id', input ? 'size-select-item' : 'size-select-item-vtc', null, true);
-    this.addPVCItem(event, input, selectAccessModeOp, selectSizeOp, inputNumber, newDivClass);
-  }
-
-  addPVCItem(event: Node & ParentNode, input: EditItem, selectAccessModeOp: EditItem, selectSizeOp: EditItem, inputNumber: EditItem, newDivClass: string): void{
-    event.appendChild(createDivWithID(null, newDivClass));
-    if (input) event.lastChild.appendChild(input.getElement());
-    event.lastChild.appendChild(selectAccessModeOp.getElement());
-    event.lastChild.appendChild(inputNumber.getElement());
-    event.lastChild.appendChild(selectSizeOp.getElement());
-  }
-
-  selectSize(): Widget {
+  selectSize(vctSize?: string): Widget {
     size.forEach(val => {
       const op = document.createElement('option');
       op.value = val.value;
       op.text = val.name;
+      if (vctSize === val.value) {
+        op.selected = true;
+      }
       this.select.appendChild(op);
     })
     return this;
   }
 
-  selectAccessMode(): Widget {
+  selectAccessMode(mode?: string): Widget {
     accessMode.forEach(val => {
       const op = document.createElement('option');
       op.value = val.value;
       op.text = val.name;
+      if (mode === val.value) {
+        op.selected = true;
+      }
       this.select.appendChild(op);
     })
     return this;

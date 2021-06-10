@@ -6,7 +6,7 @@
 import './style.css';
 import 'vscode-codicons/dist/codicon.ttf'
 import { PipelineRunEditor } from './editor';
-import { Trigger, PipelineStart } from './utils/types';
+import { Trigger, PipelineStart, Item } from './utils/types';
 import { selectText } from './utils/util';
 import { initialResourceFormValues, workspaceResource } from './utils/const';
 import { triggerSelectedWorkspaceType } from './utils/displayworkspaceresource';
@@ -65,23 +65,32 @@ function restore(state: Trigger): void {
 function displayWorkspaceContent(event: NodeListOf<Element>, trigger: Trigger): void {
   const initialValue: PipelineStart = initialResourceFormValues;
   if (event) {
+    const pipelineRunWorkspaceVCT = {};
+    if (trigger?.pipelineRun?.workspaces && trigger?.pipelineRun?.workspaces.length !== 0) {
+      trigger.pipelineRun.workspaces.forEach(val => {
+        if (val?.volumeClaimTemplate) {
+          pipelineRunWorkspaceVCT[val.name] = val.volumeClaimTemplate;
+        }
+      })
+    }
     event.forEach((val, index) => {
-      triggerSelectedWorkspaceType(val.getElementsByTagName('select')[0], val.parentNode, trigger, initialValue, index);
+      triggerSelectedWorkspaceType(val.getElementsByTagName('select')[0], val.parentNode, trigger, initialValue, index, pipelineRunWorkspaceVCT);
       try {
         const selectedWorkspaceValue = val.getElementsByTagName('select')[0].value;
         const selectedWorkspaceItem = document.querySelectorAll(`[id^=${selectedWorkspaceValue}-Workspaces]`)[0];
-        const valueWorkspaceItem = selectedWorkspaceItem.getElementsByTagName('select')[0].value;
-        const objectWorkspace = trigger.pipelineRun.workspaces[index];
+        const valueWorkspaceItem = selectedWorkspaceItem?.getElementsByTagName('select')[0].value;
+        const objectWorkspace = trigger?.pipelineRun?.workspaces[index];
+        if (!objectWorkspace) return null;
         const items = objectWorkspace[workspaceResource[selectedWorkspaceValue]].items;
         if (items) {
-          items.map(val => {
+          items.map((val: Item) => {
             createItem(selectedWorkspaceItem.parentNode, selectedWorkspaceValue, valueWorkspaceItem, initialValue, trigger, val);
           })
         } else {
           createItem(selectedWorkspaceItem.parentNode, selectedWorkspaceValue, valueWorkspaceItem, initialValue, trigger);
         }
       } catch (err) {
-        // fail to find workspace element.
+        console.log(`fail to get PipelineRun Data: ${err}`);
       }
     });
   }
