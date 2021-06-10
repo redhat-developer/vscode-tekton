@@ -8,8 +8,13 @@ import { Params, Workspace, VCT, Workspaces, Resources, Resource } from '../tekt
 export function getParams(params: Params[]): Params[] {
   if (params && params.length !== 0) {
     params.map(val => {
-      val['value'] = val.default;
-      delete val.default
+      if (val.type === 'array') {
+        val.value = [val.default];
+      } else {
+        val.value = val.default;
+      }
+      delete val.default;
+      if (val?.type) delete val.type;
     });
     return params;
   } else {

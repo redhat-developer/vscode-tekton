@@ -149,11 +149,20 @@ export class ButtonsPanel extends BaseWidget {
   }
 
   storeParamData(data: unknown[] | NodeListOf<Element>): void {
+    const paramType = {};
+    const params = this.trigger.params;
+    if (params && params.length !== 0) {
+      params.map(val => {
+        if (val.type) {
+          paramType[val.name] = val.type;
+        }
+      })
+    }
     if (data && data.length !== 0) {
       data.forEach(val => {
         const name = val.firstElementChild.innerText;
         const defaultValue = val.getElementsByTagName('input')[0].value;
-        collectParameterData(name, defaultValue, this.initialValue);
+        collectParameterData(name, defaultValue, this.initialValue, paramType);
       });
     }
   }

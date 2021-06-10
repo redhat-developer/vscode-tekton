@@ -101,7 +101,7 @@ export interface TknMetadata {
 
 export interface TknParams {
   name: string;
-  value?: string;
+  value?: string | string[];
   default?: string;
   description?: string;
 }
@@ -131,9 +131,10 @@ export interface TaskRunTemplate {
 
 export interface Params {
   name: string;
-  value?: string;
+  value?: string | string[];
   default?: string;
   description?: string;
+  type?: string;
 }
 
 export interface Ref {
@@ -330,7 +331,7 @@ export interface TknPipeline {
 
 export interface Param {
   name?: string;
-  value?: string;
+  value?: string | string[];
 }
 
 export type VolumeTypeSecret = {

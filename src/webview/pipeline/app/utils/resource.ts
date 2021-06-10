@@ -5,8 +5,12 @@
 
 import { PipelineStart, Trigger } from './types';
 
-export function collectParameterData(paramName: string, defaultValue: string, initialValue: PipelineStart): void {
-  initialValue.params.push({name: paramName, default: defaultValue});
+export function collectParameterData(paramName: string, defaultValue: string, initialValue: PipelineStart, paramType: unknown): void {
+  if (paramType?.[paramName]) {
+    initialValue.params.push({name: paramName, default: defaultValue, type: paramType?.[paramName]});
+  } else {
+    initialValue.params.push({name: paramName, default: defaultValue});
+  }
 }
 
 export function collectServiceAccountData(name: string, initialValue: PipelineStart): void {
