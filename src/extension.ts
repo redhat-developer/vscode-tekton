@@ -33,7 +33,7 @@ import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
 import { registerLogDocumentProvider } from './util/log-in-editor';
 import { openTaskRunTemplate } from './tekton/taskruntemplate';
-import sendTelemetry, { telemetryLogError, TelemetryProperties } from './telemetry';
+import sendTelemetry, { telemetryLog, telemetryLogError, TelemetryProperties } from './telemetry';
 import { cli, createCliCommand } from './cli';
 import { getVersion, tektonVersionType } from './util/tknversion';
 import { TektonNode } from './tree-view/tekton-node';
@@ -127,6 +127,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     triggerDetection();
   });
   checkClusterStatus(true); // watch Tekton resources when all required dependency are installed
+  getClusterVersions().then((version) => {
+    const telemetryProps: TelemetryProperties = {
+      identifier: 'cluster.version',
+    };
+    for (const [key, value] of Object.entries(version)) {
+      telemetryProps[key] = value;
+    }
+    sendTelemetry('tekton.cluster.version', telemetryProps)
+  })
   setCommandContext(CommandContext.TreeZenMode, false);
   setCommandContext(CommandContext.PipelinePreview, false);
 
