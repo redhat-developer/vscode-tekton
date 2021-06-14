@@ -87,6 +87,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.task.start', (context) => execute(Task.start, context, 'tekton.task.start')),
     vscode.commands.registerCommand('tekton.task.start.palette', (context) => execute(Task.start, context, 'tekton.task.start.palette')),
     vscode.commands.registerCommand('tekton.task.list', (context) => execute(Task.list, context)),
+    vscode.commands.registerCommand('tekton.clusterTask.start', (context) => execute(ClusterTask.start, context, 'tekton.clusterTask.start')),
     vscode.commands.registerCommand('tekton.clustertask.list', (context) => execute(ClusterTask.list, context)),
     vscode.commands.registerCommand('tekton.taskrun.list', (context) => execute(TaskRun.listFromPipelineRun, context)),
     vscode.commands.registerCommand('tekton.taskrun.list.palette', (context) => execute(TaskRun.listFromPipelineRun, context)),

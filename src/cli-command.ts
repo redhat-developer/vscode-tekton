@@ -5,7 +5,6 @@
 
 import { workspace } from 'vscode';
 import { CliCommand, createCliCommand } from './cli';
-import { StartObject } from './tekton/pipelinecontent';
 
 
 export function newTknCommand(...tknArguments: string[]): CliCommand {
@@ -39,46 +38,14 @@ function verbose(_target: unknown, key: string, descriptor: any): void {
   };
 }
 
-function tknWorkspace(pipelineData: StartObject): string[] {
-  const workspace: string[] = [];
-  pipelineData.workspaces.forEach(element => {
-    if (element.workspaceType === 'PersistentVolumeClaim') {
-      if (element.item && element.item.length === 0) {
-        workspace.push(`-w name=${element.name},claimName=${element.workspaceName}`);
-      } else {
-        workspace.push(`-w name=${element.name},claimName=${element.workspaceName},subPath=${element.subPath}`);
-      }
-    } else if (element.workspaceType === 'ConfigMap') {
-      if (element.item && element.item.length !== 0) {
-        let configMap = `-w name=${element.name},config=${element.workspaceName}`;
-        element.item.forEach(value => {
-          configMap = configMap.concat(`,item=${value.key}=${value.path}`);
-        });
-        workspace.push(configMap);
-      } else {
-        workspace.push(`-w name=${element.name},config=${element.workspaceName},item=${element.key}=${element.value}`);
-      }
-    } else if (element.workspaceType === 'Secret') {
-      if (element.item && element.item.length !== 0) {
-        let secret = `-w name=${element.name},secret=${element.workspaceName}`;
-        element.item.forEach(value => {
-          secret = secret.concat(`,item=${value.key}=${value.path}`);
-        });
-        workspace.push(secret);
-      } else {
-        workspace.push(`-w name=${element.name},secret=${element.workspaceName}`);
-      }
-    } else if (element.workspaceType === 'EmptyDirectory' || element.workspaceType === 'EmptyDir') {
-      workspace.push(`-w name=${element.name},emptyDir=''`);
-    }
-  });
-  return workspace;
-}
-
 export class Command {
   @verbose
   static listTaskRunsForTasks(task: string): CliCommand {
     return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/task=${task}`, '-o', 'json');
+  }
+
+  static listTaskRunsForClusterTasks(clusterTask: string): CliCommand {
+    return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/clusterTask=${clusterTask}`, '-o', 'json');
   }
 
   static resourceList(resource: string): CliCommand {
@@ -92,31 +59,6 @@ export class Command {
   @verbose
   static listTaskRunsForTasksInTerminal(task: string): CliCommand {
     return newTknCommand('taskrun', 'list', task);
-  }
-
-  @verbose
-  static startTask(taskData: StartObject): CliCommand {
-    const resources: string[] = [];
-    const params: string[] = [];
-    const svcAcct: string[] = taskData.serviceAccount ? ['-s ', taskData.serviceAccount] : [];
-    taskData.resources.forEach(element => {
-      if (element.resourceType === 'inputs') {
-        resources.push('-i');
-        resources.push(element.name + '=' + element.resourceRef);
-      } else if (element.resourceType === 'outputs') {
-        resources.push('-o');
-        resources.push(element.name + '=' + element.resourceRef);
-      }
-    });
-
-    taskData.params.forEach(element => {
-      params.push('--param');
-      params.push(element.name + '=' + element.default);
-    });
-
-    const workspace = tknWorkspace(taskData);
-
-    return newTknCommand('task', 'start', taskData.name, ...resources, ...params, ...workspace, ...svcAcct);
   }
 
   @verbose

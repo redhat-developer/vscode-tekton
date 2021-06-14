@@ -7,7 +7,7 @@ import { Tkn, tkn as tknImpl } from '../tkn';
 import { PipelineExplorer, pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { workspace, window } from 'vscode';
 import { tektonFSUri } from '../util/tekton-vfs';
-import { TknResourceItem } from './webviewstartpipeline';
+import { TknResourceItem } from './collect-data-for-wizard';
 import { telemetryLog, telemetryLogError } from '../telemetry';
 import { ContextType } from '../context-type';
 import { TektonNode } from '../tree-view/tekton-node';

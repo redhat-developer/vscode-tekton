@@ -3,8 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { ItemPath, Params, VCT } from './pipelinecontent';
-import { VolumeTypeSecret, VolumeTypeConfigMaps, VolumeTypePVC, PipelineRunWorkspace } from '../tekton';
+import { VolumeTypeSecret, VolumeTypeConfigMaps, VolumeTypePVC, Workspace, Params, VCT, ItemPath } from '../tekton';
 
 export interface TriggerFormValues {
   selectedTrigger: string;
@@ -56,7 +55,7 @@ export type TriggerBindingKind = K8sResourceCommon & {
 export interface Param {
   name: string;
   default?: string;
-  value?: string;
+  value?: string | string[];
 }
 
 export interface PipelineParam extends Param {
@@ -72,7 +71,7 @@ export interface CommonPipelineModalFormikValues {
   name: string;
   params: Params[] | undefined;
   resources: PipelineModalFormResource[];
-  workspaces?: PipelineRunWorkspace[];
+  workspaces?: Workspace[];
   serviceAccount?: string;
 }
 

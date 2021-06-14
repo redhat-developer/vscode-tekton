@@ -11,6 +11,7 @@ export interface NameType {
   name: string;
   type?: string;
   resourceRef?: ResourceRef;
+  resourceType?: string;
 }
 
 export interface ItemPath {
@@ -132,6 +133,8 @@ export interface Trigger {
   triggerLabel?: Trigger[];
   triggerContent?: object;
   commandId?: string;
+  startTask?: boolean;
+  startClusterTask?: boolean;
 }
 
 export type TriggerBindingParam = {
@@ -210,6 +213,8 @@ export interface PipelineStart {
   serviceAccount: string;
   commandId?: string;
   volumeClaimTemplate?: VCT[];
+  startTask?: boolean;
+  startClusterTask?: boolean;
 }
 
 export interface Item {

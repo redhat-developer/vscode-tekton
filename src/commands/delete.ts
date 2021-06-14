@@ -71,7 +71,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
       if (deleteCommand) {
         toDelete.set(item, deleteCommand);
       }
-      if (!hasAnyReference && checkRefResource() && pipelineList.length !== 0 && (item.contextValue === ContextType.TASK || item.contextValue === ContextType.CLUSTERTASK)) {
+      if (!hasAnyReference && checkRefResource() && pipelineList && pipelineList.length !== 0 && (item.contextValue === ContextType.TASK || item.contextValue === ContextType.CLUSTERTASK)) {
         hasAnyReference = referenceOfTaskAndClusterTaskInCluster(item, pipelineList);
       }
     }

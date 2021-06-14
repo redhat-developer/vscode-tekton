@@ -83,7 +83,7 @@ export class TektonNodeImpl implements TektonNode {
     clustertask: {
       icon: 'CT.svg',
       tooltip: 'Clustertask: {label}',
-      getChildren: () => this.tkn.getTaskRunsForTasks(this)
+      getChildren: () => this.tkn.getTaskRunsForClusterTasks(this)
     },
     tknDown: {
       icon: 'tkn-down.png',

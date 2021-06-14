@@ -14,9 +14,9 @@ import { PipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { TektonItem } from '../../src/tekton/tektonitem';
 import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
-import { Trigger, StartObject, NameType, Resources, Params, PipelineContent } from '../../src/tekton/pipelinecontent';
 import { ContextType } from '../../src/context-type';
 import { Command } from '../../src/cli-command';
+import { Params, Resources, StartObject } from '../../src/tekton';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -25,7 +25,6 @@ suite('Tekton/Pipeline', () => {
   const sandbox = sinon.createSandbox();
   let getPipelineStub: sinon.SinonStub;
   let termStub: sinon.SinonStub;
-  let pipeTrigger: Trigger[];
   let startPipelineObj: StartObject;
   let showQuickPickStub: sinon.SinonStub<unknown[], unknown>;
   const pipelineNode = new TestItem(TknImpl.ROOT, 'test-pipeline', ContextType.PIPELINENODE, null);
@@ -108,11 +107,6 @@ suite('Tekton/Pipeline', () => {
 
     setup(() => {
 
-      const testNames: NameType[] = [{
-        name: 'test',
-        type: 'test-type'
-      }];
-
       const testResources: Resources[] = [
         {
           name: 'test-resource1',
@@ -136,13 +130,6 @@ suite('Tekton/Pipeline', () => {
         }
       ];
 
-      pipeTrigger = [{
-        name: 'pipeline',
-        resources: testNames,
-        params: testParams,
-        serviceAcct: undefined
-      }];
-
       startPipelineObj = {
         name: 'pipeline',
         resources: testResources,
@@ -153,7 +140,6 @@ suite('Tekton/Pipeline', () => {
     });
 
     test('starts a pipeline with appropriate resources', async () => {
-      sandbox.stub(PipelineContent, 'startObject').withArgs(pipeTrigger, 'Pipeline').resolves(startPipelineObj);
       sandbox.stub(Pipeline, 'start').withArgs(pipelineItem).resolves('Pipeline \'pipeline\' successfully created');
       const result = await Pipeline.start(pipelineItem);
       expect(result).equals(`Pipeline '${startPipelineObj.name}' successfully created`);

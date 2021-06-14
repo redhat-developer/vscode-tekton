@@ -53,7 +53,7 @@ export class SelectWidget extends BaseWidget {
     this.createPVC(event, select);
     createVCT(event, select, this.initialValue);
     const pvcSelect = event.lastElementChild.lastElementChild.getElementsByTagName('select');
-    if (pvcSelect.length !== 0) {
+    if (pvcSelect && pvcSelect.length !== 0) {
       this.createPVC(event.lastElementChild, event.lastElementChild.lastElementChild.getElementsByTagName('select')[0]);
     }
     this.removeFieldForVolumeClaim(event, select);
@@ -178,7 +178,7 @@ export class SelectWidget extends BaseWidget {
     return this;
   }
 
-  pipelineResource(items: TknPipelineResource[], resource: NameType): Widget {
+  pipelineResource(items: TknPipelineResource[], resource: NameType, task: boolean): Widget {
     items.forEach(val => {
       if (val.spec.type === resource.type) {
         const op = document.createElement('option');
@@ -194,7 +194,11 @@ export class SelectWidget extends BaseWidget {
         this.select.appendChild(op);
       }
     });
-    collectResourceData(resource.name, this.select.value, this.initialValue);
+    if (task) {
+      collectResourceData(resource.name, this.select.value, this.initialValue, resource.resourceType);
+    } else {
+      collectResourceData(resource.name, this.select.value, this.initialValue);
+    }
     return this;
   }
 

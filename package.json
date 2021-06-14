@@ -47,6 +47,7 @@
     "onCommand:tekton.pipelineresource.list",
     "onCommand:tekton.pipelineresource.describe",
     "onCommand:tekton.task.start",
+    "onCommand:tekton.clusterTask.start",
     "onCommand:tekton.task.list",
     "onCommand:tekton.clustertask.list",
     "onCommand:tekton.taskrun.list",
@@ -366,6 +367,12 @@
         "enablement": "tekton:tkn"
       },
       {
+        "command": "tekton.clusterTask.start",
+        "title": "Start",
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
+      },
+      {
         "command": "tekton.task.start.palette",
         "title": "Start Task",
         "category": "Tekton",
@@ -632,6 +639,10 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
+          "command": "tekton.clusterTask.start",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
           "command": "tekton.task.start",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -834,6 +845,11 @@
         {
           "command": "tekton.clustertask.list",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == clustertasknode",
+          "group": "c1"
+        },
+        {
+          "command": "tekton.clusterTask.start",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == clustertask",
           "group": "c1"
         },
         {
