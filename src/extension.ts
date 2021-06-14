@@ -33,7 +33,7 @@ import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
 import { registerLogDocumentProvider } from './util/log-in-editor';
 import { openTaskRunTemplate } from './tekton/taskruntemplate';
-import sendTelemetry, { telemetryLog, telemetryLogError, TelemetryProperties } from './telemetry';
+import sendTelemetry, { telemetryLogError, TelemetryProperties } from './telemetry';
 import { cli, createCliCommand } from './cli';
 import { getVersion, tektonVersionType } from './util/tknversion';
 import { TektonNode } from './tree-view/tekton-node';
