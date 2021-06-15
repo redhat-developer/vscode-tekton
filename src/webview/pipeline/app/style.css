@@ -320,8 +320,6 @@ body {
   width: 500px;
 }
 
-
-
 .input {
   text-overflow: ellipsis;
   -webkit-writing-mode: horizontal-tb !important;
