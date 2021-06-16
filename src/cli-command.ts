@@ -48,6 +48,10 @@ export class Command {
     return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/task=${task}`, '-o', 'json');
   }
 
+  static printOcVersionJson(): CliCommand {
+    return newOcCommand('version -ojson');
+  }
+
   static listTaskRunsForClusterTasks(clusterTask: string): CliCommand {
     return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/clusterTask=${clusterTask}`, '-o', 'json');
   }

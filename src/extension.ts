@@ -39,6 +39,7 @@ import { getVersion, tektonVersionType } from './util/tknversion';
 import { TektonNode } from './tree-view/tekton-node';
 import { checkClusterStatus } from './util/check-cluster-status';
 import { getRedHatService } from '@redhat-developer/vscode-redhat-telemetry';
+import { getClusterVersions } from './cluster-version';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
