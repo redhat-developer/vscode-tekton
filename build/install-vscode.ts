@@ -13,7 +13,7 @@ downloadAndUnzipVSCode().then((executable: string) => {
   } else {
     executable = path.join(path.dirname(executable), 'bin', 'code');
   }
-  const dependencies = ['redhat.vscode-yaml', 'redhat.vscode-commons'];
+  const dependencies = ['redhat.vscode-yaml'];
   for (const dep of dependencies) {
     const installLog = cp.execSync(`${executable} --install-extension ${dep}`);
     console.log(installLog.toString());

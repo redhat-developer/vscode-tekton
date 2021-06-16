@@ -38,6 +38,7 @@ import { cli, createCliCommand } from './cli';
 import { getVersion, tektonVersionType } from './util/tknversion';
 import { TektonNode } from './tree-view/tekton-node';
 import { checkClusterStatus } from './util/check-cluster-status';
+import { getRedHatService } from '@redhat-developer/vscode-redhat-telemetry';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -46,7 +47,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   contextGlobalState = context;
   migrateFromTkn018();
-  sendTelemetry('activation');
+  const telemetry = await (await getRedHatService(context)).getTelemetryService();
+  telemetry.sendStartupEvent();
 
   const hubViewProvider = new TektonHubTasksViewProvider(context.extensionUri);
 
