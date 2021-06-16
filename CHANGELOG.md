@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.17.0 (June 18, 2021)
+
+This release brings to you:
+
+* [#571](https://github.com/redhat-developer/vscode-tekton/issues/571) Restart action doesn't support VolumeClaimTemplate.
+* [#583](https://github.com/redhat-developer/vscode-tekton/issues/583) Additional telemetry cluster version.
+* [#489](https://github.com/redhat-developer/vscode-tekton/issues/489) Wizard for starting Tasks and ClusterTask.
+* [#593](https://github.com/redhat-developer/vscode-tekton/issues/593) In windows system tekton hub doesn't work.
+* [#594](https://github.com/redhat-developer/vscode-tekton/issues/594) On window selecting size UI alignment is not proper for volumeClaimTemplate.
+* [#598](https://github.com/redhat-developer/vscode-tekton/issues/598) Remove dependency to vscode-commons.
+
 ## 0.16.1 (May 25, 2021)
 
 This release brings to you:
