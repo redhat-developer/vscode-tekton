@@ -79,7 +79,7 @@ export function createVolumeClaim(event: Node & ParentNode, input: EditItem, new
   const selectAccessModeOp = new EditItem('Access Mode', selectAccessMode, 'option-workspace-id', 'inner-editItem');
   const inputNumber = new EditItem('Size', new InputWidget('', 'number-input-box', initialValue, null, null, 'size-for-pvc-create-webview', null, numberInput, 'number'), 'input-resource', 'size-input-item');
   const selectSize = new SelectWidget('editor-select-box-item-select-a-key', null, 'size-select-box-item', initialValue, 'Size-for-PVC-Storage').selectSize(vctSize);
-  const selectSizeOp = new EditItem('', selectSize, 'option-workspace-id', input ? 'size-select-item' : 'size-select-item-vtc', null, true);
+  const selectSizeOp = new EditItem('', selectSize, 'option-workspace-id', input ? (navigator.platform === 'Win32') ? 'size-select-item-windows' : 'size-select-item' : (navigator.platform === 'Win32') ? 'size-select-item-vtc-window' : 'size-select-item-vtc', null, true);
   addPVCItem(event, input, selectAccessModeOp, selectSizeOp, inputNumber, newDivClass);
 }
 
