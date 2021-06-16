@@ -39,6 +39,7 @@ import { getVersion, tektonVersionType } from './util/tknversion';
 import { TektonNode } from './tree-view/tekton-node';
 import { checkClusterStatus } from './util/check-cluster-status';
 import { getRedHatService } from '@redhat-developer/vscode-redhat-telemetry';
+import { getClusterVersions } from './cluster-version';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -127,6 +128,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     triggerDetection();
   });
   checkClusterStatus(true); // watch Tekton resources when all required dependency are installed
+  getClusterVersions().then((version) => {
+    const telemetryProps: TelemetryProperties = {
+      identifier: 'cluster.version',
+    };
+    for (const [key, value] of Object.entries(version)) {
+      telemetryProps[key] = value;
+    }
+    sendTelemetry('tekton.cluster.version', telemetryProps)
+  })
   setCommandContext(CommandContext.TreeZenMode, false);
   setCommandContext(CommandContext.PipelinePreview, false);
 

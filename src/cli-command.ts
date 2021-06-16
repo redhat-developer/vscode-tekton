@@ -15,6 +15,10 @@ export function newK8sCommand(...k8sArguments: string[]): CliCommand {
   return createCliCommand('kubectl', ...k8sArguments);
 }
 
+export function newOcCommand(...OcArguments: string[]): CliCommand {
+  return createCliCommand('oc', ...OcArguments);
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function verbose(_target: unknown, key: string, descriptor: any): void {
   let fnKey: string | undefined;
@@ -42,6 +46,10 @@ export class Command {
   @verbose
   static listTaskRunsForTasks(task: string): CliCommand {
     return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/task=${task}`, '-o', 'json');
+  }
+
+  static printOcVersionJson(): CliCommand {
+    return newOcCommand('version -ojson');
   }
 
   static listTaskRunsForClusterTasks(clusterTask: string): CliCommand {
