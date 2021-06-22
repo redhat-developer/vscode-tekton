@@ -19,14 +19,6 @@ export class PipelineResource extends TektonItem {
     PipelineResource.tkn.executeInTerminal(Command.describePipelineResource(pipelineResource.getName()));
   }
 
-  static async list(pipelineResource: TektonNode): Promise<void> {
-    if (!pipelineResource) {
-      pipelineResource = await window.showQuickPick(await PipelineResource.getPipelineResourceNames(), { placeHolder: 'Select Pipeline Resource to list', ignoreFocusOut: true });
-    }
-    if (!pipelineResource) return null;
-    PipelineResource.tkn.executeInTerminal(Command.listPipelineResourcesInTerminal(pipelineResource.getName()));
-  }
-
   static getDeleteCommand(item: TektonNode): CliCommand {
     return Command.deletePipelineResource(item.getName())
   }

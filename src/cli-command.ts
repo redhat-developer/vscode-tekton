@@ -22,6 +22,7 @@ export function newOcCommand(...OcArguments: string[]): CliCommand {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function verbose(_target: unknown, key: string, descriptor: any): void {
   let fnKey: string | undefined;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   let fn: Function;
 
   if (typeof descriptor.value === 'function') {
@@ -124,11 +125,6 @@ export class Command {
   }
 
   @verbose
-  static listPipelineResourcesInTerminal(name: string): CliCommand {
-    return newTknCommand('resource', 'list', name);
-  }
-
-  @verbose
   static describePipelineResource(name: string): CliCommand {
     return newTknCommand('resource', 'describe', name);
   }
@@ -144,11 +140,6 @@ export class Command {
   }
 
   @verbose
-  static listPipelinesInTerminal(name: string): CliCommand {
-    return newTknCommand('pipeline', 'list', name);
-  }
-
-  @verbose
   static describePipelines(name: string): CliCommand {
     return newTknCommand('pipeline', 'describe', name);
   }
@@ -156,11 +147,6 @@ export class Command {
   @verbose
   static listPipelineRuns(name: string): CliCommand {
     return newK8sCommand('get', 'pipelinerun', '-l', `tekton.dev/pipeline=${name}`, '-o', 'json');
-  }
-
-  @verbose
-  static listPipelineRunsInTerminal(name: string): CliCommand {
-    return newTknCommand('pipelinerun', 'list', name);
   }
 
   @verbose
@@ -196,11 +182,6 @@ export class Command {
     return newK8sCommand('get', 'task.tekton', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
   }
 
-  @verbose
-  static listTasksInTerminal(namespace?: string): CliCommand {
-    return newTknCommand('task', 'list', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
-  }
-
   static listTaskRunsForPipelineRun(pipelineRunName: string): CliCommand {
     return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/pipelineRun=${pipelineRunName}`, '-o', 'json');
   }
@@ -221,10 +202,6 @@ export class Command {
   @verbose
   static listClusterTasks(namespace?: string): CliCommand {
     return newK8sCommand('get', 'clustertask', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
-  }
-
-  static listClusterTasksInTerminal(namespace?: string): CliCommand {
-    return newTknCommand('clustertask', 'list', ...(namespace ? ['-n', namespace] : ''));
   }
 
   @verbose

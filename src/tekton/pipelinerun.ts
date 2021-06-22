@@ -35,14 +35,6 @@ export class PipelineRun extends TektonItem {
     PipelineRun.tkn.executeInTerminal(Command.describePipelineRuns(pipelineRun.getName()));
   }
 
-  static async list(pipeline: TektonNode): Promise<void> {
-    if (!pipeline) {
-      pipeline = await window.showQuickPick(await PipelineRun.getPipelineNames(), { placeHolder: 'Select Pipeline Run to list', ignoreFocusOut: true });
-    }
-    if (!pipeline) return null;
-    PipelineRun.tkn.executeInTerminal(Command.listPipelineRunsInTerminal(pipeline.getName()));
-  }
-
   static async logs(pipelineRun: TektonNode): Promise<void> {
     if (!pipelineRun) {
       pipelineRun = await window.showQuickPick(await PipelineRun.getPipelineRunNames(), { placeHolder: 'Select Pipeline Run to see logs', ignoreFocusOut: true });

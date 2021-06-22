@@ -22,10 +22,6 @@ export class Task extends TektonItem {
     return await createWizardForTaskOrClusterTask(task.getName(), TaskModel.kind ,commandId);
   }
 
-  static async list(): Promise<void> {
-    Task.tkn.executeInTerminal(Command.listTasksInTerminal());
-  }
-
   static getDeleteCommand(item: TektonNode): cliInstance.CliCommand {
     return Command.deleteTask(item.getName());
   }
