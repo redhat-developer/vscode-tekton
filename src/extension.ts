@@ -102,6 +102,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('_tekton.explorer.more', expandMoreItem),
     vscode.commands.registerCommand('tekton.explorer.enterZenMode', enterZenMode),
     vscode.commands.registerCommand('tekton.custom.explorer.exitZenMode', exitZenMode),
+    vscode.commands.registerCommand('tekton.pipelineRun.template', (context) => execute(openPipelineRunTemplate, context)),
     vscode.commands.registerCommand('tekton.custom.explorer.refresh', () => refreshCustomTree('tekton.custom.explorer.refresh')),
     vscode.commands.registerCommand('tekton.custom.explorer.removeItem', () => removeItemFromCustomTree('tekton.custom.explorer.removeItem')),
     vscode.commands.registerCommand('k8s.tekton.run.logs', k8sCommands.showLogs),

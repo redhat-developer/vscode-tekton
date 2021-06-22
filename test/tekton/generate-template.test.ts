@@ -9,7 +9,7 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { cli } from '../../src/cli';
-import * as taskRunTemplate from '../../src/tekton/taskruntemplate'
+import * as taskRunTemplate from '../../src/tekton/generate-template'
 import { TestItem } from './testTektonitem';
 import { TknImpl } from '../../src/tkn';
 import { EndOfLine, TextDocument, window, workspace } from 'vscode';

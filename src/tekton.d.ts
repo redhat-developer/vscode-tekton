@@ -7,22 +7,6 @@ import { V1ContainerState as ContainerState } from '@kubernetes/client-node';
 import { ObjectMetadata } from './tekton/triggertype';
 import { K8sResourceKind } from './tekton/triggertype';
 
-//Contains set JSON representation of tkn JSON objects
-
-interface KubectlTaskSpec {
-  params?: TknParams[];
-  resources?: Resource;
-  workspaces?: TknWorkspaces[];
-  serviceAccountName?: string;
-}
-
-interface KubectlTask {
-  apiVersion?: string;
-  kind?: string;
-  metadata: TknMetadata;
-  spec: KubectlTaskSpec;
-}
-
 interface K8sResources {
   inputs?: TknResource[];
   outputs?: TknResource[];
@@ -69,7 +53,6 @@ interface InputAndOutput {
   };
 }
 
-
 export interface TknTaskRun {
   apiVersion?: string;
   kind?: string;
@@ -104,6 +87,7 @@ export interface TknParams {
   value?: string | string[];
   default?: string;
   description?: string;
+  type?: string;
 }
 
 export interface TknResource {
@@ -113,14 +97,14 @@ export interface TknResource {
 }
 
 export interface TknSpec {
-  type: string;
+  type?: string;
   resources?: TknResource[];
   params?: TknParams[];
   serviceAccount?: string;
   workspaces?: TknWorkspaces[];
 }
 
-export interface TaskRunTemplate {
+export interface Template {
   apiVersion: string;
   kind: string;
   metadata: {
@@ -326,8 +310,6 @@ export interface TknPipeline {
   metadata: TknMetadata;
   spec: KubectlPipelineSpec;
 }
-
-// JSON types
 
 export interface Param {
   name?: string;
