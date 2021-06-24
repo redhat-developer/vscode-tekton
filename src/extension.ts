@@ -33,12 +33,11 @@ import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
 import { registerLogDocumentProvider } from './util/log-in-editor';
 import { openTaskRunTemplate } from './tekton/taskruntemplate';
-import sendTelemetry, { telemetryLogError, TelemetryProperties } from './telemetry';
+import sendTelemetry, { startTelemetry, telemetryLogError, TelemetryProperties } from './telemetry';
 import { cli, createCliCommand } from './cli';
 import { getVersion, tektonVersionType } from './util/tknversion';
 import { TektonNode } from './tree-view/tekton-node';
 import { checkClusterStatus } from './util/check-cluster-status';
-import { getRedHatService } from '@redhat-developer/vscode-redhat-telemetry';
 import { getClusterVersions } from './cluster-version';
 
 export let contextGlobalState: vscode.ExtensionContext;
@@ -48,8 +47,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   contextGlobalState = context;
   migrateFromTkn018();
-  const telemetry = await (await getRedHatService(context)).getTelemetryService();
-  telemetry.sendStartupEvent();
+  startTelemetry(context);
 
   const hubViewProvider = new TektonHubTasksViewProvider(context.extensionUri);
 
