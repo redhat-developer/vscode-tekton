@@ -40,6 +40,7 @@
     "onCommand:tekton.explorerView.delete",
     "onCommand:tekton.customView.delete",
     "onCommand:tekton.pipelinerun.list",
+    "onCommand:tekton.pipelineRun.template",
     "onCommand:tekton.pipelinerun.describe",
     "onCommand:tekton.pipelinerun.logs",
     "onCommand:tekton.pipelinerun.followLogs",
@@ -303,6 +304,12 @@
       {
         "command": "tekton.pipelinerun.list",
         "title": "List PipelineRuns",
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
+      },
+      {
+        "command": "tekton.pipelineRun.template",
+        "title": "Generate PipelineRun template",
         "category": "Tekton",
         "enablement": "tekton:tkn"
       },
@@ -797,6 +804,11 @@
           "command": "tekton.pipelinerun.list",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
           "group": "c1@4"
+        },
+        {
+          "command": "tekton.pipelineRun.template",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
+          "group": "c1@5"
         },
         {
           "command": "tekton.pipelinerun.restart",

@@ -32,7 +32,7 @@ import { showDiagnosticData } from './tekton/diagnostic';
 import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
 import { registerLogDocumentProvider } from './util/log-in-editor';
-import { openTaskRunTemplate } from './tekton/taskruntemplate';
+import { openPipelineRunTemplate, openTaskRunTemplate } from './tekton/generate-template';
 import sendTelemetry, { startTelemetry, telemetryLogError, TelemetryProperties } from './telemetry';
 import { cli, createCliCommand } from './cli';
 import { getVersion, tektonVersionType } from './util/tknversion';
@@ -102,6 +102,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('_tekton.explorer.more', expandMoreItem),
     vscode.commands.registerCommand('tekton.explorer.enterZenMode', enterZenMode),
     vscode.commands.registerCommand('tekton.custom.explorer.exitZenMode', exitZenMode),
+    vscode.commands.registerCommand('tekton.pipelineRun.template', (context) => execute(openPipelineRunTemplate, context)),
     vscode.commands.registerCommand('tekton.custom.explorer.refresh', () => refreshCustomTree('tekton.custom.explorer.refresh')),
     vscode.commands.registerCommand('tekton.custom.explorer.removeItem', () => removeItemFromCustomTree('tekton.custom.explorer.removeItem')),
     vscode.commands.registerCommand('k8s.tekton.run.logs', k8sCommands.showLogs),
