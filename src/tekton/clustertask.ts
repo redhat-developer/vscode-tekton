@@ -17,10 +17,6 @@ export class ClusterTask extends TektonItem {
     await createWizardForTaskOrClusterTask(clusterTask.getName(), ClusterTaskModel.kind, commandId);
   }
 
-  static async list(): Promise<void> {
-    ClusterTask.tkn.executeInTerminal(Command.listClusterTasksInTerminal());
-  }
-
   static getDeleteCommand(item: TektonNode): CliCommand {
     return Command.deleteClusterTask(item.getName());
   }

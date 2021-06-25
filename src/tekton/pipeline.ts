@@ -71,14 +71,6 @@ export class Pipeline extends TektonItem {
     Pipeline.tkn.executeInTerminal(Command.describePipelines(pipeline.getName()));
   }
 
-  static async list(pipeline: TektonNode): Promise<void> {
-    if (!pipeline) {
-      pipeline = await Pipeline.getPipelineNode();
-    }
-    if (!pipeline) return null;
-    Pipeline.tkn.executeInTerminal(Command.listPipelinesInTerminal(pipeline.getName()));
-  }
-
   static getDeleteCommand(pipeline: TektonNode): cliInstance.CliCommand {
     return Command.deletePipeline(pipeline.getName());
   }

@@ -23,7 +23,6 @@ chai.use(sinonChai);
 
 suite('Tekton/Pipeline', () => {
   const sandbox = sinon.createSandbox();
-  let getPipelineStub: sinon.SinonStub;
   let termStub: sinon.SinonStub;
   let startPipelineObj: StartObject;
   let showQuickPickStub: sinon.SinonStub<unknown[], unknown>;
@@ -52,36 +51,13 @@ suite('Tekton/Pipeline', () => {
     sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     showQuickPickStub = sandbox.stub(vscode.window, 'showQuickPick').resolves(undefined);
     sandbox.stub(TknImpl.prototype, 'getPipelines').resolves([pipelineItem]);
-    getPipelineStub = sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
+    sandbox.stub(TektonItem, 'getPipelineNames').resolves([pipelineItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();
     termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal').resolves();
   });
 
   teardown(() => {
     sandbox.restore();
-  });
-
-  suite('called from \'Tekton Pipelines Explorer\'', () => {
-
-    test('executes the list tkn command in terminal', async () => {
-      await Pipeline.list(pipelineItem);
-      expect(termStub).calledOnceWith(Command.listPipelinesInTerminal(pipelineItem.getName()));
-    });
-
-  });
-
-  suite('called from command palette', () => {
-
-    test('calls the appropriate error message when no pipeline found', async () => {
-      getPipelineStub.restore();
-      sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([]);
-      try {
-        await Pipeline.list(null);
-      } catch (err) {
-        expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
-        return;
-      }
-    });
   });
 
   suite('start', () => {

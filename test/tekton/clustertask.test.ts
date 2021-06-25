@@ -16,7 +16,6 @@ import { TektonItem } from '../../src/tekton/tektonitem';
 import { TestItem } from './testTektonitem';
 import * as vscode from 'vscode';
 import { ContextType } from '../../src/context-type';
-import { Command } from '../../src/cli-command';
 import { K8sTask } from '../../src/tekton';
 import { PipelineWizard } from '../../src/pipeline/wizard';
 import { cli } from '../../src/cli';
@@ -35,7 +34,6 @@ suite('Tekton/Clustertask', () => {
   let tknExecStub: sinon.SinonStub;
   let cliExecStub: sinon.SinonStub;
   let pipelineWizardStub: sinon.SinonStub;
-  let getClusterTaskStub: sinon.SinonStub;
   const clustertaskNode = new TestItem(TknImpl.ROOT, 'test-clustertask', ContextType.CLUSTERTASK, null);
   const clustertaskItem = new TestItem(clustertaskNode, 'test-clustertask', ContextType.CLUSTERTASK, null);
 
@@ -121,44 +119,12 @@ suite('Tekton/Clustertask', () => {
     cliExecStub = sandbox.stub(cli, 'execute').resolves({error: null, stdout: '', stderr: ''});
     sandbox.stub(TknImpl.prototype, 'getClusterTasks').resolves([clustertaskItem]);
     pipelineWizardStub = sandbox.stub(PipelineWizard, 'create').resolves();
-    getClusterTaskStub = sandbox.stub(TektonItem, 'getClusterTaskNames').resolves([clustertaskItem]);
+    sandbox.stub(TektonItem, 'getClusterTaskNames').resolves([clustertaskItem]);
     sandbox.stub(vscode.window, 'showInputBox').resolves();
   });
 
   teardown(() => {
     sandbox.restore();
-  });
-
-  suite('list command', () => {
-    let termStub: sinon.SinonStub;
-
-    setup(() => {
-      termStub = sandbox.stub(TknImpl.prototype, 'executeInTerminal').resolves();
-    });
-
-    suite('called from \'Tekton Pipelines Explorer\'', () => {
-
-      test('executes the list tkn command in terminal', async () => {
-        await ClusterTask.list();
-        expect(termStub).calledOnceWith(Command.listClusterTasksInTerminal());
-      });
-
-    });
-
-    suite('called from command palette', () => {
-
-      test('calls the appropriate error message when no project found', async () => {
-        getClusterTaskStub.restore();
-        sandbox.stub(TknImpl.prototype, 'getPipelineResources').resolves([]);
-        try {
-          await ClusterTask.list();
-        } catch (err) {
-          expect(err.message).equals('You need at least one Pipeline available. Please create new Tekton Pipeline and try again.');
-          return;
-        }
-      });
-    });
-
   });
 
   suite('Start ClusterTask', () => {
