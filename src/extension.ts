@@ -32,7 +32,7 @@ import { showDiagnosticData } from './tekton/diagnostic';
 import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
 import { registerLogDocumentProvider } from './util/log-in-editor';
-import { openTaskRunTemplate } from './tekton/taskruntemplate';
+import { openPipelineRunTemplate, openTaskRunTemplate } from './tekton/generate-template';
 import sendTelemetry, { startTelemetry, telemetryLogError, TelemetryProperties } from './telemetry';
 import { cli, createCliCommand } from './cli';
 import { getVersion, tektonVersionType } from './util/tknversion';
