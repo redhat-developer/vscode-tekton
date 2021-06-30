@@ -5,6 +5,7 @@
 
 import { workspace } from 'vscode';
 import { CliCommand, createCliCommand } from './cli';
+import { ocFallBack } from './util/check-cluster-status';
 
 
 export function newTknCommand(...tknArguments: string[]): CliCommand {
@@ -44,25 +45,45 @@ function verbose(_target: unknown, key: string, descriptor: any): void {
 }
 
 export class Command {
-  @verbose
-  static listTaskRunsForTasks(task: string): CliCommand {
-    return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/task=${task}`, '-o', 'json');
-  }
 
   static printOcVersionJson(): CliCommand {
-    return newOcCommand('version -ojson');
+    return newOcCommand('version', '-o', 'json');
+  }
+
+  static kubectlVersion(): CliCommand {
+    return newK8sCommand('version', '-o', 'json');
+  }
+
+  static listTaskRunsForTasks(task: string): CliCommand {
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'taskrun', '-l', `tekton.dev/task=${task}`, '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/task=${task}`, '-o', 'json');
+    }
   }
 
   static listTaskRunsForClusterTasks(clusterTask: string): CliCommand {
-    return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/clusterTask=${clusterTask}`, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'taskrun', '-l', `tekton.dev/clusterTask=${clusterTask}`, '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/clusterTask=${clusterTask}`, '-o', 'json');
+    }
   }
 
   static resourceList(resource: string): CliCommand {
-    return newK8sCommand('get', resource, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', resource, '-o', 'json');
+    } else {
+      return newK8sCommand('get', resource, '-o', 'json');
+    }
   }
 
   static getTaskRun(taskRunName: string): CliCommand {
-    return newK8sCommand('get', 'taskrun', taskRunName, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'taskrun', taskRunName, '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'taskrun', taskRunName, '-o', 'json');
+    }
   }
 
   @verbose
@@ -70,58 +91,99 @@ export class Command {
     return newTknCommand('taskrun', 'list', task);
   }
 
-  @verbose
   static restartPipeline(name: string): CliCommand {
     return newTknCommand('pipeline', 'start', name, '--last', '-s', 'pipeline');
   }
 
   @verbose
   static deletePipeline(name: string): CliCommand {
-    return newK8sCommand('delete', 'Pipeline', name);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('delete', 'Pipeline', name);
+    } else {
+      return newK8sCommand('delete', 'Pipeline', name);
+    }
   }
 
   @verbose
   static listPipelineResources(): CliCommand {
-    return newK8sCommand('get', 'pipelineresources', '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'pipelineresources', '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'pipelineresources', '-o', 'json');
+    }
   }
 
-  @verbose
   static listTriggerTemplates(): CliCommand {
-    return newK8sCommand('get', 'triggertemplates', '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'triggertemplates', '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'triggertemplates', '-o', 'json');
+    }
   }
 
-  @verbose
   static listTriggerBinding(): CliCommand {
-    return newK8sCommand('get', 'triggerbinding', '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'triggerbinding', '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'triggerbinding', '-o', 'json');
+    }
   }
 
   static listClusterTriggerBinding(): CliCommand {
-    return newK8sCommand('get', 'clustertriggerbinding', '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'clustertriggerbinding', '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'clustertriggerbinding', '-o', 'json');
+    }
   }
 
   static deleteClusterTriggerBinding(name: string): CliCommand {
-    return newK8sCommand('delete', 'ClusterTriggerBinding', name);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('delete', 'ClusterTriggerBinding', name);
+    } else {
+      return newK8sCommand('delete', 'ClusterTriggerBinding', name);
+    }
   }
 
   @verbose
   static listEventListener(): CliCommand {
-    return newK8sCommand('get', 'eventlistener', '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'eventlistener', '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'eventlistener', '-o', 'json');
+    }
   }
 
   static deleteTriggerTemplate(name: string): CliCommand {
-    return newK8sCommand('delete', 'TriggerTemplate', name);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('delete', 'TriggerTemplate', name);
+    } else {
+      return newK8sCommand('delete', 'TriggerTemplate', name);
+    }
   }
 
   static deleteTriggerBinding(name: string): CliCommand {
-    return newK8sCommand('delete', 'TriggerBinding', name);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('delete', 'TriggerBinding', name);
+    } else {
+      return newK8sCommand('delete', 'TriggerBinding', name);
+    }
   }
 
   static deleteCondition(name: string): CliCommand {
-    return newK8sCommand('delete', 'Condition', name);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('delete', 'Condition', name);
+    } else {
+      return newK8sCommand('delete', 'Condition', name);
+    }
   }
 
   static deleteEventListeners(name: string): CliCommand {
-    return newK8sCommand('delete', 'EventListener', name);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('delete', 'EventListener', name);
+    } else {
+      return newK8sCommand('delete', 'EventListener', name);
+    }
   }
 
   @verbose
@@ -129,14 +191,20 @@ export class Command {
     return newTknCommand('resource', 'describe', name);
   }
 
-  @verbose
   static deletePipelineResource(name: string): CliCommand {
-    return newK8sCommand('delete', 'PipelineResource', name);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('delete', 'PipelineResource', name);
+    } else {
+      return newK8sCommand('delete', 'PipelineResource', name);
+    }
   }
 
-  @verbose
   static listPipelines(): CliCommand {
-    return newK8sCommand('get', 'pipeline', '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'pipeline', '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'pipeline', '-o', 'json');
+    }
   }
 
   @verbose
@@ -146,7 +214,11 @@ export class Command {
 
   @verbose
   static listPipelineRuns(name: string): CliCommand {
-    return newK8sCommand('get', 'pipelinerun', '-l', `tekton.dev/pipeline=${name}`, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'pipelinerun', '-l', `tekton.dev/pipeline=${name}`, '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'pipelinerun', '-l', `tekton.dev/pipeline=${name}`, '-o', 'json');
+    }
   }
 
   @verbose
@@ -161,7 +233,11 @@ export class Command {
 
   @verbose
   static deletePipelineRun(name: string): CliCommand {
-    return newK8sCommand('delete', 'PipelineRun', name);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('delete', 'PipelineRun', name);
+    } else {
+      return newK8sCommand('delete', 'PipelineRun', name);
+    }
   }
 
   @verbose
@@ -170,43 +246,79 @@ export class Command {
   }
 
   static showDiagnosticData(name: string): CliCommand {
-    return newK8sCommand('get', 'pods', name, '-o', 'jsonpath=\'{range .status.conditions[?(.reason)]}{"reason: "}{.reason}{"\\n"}{"message: "}{.message}{"\\n"}{end}\'');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'pods', name, '-o', 'jsonpath=\'{range .status.conditions[?(.reason)]}{"reason: "}{.reason}{"\\n"}{"message: "}{.message}{"\\n"}{end}\'');
+    } else {
+      return newK8sCommand('get', 'pods', name, '-o', 'jsonpath=\'{range .status.conditions[?(.reason)]}{"reason: "}{.reason}{"\\n"}{"message: "}{.message}{"\\n"}{end}\'');
+    }
   }
 
   static getPipelineRunAndTaskRunData(resource: string, name: string): CliCommand {
-    return newK8sCommand('get', resource, name, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', resource, name, '-o', 'json');
+    } else {
+      return newK8sCommand('get', resource, name, '-o', 'json');
+    }
   }
 
   @verbose
   static listTasks(namespace?: string): CliCommand {
-    return newK8sCommand('get', 'task.tekton', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'task.tekton', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'task.tekton', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
+    }
   }
 
   static listTaskRunsForPipelineRun(pipelineRunName: string): CliCommand {
-    return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/pipelineRun=${pipelineRunName}`, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'taskrun', '-l', `tekton.dev/pipelineRun=${pipelineRunName}`, '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/pipelineRun=${pipelineRunName}`, '-o', 'json');
+    }
   }
 
   static listTaskRunsForPipelineRunInTerminal(pipelineRunName: string): CliCommand {
-    return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/pipelineRun=${pipelineRunName}`);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'taskrun', '-l', `tekton.dev/pipelineRun=${pipelineRunName}`);
+    } else {
+      return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/pipelineRun=${pipelineRunName}`);
+    }
   }
 
   static getTask(name: string, type: 'clustertask' | 'task.tekton'): CliCommand {
-    return newK8sCommand('get', type, name, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', type, name, '-o', 'json');
+    } else {
+      return newK8sCommand('get', type, name, '-o', 'json');
+    }
   }
 
   @verbose
   static deleteTask(name: string): CliCommand {
-    return newK8sCommand('delete', 'Task', name);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('delete', 'Task', name);
+    } else {
+      return newK8sCommand('delete', 'Task', name);
+    }
   }
 
   @verbose
   static listClusterTasks(namespace?: string): CliCommand {
-    return newK8sCommand('get', 'clustertask', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'clustertask', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'clustertask', ...(namespace ? ['-n', namespace] : ''), '-o', 'json');
+    }
   }
 
   @verbose
   static deleteClusterTask(name: string): CliCommand {
-    return newK8sCommand('delete', 'ClusterTask', name);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('delete', 'ClusterTask', name);
+    } else {
+      return newK8sCommand('delete', 'ClusterTask', name);
+    }
   }
 
   @verbose
@@ -216,7 +328,11 @@ export class Command {
 
   @verbose
   static deleteTaskRun(name: string): CliCommand {
-    return newK8sCommand('delete', 'TaskRun', name);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('delete', 'TaskRun', name);
+    } else {
+      return newK8sCommand('delete', 'TaskRun', name);
+    }
   }
 
   @verbose
@@ -233,11 +349,19 @@ export class Command {
   }
 
   static checkTekton(): CliCommand {
-    return newK8sCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'kubectl', 'get', 'pipeline.tekton.dev');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'kubectl', 'get', 'pipeline.tekton.dev');
+    } else {
+      return newK8sCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'kubectl', 'get', 'pipeline.tekton.dev');
+    }
   }
 
   static updateYaml(fsPath: string): CliCommand {
-    return newK8sCommand('apply', '-f', fsPath);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('apply', '-f', fsPath);
+    } else {
+      return newK8sCommand('apply', '-f', fsPath);
+    }
   }
 
   static hubInstall(name: string, version: string): CliCommand {
@@ -253,58 +377,114 @@ export class Command {
   }
 
   static listTaskRun(): CliCommand {
-    return newK8sCommand('get', 'taskrun', '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'taskrun', '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'taskrun', '-o', 'json');
+    }
   }
 
   static listConditions(): CliCommand {
-    return newK8sCommand('get', 'conditions', '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'conditions', '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'conditions', '-o', 'json');
+    }
   }
 
   static listPipelineRun(): CliCommand {
-    return newK8sCommand('get', 'pipelinerun', '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'pipelinerun', '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'pipelinerun', '-o', 'json');
+    }
   }
 
   static watchResources(resourceName: string, name: string): CliCommand {
-    return newK8sCommand('get', resourceName, name, '-w', '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', resourceName, name, '-w', '-o', 'json');
+    } else {
+      return newK8sCommand('get', resourceName, name, '-w', '-o', 'json');
+    }
   }
 
   static workspace(name: string): CliCommand {
-    return newK8sCommand('get', name, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', name, '-o', 'json');
+    } else {
+      return newK8sCommand('get', name, '-o', 'json');
+    }
   }
 
   static getPipelineResource(): CliCommand {
-    return newK8sCommand('get', 'pipelineresources', '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'pipelineresources', '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'pipelineresources', '-o', 'json');
+    }
   }
 
   static getPipelineRun(name: string): CliCommand {
-    return newK8sCommand('get', 'pipelinerun', name, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'pipelinerun', name, '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'pipelinerun', name, '-o', 'json');
+    }
   }
 
   static getPipeline(name: string): CliCommand {
-    return newK8sCommand('get', 'pipeline', name, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'pipeline', name, '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'pipeline', name, '-o', 'json');
+    }
   }
 
   static getEventListener(name: string): CliCommand {
-    return newK8sCommand('get', 'el', name, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'el', name, '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'el', name, '-o', 'json');
+    }
   }
 
   static getService(name: string): CliCommand {
-    return newK8sCommand('get', 'Service', name, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'Service', name, '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'Service', name, '-o', 'json');
+    }
   }
 
   static create(file: string): CliCommand {
-    return newK8sCommand('create', '--save-config', '-f', file);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('create', '--save-config', '-f', file);
+    } else {
+      return newK8sCommand('create', '--save-config', '-f', file);
+    }
   }
 
   static apply(file: string): CliCommand {
-    return newK8sCommand('apply', '-f', file);
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('apply', '-f', file);
+    } else {
+      return newK8sCommand('apply', '-f', file);
+    }
   }
 
   static getRoute(name: string): CliCommand {
-    return newK8sCommand('get', 'route', name, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'route', name, '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'route', name, '-o', 'json');
+    }
   }
 
   static getTrigger(name: string): CliCommand {
-    return newK8sCommand('get', 'trigger', name, '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'trigger', name, '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'trigger', name, '-o', 'json');
+    }
   }
 }
