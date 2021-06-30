@@ -40,6 +40,7 @@ suite('Tekton Pipeline Extension', () => {
   const pipelinerunItem = new TektonNodeImpl(pipelineItem, 'test-pipeline-1', ContextType.PIPELINERUN, tkn, vscode.TreeItemCollapsibleState.Collapsed, '2019-07-25T12:00:00Z', 'True');
   const taskItem = new TektonNodeImpl(taskNode, 'test-tasks', ContextType.TASK, tkn, vscode.TreeItemCollapsibleState.None);
   const clustertaskItem = new TektonNodeImpl(clustertaskNode, 'test-Clustertask', ContextType.CLUSTERTASK, tkn, vscode.TreeItemCollapsibleState.None);
+  let executeStub: sinon.SinonStub;
 
   setup(async () => {
     sandbox.stub(ToolsConfig, 'detectOrDownload').resolves('foo');
@@ -56,6 +57,7 @@ suite('Tekton Pipeline Extension', () => {
     sandbox.stub(TknImpl.prototype, '_getTasks').resolves([taskItem]);
     sandbox.stub(TknImpl.prototype, '_getClusterTasks').resolves([clustertaskItem]);
     sandbox.stub(TknImpl.prototype, '_getPipelineRuns').resolves([pipelinerunItem]);
+    executeStub = sandbox.stub(TknImpl.prototype, 'execute');
   });
 
   teardown(() => {
@@ -95,13 +97,18 @@ suite('Tekton Pipeline Extension', () => {
   });
 
   test('should load pipeline, task, clustertasks and pipelineresources', async () => {
-    sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: '', stdout: '' });
+    executeStub.onFirstCall().resolves({ error: '', stdout: JSON.stringify({
+      clientVersion: {
+        'major': '1'
+      }
+    })});
+    executeStub.resolves({ error: '', stdout: '' });
     const pipelinenodes = await tkn.getPipelineNodes();
     expect(pipelinenodes.length).equals(11);
   });
 
   test('should load pipelineruns from pipeline folder', async () => {
-    sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: undefined, stdout: '' });
+    executeStub.resolves({ error: undefined, stdout: '' });
     const pipelinerun = await tkn.getPipelineRuns(pipelineItem);
     expect(pipelinerun.length).is.equals(1);
   });
