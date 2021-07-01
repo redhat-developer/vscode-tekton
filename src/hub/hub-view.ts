@@ -104,11 +104,16 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
   }
 
   private async handleReady(): Promise<void> {
-    const hubAvailable = await this.doCheckHub();
-    if (hubAvailable) {
-      await this.loadInstalledTasks();
-      await this.loadRecommendedTasks();
+    try {
+      const hubAvailable = await this.doCheckHub();
+      if (hubAvailable) {
+        await this.loadInstalledTasks();
+        await this.loadRecommendedTasks();
+      }
+    } catch (err) {
+      console.error(err);
     }
+
   }
 
   private async doCheckHub(): Promise<boolean> {
@@ -164,7 +169,6 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
     }
     this.installedTasks = installedTasks;
     this.sendMessage({ type: 'installedTasks', data: installedTasks });
-    return;
   }
 
   private async openTaskPage(task: ResourceData | InstalledTask): Promise<void> {

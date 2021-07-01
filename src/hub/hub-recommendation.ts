@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { getProjectType } from '../project-analizer/alizer/alizer-cli';
+import { getProjectType } from '../project-analizer/language-recongnizer/recognazer'
 
 const MAX_LANG_AND_TOOLS = 10;
 export async function startDetectingLanguage(): Promise<string[]> {
@@ -13,15 +13,12 @@ export async function startDetectingLanguage(): Promise<string[]> {
     try {
       const langAndTools = await getProjectType(folder.uri.fsPath);
       if (langAndTools && langAndTools.length > 0) {
-        langAndTools.sort((a, b) => {
-          return b.percentage - a.percentage
-        });
 
         const result = [];
         for (let i = 0; i < langAndTools.length; i++) {
           const element = langAndTools[i];
           result.push(element.name);
-          result.push(...element.tools);
+          result.push(element.builder);
           if (result.length >= MAX_LANG_AND_TOOLS) {
             break;
           }

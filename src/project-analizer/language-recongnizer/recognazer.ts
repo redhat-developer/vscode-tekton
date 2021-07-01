@@ -3,8 +3,10 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-export interface ProjectType {
-    name: string;
-    frameworks?: string[];
-    builder?: string;
+import { ProjectType } from '../project-types';
+import {detectLanguages} from 'language-recognizer';
+
+export async function getProjectType(path: string): Promise<ProjectType[]> {
+  const result = await detectLanguages(path);
+  return result;
 }
