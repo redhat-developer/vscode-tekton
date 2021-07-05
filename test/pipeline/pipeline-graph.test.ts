@@ -11,6 +11,7 @@ import * as graph from '../../src/pipeline/pipeline-graph';
 import { VirtualDocument } from '../../src/yaml-support/yaml-locator';
 import { PipelineRunData } from '../../src/tekton';
 import { tektonFSUri, tektonVfsProvider } from '../../src/util/tekton-vfs';
+import { NodeData } from '../../src/webview/pipeline-preview/model';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -136,6 +137,36 @@ suite('Tekton graph', () => {
       const result = await graph.calculatePipelineRunGraph(document, {} as PipelineRunData);
 
       expect(result).eql([]);
+    });
+
+    test('pipeline run provides retry count', async () => {
+      getTektonPipelineRefOrSpec.returns('FooPipeline');
+      metadataName.returns('Foo');
+      loadTektonDocument.onFirstCall().resolves({
+        getText: () => 'Some: yaml'
+      } as VirtualDocument);
+
+      tknDocuments.returns([{ nodes: [{}] }]);
+      getPipelineTasks.returns([{id: 'foo-task', name: 'foo-task',taskRef: 'foo-ref', retry: 1,kind:'Task', final: false, position: 2}]as DeclaredTask[]);
+
+      const document = {
+        uri: vscode.Uri.parse('file://some/pipelinerun.yaml'),
+
+      } as vscode.TextDocument
+      const result = await graph.calculatePipelineRunGraph(document, {status: {taskRuns: {'foo': {pipelineTaskName: 'foo-task' ,status: {steps:[],conditions:[],'retriesStatus': [{}]}}}}} as PipelineRunData);
+
+      expect(result).eql([{
+        'data': {
+          'final': false,
+          'id': 'foo-task',
+          'label': 'foo-task\nRetries: 1/1',
+          'state': 'Unknown',
+          'steps': [],
+          'taskRef': 'foo-ref',
+          'type': 'Task',
+          'yamlPosition': undefined
+        }
+      }]);
     });
   });
 

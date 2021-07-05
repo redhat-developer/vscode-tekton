@@ -253,7 +253,7 @@ function getStyle(style: CyTheme): cytoscape.Stylesheet[] {
         'text-halign': 'center',
         'color': '#d4d4d4',
         'width': 150,
-        'height': 30
+        'height': 40
       }
     },
     {
@@ -337,7 +337,7 @@ function getStyle(style: CyTheme): cytoscape.Stylesheet[] {
     {
       selector: 'node[editing = "true"]',
       style: {
-        'border-color': 'green',//style.arrowColor,
+        'border-color': 'green',
         'border-width': 2
       }
     },

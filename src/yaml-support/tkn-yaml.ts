@@ -40,6 +40,7 @@ export interface DeclaredTask {
   position?: number;
   final?: boolean;
   steps?: TaskStep[];
+  retry?: number;
 }
 
 export type RunState = 'Cancelled' | 'Finished' | 'Started' | 'Failed' | 'Unknown';
@@ -51,6 +52,7 @@ export interface PipelineRunTask extends DeclaredTask {
   stepsCount?: number;
   finishedSteps?: number;
   steps?: TaskRunSteps[] | TaskStep[];
+  retryNumber?: number;
 }
 
 
@@ -450,6 +452,12 @@ function toDeclaredTask(taskNode: YamlMap): DeclaredTask {
     decTask.name = name;
     decTask.id = name;
     decTask.position = nameValue.startPosition;
+  }
+
+  const retryValue = findNodeByKey<YamlNode>('retries', taskNode);
+  if (retryValue) {
+    const retry = retryValue.raw?.trim();
+    decTask.retry = Number.parseInt(retry);
   }
 
   const [, taskRef] = pipelineYaml.getTaskRef(taskNode) ?? [];
