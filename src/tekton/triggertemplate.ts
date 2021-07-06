@@ -32,7 +32,7 @@ export class TriggerTemplate extends TektonItem {
     for (const eventListener of listEventListener) {
       for (const triggers of eventListener.spec.triggers) {
         const message = 'Expose URL successfully copied';
-        if (triggers?.template?.name === trigger.getName()) {
+        if (triggers?.template?.name === trigger.getName() || triggers?.template?.ref === trigger.getName()) {
           const url = await getExposeURl(eventListener.status.configuration.generatedName);
           vscode.env.clipboard.writeText(url);
           telemetryLog(commandId, message);

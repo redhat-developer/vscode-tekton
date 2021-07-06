@@ -3,8 +3,6 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as tkn from '../src/tkn';
 import { CliImpl, createCliCommand } from '../src/cli';
 import * as sinon from 'sinon';
@@ -122,17 +120,10 @@ suite('tkn', () => {
 
   suite('item listings', () => {
     let execStub: sinon.SinonStub;
-    let getPipelines: sinon.SinonStub;
     const pipelineNodeItem = new TestItem(tkn.TknImpl.ROOT, 'pipelinenode', ContextType.PIPELINENODE);
     const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', ContextType.PIPELINE);
-    const pipelineItem2 = new TestItem(pipelineNodeItem, 'pipeline2', ContextType.PIPELINE);
-    const pipelineItem3 = new TestItem(pipelineNodeItem, 'pipeline3', ContextType.PIPELINE);
-    const pipelinerunItem = new TestItem(pipelineItem1, 'pipelinerun1', ContextType.PIPELINERUN, undefined, '2019-07-25T12:03:00Z', 'True');
-    const taskrunItem = new TestItem(pipelinerunItem, 'taskrun1', ContextType.TASKRUN, undefined, '2019-07-25T12:03:01Z', 'True');
-    const taskrunItem2 = new TestItem(pipelinerunItem, 'taskrun2', ContextType.TASKRUN, undefined, '2019-07-25T12:03:02Z', 'True');
     const taskNodeItem = new TestItem(tkn.TknImpl.ROOT, 'tasknode', ContextType.TASKNODE);
     const taskItem = new TestItem(taskNodeItem, 'task1', ContextType.TASK);
-    const taskItem2 = new TestItem(taskNodeItem, 'task2', ContextType.TASK);
     const clustertaskNodeItem = new TestItem(tkn.TknImpl.ROOT, 'clustertasknode', ContextType.CLUSTERTASKNODE);
     const clustertaskItem = new TestItem(clustertaskNodeItem, 'clustertask1', ContextType.CLUSTERTASK);
     const triggerTemplatesItem = new TestItem(tkn.TknImpl.ROOT, 'triggertemplates', ContextType.TRIGGERTEMPLATES);
@@ -184,8 +175,6 @@ suite('tkn', () => {
       sandbox.stub(tkn.TknImpl.prototype, 'getPipelines').resolves([]);
       execStub.resolves({ stdout: '', error: null });
       const result = await tknCli.getPipelines(pipelineNodeItem);
-
-      // tslint:disable-next-line: no-unused-expression
       expect(result).empty;
     });
 
@@ -610,6 +599,7 @@ suite('tkn', () => {
 
     test('getPipelineRuns returns "more" item', async () => {
       const tknPipelinesRuns = ['pipelinerun2', 'more'];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sandbox.replace(tknCli as any, 'defaultPageSize', 1);
       const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', ContextType.PIPELINE);
 
@@ -676,7 +666,7 @@ suite('tkn', () => {
     });
 
     test('getPipelineRuns set visible item default', async () => {
-      const tknPipelinesRuns = ['pipelinerun2', 'more'];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sandbox.replace(tknCli as any, 'defaultPageSize', 42);
       const pipelineItem1 = new TestItem(pipelineNodeItem, 'pipeline1', ContextType.PIPELINE);
 
@@ -1138,15 +1128,25 @@ suite('tkn', () => {
     });
 
     test('show warning message if user doesn\'t have the privileges to interact with tekton resources', async () => {
-      execStub.onFirstCall().resolves({ error: undefined, stdout: 'no' });
+      execStub.onFirstCall().resolves({ error: undefined, stdout: JSON.stringify({
+        clientVersion: {
+          'major': '1'
+        }
+      })});
+      execStub.onSecondCall().resolves({ error: undefined, stdout: 'no' });
       const result = await tknCli.getPipelineNodes();
       assert.equal(result[0].getName(), 'The current user doesn\'t have the privileges to interact with tekton resources.');
     });
 
     test('show warning message if pipelines operator is not installed', async () => {
+      execStub.onFirstCall().resolves({ error: undefined, stdout: JSON.stringify({
+        clientVersion: {
+          'major': '1'
+        }
+      })});
       commandsStub.onFirstCall().resolves(false);
       commandsStub.onSecondCall().resolves(true);
-      execStub.onFirstCall().resolves({ error: 'error: the server doesn\'t have a resource type \'pipeline\'', stdout: '' });
+      execStub.onSecondCall().resolves({ error: 'error: the server doesn\'t have a resource type \'pipeline\'', stdout: '' });
       await tknCli.getPipelineNodes();
       expect(commandsStub).calledTwice;
     });
@@ -1195,7 +1195,6 @@ suite('tkn', () => {
     });
 
     test('TaskRun should contains condition run node', () => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const json = require(path.join('..', '..', 'test', 'pipelinerun.json')) as PipelineRunData;
       const pipelineRun = new PipelineRun(pipelineItem, json.metadata.name, undefined, json, TreeItemCollapsibleState.Expanded);
 

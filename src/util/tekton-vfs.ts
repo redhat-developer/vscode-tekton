@@ -11,8 +11,9 @@ import { VirtualDocument } from '../yaml-support/yaml-locator';
 import { TektonItem } from '../tekton/tektonitem';
 import { originalFileName, newFileName } from './filename';
 import { getStderrString } from './stderrstring';
-import { newK8sCommand } from '../cli-command';
+import { newK8sCommand, newOcCommand } from '../cli-command';
 import { ContextType } from '../context-type';
+import { ocFallBack } from './check-cluster-status';
 
 export const TKN_RESOURCE_SCHEME = 'tekton';
 export const TKN_RESOURCE_SCHEME_READONLY = 'tekton-ro';
@@ -104,11 +105,19 @@ export class TektonVFSProvider implements FileSystemProvider {
     if (taskRegex.test(newResourceName)) {
       newResourceName = newResourceName.replace(`${ContextType.TASK}/`, `${ContextType.TASK}.tekton/`);
     }
-    return cli.execute(newK8sCommand(`-o ${outputFormat} get ${newResourceName}`));
+    if (ocFallBack.get('ocFallBack')) {
+      return cli.execute(newOcCommand(`-o ${outputFormat} get ${newResourceName}`));
+    } else {
+      return cli.execute(newK8sCommand(`-o ${outputFormat} get ${newResourceName}`));
+    }
   }
 
   async updateK8sResource(fsPath: string): Promise<CliExitData> {
-    return await cli.execute(newK8sCommand(`apply -f ${fsPath}`));
+    if (ocFallBack.get('ocFallBack')) {
+      return await cli.execute(newOcCommand(`apply -f ${fsPath}`));
+    } else {
+      return await cli.execute(newK8sCommand(`apply -f ${fsPath}`));
+    }
   }
 
   readDirectory(): [string, FileType][] | Thenable<[string, FileType][]> {
