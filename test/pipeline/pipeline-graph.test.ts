@@ -11,7 +11,6 @@ import * as graph from '../../src/pipeline/pipeline-graph';
 import { VirtualDocument } from '../../src/yaml-support/yaml-locator';
 import { PipelineRunData } from '../../src/tekton';
 import { tektonFSUri, tektonVfsProvider } from '../../src/util/tekton-vfs';
-import { NodeData } from '../../src/webview/pipeline-preview/model';
 
 const expect = chai.expect;
 chai.use(sinonChai);
