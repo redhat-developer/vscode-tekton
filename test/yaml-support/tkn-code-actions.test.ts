@@ -73,11 +73,13 @@ suite('Tekton CodeActions', () => {
     let saveTektonDocumentStub: sinon.SinonStub;
     let showInputBoxStub: sinon.SinonStub;
     let showQuickPickStub: sinon.SinonStub;
+    let executeCommandStub: sinon.SinonStub; 
 
     setup(() => {
       saveTektonDocumentStub = sandbox.stub(tektonVfsProvider, 'saveTektonDocument');
       showInputBoxStub = sandbox.stub(vscode.window, 'showInputBox');
       showQuickPickStub = sandbox.stub(vscode.window, 'showQuickPick');
+      executeCommandStub = sandbox.stub(vscode.commands, 'executeCommand');
     });
 
     test('Provider should provide Extract Task Action', async () => {
@@ -98,6 +100,7 @@ suite('Tekton CodeActions', () => {
       saveTektonDocumentStub.resolves();
       showInputBoxStub.resolves('foo-name');
       showQuickPickStub.resolves('Task');
+      executeCommandStub.resolves();
 
       const result = codeActionProvider.getProvider(TektonYamlType.Pipeline).provideCodeActions(doc, new vscode.Range(24, 17, 24, 17), undefined, undefined) as vscode.CodeAction[];
       const inlineAction = result.find(it => it.title.startsWith('Extract'));

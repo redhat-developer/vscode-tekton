@@ -150,6 +150,10 @@ function getLabel(task: PipelineRunTask): string {
     label += ' \n' + humanizer(Date.parse(task.completionTime) - Date.parse(task.startTime));
   }
 
+  if (task.retry && task.retry > 0 && task.retryNumber) {
+    label += '\nRetries: ' + task.retryNumber + '/' + task.retry;
+  }
+
   return label;
 }
 
@@ -181,6 +185,10 @@ function updatePipelineRunTasks(pipelineRun: PipelineRunData, tasks: DeclaredTas
         }
 
         runTask.finishedSteps = finishedSteps;
+      }
+      const retriesStatus = (taskRun as TaskRun).status.retriesStatus;
+      if (retriesStatus) {
+        runTask.retryNumber = retriesStatus.length;
       }
     } else {
       runTask.state = 'Unknown';

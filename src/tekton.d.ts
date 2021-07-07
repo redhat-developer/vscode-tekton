@@ -459,6 +459,7 @@ export interface TaskRunStatus {
   startTime?: string;
   completionTime?: string;
   steps: TaskRunSteps[];
+  retriesStatus?: unknown[];
 }
 
 export interface PipelineRunConditions {
