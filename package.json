@@ -539,7 +539,7 @@
       },
       {
         "view": "tektonPipelineExplorerView",
-        "contents": "Tekton Pipeline Operator is not installed. Click the below button to see the documentation for getting started.\n[Tekton pipeline](https://tekton.dev/docs/getting-started/)",
+        "contents": "Tekton Pipeline Operator is not installed. Click the below button to see the documentation for getting started.\n[Tekton pipeline](https://tekton.dev/docs/getting-started/)\n[Tekton Trigger](https://tekton.dev/docs/triggers/install/)",
         "when": "tekton.pipeline"
       }
     ],
