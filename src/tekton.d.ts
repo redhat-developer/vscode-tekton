@@ -7,13 +7,38 @@ import { V1ContainerState as ContainerState } from '@kubernetes/client-node';
 import { ObjectMetadata } from './tekton/triggertype';
 import { K8sResourceKind } from './tekton/triggertype';
 
-//Contains set JSON representation of tkn JSON objects
+interface K8sResources {
+  inputs?: TknResource[];
+  outputs?: TknResource[];
+}
+
+interface K8sWorkspaces {
+  name: string;
+}
+
+interface K8sTaskSpec {
+  params?: TknParams[];
+  resources?: K8sResources;
+  workspaces?: K8sWorkspaces[];
+  serviceAccountName?: string;
+}
+
+interface K8sTask {
+  apiVersion?: string;
+  kind?: string;
+  metadata: TknMetadata;
+  spec: K8sTaskSpec;
+}
 
 interface TknTaskRunSpec {
   params?: Param[];
   resources?: Resource;
-  workspaces?: PipelineRunWorkspace[];
+  workspaces?: Workspace[];
   serviceAccountName?: string;
+  taskRef?: {
+    name: string;
+    kind: string;
+  };
 }
 
 interface Resource {
@@ -28,8 +53,8 @@ interface InputAndOutput {
   };
 }
 
-
 export interface TknTaskRun {
+  apiVersion?: string;
   kind?: string;
   metadata: ObjectMetadata;
   spec: TknTaskRunSpec;
@@ -59,25 +84,27 @@ export interface TknMetadata {
 
 export interface TknParams {
   name: string;
-  value?: string;
+  value?: string | string[];
   default?: string;
   description?: string;
+  type?: string;
 }
 
 export interface TknResource {
   name: string;
   type: string;
+  resourceType?: string;
 }
 
 export interface TknSpec {
-  type: string;
+  type?: string;
   resources?: TknResource[];
   params?: TknParams[];
   serviceAccount?: string;
   workspaces?: TknWorkspaces[];
 }
 
-export interface TaskRunTemplate {
+export interface Template {
   apiVersion: string;
   kind: string;
   metadata: {
@@ -88,7 +115,89 @@ export interface TaskRunTemplate {
 
 export interface Params {
   name: string;
-  value: string;
+  value?: string | string[];
+  default?: string;
+  description?: string;
+  type?: string;
+}
+
+export interface Ref {
+  name: string;
+  type: string;
+}
+
+export interface NameType {
+  name: string;
+  type: string;
+}
+
+export interface ItemPath {
+  key?: string;
+  path?: string;
+}
+
+export interface Workspaces {
+  name: string;
+  item?: ItemPath[];
+  workspaceName?: string;
+  workspaceType?: string;
+  key?: string;
+  value?: string;
+  subPath?: string;
+  emptyDir?: string;
+}
+
+export interface Resources {
+  name: string;
+  resourceRef?: string;
+  resourceType?: string;
+}
+
+export interface VCT {
+  kind: string;
+  metadata: {
+    name: string;
+  };
+  spec: {
+    accessModes: string[];
+    resources: {
+      requests: {
+        storage: string;
+      };
+    };
+    volumeMode?: string;
+  };
+}
+
+export interface StartObject {
+  name: string;
+  resources?: Resources[];
+  newPvc?: NewPvc[];
+  newPipelineResource?: NewPipelineResources[];
+  params?: Params[] | undefined;
+  workspaces?: Workspaces[];
+  serviceAccount: string | null | undefined;
+  pipelineResource?: TknPipelineResource[];
+  Secret?: Secret[];
+  ConfigMap?: ConfigMap[];
+  PersistentVolumeClaim?: PVC[];
+  pipelineRun?: {
+    params: Params[] | undefined;
+    resources: Resources[];
+    workspaces: Workspaces[];
+  };
+  commandId?: string;
+  volumeClaimTemplate?: VCT[];
+  startTask?: boolean;
+  clusterTask?: boolean;
+}
+
+export interface Trigger {
+  name: string;
+  resources: NameType[];
+  params?: Params[];
+  workspaces?: Workspaces[];
+  serviceAcct: string | undefined;
 }
 
 export interface Task {
@@ -202,11 +311,9 @@ export interface TknPipeline {
   spec: KubectlPipelineSpec;
 }
 
-// JSON types
-
 export interface Param {
   name?: string;
-  value?: string;
+  value?: string | string[];
 }
 
 export type VolumeTypeSecret = {
@@ -253,7 +360,7 @@ export interface VolumeTypeClaim {
   };
 }
 
-export interface PipelineRunWorkspace extends Param {
+export interface Workspace extends Param {
   [volumeType: string]: VolumeTypeSecret | VolumeTypeConfigMaps | VolumeTypePVC | VolumeTypeClaim | {};
 }
 
@@ -280,7 +387,7 @@ export interface PipelineRunData extends K8sResourceKind {
       name: string;
     };
     params?: PipelineRunParam[];
-    workspaces?: PipelineRunWorkspace[];
+    workspaces?: Workspace[];
     resources?: PipelineRunResource[];
     serviceAccountName?: string;
   };

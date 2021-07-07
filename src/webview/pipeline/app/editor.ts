@@ -42,6 +42,8 @@ export class PipelineRunEditor implements Widget {
   createElement(title: string, resourceType?: Params[] | PipelineRunWorkspaces[] | Workspaces[], serviceAccount?: string): void {
     const resourceGroup = new GroupItem(title, `${title}-vscode-webview-pipeline`);
     this.initialValue.name = this.trigger.name;
+    if (this.trigger.startTask) this.initialValue.startTask = true;
+    if (this.trigger.startClusterTask) this.initialValue.startClusterTask = true;
     if (this.trigger.commandId) this.initialValue.commandId = this.trigger.commandId;
     let element: Widget;
     let elementId: string;
@@ -63,7 +65,7 @@ export class PipelineRunEditor implements Widget {
         } else if (title === TknResourceType.Workspaces) {
           element = new SelectWidget('Workspaces-volume', this.trigger, null, this.initialValue).workspaces(VolumeTypes, resource);
         } else if (title === TknResourceType.GitResource || title === TknResourceType.ImageResource) {
-          element = new SelectWidget('Resources', null, null, this.initialValue).pipelineResource(this.trigger.pipelineResource, resource);
+          element = new SelectWidget('Resources', null, null, this.initialValue).pipelineResource(this.trigger.pipelineResource, resource, this.trigger.startTask || this.trigger.startClusterTask);
         }
         resourceGroup.addEditItem(new EditItem(resource.name, element, resource.name, null, elementId));
         //TODO: complete this
@@ -122,7 +124,7 @@ export class PipelineRunEditor implements Widget {
   }
 
   paramPipelineRun(): void {
-    if (this.trigger.pipelineRun.params.length !== 0) {
+    if (this.trigger.pipelineRun.params && this.trigger.pipelineRun.params.length !== 0) {
       this.trigger.pipelineRun.params.forEach(val => {
         if (val.value) {
           val.default = val.value;
@@ -159,18 +161,18 @@ export class PipelineRunEditor implements Widget {
           }
         }
       });
-      if (gitResource.length !== 0) {
+      if (gitResource && gitResource.length !== 0) {
         this.createElement(TknResourceType.GitResource, gitResource);
       }
 
-      if (imageResource.length !== 0) {
+      if (imageResource && imageResource.length !== 0) {
         this.createElement(TknResourceType.ImageResource, imageResource);
       }
     }
   }
 
   workspacePipelineRun(): void {
-    if (this.trigger.pipelineRun.workspaces.length !== 0) {
+    if (this.trigger.pipelineRun.workspaces && this.trigger.pipelineRun.workspaces.length !== 0) {
       this.createElement(TknResourceType.Workspaces, this.trigger.pipelineRun.workspaces);
     }
   }
@@ -184,10 +186,10 @@ export class PipelineRunEditor implements Widget {
           imageResource.push(val)
         }
       });
-      if (gitResource.length !== 0) {
+      if (gitResource && gitResource.length !== 0) {
         this.createElement(TknResourceType.GitResource, gitResource);
       }
-      if (imageResource.length !== 0) {
+      if (imageResource && imageResource.length !== 0) {
         this.createElement(TknResourceType.ImageResource, imageResource);
       }
     }

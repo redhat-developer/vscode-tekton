@@ -9,7 +9,7 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { cli } from '../../src/cli';
-import * as taskRunTemplate from '../../src/tekton/taskruntemplate'
+import * as taskRunTemplate from '../../src/tekton/generate-template'
 import { TestItem } from './testTektonitem';
 import { TknImpl } from '../../src/tkn';
 import { EndOfLine, TextDocument, window, workspace } from 'vscode';
@@ -93,6 +93,35 @@ suite('Tekton/TaskRunTemplate', () => {
     await taskRunTemplate.openTaskRunTemplate(taskItem);
     expect(openTextStub).calledOnce;
     expect(cliExecuteStub).calledOnceWith(newK8sCommand(`get task ${taskItem.getName()} -o json`));
+  });
+
+  test('should return template file for PipelineRun', async () => {
+    cliExecuteStub.resolves({ stdout: JSON.stringify({
+      apiVersion:'tekton.dev/v1beta1',
+      kind:'Pipeline',
+      spec: {
+        params: [
+          {
+            name:'filename',
+            type:'string'
+          }
+        ],
+        workspaces: [
+          {
+            name:'storage'
+          }
+        ],
+        resources: [
+          {
+            name: 'optional-workspace',
+            type: 'git'
+          }
+        ]
+      }
+    })});
+    await taskRunTemplate.openPipelineRunTemplate(taskItem);
+    expect(openTextStub).calledOnce;
+    expect(cliExecuteStub).calledOnceWith(newK8sCommand(`get pipeline ${taskItem.getName()} -o json`));
   });
 
 })

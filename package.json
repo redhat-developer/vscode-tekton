@@ -2,7 +2,7 @@
   "name": "vscode-tekton-pipelines",
   "displayName": "Tekton Pipelines",
   "description": "Tekton Pipelines extension by Red Hat",
-  "version": "0.16.1",
+  "version": "0.17.0",
   "license": "MIT",
   "publisher": "redhat",
   "author": "Red Hat",
@@ -35,22 +35,18 @@
     "onCommand:tekton.pipeline.start",
     "onCommand:tekton.addTrigger",
     "onCommand:tekton.openInEditor",
-    "onCommand:tekton.pipeline.list",
     "onCommand:tekton.pipeline.describe",
     "onCommand:tekton.explorerView.delete",
     "onCommand:tekton.customView.delete",
-    "onCommand:tekton.pipelinerun.list",
+    "onCommand:tekton.pipelineRun.template",
     "onCommand:tekton.pipelinerun.describe",
     "onCommand:tekton.pipelinerun.logs",
     "onCommand:tekton.pipelinerun.followLogs",
     "onCommand:tekton.pipelinerun.cancel",
-    "onCommand:tekton.pipelineresource.list",
     "onCommand:tekton.pipelineresource.describe",
     "onCommand:tekton.task.start",
-    "onCommand:tekton.task.list",
-    "onCommand:tekton.clustertask.list",
+    "onCommand:tekton.clusterTask.start",
     "onCommand:tekton.taskrun.list",
-    "onCommand:tekton.taskrun.listFromTask",
     "onCommand:tekton.taskrun.logs",
     "onCommand:tekton.showDiagnosticDataAction",
     "onCommand:tekton.taskrun.followLogs",
@@ -76,6 +72,12 @@
           "type": "string",
           "default": "yaml",
           "description": "Output format for Tekton specs. One of 'json' or 'yaml' (default)."
+        },
+        "redhat.telemetry.enabled": {
+          "type": "boolean",
+          "default": null,
+          "markdownDescription": "Enable usage data and errors to be sent to Red Hat servers. Read our [privacy statement](https://developers.redhat.com/article/tool-data-collection).",
+          "scope": "window"
         },
         "vs-tekton.pipelineRunNotifications": {
           "Title": "Show pipelineRun notification",
@@ -258,12 +260,6 @@
         "enablement": "tekton:tkn"
       },
       {
-        "command": "tekton.pipeline.list",
-        "title": "List Pipelines",
-        "category": "Tekton",
-        "enablement": "tekton:tkn"
-      },
-      {
         "command": "tekton.pipeline.describe",
         "title": "Describe",
         "category": "Tekton",
@@ -272,12 +268,6 @@
       {
         "command": "tekton.pipeline.describe.palette",
         "title": "Describe Pipeline",
-        "category": "Tekton",
-        "enablement": "tekton:tkn"
-      },
-      {
-        "command": "tekton.pipelineresource.list",
-        "title": "List PipelineResources",
         "category": "Tekton",
         "enablement": "tekton:tkn"
       },
@@ -294,8 +284,8 @@
         "enablement": "tekton:tkn"
       },
       {
-        "command": "tekton.pipelinerun.list",
-        "title": "List PipelineRuns",
+        "command": "tekton.pipelineRun.template",
+        "title": "Generate PipelineRun template",
         "category": "Tekton",
         "enablement": "tekton:tkn"
       },
@@ -366,20 +356,14 @@
         "enablement": "tekton:tkn"
       },
       {
+        "command": "tekton.clusterTask.start",
+        "title": "Start",
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
+      },
+      {
         "command": "tekton.task.start.palette",
         "title": "Start Task",
-        "category": "Tekton",
-        "enablement": "tekton:tkn"
-      },
-      {
-        "command": "tekton.task.list",
-        "title": "List Tasks",
-        "category": "Tekton",
-        "enablement": "tekton:tkn"
-      },
-      {
-        "command": "tekton.clustertask.list",
-        "title": "List ClusterTasks",
         "category": "Tekton",
         "enablement": "tekton:tkn"
       },
@@ -397,13 +381,7 @@
       },
       {
         "command": "tekton.taskrun.list.palette",
-        "title": "List TaskRuns from Pipeline Run",
-        "category": "Tekton",
-        "enablement": "tekton:tkn"
-      },
-      {
-        "command": "tekton.taskrun.listFromTask",
-        "title": "List TaskRuns",
+        "title": "List TaskRuns from PipelineRun",
         "category": "Tekton",
         "enablement": "tekton:tkn"
       },
@@ -608,10 +586,6 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
-          "command": "tekton.pipelineresource.list",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
-        },
-        {
           "command": "tekton.pipelinerun.describe",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -632,6 +606,10 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
+          "command": "tekton.clusterTask.start",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
+        },
+        {
           "command": "tekton.task.start",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -648,7 +626,7 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
-          "command": "tekton.taskrun.listFromTask",
+          "command": "tekton.pipelineRun.template",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
@@ -742,11 +720,6 @@
           "group": "c1@1"
         },
         {
-          "command": "tekton.pipeline.list",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelinenode",
-          "group": "c1"
-        },
-        {
           "command": "tekton.pipeline.describe",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/  && viewItem == pipeline",
           "group": "c1@4"
@@ -762,11 +735,6 @@
           "group": "c2"
         },
         {
-          "command": "tekton.pipelineresource.list",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipelineresourcenode",
-          "group": "c2"
-        },
-        {
           "command": "tekton.pipelineresource.describe",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/  && viewItem == pipelineresource",
           "group": "c1@3"
@@ -777,9 +745,9 @@
           "group": "c2"
         },
         {
-          "command": "tekton.pipelinerun.list",
+          "command": "tekton.pipelineRun.template",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == pipeline",
-          "group": "c1@4"
+          "group": "c1@5"
         },
         {
           "command": "tekton.pipelinerun.restart",
@@ -817,29 +785,14 @@
           "group": "c1@1"
         },
         {
-          "command": "tekton.task.list",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == tasknode",
-          "group": "c1"
-        },
-        {
-          "command": "tekton.taskrun.listFromTask",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == task",
-          "group": "c1@2"
-        },
-        {
           "command": "tekton.taskrun.template",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == task",
           "group": "c1@3"
         },
         {
-          "command": "tekton.clustertask.list",
-          "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == clustertasknode",
-          "group": "c1"
-        },
-        {
-          "command": "tekton.taskrun.listFromTask",
+          "command": "tekton.clusterTask.start",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == clustertask",
-          "group": "c1@2"
+          "group": "c1"
         },
         {
           "command": "tekton.taskrun.list",
@@ -912,8 +865,7 @@
     }
   },
   "extensionDependencies": [
-    "redhat.vscode-yaml",
-    "redhat.vscode-commons"
+    "redhat.vscode-yaml"
   ],
   "scripts": {
     "verify": "node ./out/build/verify-tools.js",
@@ -996,7 +948,7 @@
   },
   "dependencies": {
     "@kubernetes/client-node": "^0.12.2",
-    "@redhat-developer/vscode-redhat-telemetry": "0.0.12",
+    "@redhat-developer/vscode-redhat-telemetry": "^0.2.0",
     "axios": "^0.21.1",
     "binary-search": "^1.3.5",
     "byline": "^5.0.0",

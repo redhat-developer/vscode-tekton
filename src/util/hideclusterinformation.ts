@@ -24,7 +24,7 @@ const pathMatch = /(?:"([a-zA-Z]\:(\\|\/|\\\\)|\/([^\/]+\/)|.\/|([^\/"]+\/)))([^
 export function hidePath(message: string): string {
   if (pathMatch.test(message)) {
     const paths = message.match(pathMatch);
-    if (paths.length !== 0) {
+    if (paths && paths.length !== 0) {
       paths.forEach((path) => {
         message = message.replace(path, '"local path');
       });
@@ -37,7 +37,7 @@ const IpAddress = /(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|
 export function hideIPAddress(message: string): string {
   if (IpAddress.test(message)) {
     const ipAddress = message.match(IpAddress);
-    if (ipAddress.length !== 0) {
+    if (ipAddress && ipAddress.length !== 0) {
       ipAddress.forEach((data) => {
         message = message.replace(data, 'IP Address ');
       });
@@ -50,7 +50,7 @@ const IPV6Address = /((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-F
 export function hideIPV6Address(message: string): string {
   if (IPV6Address.test(message)) {
     const ipv6Address = message.match(IPV6Address);
-    if (ipv6Address.length !== 0) {
+    if (ipv6Address && ipv6Address.length !== 0) {
       ipv6Address.forEach((data) => {
         message = message.replace(data, 'IPV6 Address ');
       });

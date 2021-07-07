@@ -32,12 +32,13 @@ import { showDiagnosticData } from './tekton/diagnostic';
 import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
 import { registerLogDocumentProvider } from './util/log-in-editor';
-import { openTaskRunTemplate } from './tekton/taskruntemplate';
-import sendTelemetry, { telemetryLogError, TelemetryProperties } from './telemetry';
+import { openPipelineRunTemplate, openTaskRunTemplate } from './tekton/generate-template';
+import sendTelemetry, { startTelemetry, telemetryLogError, TelemetryProperties } from './telemetry';
 import { cli, createCliCommand } from './cli';
 import { getVersion, tektonVersionType } from './util/tknversion';
 import { TektonNode } from './tree-view/tekton-node';
 import { checkClusterStatus } from './util/check-cluster-status';
+import { getClusterVersions } from './cluster-version';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -46,7 +47,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   contextGlobalState = context;
   migrateFromTkn018();
-  sendTelemetry('activation');
+  startTelemetry(context);
 
   const hubViewProvider = new TektonHubTasksViewProvider(context.extensionUri);
 
@@ -63,15 +64,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.openInEditor', (context) => execute(TektonItem.openInEditor, context, 'tekton.openInEditor')),
     vscode.commands.registerCommand('tekton.edit', (context) => execute(TektonItem.openInEditor, context, 'tekton.edit')),
     vscode.commands.registerCommand('tekton.pipeline.restart', (context) => execute(Pipeline.restart, context, 'tekton.pipeline.restart')),
-    vscode.commands.registerCommand('tekton.pipeline.list', (context) => execute(Pipeline.list, context)),
     vscode.commands.registerCommand('tekton.pipeline.describe', (context) => execute(Pipeline.describe, context)),
     vscode.commands.registerCommand('tekton.pipeline.describe.palette', (context) => execute(Pipeline.describe, context)),
     vscode.commands.registerCommand('tekton.explorerView.delete', (context) => deleteFromExplorer(context, 'tekton.explorerView.delete')),
     vscode.commands.registerCommand('tekton.customView.delete', (context) => deleteFromCustom(context), 'tekton.customView.delete'),
-    vscode.commands.registerCommand('tekton.pipelineresource.list', (context) => execute(PipelineResource.list, context)),
     vscode.commands.registerCommand('tekton.pipelineresource.describe', (context) => execute(PipelineResource.describe, context)),
     vscode.commands.registerCommand('tekton.pipelineresource.describe.palette', (context) => execute(PipelineResource.describe, context)),
-    vscode.commands.registerCommand('tekton.pipelinerun.list', (context) => execute(PipelineRun.list, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.describe', (context) => execute(PipelineRun.describe, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.describe.palette', (context) => execute(PipelineRun.describe, context)),
     vscode.commands.registerCommand('tekton.pipelinerun.restart', (context) => execute(PipelineRun.restart, context, 'tekton.pipelinerun.restart')),
@@ -86,11 +84,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.triggerTemplate.url', (context) => execute(TriggerTemplate.copyExposeUrl, context, 'tekton.triggerTemplate.url')),
     vscode.commands.registerCommand('tekton.task.start', (context) => execute(Task.start, context, 'tekton.task.start')),
     vscode.commands.registerCommand('tekton.task.start.palette', (context) => execute(Task.start, context, 'tekton.task.start.palette')),
-    vscode.commands.registerCommand('tekton.task.list', (context) => execute(Task.list, context)),
-    vscode.commands.registerCommand('tekton.clustertask.list', (context) => execute(ClusterTask.list, context)),
+    vscode.commands.registerCommand('tekton.clusterTask.start', (context) => execute(ClusterTask.start, context, 'tekton.clusterTask.start')),
     vscode.commands.registerCommand('tekton.taskrun.list', (context) => execute(TaskRun.listFromPipelineRun, context)),
     vscode.commands.registerCommand('tekton.taskrun.list.palette', (context) => execute(TaskRun.listFromPipelineRun, context)),
-    vscode.commands.registerCommand('tekton.taskrun.listFromTask', (context) => execute(TaskRun.listFromTask, context)),
     vscode.commands.registerCommand('tekton.taskrun.listFromTask.palette', (context) => execute(TaskRun.listFromTask, context)),
     vscode.commands.registerCommand('tekton.taskrun.logs', (context) => execute(TaskRun.logs, context)),
     vscode.commands.registerCommand('tekton.taskrun.logs.palette', (context) => execute(TaskRun.logs, context)),
@@ -100,6 +96,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('_tekton.explorer.more', expandMoreItem),
     vscode.commands.registerCommand('tekton.explorer.enterZenMode', enterZenMode),
     vscode.commands.registerCommand('tekton.custom.explorer.exitZenMode', exitZenMode),
+    vscode.commands.registerCommand('tekton.pipelineRun.template', (context) => execute(openPipelineRunTemplate, context)),
     vscode.commands.registerCommand('tekton.custom.explorer.refresh', () => refreshCustomTree('tekton.custom.explorer.refresh')),
     vscode.commands.registerCommand('tekton.custom.explorer.removeItem', () => removeItemFromCustomTree('tekton.custom.explorer.removeItem')),
     vscode.commands.registerCommand('k8s.tekton.run.logs', k8sCommands.showLogs),
@@ -124,6 +121,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     triggerDetection();
   });
   checkClusterStatus(true); // watch Tekton resources when all required dependency are installed
+  getClusterVersions().then((version) => {
+    const telemetryProps: TelemetryProperties = {
+      identifier: 'cluster.version',
+    };
+    for (const [key, value] of Object.entries(version)) {
+      telemetryProps[key] = value;
+    }
+    sendTelemetry('tekton.cluster.version', telemetryProps)
+  })
   setCommandContext(CommandContext.TreeZenMode, false);
   setCommandContext(CommandContext.PipelinePreview, false);
 

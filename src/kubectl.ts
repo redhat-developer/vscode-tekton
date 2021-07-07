@@ -4,15 +4,24 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { CliCommand, cli} from './cli';
-import { newK8sCommand } from './cli-command';
+import { newK8sCommand, newOcCommand } from './cli-command';
 import { PipelineRunData, TknTaskRun } from './tekton';
+import { ocFallBack } from './util/check-cluster-status';
 
 export const KubectlCommands = {
   watchPipelineRuns(name: string): CliCommand {
-    return newK8sCommand('get', 'pipelinerun', name, '-w', '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', 'pipelinerun', name, '-w', '-o', 'json');
+    } else {
+      return newK8sCommand('get', 'pipelinerun', name, '-w', '-o', 'json');
+    }
   },
   watchResources(resource: string): CliCommand {
-    return newK8sCommand('get', resource, '-w', '-o', 'json');
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', resource, '-w', '-o', 'json');
+    } else {
+      return newK8sCommand('get', resource, '-w', '-o', 'json');
+    }
   }
 }
 

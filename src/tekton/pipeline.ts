@@ -10,7 +10,7 @@ import * as cliInstance from '../cli';
 import { cli } from '../cli';
 import { TknPipelineTrigger } from '../tekton';
 import { PipelineWizard } from '../pipeline/wizard';
-import { pipelineData } from './webviewstartpipeline';
+import { collectWizardContent } from './collect-data-for-wizard';
 import { triggerDetection } from '../util/detection';
 import { telemetryLog, telemetryLogError } from '../telemetry';
 import { TektonNode } from '../tree-view/tekton-node';
@@ -71,14 +71,6 @@ export class Pipeline extends TektonItem {
     Pipeline.tkn.executeInTerminal(Command.describePipelines(pipeline.getName()));
   }
 
-  static async list(pipeline: TektonNode): Promise<void> {
-    if (!pipeline) {
-      pipeline = await Pipeline.getPipelineNode();
-    }
-    if (!pipeline) return null;
-    Pipeline.tkn.executeInTerminal(Command.listPipelinesInTerminal(pipeline.getName()));
-  }
-
   static getDeleteCommand(pipeline: TektonNode): cliInstance.CliCommand {
     return Command.deletePipeline(pipeline.getName());
   }
@@ -86,17 +78,17 @@ export class Pipeline extends TektonItem {
   static async startWizard(pipeline: TektonNode, commandId?: string): Promise<void | string> {
     if (!pipeline) return null;
     const result: cliInstance.CliExitData = await Pipeline.tkn.execute(Command.getPipeline(pipeline.getName()), process.cwd(), false);
-    let data: TknPipelineTrigger;
+    let pipelineResource: TknPipelineTrigger;
     if (result.error) {
       telemetryLogError(commandId, result.error);
       return window.showErrorMessage(`${result.error} Std.err when processing pipelines`)
     }
     try {
-      data = JSON.parse(result.stdout);
-    } catch (ignore) {
-      //show no pipelines if output is not correct json
+      pipelineResource = JSON.parse(result.stdout);
+    } catch (err) {
+      return window.showErrorMessage(`fail to fetch pipeline resource data for ${pipeline.getName()}, reason: ${err}`);
     }
-    const trigger = await pipelineData(data);
+    const trigger = await collectWizardContent(pipelineResource.metadata.name, pipelineResource.spec.params, pipelineResource.spec.resources, pipelineResource.spec.workspaces, false);
     if (commandId) trigger.commandId = commandId;
     if (!trigger.workspaces && !trigger.resources && !trigger.params) {
       delete trigger.serviceAccount;

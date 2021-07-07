@@ -7,13 +7,14 @@ import { tkn as tkn } from './tkn';
 import * as cliInstance from './cli';
 import { TektonItem } from './tekton/tektonitem';
 import { TknPipelineTrigger } from './tekton';
-import { pipelineData } from './tekton/webviewstartpipeline';
+import { collectWizardContent } from './tekton/collect-data-for-wizard';
 import { PipelineWizard } from './pipeline/wizard';
 import { ViewColumn, window } from 'vscode';
-import { startTask } from './tekton/starttask';
+import { createWizardForTaskOrClusterTask } from './tekton/create-wizard-for-task-or-clustertask';
 import { telemetryLogError } from './telemetry';
 import { Command } from './cli-command';
 import { startPipelineFromJson } from './tekton/start-pipeline-from-json';
+import { TaskModel } from './util/resource-kind';
 
 interface K8sClusterExplorerItem {
   nodeType: 'resource';
@@ -54,18 +55,18 @@ class K8sCommands extends TektonItem {
   async startPipeline(context: K8sClusterExplorerItem, commandId?: string): Promise<void | string> {
     if (!context) return null;
     const result: cliInstance.CliExitData = await K8sCommands.tkn.execute(Command.getPipeline(context.name), process.cwd(), false);
-    let data: TknPipelineTrigger;
+    let pipeline: TknPipelineTrigger;
     if (result.error) {
       telemetryLogError(commandId, result.error);
       window.showErrorMessage(`${result.error}  Std.err when processing pipelines`);
       return;
     }
     try {
-      data = JSON.parse(result.stdout);
+      pipeline = JSON.parse(result.stdout);
     } catch (ignore) {
       //show no pipelines if output is not correct json
     }
-    const trigger = await pipelineData(data);
+    const trigger = await collectWizardContent(pipeline.metadata.name, pipeline.spec.params, pipeline.spec.resources, pipeline.spec.workspaces, false);
     if (commandId) trigger.commandId = commandId;
     if (!trigger.workspaces && !trigger.resources && !trigger.params) {
       delete trigger.serviceAccount;
@@ -76,7 +77,7 @@ class K8sCommands extends TektonItem {
   }
 
   async startTask(context: K8sClusterExplorerItem, commandId?: string): Promise<string> {
-    return await startTask(context.name, commandId);
+    return await createWizardForTaskOrClusterTask(context.name, TaskModel.kind, commandId);
   }
 }
 

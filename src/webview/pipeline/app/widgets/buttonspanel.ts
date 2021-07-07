@@ -7,7 +7,7 @@ import { BaseWidget } from '../../../common/widget';
 import { Trigger, PipelineStart } from '../utils/types';
 import { createItem } from '../utils/item';
 import { vscode } from '../index';
-import { addItemInWorkspace, collectParameterData, collectResourceData, collectServiceAccountData, collectTriggerData, collectWorkspaceData, createNewPipelineResource, createPVC, createVCT, getRandomChars, removePvcName, storePvcName } from '../utils/resource';
+import { addItemInWorkspace, collectParameterData, collectResourceData, collectServiceAccountData, collectTriggerData, collectWorkspaceData, createNewPipelineResource, createPVC, createVolumeClaimTemplate, getRandomChars, removePvcName, storePvcName } from '../utils/resource';
 import { disableRemoveButton, blockStartButton } from '../utils/disablebutton';
 import { TknResourceType } from '../utils/const';
 
@@ -49,9 +49,19 @@ export class ButtonsPanel extends BaseWidget {
         this.storeItemData(event.querySelectorAll('[id^=items-section-workspace-new-item]'));
         this.storeServiceAccountData(event.querySelectorAll('[id^=Service-account-name-input-field-content-data]'));
         this.storeNewResourceData(event.querySelectorAll('[id^=Create-Pipeline-Resource-new-url]'));
-        if (!this.trigger.trigger) {
+        if (!this.trigger.trigger && !this.initialValue.startTask && !this.initialValue.startClusterTask) {
           vscode.postMessage({
             type: 'startPipeline',
+            body: this.initialValue
+          });
+        } else if (this.initialValue.startClusterTask) {
+          vscode.postMessage({
+            type: 'clusterTask',
+            body: this.initialValue
+          });
+        } else if (this.initialValue.startTask) {
+          vscode.postMessage({
+            type: 'startTask',
             body: this.initialValue
           });
         } else {
@@ -67,7 +77,7 @@ export class ButtonsPanel extends BaseWidget {
     const itemData = event.parentNode;
     if (event.lastChild.parentElement.id === 'items-section-workspace-new-item') {
       const selectedItem = itemData.querySelectorAll('[id^=items-section-workspace-new-item]');
-      if (selectedItem.length !== 1) {
+      if (selectedItem && selectedItem.length !== 1) {
         event.lastChild.parentElement.remove();
         disableRemoveButton(itemData);
       }
@@ -79,7 +89,7 @@ export class ButtonsPanel extends BaseWidget {
   }
 
   storeWorkspaceResourceName(data: unknown[] | NodeListOf<Element>): void {
-    if (data.length !== 0) {
+    if (data && data.length !== 0) {
       data.forEach(val => {
         const workspaceResourceName = val.parentElement.children[1].children[0].value;
         const name = val.parentElement.parentElement.firstElementChild.id;
@@ -89,7 +99,7 @@ export class ButtonsPanel extends BaseWidget {
   }
 
   storePvcContent(data: unknown[] | NodeListOf<Element>): void {
-    if (data.length !== 0) {
+    if (data && data.length !== 0) {
       data.forEach(val => {
         const pvcName = val.parentNode.parentElement.firstChild.textContent;
         if (val.firstChild.value.trim() === 'Create a new PVC') {
@@ -106,7 +116,7 @@ export class ButtonsPanel extends BaseWidget {
   }
 
   storeNewPvcData(data: unknown[] | NodeListOf<Element>): void {
-    if (data.length !== 0) {
+    if (data && data.length !== 0) {
       data.forEach(val => {
         const pvcName = val.querySelectorAll('[id^=Webview-PVC-Name]')[0].value;
         const accessMode = val.querySelectorAll('[id^=Access-Mode-for-Pvc]')[0].value;
@@ -118,19 +128,19 @@ export class ButtonsPanel extends BaseWidget {
   }
 
   storeVolumeClaimTemplate(data: unknown[] | NodeListOf<Element>): void {
-    if (data.length !== 0) {
+    if (data && data.length !== 0) {
       data.forEach(val => {
         const resourceName = val.parentNode.parentElement.firstElementChild.id;
         const accessMode = val.querySelectorAll('[id^=Access-Mode-for-Pvc]')[0].value;
         const size = val.querySelectorAll('[id^=Size-for-PVC-Storage]')[0].value;
         const inputSize = val.querySelectorAll('[id^=size-for-pvc-create-webview]')[0].value;
-        createVCT(resourceName, accessMode, size, inputSize, this.initialValue);
+        createVolumeClaimTemplate(resourceName, accessMode, size, inputSize, this.initialValue);
       })
     }
   }
 
   storeTriggerData(data: unknown[] | NodeListOf<Element>): void {
-    if (data.length !== 0) {
+    if (data && data.length !== 0) {
       data.forEach(val => {
         const selectValue = val.getElementsByTagName('select')[0].value;        
         collectTriggerData(selectValue, this.initialValue, this.trigger);
@@ -139,17 +149,26 @@ export class ButtonsPanel extends BaseWidget {
   }
 
   storeParamData(data: unknown[] | NodeListOf<Element>): void {
-    if (data.length !== 0) {
+    const paramType = {};
+    const params = this.trigger.params;
+    if (params && params.length !== 0) {
+      params.map(val => {
+        if (val.type) {
+          paramType[val.name] = val.type;
+        }
+      })
+    }
+    if (data && data.length !== 0) {
       data.forEach(val => {
         const name = val.firstElementChild.innerText;
         const defaultValue = val.getElementsByTagName('input')[0].value;
-        collectParameterData(name, defaultValue, this.initialValue);
+        collectParameterData(name, defaultValue, this.initialValue, paramType);
       });
     }
   }
 
   storeServiceAccountData(data: unknown[] | NodeListOf<Element>): void {
-    if (data.length !== 0) {
+    if (data && data.length !== 0) {
       data.forEach(val => {
         const name = val.getElementsByTagName('input')[0].value;
         collectServiceAccountData(name, this.initialValue);
@@ -158,7 +177,7 @@ export class ButtonsPanel extends BaseWidget {
   }
 
   storeNewResourceData(data: unknown[] | NodeListOf<Element>): void {
-    if (data.length !== 0) {
+    if (data && data.length !== 0) {
       data.forEach(val => {
         if (val.parentElement?.['value'] === 'Create Pipeline Resource') {
           const value = val.parentElement.parentElement.parentElement.querySelector('[id^=create-new-pipeline-resource-name]').value;
@@ -180,7 +199,7 @@ export class ButtonsPanel extends BaseWidget {
   }
 
   storeItemData(data: NodeListOf<Element>): void {
-    if (data.length !== 0) {
+    if (data && data.length !== 0) {
       data.forEach(val => {
         const resourceName = val.parentNode.parentElement.firstElementChild.id;
         const key = val.getElementsByTagName('select')[0].value;

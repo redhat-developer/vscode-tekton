@@ -3,9 +3,12 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { getTelemetryService, TelemetryEvent, TelemetryService } from '@redhat-developer/vscode-redhat-telemetry';
+import { getRedHatService, TelemetryEvent, TelemetryService } from '@redhat-developer/vscode-redhat-telemetry';
+import { ExtensionContext } from 'vscode';
 import { hideClusterInfo } from './util/hideclusterinformation';
 import { getStderrString } from './util/stderrstring';
+
+let telemetryService: TelemetryService;
 
 export interface TelemetryProperties {
   identifier?: string;
@@ -17,7 +20,15 @@ export interface TelemetryProperties {
   mission?: string;
 }
 
-const telemetryService: Promise<TelemetryService> = getTelemetryService('redhat.vscode-tekton-pipelines');
+export async function startTelemetry(context: ExtensionContext): Promise<void> {
+  try {
+    const redHatService = await getRedHatService(context);
+    telemetryService = await redHatService.getTelemetryService();
+  } catch (error) {
+    console.log(`${error}`);
+  }
+  return telemetryService?.sendStartupEvent();
+}
 
 export function telemetryProperties(commandId: string): TelemetryProperties {
   return {
@@ -32,10 +43,6 @@ export async function telemetryLogError(identifier: string, result: string | Err
     telemetryProps.error = hideClusterInfo(message);
     sendTelemetry(`${identifier}_error`, telemetryProps);
   }
-}
-
-export async function getTelemetryServiceInstance(): Promise<TelemetryService> {
-  return telemetryService;
 }
 
 export function createTrackingEvent(name: string, properties = {}): TelemetryEvent {
@@ -55,9 +62,5 @@ export function telemetryLog(identifier: string, message?: string): void {
 } 
 
 export default async function sendTelemetry(actionName: string, properties?: TelemetryProperties): Promise<void> {
-  const service = await getTelemetryServiceInstance();
-  if (actionName === 'activation') {
-    return service?.sendStartupEvent();
-  }
-  return service?.send(createTrackingEvent(actionName, properties));
+  return telemetryService?.send(createTrackingEvent(actionName, properties));
 }

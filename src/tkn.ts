@@ -11,7 +11,6 @@ import { ToolsConfig } from './tools';
 import { TknPipelineResource, TknTask, PipelineRunData, TaskRunStatus, ConditionCheckStatus, PipelineTaskRunData } from './tekton';
 import { kubectl } from './kubectl';
 import { pipelineExplorer } from './pipeline/pipelineExplorer';
-import { StartObject } from './tekton/pipelinecontent';
 import { RunState } from './yaml-support/tkn-yaml';
 import { getStderrString } from './util/stderrstring';
 import { ContextType } from './context-type';
@@ -65,7 +64,6 @@ export function getPipelineRunTaskState(status: TaskRunStatus | ConditionCheckSt
 
 export interface Tkn {
   getPipelineNodes(): Promise<TektonNode[]>;
-  startTask(task: StartObject): Promise<TektonNode[]>;
   restartPipeline(pipeline: TektonNode): Promise<void>;
   getPipelines(pipeline?: TektonNode): Promise<TektonNode[]>;
   getPipelineRuns(pipelineRun?: TektonNode): Promise<TektonNode[]>;
@@ -78,6 +76,7 @@ export interface Tkn {
   executeWatch(command: CliCommand, opts?: {}): WatchProcess;
   executeInTerminal(command: CliCommand, cwd?: string): void;
   getTaskRunsForTasks(task: TektonNode): Promise<TektonNode[]>;
+  getTaskRunsForClusterTasks(task: TektonNode): Promise<TektonNode[]>;
   getTriggerTemplates(triggerTemplates?: TektonNode): Promise<TektonNode[]>;
   getTriggerBinding(triggerBinding?: TektonNode): Promise<TektonNode[]>;
   getClusterTriggerBinding(clusterTriggerBinding: TektonNode): Promise<TektonNode[]>;
@@ -249,6 +248,28 @@ export class TknImpl implements Tkn {
       console.log(result + ' Std.err when processing taskruns for ' + task.getName());
       return [new TektonNodeImpl(task, getStderrString(result.error), ContextType.TASKRUN, this, TreeItemCollapsibleState.None)];
     }
+    return this.getSupportedTaskRunTreeView(result, task);
+  }
+
+  async getTaskRunsForClusterTasks(clusterTask: TektonNode): Promise<TektonNode[]> {
+    if (!clusterTask.visibleChildren) {
+      clusterTask.visibleChildren = this.defaultPageSize;
+    }
+    const taskRun = await this._getTaskRunsForClusterTasks(clusterTask);
+    this.getPipelineStatus(taskRun);
+    return this.limitView(clusterTask, taskRun);
+  }
+
+  async _getTaskRunsForClusterTasks(clusterTask: TektonNode): Promise<TektonNode[]> {
+    const result = await this.execute(Command.listTaskRunsForClusterTasks(clusterTask.getName()));
+    if (result.error) {
+      console.log(result + ' Std.err when processing taskruns for ' + clusterTask.getName());
+      return [new TektonNodeImpl(clusterTask, getStderrString(result.error), ContextType.TASKRUN, this, TreeItemCollapsibleState.None)];
+    }
+    return this.getSupportedTaskRunTreeView(result, clusterTask);
+  }
+
+  async getSupportedTaskRunTreeView(result: CliExitData, taskRef: TektonNode): Promise<TektonNode[]> {
     let data: PipelineTaskRunData[] = [];
     try {
       data = JSON.parse(result.stdout).items;
@@ -256,7 +277,7 @@ export class TknImpl implements Tkn {
     } catch (ignore) {
     }
     return data
-      .map((value) => new TaskRun(task, value.metadata.name, this, value))
+      .map((value) => new TaskRun(taskRef, value.metadata.name, this, value))
       .sort(compareTimeNewestFirst);
   }
 
@@ -514,24 +535,6 @@ export class TknImpl implements Tkn {
     }
 
     return data;
-  }
-
-  async startTask(task: StartObject): Promise<TektonNode[]> {
-    const result = await this.execute(Command.startTask(task));
-    let data: TknTask[] = [];
-    try {
-      data = JSON.parse(result.stdout).items;
-      // eslint-disable-next-line no-empty
-    } catch (ignore) {
-    }
-    let tasks: NameId[] = data.map((value) => {
-      return {
-        name: value.metadata.name,
-        uid: value.metadata.uid
-      }
-    });
-    tasks = [...new Set(tasks)];
-    return tasks.map<TektonNode>((value) => new TektonNodeImpl(undefined, value.name, ContextType.PIPELINE, this, TreeItemCollapsibleState.None, value.uid)).sort(compareNodes);
   }
 
   async restartPipeline(pipeline: TektonNode): Promise<void> {

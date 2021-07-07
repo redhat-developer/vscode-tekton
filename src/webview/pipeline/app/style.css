@@ -296,6 +296,14 @@ body {
   display: block;
 }
 
+.size-select-item-windows {
+  position: absolute;
+  left: 105px;
+  top: 306px;
+  white-space: normal;
+  width: 500px;
+}
+
 .size-select-item {
   position: absolute;
   left: 105px;
@@ -308,6 +316,14 @@ body {
   position: absolute;
   left: 105px;
   top: 229px;
+  white-space: normal;
+  width: 500px;
+}
+
+.size-select-item-vtc-window {
+  position: absolute;
+  left: 105px;
+  top: 242px;
   white-space: normal;
   width: 500px;
 }

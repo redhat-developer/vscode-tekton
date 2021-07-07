@@ -24,6 +24,17 @@ export const initialResourceFormValues = {
   volumeClaimTemplate: []
 }
 
+export enum WorkspaceOption {
+  emptyDirectory = 'EmptyDirectory',
+  configMap = 'ConfigMap',
+  secret = 'Secret',
+  persistentVolumeClaim = 'PersistentVolumeClaim',
+}
+
+export const volumeClaimTemplate = 'Create a new VolumeClaimTemplate';
+
+export const volumeClaimTemplateID = 'create-new-VolumeClaimTemplate-entry';
+
 export enum TknResourceType {
   Trigger = 'Webhook',
   Params = 'Parameters',
