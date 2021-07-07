@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { ProjectType } from '../project-types';
-import {detectLanguages} from 'language-recognizer';
+import {detectLanguages} from '@redhat-developer/alizer';
 
 export async function getProjectType(path: string): Promise<ProjectType[]> {
   const result = await detectLanguages(path);

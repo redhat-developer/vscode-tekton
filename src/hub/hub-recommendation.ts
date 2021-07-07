@@ -15,10 +15,12 @@ export async function startDetectingLanguage(): Promise<string[]> {
       if (langAndTools && langAndTools.length > 0) {
 
         const result = [];
-        for (let i = 0; i < langAndTools.length; i++) {
-          const element = langAndTools[i];
+        for (const element of langAndTools) {
           result.push(element.name);
           result.push(element.builder);
+          if (element.frameworks){
+            result.push(...element.frameworks);
+          }
           if (result.length >= MAX_LANG_AND_TOOLS) {
             break;
           }
