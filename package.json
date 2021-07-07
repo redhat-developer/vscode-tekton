@@ -97,6 +97,12 @@
           "default": false,
           "description": "Show Tekton Pipeline output channel when new text added to output stream"
         },
+        "vs-tekton.showPipelineRunFollowLogs": {
+          "title": "Show pipelineRun follow Logs",
+          "type": "boolean",
+          "default": true,
+          "description": "Show pipelineRun follow logs while starting pipeline."
+        },
         "vs-tekton.outputVerbosityLevel": {
           "title": "Output Verbosity Level",
           "type": "number",
