@@ -89,8 +89,11 @@ async function doInstallTask(task: HubTaskInstallation): Promise<boolean> {
         vscode.window.showWarningMessage(message);
       } else {
         message = `Task ${task.name} installed.`;
-        telemetryLog('tekton.hub.install', message);
         vscode.window.showInformationMessage(message);
+        if (task.view && task.view === 'recommendedView'){
+          message += ' From recommendation.'
+        }
+        telemetryLog('tekton.hub.install', message);
         installEventEmitter.fire(task);
         return true;
       }

@@ -50,7 +50,8 @@ suite('Install Task', () => {
       name: 'foo',
       url: 'https://some/path/task.yaml',
       asClusterTask: false,
-      taskVersion: {version: '1.0'} as ResourceVersionData
+      taskVersion: {version: '1.0'} as ResourceVersionData,
+      view: 'test'
     });
 
     expect(executeStub).calledOnceWith(Command.hubInstall('foo', '1.0'));
@@ -66,7 +67,8 @@ suite('Install Task', () => {
     await installTask({
       name: 'foo',
       url: 'https://some/path/task.yaml',
-      asClusterTask: true
+      asClusterTask: true,
+      view: 'test'
     });
     const tempPath = path.join('/foo','task.yaml');
     expect(downloadStub).calledOnceWith('https://some/path/task.yaml', tempPath);
