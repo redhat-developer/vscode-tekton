@@ -12,6 +12,7 @@ export interface HubTaskInstallation {
   minPipelinesVersion?: string;
   asClusterTask: boolean;
   taskVersion?: ResourceVersionData;
+  view: string;
 }
 
 export interface HubTaskUninstall {
@@ -24,7 +25,7 @@ export interface InstalledTask extends ResourceData {
   clusterTask?: boolean;
 }
 
-export type HubTask = InstalledTask | ResourceData
+export type HubTask = (InstalledTask | ResourceData) & { view?: string }
 
 export function isInstalledTask(task: HubTask): task is InstalledTask {
   return (task as InstalledTask).installedVersion !== undefined;
