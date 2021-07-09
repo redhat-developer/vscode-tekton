@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.18.0 (July 08, 2021)
+
+This release brings to you:
+
+* [#445](https://github.com/redhat-developer/vscode-tekton/issues/445) The 'List' context menu actions seems to provide no additional value.
+* [#451](https://github.com/redhat-developer/vscode-tekton/issues/451) TektonHub: recommend task based on user project/devfile.
+* [#353](https://github.com/redhat-developer/vscode-tekton/issues/353) Generate an example PipelineRun YAML for a Pipeline.
+* [#356](https://github.com/redhat-developer/vscode-tekton/issues/356) Install Tekton on the cluster.
+* [#357](https://github.com/redhat-developer/vscode-tekton/issues/357) Display task retry count.
+* [#582](https://github.com/redhat-developer/vscode-tekton/issues/582) Fallback on oc if kubectl not present.
+* [#603](https://github.com/redhat-developer/vscode-tekton/pull/603) Update vscode-redhat-telemetry to 0.2.0.
+
 ## 0.17.0 (June 18, 2021)
 
 This release brings to you:
