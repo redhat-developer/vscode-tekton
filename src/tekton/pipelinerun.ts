@@ -56,10 +56,14 @@ export class PipelineRun extends TektonItem {
     if (!pipelineRun){
       return;
     }
+    this.pipelineRunFollowLogs(pipelineRun.getName());
+  }
+
+  static async pipelineRunFollowLogs(pipelineRunName: string): Promise<void> {
     if (workspace.getConfiguration('vs-tekton').get('showLogInEditor')) {
-      showLogInEditor(Command.showPipelineRunFollowLogs(pipelineRun.getName()), `Log: ${pipelineRun.getName()}`);
+      showLogInEditor(Command.showPipelineRunFollowLogs(pipelineRunName), `Log: ${pipelineRunName}`);
     } else {
-      PipelineRun.tkn.executeInTerminal(Command.showPipelineRunFollowLogs(pipelineRun.getName()));
+      PipelineRun.tkn.executeInTerminal(Command.showPipelineRunFollowLogs(pipelineRunName));
     }
   }
 

@@ -149,9 +149,10 @@ Development of the Tekton Pipelines Extension is largely following development o
 
 
 ### Extension Configuration Settings
-   * `Tekton Pipelines: Show Channel On Output` - Show Tekton Pipelines output channel when new text added to output stream
+   * `Tekton Pipelines: Show Channel On Output` - Show Tekton Pipelines output channel when new text added to output stream.
    * `Tekton Pipelines: Output verbosity level` - Output verbosity level (value between 0 and 9) for Tekton Pipeline Start, Push and Watch commands in output channel and integrated terminal.
    * `Tekton Pipelines: Show reference resource notification` - Enable/disable to check Task and ClusterTask Reference Resource.
+   * `Tekton Pipelines: Show PipelineRun Follow Logs` - Show pipelineRun follow logs while starting pipeline.
 
 ### Dependencies
 
