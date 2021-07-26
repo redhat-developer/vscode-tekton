@@ -97,8 +97,8 @@
           "default": false,
           "description": "Show Tekton Pipeline output channel when new text added to output stream"
         },
-        "vs-tekton.showPipelineRunFollowLogs": {
-          "title": "Show pipelineRun follow Logs",
+        "vs-tekton.showLogsOnPipelineStart": {
+          "title": "Start pipeline with logs",
           "type": "boolean",
           "default": true,
           "description": "Show pipelineRun follow logs while starting pipeline."

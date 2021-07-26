@@ -103,7 +103,7 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
       const pipelineRunName = result.stdout.match(pipelineRunNameRegex)[0];
       if (pipelineRunName) {
         await showPipelineRunPreview(pipelineRunName);
-        if (vscode.workspace.getConfiguration('vs-tekton').get('showPipelineRunFollowLogs')) PipelineRun.pipelineRunFollowLogs(pipelineRunName);
+        if (vscode.workspace.getConfiguration('vs-tekton').get('showLogsOnPipelineStart')) PipelineRun.pipelineRunFollowLogs(pipelineRunName);
       }
     }
     vscode.window.showInformationMessage(message);
