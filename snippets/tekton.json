@@ -86,6 +86,83 @@
       "        name: ${14:taskName}"
     ]
   },
+  "Pipeline-finally": {
+    "prefix": "Pipeline-with-finally",
+    "description": "Create a Tekton Pipeline Resource with finally in spec",
+    "body": [
+      "apiVersion: tekton.dev/v1beta1",
+      "kind: Pipeline",
+      "metadata:",
+      "  name: ${1:app-deploy}",
+      "spec:",
+      "  finally:",
+      "    - name: ${2:finallyName}",
+      "      taskRef:",
+      "        name: ${3:taskName}"
+    ]
+  },
+  "Pipeline-with-buildah-task": {
+    "prefix": "Pipeline-with-buildah-task",
+    "description": "Create a Tekton Pipeline Resource with buildah task in spec",
+    "body": [
+      "apiVersion: tekton.dev/v1beta1",
+      "kind: Pipeline",
+      "metadata:",
+      "  name: ${1:app-deploy}",
+      "spec:",
+      "  tasks:",
+      "    - name: ${2:taskName}",
+      "      taskRef:",
+      "        name: ${3:buildah}"
+    ]
+  },
+  "Pipeline-with-kubectl-task": {
+    "prefix": "Pipeline-with-kubectl-task",
+    "description": "Create a Tekton Pipeline Resource with kubectl task in spec",
+    "body": [
+      "apiVersion: tekton.dev/v1beta1",
+      "kind: Pipeline",
+      "metadata:",
+      "  name: ${1:app-deploy}",
+      "spec:",
+      "  tasks:",
+      "    - name: ${2:taskName}",
+      "      taskRef:",
+      "        name: ${3:kubectl}"
+    ]
+  },
+  "Pipeline-with-maven-task": {
+    "prefix": "Pipeline-with-maven-task",
+    "description": "Create a Tekton Pipeline Resource with maven task in spec",
+    "body": [
+      "apiVersion: tekton.dev/v1beta1",
+      "kind: Pipeline",
+      "metadata:",
+      "  name: ${1:app-deploy}",
+      "spec:",
+      "  tasks:",
+      "    - name: ${2:taskName}",
+      "      taskRef:",
+      "        name: ${3:maven}"
+    ]
+  },
+  "Pipeline-condition": {
+    "prefix": "Pipeline-with-condition",
+    "description": "Create a Tekton Pipeline Resource with condition in spec",
+    "body": [
+      "apiVersion: tekton.dev/v1beta1",
+      "kind: Pipeline",
+      "metadata:",
+      "  name: ${1:app-deploy}",
+      "spec:",
+      "  tasks:",
+      "    - name: ${2:taskName}",
+      "      taskRef:",
+      "        name: ${3:taskRefName}",
+      "      conditions:",
+      "        - conditionRef: ${4:conditionRefName}"
+    ]
+  },
   "PipelineRun": {
     "prefix": "PipelineRun",
     "description": "Create a Tekton PipelineRun Resource",

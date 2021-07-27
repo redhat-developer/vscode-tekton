@@ -28,9 +28,34 @@ const snippets: { [key: string]: Snippet } = {
     body: load('taskrun.yaml'),
   },
   'Pipeline': {
-    prefix: 'Pipeline',
+    prefix: 'Pipeline-test',
     description: 'Create a Tekton Pipeline Resource',
     body: load('pipeline.yaml'),
+  },
+  'Pipeline-finally': {
+    prefix: 'Pipeline-with-finally',
+    description: 'Create a Tekton Pipeline Resource with finally in spec',
+    body: load('pipeline-finally.yaml'),
+  },
+  'Pipeline-with-buildah-task': {
+    prefix: 'Pipeline-with-buildah-task',
+    description: 'Create a Tekton Pipeline Resource with buildah task in spec',
+    body: load('pipeline-with-buildah-task.yaml'),
+  },
+  'Pipeline-with-kubectl-task': {
+    prefix: 'Pipeline-with-kubectl-task',
+    description: 'Create a Tekton Pipeline Resource with kubectl task in spec',
+    body: load('pipeline-with-kubectl-task.yaml'),
+  },
+  'Pipeline-with-maven-task': {
+    prefix: 'Pipeline-with-maven-task',
+    description: 'Create a Tekton Pipeline Resource with maven task in spec',
+    body: load('pipeline-with-maven-task.yaml'),
+  },
+  'Pipeline-condition': {
+    prefix: 'Pipeline-with-condition',
+    description: 'Create a Tekton Pipeline Resource with condition in spec',
+    body: load('pipeline-condition.yaml'),
   },
   'PipelineRun': {
     prefix: 'PipelineRun',
