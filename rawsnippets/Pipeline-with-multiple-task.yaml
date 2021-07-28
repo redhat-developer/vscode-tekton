@@ -7,3 +7,9 @@ spec:
     - name: ${2:taskName}
       taskRef:
         name: ${3:buildah}
+    - name: ${4:taskName}
+      taskRef:
+        name: ${5:maven}
+    - name: ${6:taskName}
+      taskRef:
+        name: ${7:kubectl}

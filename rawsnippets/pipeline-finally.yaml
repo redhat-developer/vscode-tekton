@@ -3,7 +3,11 @@ kind: Pipeline
 metadata:
   name: ${1:app-deploy}
 spec:
-  finally:
-    - name: ${2:finallyName}
+  tasks:
+    - name: ${2:taskName}
       taskRef:
-        name: ${3:taskName}
+        name: ${3:build-app}
+  finally:
+    - name: ${4:finallyName}
+      taskRef:
+        name: ${5:taskName}

@@ -1,9 +1,0 @@
-apiVersion: tekton.dev/v1beta1
-kind: Pipeline
-metadata:
-  name: ${1:app-deploy}
-spec:
-  tasks:
-    - name: ${2:taskName}
-      taskRef:
-        name: ${3:maven}

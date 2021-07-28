@@ -10,18 +10,3 @@ spec:
     - name: ${4:taskName}
       taskRef:
         name: ${5:build-app}
-    - name: ${6:taskName}
-      taskRef:
-        name: ${7:maven}
-    - name: ${8:taskName}
-      taskRef:
-        name: ${9:buildah}
-    - name: ${10:taskName}
-      taskRef:
-        name: ${11:taskRefName}
-      conditions:
-        - conditionRef: ${12:conditionRefName}
-  finally:
-    - name: ${13:finallyName}
-      taskRef:
-        name: ${14:taskName}
