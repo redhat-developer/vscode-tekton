@@ -32,6 +32,21 @@ const snippets: { [key: string]: Snippet } = {
     description: 'Create a Tekton Pipeline Resource',
     body: load('pipeline.yaml'),
   },
+  'Pipeline-finally': {
+    prefix: 'Pipeline-with-finally',
+    description: 'Create a Tekton Pipeline Resource with finally in spec',
+    body: load('pipeline-finally.yaml'),
+  },
+  'Pipeline-with-multiple-task': {
+    prefix: 'Pipeline-with-multiple-task',
+    description: 'Create a Tekton Pipeline Resource with at least three task in spec',
+    body: load('pipeline-with-multiple-task.yaml'),
+  },
+  'Pipeline-condition': {
+    prefix: 'Pipeline-with-condition',
+    description: 'Create a Tekton Pipeline Resource with condition in spec',
+    body: load('pipeline-condition.yaml'),
+  },
   'PipelineRun': {
     prefix: 'PipelineRun',
     description: 'Create a Tekton PipelineRun Resource',

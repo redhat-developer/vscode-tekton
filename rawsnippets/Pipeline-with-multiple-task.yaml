@@ -1,0 +1,60 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ${1:app-deploy}
+spec:
+  workspaces:
+    - name: ${2:maven-settings}
+    - name: ${3:my-source}
+  tasks:
+    - name: ${4:taskName}
+      taskRef:
+        name: ${5:maven}
+      params:
+        - name: ${6:CONTEXT_DIR}
+          value: ${7:"apps/greeter/java/quarkus"} #configure: may change according to your source
+        - name: ${8:GOALS}
+          value: ${9:["package"]}
+      workspaces:
+        - name: ${10:maven-settings}
+          workspace: ${11:maven-settings}
+    - name: ${12:taskName}
+      taskRef:
+        name: ${13:buildah}
+      params:
+        - name: ${14:IMAGE}
+          value: ${15:gcr.io/my-repo/my-image} #configure: may change according to your source
+      workspaces:
+        - name: ${16:source}
+          workspace: ${17:my-source}
+    - name: ${18:taskName}
+      taskRef:
+        name: ${19:kubectl-deploy-pod}
+      params:
+        - name: ${20:action}
+          value: ${21:create} #configure: may change according to your source
+        - name: ${22:success-condition}
+          value: ${23:status.phase == Running}
+        - name: ${24:failure-condition}
+          value: ${25:status.phase in (Failed, Error)}
+        - name: ${26:output}
+          value: |
+            - name: ${27:job-name}
+              valueFrom: ${28:'{.metadata.name}'}
+            - name: ${29:job-namespace}
+              valueFrom: ${30:'{.metadata.namespace}'}
+        - name: ${31:set-ownerreference}
+          value: ${32:"true"}
+        - name: ${33:manifest}
+          value: |
+            apiVersion: ${34:v1}
+            kind: ${35:Pod}
+            metadata:
+            generateName: ${36:myapp-pod-}
+            labels:
+              app: ${37:myapp}
+            spec:
+              containers:
+              - name: ${38:myapp-container}
+                image: ${39:docker}
+                command: ${40:['sh', '-c', 'echo Hello Kubernetes! && sleep 30']}
