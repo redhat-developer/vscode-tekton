@@ -27,6 +27,8 @@ import { getStderrString } from '../util/stderrstring';
 import { Command } from '../cli-command';
 import semver = require('semver');
 import { ClusterTaskModel, EventListenerModel, PipelineRunModel, TaskModel, TriggerTemplateModel } from '../util/resource-kind';
+import { showPipelineRunPreview } from '../pipeline/pipeline-preview';
+import { PipelineRun } from './pipelinerun';
 
 export enum WorkspaceResource {
   Secret = 'secret',
@@ -96,6 +98,14 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
   if (kind === PipelineRunModel.kind && !result.error) {
     const message = 'Pipeline successfully started';
     telemetryLog(commandId, message);
+    if (TektonItem.ShowPipelineRun()) {
+      const pipelineRunNameRegex = new RegExp(`${trigger.metadata.generateName}\\w*`);
+      const pipelineRunName = result.stdout.match(pipelineRunNameRegex)[0];
+      if (pipelineRunName) {
+        await showPipelineRunPreview(pipelineRunName);
+        if (vscode.workspace.getConfiguration('vs-tekton').get('showLogsOnPipelineStart')) PipelineRun.pipelineRunFollowLogs(pipelineRunName);
+      }
+    }
     vscode.window.showInformationMessage(message);
   }
   if ((kind === TaskModel.kind || kind === ClusterTaskModel.kind) && !result.error) {
