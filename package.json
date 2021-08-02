@@ -101,7 +101,7 @@
           "title": "Start pipeline with logs",
           "type": "boolean",
           "default": true,
-          "description": "Show pipelineRun follow logs while starting pipeline."
+          "description": "Show PipelineRun follow logs while starting pipeline."
         },
         "vs-tekton.outputVerbosityLevel": {
           "title": "Output Verbosity Level",
@@ -986,3 +986,4 @@
     "vscode-kubernetes-tools-api": "1.3.0"
   }
 }
+
