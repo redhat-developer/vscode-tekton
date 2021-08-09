@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: example-task
+  namespace: default
+spec:
+  params:
+    - name: appName
+      default: testApp
+      type: string
+  steps:
+    - image: registry.redhat.io/ubi7/ubi-minimal
+      command:
+        - /bin/bash
+        - '-c'
+        - echo
+        - $(inputs.params.appName)

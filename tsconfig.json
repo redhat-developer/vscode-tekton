@@ -22,11 +22,13 @@
     "exclude": [
         "node_modules",
         ".vscode-test",
-        "src/webview"
+        "src/webview",
+        "test-resources"
     ],
     "include": [
         "src",
         "test",
-        "build"
+        "build",
+        "ui-test"
     ]
 }

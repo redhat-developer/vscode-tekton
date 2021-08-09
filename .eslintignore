@@ -8,3 +8,5 @@ coverage
 preview
 
 src/tekton-hub-client/
+
+test-resources
