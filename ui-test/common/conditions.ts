@@ -2,9 +2,9 @@
  *  Copyright (c) Red Hat, Inc. All rights reserved.
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
-import { Workbench, BottomBarPanel, TerminalView, OutputView, InputBox, SideBarView, Input, ViewItem, CustomTreeItem, NotificationType } from 'vscode-extension-tester';
+import { Workbench, BottomBarPanel, TerminalView, InputBox, SideBarView, Input, ViewItem, CustomTreeItem, NotificationType, QuickPickItem, TreeItem, Notification } from 'vscode-extension-tester';
 
-export async function notificationCenterIsOpened(): Promise<boolean | undefined> {
+export async function notificationCenterIsOpened(): Promise<boolean> {
   try {
     const center = await new Workbench().openNotificationsCenter();
     return await center.isDisplayed();
@@ -14,7 +14,7 @@ export async function notificationCenterIsOpened(): Promise<boolean | undefined>
   }
 }
 
-export async function terminalChannelExists(text: string): Promise<string | undefined> {
+export async function terminalChannelExists(text: string): Promise<string | null> {
   const terminalView = await new BottomBarPanel().openTerminalView();
   const names = await terminalView.getChannelNames();
   for (const name of names) {
@@ -26,7 +26,7 @@ export async function terminalChannelExists(text: string): Promise<string | unde
   return null;
 }
 
-export async function outputChannelExists(text: string): Promise<string | undefined> {
+export async function outputChannelExists(text: string): Promise<string | null> {
   const outputView = await new BottomBarPanel().openOutputView();
   const names = await outputView.getChannelNames();
   for (const name of names) {
@@ -38,8 +38,7 @@ export async function outputChannelExists(text: string): Promise<string | undefi
   return null;
 }
 
-
-export async function terminalHasText(view: TerminalView, text: string, timePeriod = 2000): Promise<string | undefined> {
+export async function terminalHasText(view: TerminalView, text: string, timePeriod = 2000): Promise<string | null> {
   await (await new Workbench().openNotificationsCenter()).clearAllNotifications();
   const currentText = await view.getText();
   if (currentText.indexOf(text) > -1) {
@@ -50,19 +49,7 @@ export async function terminalHasText(view: TerminalView, text: string, timePeri
   }
 }
 
-export async function outputHasText(view: OutputView, text: string, timePeriod = 2000): Promise<string | undefined> {
-  await (await new Workbench().openNotificationsCenter()).clearAllNotifications();
-  const currentText = await view.getText();
-  if (currentText.indexOf(text) > -1) {
-    return text;
-  } else {
-    await view.getDriver().sleep(timePeriod);
-    return null;
-  }
-}
-
-
-export async function inputHasNewMessage(input: InputBox, message: string, placeholder?: string) {
+export async function inputHasNewMessage(input: InputBox, message: string, placeholder?: string): Promise<string | boolean> {
   const currentMessage = await input.getMessage();
   if (currentMessage && (currentMessage.includes(message))) {
     return true;
@@ -74,7 +61,7 @@ export async function inputHasNewMessage(input: InputBox, message: string, place
   return false;
 }
 
-export async function viewHasItems() {
+export async function viewHasItems(): Promise<boolean> {
   try {
     const explorer = await new SideBarView().getContent().getSection('Tekton Pipelines');
     const items = await explorer.getVisibleItems();
@@ -87,12 +74,12 @@ export async function viewHasItems() {
   }
 }
 
-export async function viewHasNoProgress(view: SideBarView) {
+export async function viewHasNoProgress(view: SideBarView): Promise<boolean> {
   const content = view.getContent();
   return !await content.hasProgress();
 }
 
-export async function inputHasQuickPicks(input: Input) {
+export async function inputHasQuickPicks(input: Input): Promise<QuickPickItem[] | null> {
   const picks = await input.getQuickPicks();
   if (picks.length > 0) {
     return picks;
@@ -100,7 +87,7 @@ export async function inputHasQuickPicks(input: Input) {
   return null;
 }
 
-export async function nodeHasNewChildren(node: CustomTreeItem, startChildren?: ViewItem[]) {
+export async function nodeHasNewChildren(node: CustomTreeItem, startChildren?: ViewItem[]): Promise<TreeItem[] | null>{
   try {
     if (!startChildren) {
       startChildren = await node.getChildren();
@@ -113,15 +100,15 @@ export async function nodeHasNewChildren(node: CustomTreeItem, startChildren?: V
     return endChildren;
   } catch (err) {
     await node.getDriver().sleep(500);
-    return await node.getChildren();
+    return node.getChildren();
   }
 }
 
-export async function editorExists(title: string): Promise<boolean | undefined> {
+export async function editorExists(title: string): Promise<boolean> {
   try {
     const titles = await new Workbench().getEditorView().getOpenEditorTitles();
-    for (const title of titles) {
-      if (title.indexOf(title) > -1) {
+    for (const titleFromTitles of titles) {
+      if (titleFromTitles.indexOf(title) > -1) {
         return true;
       }
     }
@@ -133,7 +120,7 @@ export async function editorExists(title: string): Promise<boolean | undefined> 
 }
 
 
-export async function getNotificationWithMessage(message: string) {
+export async function getNotificationWithMessage(message: string): Promise<Notification | null>{
   try {
     const center = await new Workbench().openNotificationsCenter();
     const notifications = await center.getNotifications(NotificationType.Any);

@@ -18,10 +18,8 @@ export function taskTest(clusterUrl: string, username: string, password: string)
       this.timeout(200000);
       driver = VSBrowser.instance.driver;
       await new EditorView().closeAllEditors();
-      loginToOpenShiftWithTerminal(clusterUrl, username, password);
+      await loginToOpenShiftWithTerminal(clusterUrl, username, password);
 
-      const control = new ActivityBar().getViewControl(views.TEKTON_TITLE);
-      await (await control).openView();
       await (await new ActivityBar().getViewControl(views.TEKTON_TITLE)).openView();
       await driver.wait(() => { return viewHasItems(); }, 200000);
     });
@@ -55,7 +53,8 @@ export function taskTest(clusterUrl: string, username: string, password: string)
       this.timeout(400000);
       await new Workbench().executeCommand(commands.SHOW_TASK_RUN_LOGS);
       await inputConfirm(false);
-      const terminalView = await new BottomBarPanel().openTerminalView();
+      const bottomBar = new BottomBarPanel();
+      const terminalView = await bottomBar.openTerminalView();
       await driver.wait(() => { return terminalHasText(terminalView, 'tkn taskrun logs'); }, 200000);
       await terminalView.killTerminal();
     });
@@ -69,7 +68,7 @@ export function taskTest(clusterUrl: string, username: string, password: string)
   });
 }
 
-async function getFilePath(file: string){
+async function getFilePath(file: string): Promise<string> {
   const resources = path.resolve('ui-test', 'resources');
   return path.join(resources, file);
 }

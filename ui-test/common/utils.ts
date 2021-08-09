@@ -8,7 +8,8 @@ import { notificationCenterIsOpened, inputHasNewMessage, terminalHasText} from '
 export async function loginToOpenShiftWithTerminal(clusterUrl: string, username: string, password: string): Promise<void> {
   const terminalView = await new BottomBarPanel().openTerminalView();
   await terminalView.executeCommand('rm -f .kube/config');
-  await terminalView.executeCommand('oc login --username=' + username + ' --password=' + password + ' --server=' + clusterUrl + ' --insecure-skip-tls-verify');
+  await terminalView.executeCommand(`oc login --username=${username} --password=${password} --server=${clusterUrl} --insecure-skip-tls-verify`);
+
   await terminalView.executeCommand('oc new-project test-tekton');
   await terminalHasText(terminalView, 'Login successful.');
   await terminalView.killTerminal();
@@ -24,7 +25,7 @@ export async function logoutFromOpenShiftWithTerminal(): Promise<void> {
   await terminalView.killTerminal();
 }
 
-export async function clearNotifications(): Promise<undefined> {
+export async function clearNotifications(): Promise<void> {
   const driver = VSBrowser.instance.driver;
   try {
     const center = await new Workbench().openNotificationsCenter();
@@ -39,18 +40,16 @@ export async function clearNotifications(): Promise<undefined> {
 export async function getTextFromTerminal(): Promise<string> {
   const terminalView = await new BottomBarPanel().openTerminalView();
   await terminalView.selectChannel('Tekton');
-  const text = await terminalView.getText();
-  return text;
+  return await terminalView.getText();
 }
 
 export async function getTextFromOutput(): Promise<string> {
   const outputView = await new BottomBarPanel().openOutputView();
   await outputView.selectChannel('Tekton Pipelines');
-  const text = await outputView.getText();
-  return text;
+  return await outputView.getText();
 }
 
-export async function setInputTextAndConfirm(text?: string, shouldWait = false) {
+export async function setInputTextAndConfirm(text?: string, shouldWait = false): Promise<void> {
   const input = await new InputBox().wait();
   const message = await input.getMessage();
   const holder = await input.getPlaceHolder();
@@ -63,7 +62,7 @@ export async function setInputTextAndConfirm(text?: string, shouldWait = false) 
   }
 }
 
-export async function inputConfirm(shouldWait = false) {
+export async function inputConfirm(shouldWait = false): Promise<void> {
   const input = await new InputBox().wait();
   const message = await input.getMessage();
   const holder = await input.getPlaceHolder();
