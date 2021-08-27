@@ -35,6 +35,7 @@ export class TaskWidget extends BaseWidget {
   private versionsSelect: HTMLSelectElement;
   private versions: Versions | undefined;
   private tknVersion: string | undefined;
+  private installButton: HTMLAnchorElement;
 
   constructor(private root: HTMLElement, private messageSender: VSMessage) {
     super();
@@ -210,6 +211,7 @@ export class TaskWidget extends BaseWidget {
       this.sendInstall();
       installButton.textContent = 'Installing';
     }
+    this.installButton = installButton;
     installLi.appendChild(installButton);
     const tknDropdown = createDiv('monaco-dropdown');
 
@@ -417,5 +419,9 @@ export class TaskWidget extends BaseWidget {
   setTaskVersion(task: ResourceVersionData): void {
     this.currentVersion = task;
     this.updatePage();
+  }
+
+  cancelInstall(): void {
+    this.installButton.textContent = 'Install';
   }
 }

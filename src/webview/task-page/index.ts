@@ -26,6 +26,12 @@ window.addEventListener('message', event => {
       break;
     case 'taskVersion': 
       widget.setTaskVersion(event.data.data);
+      break;
+    case 'cancelInstall':
+      widget.cancelInstall();
+      break;
+    default:
+      console.error(`Cannot handle: ${JSON.stringify(event.data)}`);
   }
 }, false);
 
