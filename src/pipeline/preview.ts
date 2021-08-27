@@ -14,6 +14,7 @@ import { PipelineRunData } from '../tekton';
 import { NodeData } from '../webview/pipeline-preview/model';
 import { VirtualDocument } from '../yaml-support/yaml-locator';
 import { telemetryLogError } from '../telemetry';
+import { TaskRun } from '../tekton/taskrun';
 
 export interface PipelinePreviewInput {
   readonly document: vscode.TextDocument | VirtualDocument;
@@ -76,6 +77,9 @@ export class PipelinePreview extends Disposable {
           break;
         case 'getSteps': 
           this.handleGetSteps(e.body);
+          break;
+        case 'showTaskLog':
+          this.handleShowTaskLog(e.body);
           break;
         default:
           console.error(`Cannot handle message: ${e.type}`);
@@ -169,6 +173,10 @@ export class PipelinePreview extends Disposable {
       telemetryLogError('Pipeline Diagram', err);
     }
   
+  }
+
+  private handleShowTaskLog(taskRunName: string): void {
+    TaskRun.showLogs(taskRunName);
   }
 
   private isPreviewOf(resource: vscode.Uri): boolean {

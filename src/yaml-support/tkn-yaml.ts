@@ -53,6 +53,7 @@ export interface PipelineRunTask extends DeclaredTask {
   finishedSteps?: number;
   steps?: TaskRunSteps[] | TaskStep[];
   retryNumber?: number;
+  taskRunName?: string;
 }
 
 

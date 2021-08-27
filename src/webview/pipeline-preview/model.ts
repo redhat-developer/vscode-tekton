@@ -86,4 +86,6 @@ export interface CyTheme {
   fontFamily: string;
   targetEdgesColor: string;
   sourceEdgesColor: string;
+  menuBackgroundColor: string;
+  menuSelectionColor: string;
 }

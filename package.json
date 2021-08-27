@@ -924,6 +924,7 @@
     "codecov": "^3.7.1",
     "css-loader": "^5.2.4",
     "cytoscape": "^3.14.0",
+    "cytoscape-cxtmenu": "^3.4.0",
     "cytoscape-dagre": "^2.2.2",
     "cytoscape-popper": "^2.0.0",
     "decache": "^4.5.1",

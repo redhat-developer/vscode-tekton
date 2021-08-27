@@ -162,6 +162,7 @@ suite('Tekton graph', () => {
           'state': 'Unknown',
           'steps': [],
           'taskRef': 'foo-ref',
+          'taskRunName': 'foo',
           'type': 'Task',
           'yamlPosition': undefined
         }

@@ -92,10 +92,14 @@ export class TaskRun extends TektonItem {
     if (!taskRun) {
       return;
     }
+    return TaskRun.showLogs(taskRun.getName());
+  }
+
+  static showLogs(taskRunName: string): void {
     if (workspace.getConfiguration('vs-tekton').get('showLogInEditor')) {
-      showLogInEditor(Command.showTaskRunLogs(taskRun.getName()), `Log: ${taskRun.getName()}`);
+      showLogInEditor(Command.showTaskRunLogs(taskRunName), `Log: ${taskRunName}`);
     } else {
-      TaskRun.tkn.executeInTerminal(Command.showTaskRunLogs(taskRun.getName()));
+      TaskRun.tkn.executeInTerminal(Command.showTaskRunLogs(taskRunName));
     }
   }
 
