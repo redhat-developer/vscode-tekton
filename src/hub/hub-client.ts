@@ -35,8 +35,15 @@ export async function getTektonHubStatus(): Promise<TektonHubStatus> {
 
 export async function searchTask(name: string): Promise<hubApi.ResourceData[]> {
   try {
+    let result;
     const resApi = createResourceApi();
-    const result = await resApi.resourceQuery(name, undefined, ['task'], undefined, undefined, 'contains');
+    if (name?.trim().match('@tag:(.*)')) {
+      result = await resApi.resourceQuery(undefined, undefined, ['task'], [name?.trim().match('@tag:(.*)')[1]], undefined, 'contains');
+    } else if (name?.trim().match('^@categories:(.*)')) {
+      result = await resApi.resourceQuery(undefined, [name?.trim().match('^@categories:(.*)')[1]], ['task'], undefined, undefined, 'contains');
+    } else {
+      result = await resApi.resourceQuery(name, undefined, ['task'], ['build'], undefined, 'contains');
+    }
     return result.data.data;
   } catch (err) {
     if (err instanceof Error ){
