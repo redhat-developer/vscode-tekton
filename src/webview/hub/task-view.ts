@@ -272,7 +272,7 @@ export class TaskView {
 
     const taskListContainer = createDiv();
     taskListContainer.id = 'tasksList';
-    taskListContainer.className = 'testtest';
+    taskListContainer.className = 'contain-style';
     this.taskList = new TaskList(taskListContainer, this.vscodeAPI, this.loader, 'searchView');
 
     this.mainContainer = document.getElementById('mainContainer');

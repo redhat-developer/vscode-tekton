@@ -83,24 +83,24 @@ textarea::placeholder {
 	color: var(--vscode-input-placeholderForeground);
 }
 
-.testtest {
+.contain-style {
 	top: 2%;
     position: relative;
 }
 
-li.test-xyz { 
+li.li-style { 
 	padding :  .6rem .1rem;
 	margin : 0;
 	position : relative
 }
   
-ul.test-abc { list-style : none; padding : 0; color : var(--vscode-foreground); background-color : var(--vscode-editor-background) }
+ul.ul-color { list-style : none; padding : 0; color : var(--vscode-foreground); background-color : var(--vscode-editor-background) }
 
-ul.test-abcd {}
+ul.ul-position {}
 
-li.test-xyz li.test-xyz:hover { color : var(--vscode-foreground); background-color : var(--vscode-input-background) }
+li.li-style li.li-style:hover { color : var(--vscode-foreground); background-color : var(--vscode-input-background) }
   
-li.test-xyz li.test-xyz.current { color : var(--vscode-foreground); background-color : var(--vscode-editor-background) }
+li.li-style li.li-style.current { color : var(--vscode-foreground); background-color : var(--vscode-editor-background) }
 
 .select-list-group, .select-list-group * {
 	width: 100%;
