@@ -14,7 +14,7 @@ import { createDiv, createSpan } from '../common/dom-util';
 import * as semver from 'semver';
 import { HubTask, HubTaskInstallation, InstalledTask, isInstalledTask } from '../../hub/hub-common';
 import { Loader } from '../common/loader';
-import { dropDownForTags, hideList, initList, listGroup } from './search_dropdown';
+import { dropDownForTags, enterEvent, hideList, initList, keyUpDown, listGroup } from './search_dropdown';
 
 
 export class SearchInput {
@@ -245,9 +245,15 @@ export class TaskView {
   constructor(private vscodeAPI: VSMessage & ViewState) {
     this.searchInput = new SearchInput(document.getElementById('taskInput') as HTMLInputElement, vscodeAPI);
     this.searchInput.inputElement.addEventListener('keypress', (e) => {
+      if (e.code === 'Enter') {
+        enterEvent(e);
+      }
       hideList(listGroup);
       initList()
-    })
+    });
+    this.searchInput.inputElement.addEventListener('click', () => {
+      keyUpDown();
+    });
     this.searchInput.onInputChange((input) => {
       if (input) {
         dropDownForTags(input);

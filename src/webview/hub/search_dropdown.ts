@@ -3,10 +3,15 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
+let count = 1;
 const group = document.getElementById('slg');
 export const listGroup = group.querySelector('li ul');
 const listArray = group.querySelectorAll('li ul li');
 
+
+export function enterEvent(event: KeyboardEvent): void {
+  event.target['value'] = listGroup.querySelector('[data-highlight="true"]').innerHTML;
+}
 
 export function dropDownForTags(input: string): void {
   for (let i = 0; i < listArray.length; i++) {
@@ -21,6 +26,41 @@ export function showList(ele): void {
 
 export function hideList(ele): void {
   ele.dataset.toggle = 'false';
+}
+
+export function keyUpDown(): void {
+  const taskInput = document.getElementById('taskInput');
+  const items = group.querySelectorAll('li[data-display="true"]');
+  const last = items[items.length - 1];
+  const first = items[0];
+
+  taskInput.onkeydown = function (e) {
+    if (e.code === 'ArrowUp') {
+      if (count === 0) {
+        count = 2;
+      }
+      count--;
+      count = count <= 0 ? items.length : count;
+      items[count - 1]['dataset'].highlight = items[count - 1] ? 'true' : 'false';
+      if (items[count]) {
+        items[count]['dataset'].highlight = 'false';
+      } else {
+        first['dataset'].highlight = 'false';
+      }
+    }
+    if (e.code === 'ArrowDown') {
+      count = count >= items.length ? 0 : count
+      items[count]['dataset'].highlight = items[count] ? 'true' : 'false';
+      if (items[count - 1]) {
+        items[count - 1]['dataset'].highlight = 'false';
+      }
+      else {
+        last['dataset'].highlight = 'false';
+      }
+      count++;
+      count = count >= items.length ? 0 : count;
+    }
+  };
 }
 
 export function matching(item, input: string): void {

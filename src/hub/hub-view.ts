@@ -91,7 +91,8 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
           <li class="li-style">
               <input type="text" placeholder="Search Tasks in TektonHub" id="taskInput" />
               <ul class="ul-color ul-position" data-toggle="false">
-                <li class="li-style">@tag:</li>
+                <li class="li-style" data-display="true">@tag:</li>
+                <li class="li-style" data-display="true">@categories:</li>
               </ul>
            </li>
         </ul>

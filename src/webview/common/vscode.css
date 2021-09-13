@@ -124,5 +124,6 @@ li.li-style li.li-style.current { color : var(--vscode-foreground); background-c
 	border-left: 5px solid transparent;
 }
 .select-list-group li[data-highlight="true"] {
-	border-left: 5px solid darkslateblue;
+	border-left: 5px solid var(--vscode-focusBorder);
+	background-color: var(--vscode-focusBorder);
 }
