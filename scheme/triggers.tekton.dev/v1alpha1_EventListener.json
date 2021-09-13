@@ -387,7 +387,6 @@
           "type": "array"
         },
         "resources": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/ResourceRequirements"
         },
         "volumeMounts": {
@@ -692,6 +691,19 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "EphemeralVolumeSource": {
+      "properties": {
+        "volumeClaimTemplate": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/PersistentVolumeClaimTemplate"
+        },
+        "readOnly": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "EventListener": {
       "required": [
         "spec"
@@ -733,7 +745,6 @@
     },
     "EventListenerSpec": {
       "required": [
-        "serviceAccountName",
         "triggers"
       ],
       "properties": {
@@ -746,9 +757,6 @@
             "$ref": "#/definitions/EventListenerTrigger"
           },
           "type": "array"
-        },
-        "replicas": {
-          "type": "integer"
         },
         "namespaceSelector": {
           "$schema": "http://json-schema.org/draft-04/schema#",
@@ -870,11 +878,6 @@
           "type": "array"
         }
       },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "FieldsV1": {
-      "properties": {},
       "additionalProperties": false,
       "type": "object"
     },
@@ -1176,8 +1179,43 @@
           "type": "string"
         },
         "value": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/JSON"
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "properties": {},
+                    "additionalProperties": true,
+                    "type": "object"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "properties": {},
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "additionalProperties": false,
@@ -1193,21 +1231,6 @@
         },
         "apiVersion": {
           "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "JSON": {
-      "required": [
-        "Raw"
-      ],
-      "properties": {
-        "Raw": {
-          "type": "string",
-          "media": {
-            "binaryEncoding": "base64"
-          }
         }
       },
       "additionalProperties": false,
@@ -1332,8 +1355,9 @@
           "type": "string"
         },
         "fieldsV1": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/FieldsV1"
+          "properties": {},
+          "additionalProperties": true,
+          "type": "object"
         }
       },
       "additionalProperties": false,
@@ -1637,6 +1661,54 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "PersistentVolumeClaimSpec": {
+      "properties": {
+        "accessModes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "selector": {
+          "$ref": "#/definitions/LabelSelector"
+        },
+        "resources": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ResourceRequirements"
+        },
+        "volumeName": {
+          "type": "string"
+        },
+        "storageClassName": {
+          "type": "string"
+        },
+        "volumeMode": {
+          "type": "string"
+        },
+        "dataSource": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TypedLocalObjectReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "PersistentVolumeClaimTemplate": {
+      "required": [
+        "spec"
+      ],
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/ObjectMeta"
+        },
+        "spec": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/PersistentVolumeClaimSpec"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "PersistentVolumeClaimVolumeSource": {
       "required": [
         "claimName"
@@ -1810,6 +1882,9 @@
         },
         "fsGroupChangePolicy": {
           "type": "string"
+        },
+        "seccompProfile": {
+          "$ref": "#/definitions/SeccompProfile"
         }
       },
       "additionalProperties": false,
@@ -1968,6 +2043,9 @@
             "$ref": "#/definitions/TopologySpreadConstraint"
           },
           "type": "array"
+        },
+        "setHostnameAsFQDN": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false,
@@ -2255,6 +2333,21 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "SeccompProfile": {
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "localhostProfile": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "SecretEnvSource": {
       "properties": {
         "name": {
@@ -2371,6 +2464,10 @@
         },
         "procMount": {
           "type": "string"
+        },
+        "seccompProfile": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/SeccompProfile"
         }
       },
       "additionalProperties": false,
@@ -2591,6 +2688,26 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "TypedLocalObjectReference": {
+      "required": [
+        "apiGroup",
+        "kind",
+        "name"
+      ],
+      "properties": {
+        "apiGroup": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "URL": {
       "required": [
         "Scheme",
@@ -2601,7 +2718,8 @@
         "RawPath",
         "ForceQuery",
         "RawQuery",
-        "Fragment"
+        "Fragment",
+        "RawFragment"
       ],
       "properties": {
         "Scheme": {
@@ -2630,6 +2748,9 @@
           "type": "string"
         },
         "Fragment": {
+          "type": "string"
+        },
+        "RawFragment": {
           "type": "string"
         }
       },
@@ -2760,6 +2881,10 @@
         "csi": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/CSIVolumeSource"
+        },
+        "ephemeral": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/EphemeralVolumeSource"
         }
       },
       "additionalProperties": false,
