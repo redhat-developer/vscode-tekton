@@ -249,7 +249,7 @@ export class TaskView {
         enterEvent(e);
       }
       hideList(listGroup);
-      initList()
+      initList();
     });
     this.searchInput.inputElement.addEventListener('click', () => {
       keyUpDown();

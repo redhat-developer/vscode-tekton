@@ -30,11 +30,10 @@ export function hideList(ele): void {
 
 export function keyUpDown(): void {
   const taskInput = document.getElementById('taskInput');
-  const items = group.querySelectorAll('li[data-display="true"]');
-  const last = items[items.length - 1];
-  const first = items[0];
-
   taskInput.onkeydown = function (e) {
+    const items = document.querySelectorAll('li[data-display="true"]');
+    const last = items[items.length - 1];
+    const first = items[0];
     if (e.code === 'ArrowUp') {
       if (count === 0) {
         count = 2;
@@ -44,6 +43,8 @@ export function keyUpDown(): void {
       items[count - 1]['dataset'].highlight = items[count - 1] ? 'true' : 'false';
       if (items[count]) {
         items[count]['dataset'].highlight = 'false';
+      } else if (items && items.length === 1) {
+        last['dataset'].highlight = 'true';
       } else {
         first['dataset'].highlight = 'false';
       }
@@ -53,8 +54,9 @@ export function keyUpDown(): void {
       items[count]['dataset'].highlight = items[count] ? 'true' : 'false';
       if (items[count - 1]) {
         items[count - 1]['dataset'].highlight = 'false';
-      }
-      else {
+      } else if (items && items.length === 1) {
+        last['dataset'].highlight = 'true';
+      } else {
         last['dataset'].highlight = 'false';
       }
       count++;
