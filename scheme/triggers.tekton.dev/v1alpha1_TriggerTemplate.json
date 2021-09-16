@@ -2,11 +2,6 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "$ref": "#/definitions/TriggerTemplate",
   "definitions": {
-    "FieldsV1": {
-      "properties": {},
-      "additionalProperties": false,
-      "type": "object"
-    },
     "ManagedFieldsEntry": {
       "properties": {
         "manager": {
@@ -26,8 +21,9 @@
           "type": "string"
         },
         "fieldsV1": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/FieldsV1"
+          "properties": {},
+          "additionalProperties": true,
+          "type": "object"
         }
       },
       "additionalProperties": false,
