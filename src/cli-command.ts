@@ -375,6 +375,10 @@ export class Command {
   static hubTaskDowngrade(name: string, version: string): CliCommand {
     return newTknCommand('hub', 'downgrade', 'task', name, '--to', version);
   }
+  
+  static hubTaskReinstall(name: string, version: string): CliCommand {
+    return newTknCommand('hub', 'reinstall', 'task', name, '--version', version);
+  }
 
   static listTaskRun(): CliCommand {
     if (ocFallBack.get('ocFallBack')) {
