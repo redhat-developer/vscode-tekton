@@ -154,6 +154,14 @@ export class Command {
     }
   }
 
+  static featureFlags(): CliCommand {
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('get', '-n', 'tekton-pipelines', 'configmap', 'feature-flags', '-o', 'json');
+    } else {
+      return newK8sCommand('get', '-n', 'tekton-pipelines', 'configmap', 'feature-flags', '-o', 'json');
+    }
+  }
+
   static deleteTriggerTemplate(name: string): CliCommand {
     if (ocFallBack.get('ocFallBack')) {
       return newOcCommand('delete', 'TriggerTemplate', name);
@@ -406,6 +414,42 @@ export class Command {
     } else {
       return newK8sCommand('get', resourceName, name, '-w', '-o', 'json');
     }
+  }
+
+  static loginToContainer(container: string, podName: string, namespace: string): CliCommand {
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('exec', '-it', '-n', namespace, '-c', container, podName, 'bash');
+    } else {
+      return newK8sCommand('exec', '-it', '-n', namespace, '-c', container, podName, 'bash');
+    }
+  }
+
+  static isContainerStoppedOnDebug(container: string, podName: string, namespace: string): CliCommand {
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', 'awk \'END{print NR}\' tekton/termination');
+    } else {
+      return newK8sCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', 'awk \'END{print NR}\' tekton/termination');
+    }
+  }
+
+  static debugContinue(container: string, podName: string, namespace: string): CliCommand {
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', '/tekton/debug/scripts/debug-continue');
+    } else {
+      return newK8sCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', '/tekton/debug/scripts/debug-continue');
+    }
+  }
+
+  static debugFailContinue(container: string, podName: string, namespace: string): CliCommand {
+    if (ocFallBack.get('ocFallBack')) {
+      return newOcCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', '/tekton/debug/scripts/debug-fail-continue');
+    } else {
+      return newK8sCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', '/tekton/debug/scripts/debug-fail-continue');
+    }
+  }
+
+  static cancelTaskRun(name: string): CliCommand {
+    return newTknCommand('taskrun', 'cancel', name);
   }
 
   static workspace(name: string): CliCommand {
