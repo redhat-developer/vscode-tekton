@@ -26,14 +26,6 @@ interface FeatureFlag {
   };
 }
 
-const getRandomChars = (len = 7): string => {
-  return Math.random()
-    .toString(36)
-    .replace(/[^a-z0-9]+/g, '')
-    .substr(1, len);
-}
-
-
 export function debug(taskRun: TektonNode): Promise<string | null> {
   return Progress.execFunctionWithProgress(`Starting debugger session for the TaskRun '${taskRun.getName()}'.`, () => startDebugger(taskRun));
 }
@@ -46,9 +38,8 @@ async function startDebugger(taskRun: TektonNode): Promise<string> {
   }
   const featureFlagData: FeatureFlag = JSON.parse(result.stdout);
   if (featureFlagData.data['enable-api-fields'] === 'alpha') {
-    const resourceName = `${taskRun.getName()}-${getRandomChars(7)}`;
-    const createTaskRun = await startTaskRunWithDebugger(taskRun, resourceName, 'debug_start');
-    if (!createTaskRun) return null;
+    const resourceName = await startTaskRunWithDebugger(taskRun, 'debug_start');
+    if (!resourceName) return null;
     sessions.set(resourceName, {resourceType: taskRun.contextValue});
     debugExplorer.refresh();
   } else {
@@ -57,12 +48,12 @@ async function startDebugger(taskRun: TektonNode): Promise<string> {
 }
 
 
-async function startTaskRunWithDebugger(taskRun: TektonNode, resourceName: string, commandId?: string): Promise<boolean> {
+async function startTaskRunWithDebugger(taskRun: TektonNode, commandId?: string): Promise<string> {
   const taskRunTemplate: TknTaskRun = {
     apiVersion: 'tekton.dev/v1beta1',
     kind: 'TaskRun',
     metadata: {
-      name: resourceName
+      generateName: `${taskRun.getName()}-`
     }
   }
   const taskRunContent = await TaskRun.getTaskRunData(taskRun.getName());
@@ -77,12 +68,14 @@ async function startTaskRunWithDebugger(taskRun: TektonNode, resourceName: strin
   const fsPath = path.join(tempPath, `${taskRunTemplate.metadata.generateName}.yaml`);
   const taskRunYaml = yaml.dump(taskRunTemplate);
   await fs.writeFile(fsPath, taskRunYaml, 'utf8');
-  const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
+  const result = await cli.execute(Command.create(`${quote}${fsPath}${quote} -o json`));
   if (result.error) {
     telemetryLogError(commandId, result.error.toString().replace(fsPath, 'user path'));
     window.showErrorMessage(`Fail to start TaskRun: ${getStderrString(result.error)}`);
-    return false;
+    await fs.unlink(fsPath);
+    return null;
   }
   await fs.unlink(fsPath);
-  return true;
+  const taskRunData: TknTaskRun = JSON.parse(result.stdout);
+  return taskRunData.metadata.name;
 }

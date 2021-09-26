@@ -65,15 +65,23 @@ async function watchTaskRunContainer(resourceName: string, resourceType: string)
 
       const containerPass = new RegExp('current phase is Succeeded');
       if (containerPass.test(getStderrString(checkDebugStatus.error)) && sessions.get(taskRunData.metadata.name)) {
-        sessions.delete(taskRunData.metadata.name);
-        const activeTerminal = window.terminals;
-        activeTerminal.map((terminal) => {
-          if (terminal.name.trim() === `Tekton:${taskRunData.metadata.name}`) {
-            terminal.dispose();
-          }
-        });
-        debugExplorer.refresh();
+        deleteDebugger(taskRunData);
+      }
+
+      if (!checkDebugStatus.stdout.trim() && sessions.get(taskRunData.metadata.name).count) {
+        deleteDebugger(taskRunData);
       }
     }
   });
+}
+
+function deleteDebugger(taskRunData: TknTaskRun): void {
+  sessions.delete(taskRunData.metadata.name);
+  const activeTerminal = window.terminals;
+  activeTerminal.map((terminal) => {
+    if (terminal.name.trim() === `Tekton:${taskRunData.metadata.name}`) {
+      terminal.dispose();
+    }
+  });
+  debugExplorer.refresh();
 }
