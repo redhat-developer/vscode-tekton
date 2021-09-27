@@ -9,6 +9,7 @@ import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { window } from 'vscode';
 import { cli } from '../cli';
+import semver = require('semver');
 import { Command } from '../cli-command';
 import { TaskRun } from '../tekton/taskrun';
 import { TektonNode } from '../tree-view/tekton-node';
@@ -19,6 +20,7 @@ import { debugExplorer } from './debugExplorer';
 import { telemetryLogError } from '../telemetry';
 import { TknTaskRun } from '../tekton';
 import { sessions } from './debug-tree-view';
+import { TknVersion, version } from '../util/tknversion';
 
 interface FeatureFlag {
   data: {
@@ -31,6 +33,12 @@ export function debug(taskRun: TektonNode): Promise<string | null> {
 }
 
 async function startDebugger(taskRun: TektonNode): Promise<string> {
+  const getNewELSupport: TknVersion = await version();
+  const compareVersion = semver.satisfies('0.26.0', `<=${getNewELSupport.pipeline}`);
+  if (!compareVersion) {
+    window.showWarningMessage('Debugger is supported above pipeline version: `0.26.0`');
+    return null;
+  }
   const result = await cli.execute(Command.featureFlags());
   if (result.error) {
     window.showErrorMessage(`Fail to fetch data: ${getStderrString(result.error)}`);
@@ -43,7 +51,7 @@ async function startDebugger(taskRun: TektonNode): Promise<string> {
     sessions.set(resourceName, {resourceType: taskRun.contextValue});
     debugExplorer.refresh();
   } else {
-    window.showWarningMessage('To enable debugger change enable-api-fields to alpha');
+    window.showWarningMessage('To enable debugger change enable-api-fields to alpha in ConfigMap namespace tekton-pipelines');
   }
 }
 

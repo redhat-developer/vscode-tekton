@@ -68,7 +68,7 @@ async function watchTaskRunContainer(resourceName: string, resourceType: string)
         deleteDebugger(taskRunData);
       }
 
-      if (!checkDebugStatus.stdout.trim() && sessions.get(taskRunData.metadata.name).count) {
+      if (!checkDebugStatus.stdout.trim() && sessions.get(taskRunData.metadata.name)?.count) {
         deleteDebugger(taskRunData);
       }
     }

@@ -562,13 +562,13 @@
           "when": "tekton:zenMode"
         },
         {
+          "id": "tektonDebugView",
+          "name": "Debug Sessions"
+        },
+        {
           "id": "tektonHubTasks",
           "name": "TektonHub",
           "type": "webview"
-        },
-        {
-          "id": "tektonDebugView",
-          "name": "Debug Sessions"
         }
       ]
     },
