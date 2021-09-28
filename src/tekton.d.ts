@@ -37,6 +37,7 @@ interface Debugger {
 
 interface TknTaskRunSpec {
   params?: Param[];
+  status?: string;
   resources?: Resource;
   workspaces?: Workspace[];
   serviceAccountName?: string;

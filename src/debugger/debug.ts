@@ -68,6 +68,9 @@ async function startTaskRunWithDebugger(taskRun: TektonNode, commandId?: string)
   taskRunTemplate.spec = taskRunContent.spec;
   taskRunTemplate.metadata.labels = taskRunContent.metadata.labels;
   taskRunTemplate.spec.debug = {breakpoint: ['onFailure']};
+  if (taskRunTemplate.spec.status) {
+    delete(taskRunTemplate.spec.status);
+  }
   const tempPath = os.tmpdir();
   if (!tempPath) {
     return;
