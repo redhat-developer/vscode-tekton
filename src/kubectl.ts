@@ -5,7 +5,7 @@
 
 import { CliCommand, cli} from './cli';
 import { newK8sCommand, newOcCommand } from './cli-command';
-import { PipelineRunData, PipelineTaskRunData, TknTaskRun } from './tekton';
+import { PipelineRunData, TknTaskRun } from './tekton';
 import { ocFallBack } from './util/check-cluster-status';
 
 export const KubectlCommands = {
