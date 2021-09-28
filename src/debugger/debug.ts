@@ -16,10 +16,9 @@ import { TektonNode } from '../tree-view/tekton-node';
 import { Platform } from '../util/platform';
 import { Progress } from '../util/progress';
 import { getStderrString } from '../util/stderrstring';
-import { debugExplorer } from './debugExplorer';
 import { telemetryLogError } from '../telemetry';
 import { TknTaskRun } from '../tekton';
-import { sessions } from './debug-tree-view';
+import { watchTaskRunContainer } from './debug-tree-view';
 import { TknVersion, version } from '../util/tknversion';
 
 interface FeatureFlag {
@@ -48,8 +47,9 @@ async function startDebugger(taskRun: TektonNode): Promise<string> {
   if (featureFlagData.data['enable-api-fields'] === 'alpha') {
     const resourceName = await startTaskRunWithDebugger(taskRun, 'debug_start');
     if (!resourceName) return null;
-    sessions.set(resourceName, {resourceType: taskRun.contextValue});
-    debugExplorer.refresh();
+    // sessions.set(resourceName, {resourceType: taskRun.contextValue});
+    watchTaskRunContainer(resourceName, taskRun.contextValue);
+    // debugExplorer.refresh();
   } else {
     window.showWarningMessage('To enable debugger change enable-api-fields to alpha in ConfigMap namespace tekton-pipelines');
   }

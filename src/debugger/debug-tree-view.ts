@@ -41,14 +41,14 @@ export async function debugTreeView(): Promise<TektonNode[]> {
         ContextType.DEBUGGER,
         TreeItemCollapsibleState.None,
       );
-      watchTaskRunContainer(key, value.resourceType);
+      // watchTaskRunContainer(key, value.resourceType);
       children.unshift(obj);
     }
     return children;
   }
 }
 
-async function watchTaskRunContainer(resourceName: string, resourceType: string): Promise<void> {
+export async function watchTaskRunContainer(resourceName: string, resourceType: string): Promise<void> {
   try {
     await kubectl.watchRunCommand(Command.watchResources(resourceType, resourceName), async (taskRunData: TknTaskRun) => {
       try {
@@ -63,6 +63,7 @@ async function watchTaskRunContainer(resourceName: string, resourceType: string)
               resourceName: taskRunData.metadata.name,
               namespace: taskRunData.metadata.namespace
             });
+            debugExplorer.refresh();
           }
 
           const containerPass = new RegExp('current phase is Succeeded');
