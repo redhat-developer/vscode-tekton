@@ -12,14 +12,13 @@ import { getStderrString } from '../util/stderrstring';
 import { sessions } from './debug-tree-view';
 
 
-export async function cancelTasRun(taskRun: TektonNode, commandId?: string): Promise<void> {
+export async function cancelTaskRun(taskRun: TektonNode, commandId?: string): Promise<void> {
   if (!taskRun) return null;
-  try {
-    const continueTaskRun = sessions.get(taskRun.getName());
-    await cli.execute(Command.cancelTaskRun(continueTaskRun.resourceName));
-  } catch (error) {
-    telemetryLogError(commandId, `Fail to debug fail continue ${getStderrString(error)}.`);
-    window.showInformationMessage(`Fail to debug fail continue ${getStderrString(error)}.`);
-    return;
+  const continueTaskRun = sessions.get(taskRun.getName());
+  const result = await cli.execute(Command.cancelTaskRun(continueTaskRun.resourceName));
+  if (result.error) {
+    telemetryLogError(commandId, `Fail to debug fail continue ${getStderrString(result.error)}.`);
+    window.showErrorMessage(`Fail to debug fail continue ${getStderrString(result.error)}.`);
+    return null;
   }
 }

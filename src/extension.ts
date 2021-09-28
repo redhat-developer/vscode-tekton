@@ -42,7 +42,7 @@ import { getClusterVersions } from './cluster-version';
 import { debug } from './debugger/debug';
 import { debugExplorer } from './debugger/debugExplorer';
 import { showDebugContinue } from './debugger/debug-continue';
-import { cancelTasRun } from './debugger/cancel-taskrun';
+import { cancelTaskRun } from './debugger/cancel-taskrun';
 import { showDebugFailContinue } from './debugger/debug-fail-continue';
 
 export let contextGlobalState: vscode.ExtensionContext;
@@ -114,7 +114,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.taskrun.debug', (context) => execute(debug, context, 'tekton.taskrun.debug')),
     vscode.commands.registerCommand('debug.continue', (context) => execute(showDebugContinue, context, 'debug.continue')),
     vscode.commands.registerCommand('debug.failContinue', (context) => execute(showDebugFailContinue, context, 'debug.failContinue')),
-    vscode.commands.registerCommand('debug.exit', (context) => execute(cancelTasRun, context, 'debug.exit')),
+    vscode.commands.registerCommand('debug.exit', (context) => execute(cancelTaskRun, context, 'debug.exit')),
 
     hubViewProvider,
     vscode.window.registerWebviewViewProvider('tektonHubTasks', hubViewProvider),

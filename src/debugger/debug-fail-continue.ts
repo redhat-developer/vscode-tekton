@@ -14,12 +14,11 @@ import { sessions } from './debug-tree-view';
 
 export async function showDebugFailContinue(taskRun: TektonNode, commandId?: string): Promise<void> {
   if (!taskRun) return null;
-  try {
-    const continueTaskRun = sessions.get(taskRun.getName());
-    await cli.execute(Command.debugFailContinue(continueTaskRun.containerName, continueTaskRun.podName, continueTaskRun.namespace));
-  } catch (error) {
-    telemetryLogError(commandId, `Fail to debug fail continue ${getStderrString(error)}.`);
-    window.showInformationMessage(`Fail to debug fail continue ${getStderrString(error)}.`);
-    return;
+  const continueTaskRun = sessions.get(taskRun.getName());
+  const result = await cli.execute(Command.debugFailContinue(continueTaskRun.containerName, continueTaskRun.podName, continueTaskRun.namespace));
+  if (result.error) {
+    telemetryLogError(commandId, `Fail to debug fail continue ${getStderrString(result.error)}.`);
+    window.showInformationMessage(`Fail to debug fail continue ${getStderrString(result.error)}.`);
+    return null;
   }
 }
