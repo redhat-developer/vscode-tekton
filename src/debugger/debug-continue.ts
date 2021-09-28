@@ -16,9 +16,9 @@ export async function showDebugContinue(taskRun: TektonNode, commandId?: string)
   if (!taskRun) return null;
   const continueTaskRun = sessions.get(taskRun.getName());
   const result = await cli.execute(Command.debugContinue(continueTaskRun.containerName, continueTaskRun.podName, continueTaskRun.namespace));
-  if (result.error) {
+  if (result.error && !result.stdout) {
     telemetryLogError(commandId, `Fail to continue debug ${getStderrString(result.error)}.`);
-    window.showInformationMessage(`Fail to continue debug ${getStderrString(result.error)}.`);
+    window.showErrorMessage(`Fail to continue debug ${getStderrString(result.error)}.`);
     return null;
   }
 }
