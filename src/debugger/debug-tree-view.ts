@@ -49,30 +49,44 @@ export async function debugTreeView(): Promise<TektonNode[]> {
 }
 
 async function watchTaskRunContainer(resourceName: string, resourceType: string): Promise<void> {
-  await kubectl.watchRunCommand(Command.watchResources(resourceType, resourceName), async (taskRunData: TknTaskRun) => {
-    if (taskRunData?.status?.podName && taskRunData?.status?.steps?.[0]?.container) {
-      const checkDebugStatus = await cli.execute(Command.isContainerStoppedOnDebug(taskRunData.status.steps[0].container, taskRunData.status.podName, taskRunData.metadata.namespace));
-      if (!sessions.get(taskRunData.metadata.name).count && checkDebugStatus.stdout.trim() && checkDebugStatus.stdout.trim().length !== 0) {
-        tkn.executeInTerminal(Command.loginToContainer(taskRunData.status.steps[0].container, taskRunData.status.podName, taskRunData.metadata.namespace), taskRunData.metadata.name);
-        sessions.set(taskRunData.metadata.name, {
-          count: true,
-          podName: taskRunData.status.podName,
-          containerName: taskRunData.status.steps[0].container,
-          resourceName: taskRunData.metadata.name,
-          namespace: taskRunData.metadata.namespace
-        });
-      }
+  try {
+    await kubectl.watchRunCommand(Command.watchResources(resourceType, resourceName), async (taskRunData: TknTaskRun) => {
+      try {
+        if (taskRunData?.status?.podName && taskRunData?.status?.steps?.[0]?.container) {
+          const checkDebugStatus = await cli.execute(Command.isContainerStoppedOnDebug(taskRunData.status.steps[0].container, taskRunData.status.podName, taskRunData.metadata.namespace));
+          if (!sessions.get(taskRunData.metadata.name)?.count && checkDebugStatus.stdout.trim() && checkDebugStatus.stdout.trim().length !== 0) {
+            tkn.executeInTerminal(Command.loginToContainer(taskRunData.status.steps[0].container, taskRunData.status.podName, taskRunData.metadata.namespace), taskRunData.metadata.name);
+            sessions.set(taskRunData.metadata.name, {
+              count: true,
+              podName: taskRunData.status.podName,
+              containerName: taskRunData.status.steps[0].container,
+              resourceName: taskRunData.metadata.name,
+              namespace: taskRunData.metadata.namespace
+            });
+          }
 
-      const containerPass = new RegExp('current phase is Succeeded');
-      if (containerPass.test(getStderrString(checkDebugStatus.error)) && sessions.get(taskRunData.metadata.name)) {
-        deleteDebugger(taskRunData);
-      }
+          const containerPass = new RegExp('current phase is Succeeded');
+          if (containerPass.test(getStderrString(checkDebugStatus.error)) && sessions.get(taskRunData.metadata.name)) {
+            deleteDebugger(taskRunData);
+          }
 
-      if (!checkDebugStatus.stdout.trim() && sessions.get(taskRunData.metadata.name)?.count) {
-        deleteDebugger(taskRunData);
+          if (!checkDebugStatus.stdout.trim() && sessions.get(taskRunData.metadata.name)?.count) {
+            deleteDebugger(taskRunData);
+          }
+        }
+        if (taskRunData?.status?.conditions?.[0].reason === 'TaskRunCancelled' || taskRunData?.status?.conditions?.[0].status === 'False') {
+          sessions.delete(resourceName);
+          debugExplorer.refresh();
+        }
+      } catch (e) {
+        sessions.delete(resourceName);
+        debugExplorer.refresh();
       }
-    }
-  });
+    });
+  } catch (e) {
+    sessions.delete(resourceName);
+    debugExplorer.refresh();
+  }
 }
 
 function deleteDebugger(taskRunData: TknTaskRun): void {
