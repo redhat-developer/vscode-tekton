@@ -31,7 +31,7 @@ export function debug(taskRun: TektonNode): Promise<string | null> {
   return Progress.execFunctionWithProgress(`Starting debugger session for the TaskRun '${taskRun.getName()}'.`, () => startDebugger(taskRun));
 }
 
-async function startDebugger(taskRun: TektonNode): Promise<string> {
+export async function startDebugger(taskRun: TektonNode): Promise<string> {
   const getNewELSupport: TknVersion = await version();
   const compareVersion = semver.satisfies('0.26.0', `<=${getNewELSupport.pipeline}`);
   if (!compareVersion) {
@@ -52,6 +52,7 @@ async function startDebugger(taskRun: TektonNode): Promise<string> {
     // debugExplorer.refresh();
   } else {
     window.showWarningMessage('To enable debugger change enable-api-fields to alpha in ConfigMap namespace tekton-pipelines');
+    return null;
   }
 }
 
