@@ -441,6 +441,12 @@
         "enablement": "tekton:tkn"
       },
       {
+        "command": "debug.terminal",
+        "title": "Show debug in terminal",
+        "category": "Tekton",
+        "enablement": "tekton:tkn"
+      },
+      {
         "command": "tekton.showDiagnosticDataAction",
         "title": "Show Diagnostic Data",
         "category": "Tekton",
@@ -683,6 +689,10 @@
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
         {
+          "command": "debug.terminal",
+          "when": "view =~ /^tekton(CustomTree|PipelineExplorer|Debug)View/"
+        },
+        {
           "command": "tekton.showDiagnosticDataAction",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/"
         },
@@ -867,6 +877,11 @@
         {
           "command": "tekton.taskrun.debug",
           "when": "view =~ /^tekton(CustomTree|PipelineExplorer)View/ && viewItem == taskrun",
+          "group": "c1@3"
+        },
+        {
+          "command": "debug.terminal",
+          "when": "view =~ /^tekton(Debug)View/ && viewItem == debugger",
           "group": "c1@3"
         },
         {

@@ -44,6 +44,7 @@ import { debugExplorer } from './debugger/debugExplorer';
 import { showDebugContinue } from './debugger/debug-continue';
 import { cancelTaskRun } from './debugger/cancel-taskrun';
 import { showDebugFailContinue } from './debugger/debug-fail-continue';
+import { openContainerInTerminal } from './debugger/show-in-terminal';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -115,6 +116,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('debug.continue', (context) => execute(showDebugContinue, context, 'debug.continue')),
     vscode.commands.registerCommand('debug.failContinue', (context) => execute(showDebugFailContinue, context, 'debug.failContinue')),
     vscode.commands.registerCommand('debug.exit', (context) => execute(cancelTaskRun, context, 'debug.exit')),
+    vscode.commands.registerCommand('debug.terminal', (context) => execute(openContainerInTerminal, context, 'debug.terminal')),
 
     hubViewProvider,
     vscode.window.registerWebviewViewProvider('tektonHubTasks', hubViewProvider),

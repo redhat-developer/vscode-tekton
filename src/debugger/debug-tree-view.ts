@@ -34,7 +34,7 @@ export const sessions: Map<string, DebugSessionEntry> = new Map();
 export async function debugTreeView(): Promise<TektonNode[]> {
   if (sessions && sessions.size !== 0) {
     const children = [];
-    for (const [key, value] of sessions) {
+    for (const [key] of sessions) {
       const obj: DebuggerNodeImpl = new DebuggerNodeImpl(
         null,
         key,

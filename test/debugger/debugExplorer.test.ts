@@ -7,8 +7,6 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import sinon = require('sinon');
 import { DebugExplorer } from '../../src/debugger/debugExplorer';
-import { TestItem } from '../tekton/testTektonitem';
-import { TknImpl } from '../../src/tkn';
 import { sessions } from '../../src/debugger/debug-tree-view';
 
 const expect = chai.expect;
