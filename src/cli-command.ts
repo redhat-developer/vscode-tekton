@@ -418,9 +418,9 @@ export class Command {
 
   static loginToContainer(container: string, podName: string, namespace: string): CliCommand {
     if (ocFallBack.get('ocFallBack')) {
-      return newOcCommand('exec', '-it', '-n', namespace, '-c', container, podName, 'bash');
+      return newOcCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', 'bash');
     } else {
-      return newK8sCommand('exec', '-it', '-n', namespace, '-c', container, podName, 'bash');
+      return newK8sCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', 'bash');
     }
   }
 
