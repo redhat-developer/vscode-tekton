@@ -88,7 +88,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
       if (value === 'Yes') {
         return Progress.execFunctionWithProgress('Deleting...', async () => {
           for (const del of toDelete.values()) {
-            const result = await cli.execute(del);
+            const result = await tkn.execute(del);
             if (result.error) {
               telemetryLogError(commandId, result.error);
               window.showErrorMessage(`Failed to delete: '${result.error}'.`)

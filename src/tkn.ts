@@ -573,12 +573,10 @@ export class TknImpl implements Tkn {
   }
 
   async execute(command: CliCommand, cwd?: string, fail = true): Promise<CliExitData> {
-    if (command.cliCommand.indexOf('tkn') >= 0) {
-      const toolLocation = ToolsConfig.getTknLocation('tkn');
-      if (toolLocation) {
-        // eslint-disable-next-line require-atomic-updates
-        command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);
-      }
+    const toolLocation = await ToolsConfig.detectOrDownload(command.cliCommand);
+    if (toolLocation) {
+      // eslint-disable-next-line require-atomic-updates
+      command.cliCommand = command.cliCommand.replace(command.cliCommand, `"${toolLocation}"`).replace(new RegExp(`&& ${command.cliCommand}`, 'g'), `&& "${toolLocation}"`);
     }
 
     return cli.execute(command, cwd ? { cwd } : {})
@@ -587,12 +585,10 @@ export class TknImpl implements Tkn {
   }
 
   executeWatch(command: CliCommand, cwd?: string): WatchProcess {
-    if (command.cliCommand.indexOf('tkn') >= 0) {
-      const toolLocation = ToolsConfig.getTknLocation('tkn');
-      if (toolLocation) {
-        // eslint-disable-next-line require-atomic-updates
-        command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);
-      }
+    const toolLocation = ToolsConfig.getTknLocation(command.cliCommand);
+    if (toolLocation) {
+      // eslint-disable-next-line require-atomic-updates
+      command.cliCommand = command.cliCommand.replace(command.cliCommand, `"${toolLocation}"`).replace(new RegExp(`&& ${command.cliCommand}`, 'g'), `&& "${toolLocation}"`);
     }
 
     return cli.executeWatch(command, cwd ? { cwd } : {});

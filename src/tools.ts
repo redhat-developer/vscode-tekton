@@ -100,10 +100,13 @@ export class ToolsConfig {
           if (action !== 'Cancel') {
             if (toolDlLocation.endsWith('.zip') || toolDlLocation.endsWith('.tar.gz')) {
               await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), ToolsConfig.tool[cmd].filePrefix);
+              await fsex.remove(toolDlLocation);
             } else if (toolDlLocation.endsWith('.gz')) {
               await Archive.unzip(toolDlLocation, toolCacheLocation, ToolsConfig.tool[cmd].filePrefix);
+              await fsex.remove(toolDlLocation);
+            } else {
+              fsex.renameSync(toolDlLocation, toolCacheLocation);
             }
-            await fsex.remove(toolDlLocation);
             if (Platform.OS !== 'win32') {
               await fsex.chmod(toolCacheLocation, '765');
             }

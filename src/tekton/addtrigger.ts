@@ -29,6 +29,7 @@ import semver = require('semver');
 import { ClusterTaskModel, EventListenerModel, PipelineRunModel, TaskModel, TriggerTemplateModel } from '../util/resource-kind';
 import { showPipelineRunPreview } from '../pipeline/pipeline-preview';
 import { PipelineRun } from './pipelinerun';
+import { tkn } from '../tkn';
 
 export enum WorkspaceResource {
   Secret = 'secret',
@@ -84,7 +85,7 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
   }
   const fsPath = path.join(tempPath, `${trigger.metadata.name || trigger.metadata.generateName}.yaml`);
   await fs.writeFile(fsPath, triggerYaml, 'utf8');
-  const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
+  const result = await tkn.execute(Command.create(`${quote}${fsPath}${quote}`));
   if (result.error) {
     telemetryLogError(commandId, result.error.toString().replace(fsPath, 'user path'));
     vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(result.error)}`);
