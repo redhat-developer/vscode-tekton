@@ -39,28 +39,28 @@ export class ToolsConfig {
   }
 
   static getTknLocation(cmd: string): string {
-    return ToolsConfig.tool[cmd].location;
+    return ToolsConfig.tool[cmd]?.location;
   }
 
   public static async detectOrDownload(cmd: string): Promise<string> {
 
-    let toolLocation: string = ToolsConfig.tool[cmd].location;
+    let toolLocation: string = ToolsConfig.tool[cmd]?.location;
 
     if (toolLocation === undefined) {
       let response: string;
       const toolCacheLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool[cmd].cmdFileName);
       const whichLocation = which(cmd);
       const toolLocations: string[] = [whichLocation ? whichLocation.stdout : null, toolCacheLocation];
-      toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tool[cmd].versionRange);
+      toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tool[cmd].versionRange, cmd);
       const downloadVersion = `Download ${ToolsConfig.tool[cmd].version}`;
 
       if (toolLocation) {
-        const currentVersion = await ToolsConfig.getVersion(toolLocation);
-        if (!semver.satisfies(currentVersion, `>=${ToolsConfig.tool[cmd].versionRange}`)) {
+        const currentVersion = await ToolsConfig.getVersion(toolLocation, cmd);
+        if (!semver.satisfies(currentVersion, `>=${ToolsConfig.tool[cmd].versionRange}`) && cmd !== 'kubectl') {
           response = await vscode.window.showWarningMessage(`Detected unsupported tkn version: ${currentVersion}. Supported tkn version: ${ToolsConfig.tool[cmd].versionRangeLabel}.`, downloadVersion, 'Cancel');
         }
       }
-      if (await ToolsConfig.getVersion(toolCacheLocation) === ToolsConfig.tool[cmd].version && response !== 'Cancel') {
+      if (await ToolsConfig.getVersion(toolCacheLocation, cmd) === ToolsConfig.tool[cmd].version && response !== 'Cancel') {
         response = 'Cancel';
         toolLocation = toolCacheLocation;
       }
@@ -125,28 +125,36 @@ export class ToolsConfig {
     return toolLocation;
   }
 
-  public static async getVersion(location: string): Promise<string> {
+  public static async getVersion(location: string, cmd?: string): Promise<string> {
     let detectedVersion: string;
     if (await fsex.pathExists(location)) {
       const version = new RegExp('^Client version:\\s[v]?([0-9]+\\.[0-9]+\\.[0-9]+)$');
-      const result = await cli.execute(createCliCommand(`"${location}"`, 'version'));
-      if (result.stdout) {
-        const toolVersion: string[] = result.stdout.trim().split('\n').filter((value) => {
-          return value.match(version);
-        }).map((value) => version.exec(value)[1]);
-        if (toolVersion.length) {
-          detectedVersion = toolVersion[0];
+      if (cmd === 'kubectl') {
+        const result = await cli.execute(createCliCommand(`"${location}"`, 'version', '-o', 'json'));
+        if (result.stdout) {
+          const jsonKubectlVersion = JSON.parse(result.stdout)['clientVersion'];
+          detectedVersion = `${jsonKubectlVersion['major']}.${jsonKubectlVersion['minor']}.0`;
+        }
+      } else {
+        const result = await cli.execute(createCliCommand(`"${location}"`, 'version'));
+        if (result.stdout) {
+          const toolVersion: string[] = result.stdout.trim().split('\n').filter((value) => {
+            return value.match(version);
+          }).map((value) => version.exec(value)[1]);
+          if (toolVersion.length) {
+            detectedVersion = toolVersion[0];
+          }
         }
       }
     }
     return detectedVersion;
   }
 
-  public static async selectTool(locations: string[], versionRange: string): Promise<string> {
+  public static async selectTool(locations: string[], versionRange: string, cmd?: string): Promise<string> {
     let result: string;
     for (const location of locations) {
       if (await fsex.pathExists(location)) {
-        const configVersion = await ToolsConfig.getVersion(location);
+        const configVersion = await ToolsConfig.getVersion(location, cmd);
         if (location && (semver.satisfies(configVersion, `>=${versionRange}`)) || semver.satisfies(configVersion, versionRange)) {
           result = location;
           break;

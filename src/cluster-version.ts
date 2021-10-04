@@ -5,8 +5,8 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
 
+import { cli } from './cli';
 import { Command } from './cli-command';
-import { tkn } from './tkn';
 
 interface Versions {
   openshift_Version: string;
@@ -14,7 +14,7 @@ interface Versions {
 }
 
 export async function getClusterVersions(): Promise<Versions> {
-  const result = await tkn.execute(Command.printOcVersionJson());
+  const result = await cli.execute(Command.printOcVersionJson());
   const versions: Versions = {
     kubernetes_Version: undefined,
     openshift_Version: undefined

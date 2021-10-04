@@ -5,7 +5,6 @@
 
 import * as os from 'os';
 import * as path from 'path';
-import { cli } from '../cli';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import * as vscode from 'vscode';

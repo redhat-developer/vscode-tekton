@@ -18,7 +18,6 @@ import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
 import { exposeRoute, RouteModel } from './expose';
 import { Progress } from '../util/progress';
-import { cli } from '../cli';
 import { TknVersion, version } from '../util/tknversion';
 import { NewPvc } from './create-resources';
 import { getExposeURl } from '../util/exposeurl';

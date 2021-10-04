@@ -6,7 +6,7 @@
 import { customTektonExplorer } from '../pipeline/customTektonExplorer'
 import { pipelineExplorer } from '../pipeline/pipelineExplorer'
 import { Pipeline } from '../tekton/pipeline';
-import { cli, CliCommand } from '../cli';
+import { CliCommand } from '../cli';
 import { Condition } from '../tekton/condition';
 import { PipelineResource } from '../tekton/pipelineresource';
 import { PipelineRun } from '../tekton/pipelinerun';
