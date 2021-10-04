@@ -574,7 +574,7 @@ export class TknImpl implements Tkn {
 
   async execute(command: CliCommand, cwd?: string, fail = true): Promise<CliExitData> {
     if (command.cliCommand.indexOf('tkn') >= 0) {
-      const toolLocation = ToolsConfig.getTknLocation();
+      const toolLocation = ToolsConfig.getTknLocation('tkn');
       if (toolLocation) {
         // eslint-disable-next-line require-atomic-updates
         command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);
@@ -588,7 +588,7 @@ export class TknImpl implements Tkn {
 
   executeWatch(command: CliCommand, cwd?: string): WatchProcess {
     if (command.cliCommand.indexOf('tkn') >= 0) {
-      const toolLocation = ToolsConfig.getTknLocation();
+      const toolLocation = ToolsConfig.getTknLocation('tkn');
       if (toolLocation) {
         // eslint-disable-next-line require-atomic-updates
         command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);

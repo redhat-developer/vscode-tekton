@@ -21,12 +21,14 @@ export class ToolsConfig {
 
   public static loadMetadata(requirements, platform): object {
     const req = JSON.parse(JSON.stringify(requirements));
-    if (req['tkn'].platform) {
-      if (req['tkn'].platform[platform]) {
-        Object.assign(req['tkn'], req['tkn'].platform[platform]);
-        delete req['tkn'].platform;
-      } else {
-        delete req['tkn'];
+    for (const object in requirements) {
+      if (req[object].platform) {
+        if (req[object].platform[platform]) {
+          Object.assign(req[object], req[object].platform[platform]);
+          delete req[object].platform;
+        } else {
+          delete req[object];
+        }
       }
     }
     return req;
@@ -36,41 +38,41 @@ export class ToolsConfig {
     ToolsConfig.tool = ToolsConfig.loadMetadata(configData, Platform.OS);
   }
 
-  static getTknLocation(): string {
-    return ToolsConfig.tool['tkn'].location;
+  static getTknLocation(cmd: string): string {
+    return ToolsConfig.tool[cmd].location;
   }
 
-  public static async detectOrDownload(): Promise<string> {
+  public static async detectOrDownload(cmd: string): Promise<string> {
 
-    let toolLocation: string = ToolsConfig.tool['tkn'].location;
+    let toolLocation: string = ToolsConfig.tool[cmd].location;
 
     if (toolLocation === undefined) {
       let response: string;
-      const toolCacheLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName);
-      const whichLocation = which('tkn');
+      const toolCacheLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool[cmd].cmdFileName);
+      const whichLocation = which(cmd);
       const toolLocations: string[] = [whichLocation ? whichLocation.stdout : null, toolCacheLocation];
-      toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tool['tkn'].versionRange);
-      const downloadVersion = `Download ${ToolsConfig.tool['tkn'].version}`;
+      toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tool[cmd].versionRange);
+      const downloadVersion = `Download ${ToolsConfig.tool[cmd].version}`;
 
       if (toolLocation) {
         const currentVersion = await ToolsConfig.getVersion(toolLocation);
-        if (!semver.satisfies(currentVersion, `>=${ToolsConfig.tool['tkn'].versionRange}`)) {
-          response = await vscode.window.showWarningMessage(`Detected unsupported tkn version: ${currentVersion}. Supported tkn version: ${ToolsConfig.tool['tkn'].versionRangeLabel}.`, downloadVersion, 'Cancel');
+        if (!semver.satisfies(currentVersion, `>=${ToolsConfig.tool[cmd].versionRange}`)) {
+          response = await vscode.window.showWarningMessage(`Detected unsupported tkn version: ${currentVersion}. Supported tkn version: ${ToolsConfig.tool[cmd].versionRangeLabel}.`, downloadVersion, 'Cancel');
         }
       }
-      if (await ToolsConfig.getVersion(toolCacheLocation) === ToolsConfig.tool['tkn'].version && response !== 'Cancel') {
+      if (await ToolsConfig.getVersion(toolCacheLocation) === ToolsConfig.tool[cmd].version && response !== 'Cancel') {
         response = 'Cancel';
         toolLocation = toolCacheLocation;
       }
 
       if (toolLocation === undefined || response === downloadVersion) {
         // otherwise request permission to download
-        const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].dlFileName);
-        const installRequest = `Download and install v${ToolsConfig.tool['tkn'].version}`;
+        const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool[cmd].dlFileName);
+        const installRequest = `Download and install v${ToolsConfig.tool[cmd].version}`;
 
         if (response !== downloadVersion) {
           response = await vscode.window.showInformationMessage(
-            `Cannot find Tekton CLI ${ToolsConfig.tool['tkn'].versionRangeLabel} for interacting with Tekton Pipelines. Commands which requires Tekton CLI will be disabled.`, installRequest, 'Help', 'Cancel');
+            `Cannot find Tekton CLI ${ToolsConfig.tool[cmd].versionRangeLabel} for interacting with Tekton Pipelines. Commands which requires Tekton CLI will be disabled.`, installRequest, 'Help', 'Cancel');
         }
         await fsex.ensureDir(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
         if (response === installRequest || response === downloadVersion) {
@@ -80,26 +82,26 @@ export class ToolsConfig {
             await vscode.window.withProgress({
               cancellable: true,
               location: vscode.ProgressLocation.Notification,
-              title: `Downloading ${ToolsConfig.tool['tkn'].description}`
+              title: `Downloading ${ToolsConfig.tool[cmd].description}`
             }, (progress: vscode.Progress<{ increment: number; message: string }>) => DownloadUtil.downloadFile(
-              ToolsConfig.tool['tkn'].url,
+              ToolsConfig.tool[cmd].url,
               toolDlLocation,
               (dlProgress, increment) => progress.report({ increment, message: `${dlProgress}%` }))
             );
 
             const sha256sum: string = await hasha.fromFile(toolDlLocation, { algorithm: 'sha256' });
-            if (sha256sum !== ToolsConfig.tool['tkn'].sha256sum) {
+            if (sha256sum !== ToolsConfig.tool[cmd].sha256sum) {
               fsex.removeSync(toolDlLocation);
-              action = await vscode.window.showInformationMessage(`Checksum for downloaded ${ToolsConfig.tool['tkn'].description} v${ToolsConfig.tool['tkn'].version} is not correct.`, 'Download again', 'Cancel');
+              action = await vscode.window.showInformationMessage(`Checksum for downloaded ${ToolsConfig.tool[cmd].description} v${ToolsConfig.tool[cmd].version} is not correct.`, 'Download again', 'Cancel');
             }
 
           } while (action === 'Download again');
 
           if (action !== 'Cancel') {
             if (toolDlLocation.endsWith('.zip') || toolDlLocation.endsWith('.tar.gz')) {
-              await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), ToolsConfig.tool['tkn'].filePrefix);
+              await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), ToolsConfig.tool[cmd].filePrefix);
             } else if (toolDlLocation.endsWith('.gz')) {
-              await Archive.unzip(toolDlLocation, toolCacheLocation, ToolsConfig.tool['tkn'].filePrefix);
+              await Archive.unzip(toolDlLocation, toolCacheLocation, ToolsConfig.tool[cmd].filePrefix);
             }
             await fsex.remove(toolDlLocation);
             if (Platform.OS !== 'win32') {
@@ -114,7 +116,7 @@ export class ToolsConfig {
       if (toolLocation) {
         // TODO: 
         // eslint-disable-next-line require-atomic-updates
-        ToolsConfig.tool['tkn'].location = toolLocation;
+        ToolsConfig.tool[cmd].location = toolLocation;
       }
     }
     return toolLocation;

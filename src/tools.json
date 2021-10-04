@@ -27,5 +27,34 @@
         "dlFileName": "tkn_0.17.0_Linux_x86_64.tar.gz"
       }
     }
+  },
+  "kubectl": {
+    "description": "Kubernetes CLI tool",
+    "vendor": "Google",
+    "name": "kubectl",
+    "version": "1.18.8",
+    "versionRange": "1.18.8",
+    "versionRangeLabel": "v1.18.0",
+    "dlFileName": "kubectl",
+    "cmdFileName": "kubectl",
+    "filePrefix": "",
+    "platform": {
+      "win32": {
+        "url": "https://storage.googleapis.com/kubernetes-release/release/v1.18.8/bin/windows/amd64/kubectl.exe",
+        "sha256sum": "4e19391f236d060448e41316119a8b184af7ed120561293cc9642356c3b88233",
+        "dlFileName": "kubectl.exe",
+        "cmdFileName": "kubectl.exe"
+      },
+      "darwin": {
+        "url": "https://storage.googleapis.com/kubernetes-release/release/v1.18.8/bin/darwin/amd64/kubectl",
+        "sha256sum": "13a366761418571311fc539d99888779f2501328ea9c6b2eb17a93b6733412f7",
+        "dlFileName": "kubectl"
+      },
+      "linux": {
+        "url": "https://storage.googleapis.com/kubernetes-release/release/v1.18.8/bin/linux/amd64/kubectl",
+        "sha256sum": "a076f5eff0710de94d1eb77bee458ea43b8f4d9572bbb3a3aec1edf0dde0a3e7",
+        "dlFileName": "kubectl"
+      }
+    }
   }
 }

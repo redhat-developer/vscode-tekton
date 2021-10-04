@@ -201,7 +201,7 @@ async function detectTknCli(): Promise<void> {
   setCommandContext(CommandContext.TknCli, false);
 
   // start detecting 'tkn' on extension start
-  const tknPath = await ToolsConfig.detectOrDownload();
+  const tknPath = await ToolsConfig.detectOrDownload('tkn');
 
   if (tknPath) {
     setCommandContext(CommandContext.TknCli, true);
