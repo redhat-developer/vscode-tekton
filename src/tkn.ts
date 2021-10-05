@@ -558,7 +558,7 @@ export class TknImpl implements Tkn {
   }
 
   async executeInTerminal(command: CliCommand, resourceName?: string, cwd: string = process.cwd(), name = 'Tekton'): Promise<void> {
-    let toolLocation = await ToolsConfig.detectOrDownload();
+    let toolLocation = await ToolsConfig.detectOrDownload(command.cliCommand);
     if (toolLocation) {
       toolLocation = path.dirname(toolLocation);
     }
