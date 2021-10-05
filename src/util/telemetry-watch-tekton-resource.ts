@@ -26,4 +26,3 @@ export async function watchTektonResources(extensionStartUpCheck?: boolean): Pro
     pipelineTriggerStatus.set('trigger', true);
   }   
 }
-
