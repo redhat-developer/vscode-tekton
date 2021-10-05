@@ -74,7 +74,7 @@ export interface Tkn {
   getRawClusterTasks(): Promise<TknTask[]>;
   execute(command: CliCommand, cwd?: string, fail?: boolean): Promise<CliExitData>;
   executeWatch(command: CliCommand, opts?: {}): WatchProcess;
-  executeInTerminal(command: CliCommand, cwd?: string): void;
+  executeInTerminal(command: CliCommand, resourceName?: string, cwd?: string): void;
   getTaskRunsForTasks(task: TektonNode): Promise<TektonNode[]>;
   getTaskRunsForClusterTasks(task: TektonNode): Promise<TektonNode[]>;
   getTriggerTemplates(triggerTemplates?: TektonNode): Promise<TektonNode[]>;
@@ -557,12 +557,17 @@ export class TknImpl implements Tkn {
     return data;
   }
 
-  async executeInTerminal(command: CliCommand, cwd: string = process.cwd(), name = 'Tekton'): Promise<void> {
+  async executeInTerminal(command: CliCommand, resourceName?: string, cwd: string = process.cwd(), name = 'Tekton'): Promise<void> {
     let toolLocation = await ToolsConfig.detectOrDownload();
     if (toolLocation) {
       toolLocation = path.dirname(toolLocation);
     }
-    const terminal: Terminal = WindowUtil.createTerminal(name, cwd, toolLocation);
+    let terminal: Terminal;
+    if (resourceName) {
+      terminal = WindowUtil.createTerminal(`${name}:${resourceName}`, cwd, toolLocation);
+    } else {
+      terminal = WindowUtil.createTerminal(name, cwd, toolLocation);
+    }
     terminal.sendText(cliCommandToString(command), true);
     terminal.show();
   }

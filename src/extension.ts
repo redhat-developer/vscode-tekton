@@ -39,6 +39,12 @@ import { getVersion, tektonVersionType } from './util/tknversion';
 import { TektonNode } from './tree-view/tekton-node';
 import { checkClusterStatus } from './util/check-cluster-status';
 import { getClusterVersions } from './cluster-version';
+import { debug } from './debugger/debug';
+import { debugExplorer } from './debugger/debugExplorer';
+import { showDebugContinue } from './debugger/debug-continue';
+import { cancelTaskRun } from './debugger/cancel-taskrun';
+import { showDebugFailContinue } from './debugger/debug-fail-continue';
+import { openContainerInTerminal } from './debugger/show-in-terminal';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -106,10 +112,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand('tekton.open.task.palette', (context) => execute(TaskRun.openDefinition, context, 'tekton.open.task.palette')),
     vscode.commands.registerCommand('tekton.view.pipelinerun.diagram', (context) => execute(PipelineRun.showDiagram, context)),
     vscode.commands.registerCommand('tekton.taskrun.template', (context) => execute(openTaskRunTemplate, context, 'tekton.taskrun.template')),
+    vscode.commands.registerCommand('tekton.taskrun.debug', (context) => execute(debug, context, 'tekton.taskrun.debug')),
+    vscode.commands.registerCommand('debug.continue', (context) => execute(showDebugContinue, context, 'debug.continue')),
+    vscode.commands.registerCommand('debug.failContinue', (context) => execute(showDebugFailContinue, context, 'debug.failContinue')),
+    vscode.commands.registerCommand('debug.exit', (context) => execute(cancelTaskRun, context, 'debug.exit')),
+    vscode.commands.registerCommand('debug.terminal', (context) => execute(openContainerInTerminal, context, 'debug.terminal')),
 
     hubViewProvider,
     vscode.window.registerWebviewViewProvider('tektonHubTasks', hubViewProvider),
     pipelineExplorer,
+    debugExplorer,
     registerLogDocumentProvider(),
     // Temporarily loaded resource providers
     vscode.workspace.registerFileSystemProvider(TKN_RESOURCE_SCHEME, tektonVfsProvider, { isCaseSensitive: true, }),
