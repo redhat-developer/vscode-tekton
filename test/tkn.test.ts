@@ -22,7 +22,6 @@ import { PipelineRun } from '../src/tree-view/pipelinerun-node';
 import { MoreNode } from '../src/tree-view/expand-node';
 import { Command } from '../src/cli-command';
 import * as telemetry from '../src/telemetry';
-import { TknImpl } from '../src/tkn';
 
 const expect = chai.expect;
 chai.use(sinonChai);

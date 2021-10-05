@@ -14,7 +14,6 @@ import * as sinon from 'sinon';
 import { TknImpl } from '../../src/tkn';
 import * as vscode from 'vscode';
 import { ContextType } from '../../src/context-type';
-import { cli } from '../../src/cli';
 import * as telemetry from '../../src/telemetry';
 import { TestItem } from '../tekton/testTektonitem';
 import { Command } from '../../src/cli-command';
@@ -84,7 +83,7 @@ suite('debug', () => {
     safeDumpStub = sandbox.stub(yaml, 'safeDump').returns('empty');
     showErrorMessageStub = sandbox.stub(vscode.window, 'showErrorMessage').resolves();
     showWarningMessageStub = sandbox.stub(vscode.window, 'showWarningMessage').resolves();
-    cliExecStub = sandbox.stub(cli, 'execute').resolves({error: null, stdout: '', stderr: ''});
+    cliExecStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({error: null, stdout: '', stderr: ''});
     watchTaskRunStub = sandbox.stub(watchTaskRun, 'watchTaskRunContainer').resolves({error: null, stdout: '', stderr: ''});
   });
 

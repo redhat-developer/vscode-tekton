@@ -211,7 +211,9 @@ async function detectTknCli(): Promise<void> {
     setCommandContext(CommandContext.TknCli, true);
     sendVersionToTelemetry('tkn.version', tknPath);
   }
-  sendVersionToTelemetry('kubectl.version', 'kubectl -o json');
+  if (ToolsConfig.getTknLocation('kubectl')) {
+    sendVersionToTelemetry('kubectl.version', `${ToolsConfig.getTknLocation('kubectl')} -o json`);
+  }
 }
 
 async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<void> {

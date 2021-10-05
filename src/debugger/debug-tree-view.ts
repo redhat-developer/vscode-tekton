@@ -4,7 +4,6 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { TreeItemCollapsibleState, window } from 'vscode';
-import { cli } from '../cli';
 import { Command } from '../cli-command';
 import { ContextType } from '../context-type';
 import { kubectl } from '../kubectl';
@@ -53,7 +52,7 @@ export async function watchTaskRunContainer(resourceName: string, resourceType: 
     await kubectl.watchRunCommand(Command.watchResources(resourceType, resourceName), async (taskRunData: TknTaskRun) => {
       try {
         if (taskRunData?.status?.podName && taskRunData?.status?.steps?.[0]?.container) {
-          const checkDebugStatus = await cli.execute(Command.isContainerStoppedOnDebug(taskRunData.status.steps[0].container, taskRunData.status.podName, taskRunData.metadata.namespace));
+          const checkDebugStatus = await tkn.execute(Command.isContainerStoppedOnDebug(taskRunData.status.steps[0].container, taskRunData.status.podName, taskRunData.metadata.namespace), process.cwd(), false);
           if (!sessions.get(taskRunData.metadata.name)?.count && checkDebugStatus.stdout.trim() && checkDebugStatus.stdout.trim().length !== 0) {
             tkn.executeInTerminal(Command.loginToContainer(taskRunData.status.steps[0].container, taskRunData.status.podName, taskRunData.metadata.namespace), taskRunData.metadata.name);
             sessions.set(taskRunData.metadata.name, {

@@ -10,7 +10,6 @@ import * as vscode from 'vscode';
 import * as os from 'os'
 import * as fsx from 'fs-extra';
 import * as path from 'path';
-import { cli } from '../../src/cli';
 import { teardown } from 'mocha';
 import { newK8sCommand } from '../../src/cli-command';
 import { TknImpl } from '../../src/tkn';
