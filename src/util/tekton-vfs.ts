@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 import { FileSystemProvider, EventEmitter, FileChangeEvent, Event, Uri, Disposable, FileStat, FileType, FileChangeType } from 'vscode';
-import { CliExitData, cli } from '../cli';
+import { CliExitData } from '../cli';
 import * as path from 'path';
 import * as os from 'os'
 import * as fsx from 'fs-extra';
@@ -14,6 +14,7 @@ import { getStderrString } from './stderrstring';
 import { newK8sCommand } from '../cli-command';
 import { ContextType } from '../context-type';
 import { tkn } from '../tkn';
+import { ToolsConfig } from '../tools';
 
 export const TKN_RESOURCE_SCHEME = 'tekton';
 export const TKN_RESOURCE_SCHEME_READONLY = 'tekton-ro';
@@ -105,11 +106,15 @@ export class TektonVFSProvider implements FileSystemProvider {
     if (taskRegex.test(newResourceName)) {
       newResourceName = newResourceName.replace(`${ContextType.TASK}/`, `${ContextType.TASK}.tekton/`);
     }
-    return tkn.execute(newK8sCommand(`-o ${outputFormat} get ${newResourceName}`));
+    if (ToolsConfig.getTknLocation('kubectl')) {
+      return tkn.execute(newK8sCommand(`-o ${outputFormat} get ${newResourceName}`));
+    }
   }
 
   async updateK8sResource(fsPath: string): Promise<CliExitData> {
-    return await tkn.execute(newK8sCommand(`apply -f ${fsPath}`));
+    if (ToolsConfig.getTknLocation('kubectl')) {
+      return await tkn.execute(newK8sCommand(`apply -f ${fsPath}`));
+    }
   }
 
   readDirectory(): [string, FileType][] | Thenable<[string, FileType][]> {

@@ -70,9 +70,13 @@ export class ToolsConfig {
         const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool[cmd].dlFileName);
         const installRequest = `Download and install v${ToolsConfig.tool[cmd].version}`;
 
-        if (response !== downloadVersion) {
+        if (response !== downloadVersion && cmd !== 'kubectl') {
           response = await vscode.window.showInformationMessage(
             `Cannot find Tekton CLI ${ToolsConfig.tool[cmd].versionRangeLabel} for interacting with Tekton Pipelines. Commands which requires Tekton CLI will be disabled.`, installRequest, 'Help', 'Cancel');
+        }
+        if (response !== downloadVersion && cmd === 'kubectl') {
+          response = await vscode.window.showInformationMessage(
+            `Cannot find ${ToolsConfig.tool[cmd].description} ${ToolsConfig.tool[cmd].versionRangeLabel}.`, installRequest, 'Cancel');
         }
         await fsex.ensureDir(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
         if (response === installRequest || response === downloadVersion) {
