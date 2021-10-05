@@ -22,6 +22,7 @@ import { PipelineRun } from '../src/tree-view/pipelinerun-node';
 import { MoreNode } from '../src/tree-view/expand-node';
 import { Command } from '../src/cli-command';
 import * as telemetry from '../src/telemetry';
+import { TknImpl } from '../src/tkn';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -139,7 +140,7 @@ suite('tkn', () => {
 
     test('getPipelines returns items from tkn pipeline list command', async () => {
       const tknPipelines = ['pipeline1', 'pipeline2', 'pipeline3'];
-      execStubCli.onFirstCall().resolves({
+      execStub.onFirstCall().resolves({
         error: null, stdout: JSON.stringify({
           'items': [{
             'kind': 'Pipeline',
@@ -164,7 +165,7 @@ suite('tkn', () => {
       });
       const result = await tknCli.getPipelines(pipelineNodeItem);
 
-      expect(execStubCli).calledOnceWith(Command.listPipelines());
+      expect(execStub).calledOnceWith(Command.listPipelines());
       expect(result.length).equals(3);
       for (let i = 1; i < result.length; i++) {
         expect(result[i].getName()).equals(tknPipelines[i]);
@@ -1128,25 +1129,15 @@ suite('tkn', () => {
     });
 
     test('show warning message if user doesn\'t have the privileges to interact with tekton resources', async () => {
-      execStub.onFirstCall().resolves({ error: undefined, stdout: JSON.stringify({
-        clientVersion: {
-          'major': '1'
-        }
-      })});
-      execStub.onSecondCall().resolves({ error: undefined, stdout: 'no' });
+      execStub.onFirstCall().resolves({ error: undefined, stdout: 'no' });
       const result = await tknCli.getPipelineNodes();
       assert.equal(result[0].getName(), 'The current user doesn\'t have the privileges to interact with tekton resources.');
     });
 
     test('show warning message if pipelines operator is not installed', async () => {
-      execStub.onFirstCall().resolves({ error: undefined, stdout: JSON.stringify({
-        clientVersion: {
-          'major': '1'
-        }
-      })});
       commandsStub.onFirstCall().resolves(false);
       commandsStub.onSecondCall().resolves(true);
-      execStub.onSecondCall().resolves({ error: 'error: the server doesn\'t have a resource type \'pipeline\'', stdout: '' });
+      execStub.onFirstCall().resolves({ error: 'error: the server doesn\'t have a resource type \'pipeline\'', stdout: '' });
       await tknCli.getPipelineNodes();
       expect(commandsStub).calledTwice;
     });

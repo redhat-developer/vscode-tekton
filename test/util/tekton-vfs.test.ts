@@ -13,6 +13,8 @@ import * as path from 'path';
 import { cli } from '../../src/cli';
 import { teardown } from 'mocha';
 import { newK8sCommand } from '../../src/cli-command';
+import { TknImpl } from '../../src/tkn';
+import { ToolsConfig } from '../../src/tools';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -53,12 +55,13 @@ suite('Tekton VFS Provider', () => {
     let statStub: sinon.SinonStub;
 
     setup(() => {
-      cliExecuteStub = sandbox.stub(cli, 'execute');
+      cliExecuteStub = sandbox.stub(TknImpl.prototype, 'execute');
       tmpdirStub = sandbox.stub(os, 'tmpdir');
       unlinkStub = sandbox.stub(fsx, 'unlink');
       writeFileStub = sandbox.stub(fsx, 'writeFile');
       ensureFileStub = sandbox.stub(fsx, 'ensureFile');
       statStub = sandbox.stub(fsx, 'stat');
+      sandbox.stub(ToolsConfig, 'getTknLocation').returns('1.18.0');
     });
 
     test('extractResourceAndFormat should return resource and format', () => {

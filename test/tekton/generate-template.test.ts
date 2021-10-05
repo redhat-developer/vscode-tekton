@@ -8,7 +8,6 @@
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
-import { cli } from '../../src/cli';
 import * as taskRunTemplate from '../../src/tekton/generate-template'
 import { TestItem } from './testTektonitem';
 import { TknImpl } from '../../src/tkn';
@@ -49,7 +48,7 @@ suite('Tekton/TaskRunTemplate', () => {
   };
 
   setup(() => {
-    cliExecuteStub = sandbox.stub(cli, 'execute');
+    cliExecuteStub = sandbox.stub(TknImpl.prototype, 'execute');
     openTextStub = sandbox.stub(workspace, 'openTextDocument').resolves(textDocument);
     sandbox.stub(window, 'showTextDocument').resolves();
   });
