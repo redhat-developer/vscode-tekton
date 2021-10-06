@@ -56,7 +56,7 @@ export class PipelineRun extends TektonItem {
     if (!pipelineRun){
       return;
     }
-    this.pipelineRunFollowLogs(pipelineRun.getName());
+    PipelineRun.pipelineRunFollowLogs(pipelineRun.getName());
   }
 
   static async pipelineRunFollowLogs(pipelineRunName: string): Promise<void> {

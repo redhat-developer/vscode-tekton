@@ -4,7 +4,6 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { window } from 'vscode';
-import { cli } from '../cli';
 import { Command } from '../cli-command';
 import { TknTaskRun } from '../tekton';
 import { telemetryLog } from '../telemetry';
@@ -19,7 +18,7 @@ export async function openContainerInTerminal(taskRun: TektonNode, commandId?: s
       terminal.dispose();
     }
   });
-  const result = await cli.execute(Command.getTaskRun(taskRun.getName()));
+  const result = await tkn.execute(Command.getTaskRun(taskRun.getName()), process.cwd(), false);
   const taskRunData: TknTaskRun = JSON.parse(result.stdout);
   telemetryLog(commandId, 'Open container in terminal command click')
   tkn.executeInTerminal(Command.loginToContainer(taskRunData.status.steps[0].container, taskRunData.status.podName, taskRunData.metadata.namespace), taskRunData.metadata.name);

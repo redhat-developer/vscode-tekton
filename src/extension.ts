@@ -132,7 +132,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   detectTknCli().then(() => {
     triggerDetection();
   });
-  checkClusterStatus(true); // watch Tekton resources when all required dependency are installed
+  if (ToolsConfig.getTknLocation('kubectl')) {
+    checkClusterStatus(true); // watch Tekton resources when all required dependency are installed
+  }
   getClusterVersions().then((version) => {
     const telemetryProps: TelemetryProperties = {
       identifier: 'cluster.version',
@@ -169,7 +171,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   if (configurationApi.available) {
     const confApi = configurationApi.api;
     confApi.onDidChangeContext(() => {
-      checkClusterStatus(true);
+      if (ToolsConfig.getTknLocation('kubectl')) {
+        checkClusterStatus(true);
+      }
       pipelineExplorer.refresh();
     });
   }
@@ -201,13 +205,15 @@ async function detectTknCli(): Promise<void> {
   setCommandContext(CommandContext.TknCli, false);
 
   // start detecting 'tkn' on extension start
-  const tknPath = await ToolsConfig.detectOrDownload();
+  const tknPath = await ToolsConfig.detectOrDownload('tkn');
 
   if (tknPath) {
     setCommandContext(CommandContext.TknCli, true);
     sendVersionToTelemetry('tkn.version', tknPath);
   }
-  sendVersionToTelemetry('kubectl.version', 'kubectl -o json');
+  if (ToolsConfig.getTknLocation('kubectl')) {
+    sendVersionToTelemetry('kubectl.version', `${ToolsConfig.getTknLocation('kubectl')} -o json`);
+  }
 }
 
 async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<void> {

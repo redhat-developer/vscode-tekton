@@ -6,30 +6,20 @@
 import * as yaml from 'js-yaml';
 import * as vscode from 'vscode';
 import { Task, Template, TknPipelineTrigger } from '../tekton';
-import { cli, CliExitData } from '../cli';
+import { CliExitData } from '../cli';
 import { telemetryLog } from '../telemetry';
-import { newK8sCommand, newOcCommand } from '../cli-command';
+import { newK8sCommand } from '../cli-command';
 import { TektonNode } from '../tree-view/tekton-node';
-import { ocFallBack } from '../util/check-cluster-status';
+import { tkn } from '../tkn';
 
 async function getTask(name: string): Promise<Task> {
-  let task: CliExitData;
-  if (ocFallBack.get('ocFallBack')) {
-    task = await cli.execute(newOcCommand(`get task ${name} -o json`));
-  } else {
-    task = await cli.execute(newK8sCommand(`get task ${name} -o json`));
-  }
+  const task: CliExitData = await tkn.execute(newK8sCommand(`get task ${name} -o json`));
   const taskData = JSON.parse(task.stdout);
   return taskData;
 }
 
 async function getPipeline(name: string): Promise<TknPipelineTrigger> {
-  let pipeline;
-  if (ocFallBack.get('ocFallBack')) {
-    pipeline = await cli.execute(newOcCommand(`get pipeline ${name} -o json`));
-  } else {
-    pipeline = await cli.execute(newK8sCommand(`get pipeline ${name} -o json`));
-  }
+  const pipeline = await tkn.execute(newK8sCommand(`get pipeline ${name} -o json`));
   const pipelineData = JSON.parse(pipeline.stdout);
   return pipelineData;
 }

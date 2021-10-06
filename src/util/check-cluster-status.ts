@@ -14,37 +14,7 @@ import { getStderrString } from './stderrstring';
 import { watchTektonResources } from './telemetry-watch-tekton-resource';
 import { watchResources } from './watchResources';
 
-export const ocFallBack = new Map<string, boolean>();
-
-function getClientVersion(version: CliExitData, versionType: string): null | object {
-  let clientVersion = null;
-  try {
-    clientVersion = JSON.parse(version.stdout)?.[versionType];
-  } catch (ignore) {
-    // ignore
-  }
-  return clientVersion
-}
-
 export async function checkClusterStatus(extensionStartUpCheck?: boolean): Promise<TektonNode[]> {
-  const kubectlAvailability = await tkn.execute(Command.kubectlVersion(), process.cwd(), false);
-  if (getClientVersion(kubectlAvailability, 'clientVersion') === null) {
-    const ocAvailability = await tkn.execute(Command.printOcVersionJson(), process.cwd(), false);
-    if (getClientVersion(ocAvailability, 'releaseClientVersion') === null) {
-      const tknMessage = 'Please install kubectl.';
-      watchResources.disableWatch();
-      if (extensionStartUpCheck) {
-        telemetryLog('kubeclt_not_found', tknMessage);
-        return;
-      }
-      telemetryLog('kubeclt_not_found', tknMessage);
-      return [new TektonNodeImpl(null, tknMessage, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)]
-    } else {
-      ocFallBack.set('ocFallBack', true);
-    }
-  } else {
-    ocFallBack.set('ocFallBack', false);
-  }
   const result: CliExitData = await tkn.execute(
     Command.checkTekton(), process.cwd(), false
   );

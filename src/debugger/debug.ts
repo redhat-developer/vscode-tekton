@@ -8,7 +8,6 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { window } from 'vscode';
-import { cli } from '../cli';
 import semver = require('semver');
 import { Command } from '../cli-command';
 import { TaskRun } from '../tekton/taskrun';
@@ -20,6 +19,7 @@ import { telemetryLogError } from '../telemetry';
 import { TknTaskRun } from '../tekton';
 import { watchTaskRunContainer } from './debug-tree-view';
 import { TknVersion, version } from '../util/tknversion';
+import { tkn } from '../tkn';
 
 interface FeatureFlag {
   data: {
@@ -38,7 +38,7 @@ export async function startDebugger(taskRun: TektonNode): Promise<string> {
     window.showWarningMessage('Debugger is supported above pipeline version: `0.26.0`');
     return null;
   }
-  const result = await cli.execute(Command.featureFlags());
+  const result = await tkn.execute(Command.featureFlags(), process.cwd(), false);
   if (result.error) {
     window.showErrorMessage(`Fail to fetch data: ${getStderrString(result.error)}`);
     return null;
@@ -80,7 +80,7 @@ async function startTaskRunWithDebugger(taskRun: TektonNode, commandId?: string)
   const fsPath = path.join(tempPath, `${taskRunTemplate.metadata.generateName}.yaml`);
   const taskRunYaml = yaml.dump(taskRunTemplate);
   await fs.writeFile(fsPath, taskRunYaml, 'utf8');
-  const result = await cli.execute(Command.create(`${quote}${fsPath}${quote} -o json`));
+  const result = await tkn.execute(Command.create(`${quote}${fsPath}${quote} -o json`));
   if (result.error) {
     telemetryLogError(commandId, result.error.toString().replace(fsPath, 'user path'));
     window.showErrorMessage(`Fail to start TaskRun: ${getStderrString(result.error)}`);

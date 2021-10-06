@@ -5,7 +5,6 @@
 
 import * as os from 'os';
 import * as path from 'path';
-import { cli } from '../cli';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import * as vscode from 'vscode';
@@ -15,6 +14,7 @@ import { pipelineExplorer } from '../pipeline/pipelineExplorer';
 import { Platform } from '../util/platform';
 import { getStderrString } from '../util/stderrstring';
 import { Command } from '../cli-command';
+import { tkn } from '../tkn';
 
 function checkDeploy(): boolean {
   return vscode.workspace
@@ -48,7 +48,7 @@ export async function updateTektonResource(document: vscode.TextDocument): Promi
     }
     if (verifyTknYaml && !hasErrors && (/Deploy/.test(value) || contextGlobalState.workspaceState.get(document.uri.fsPath))) {
       const quote = Platform.OS === 'win32' ? '"' : '\'';
-      const result = await cli.execute(Command.create(`${quote}${document.uri.fsPath}${quote}`));
+      const result = await tkn.execute(Command.create(`${quote}${document.uri.fsPath}${quote}`));
       if (result.error) {
         const tempPath = os.tmpdir();
         if (!tempPath) {
@@ -73,7 +73,7 @@ export async function updateTektonResource(document: vscode.TextDocument): Promi
         } catch (err) {
           // ignore
         }
-        const apply = await cli.execute(Command.apply(`${quote}${fsPath}${quote}`));
+        const apply = await tkn.execute(Command.apply(`${quote}${fsPath}${quote}`));
         await fs.unlink(fsPath);
         if (apply.error) {
           vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(apply.error)}`);

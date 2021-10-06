@@ -558,7 +558,7 @@ export class TknImpl implements Tkn {
   }
 
   async executeInTerminal(command: CliCommand, resourceName?: string, cwd: string = process.cwd(), name = 'Tekton'): Promise<void> {
-    let toolLocation = await ToolsConfig.detectOrDownload();
+    let toolLocation = await ToolsConfig.detectOrDownload(command.cliCommand);
     if (toolLocation) {
       toolLocation = path.dirname(toolLocation);
     }
@@ -574,10 +574,16 @@ export class TknImpl implements Tkn {
 
   async execute(command: CliCommand, cwd?: string, fail = true): Promise<CliExitData> {
     if (command.cliCommand.indexOf('tkn') >= 0) {
-      const toolLocation = ToolsConfig.getTknLocation();
+      const toolLocation = ToolsConfig.getTknLocation('tkn');
       if (toolLocation) {
         // eslint-disable-next-line require-atomic-updates
         command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);
+      }
+    } else {
+      const toolLocation = await ToolsConfig.detectOrDownload(command.cliCommand);
+      if (toolLocation) {
+        // eslint-disable-next-line require-atomic-updates
+        command.cliCommand = command.cliCommand.replace(command.cliCommand, `"${toolLocation}"`).replace(new RegExp(`&& ${command.cliCommand}`, 'g'), `&& "${toolLocation}"`);
       }
     }
 
@@ -587,12 +593,10 @@ export class TknImpl implements Tkn {
   }
 
   executeWatch(command: CliCommand, cwd?: string): WatchProcess {
-    if (command.cliCommand.indexOf('tkn') >= 0) {
-      const toolLocation = ToolsConfig.getTknLocation();
-      if (toolLocation) {
-        // eslint-disable-next-line require-atomic-updates
-        command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);
-      }
+    const toolLocation = ToolsConfig.getTknLocation(command.cliCommand);
+    if (toolLocation) {
+      // eslint-disable-next-line require-atomic-updates
+      command.cliCommand = command.cliCommand.replace(command.cliCommand, `"${toolLocation}"`).replace(new RegExp(`&& ${command.cliCommand}`, 'g'), `&& "${toolLocation}"`);
     }
 
     return cli.executeWatch(command, cwd ? { cwd } : {});

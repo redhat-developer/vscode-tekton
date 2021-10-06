@@ -17,7 +17,6 @@ import { TknImpl } from '../../src/tkn';
 import { getPipelineRunFrom, createTriggerTemplate, createEventListener, getPipelineRunWorkspaces, addTriggerToPipeline, addTrigger } from '../../src/tekton/addtrigger';
 import { AddTriggerFormValues, TriggerBindingKind } from '../../src/tekton/triggertype';
 import { PipelineRunData, TriggerTemplateKindParam, TriggerTemplateKind } from '../../src/tekton';
-import { cli } from '../../src/cli';
 import { window } from 'vscode';
 
 
@@ -27,7 +26,6 @@ chai.use(sinonChai);
 suite('Tekton/Pipeline', () => {
   const sandbox = sinon.createSandbox();
   let execStub: sinon.SinonStub;
-  let cliStub: sinon.SinonStub;
   let osStub: sinon.SinonStub;
   let writeFileStub: sinon.SinonStub;
   let unlinkStub: sinon.SinonStub;
@@ -37,7 +35,6 @@ suite('Tekton/Pipeline', () => {
 
   setup(() => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
-    cliStub = sandbox.stub(cli, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     osStub = sandbox.stub(os, 'tmpdir').returns('path');
     writeFileStub = sandbox.stub(fs, 'writeFile').resolves();
     unlinkStub = sandbox.stub(fs, 'unlink').resolves();
@@ -366,22 +363,19 @@ suite('Tekton/Pipeline', () => {
 
     test('create trigger', async () => {
       execStub.onFirstCall().resolves({ error: null, stdout: JSON.stringify(pipeline), stderr: '' });
-      cliStub.onFirstCall().resolves({ error: null, stdout: JSON.stringify({kind: 'TriggerTemplate'}), stderr: '' });
-      execStub.onSecondCall().resolves({ error: null,
-        stdout: tknVersion,
-        stderr: '' });
-      cliStub.onSecondCall().resolves({ error: null, stdout: JSON.stringify({kind: 'EventListener'}), stderr: '' });
+      execStub.onSecondCall().resolves({ error: null, stdout: JSON.stringify({kind: 'TriggerTemplate'}), stderr: '' });
       execStub.onThirdCall().resolves({ error: null,
         stdout: tknVersion,
         stderr: '' });
-      execStub.onCall(2).resolves({ error: null,
+      execStub.onCall(3).resolves({ error: null, stdout: JSON.stringify({kind: 'EventListener'}), stderr: '' });
+      execStub.onCall(4).resolves({ error: null,
         stdout: JSON.stringify(eventListener),
         stderr: '' });
-      execStub.onCall(3).resolves({ error: null,
+      execStub.onCall(5).resolves({ error: null,
         stdout: JSON.stringify(serviceResource),
         stderr: '' });
-      cliStub.onSecondCall().resolves({ error: null, stdout: 'successful', stderr: '' });
-      execStub.onCall(4).resolves({ error: null,
+      execStub.onCall(6).resolves({ error: null, stdout: 'successful', stderr: '' });
+      execStub.onCall(7).resolves({ error: null,
         stdout: JSON.stringify({
           spec: {
             host: 'el-event-listener-dbpg2j-pipelines-tutorial.apps.dev-svc-4.8-042807.devcluster.openshift.com'
@@ -399,18 +393,18 @@ suite('Tekton/Pipeline', () => {
 
     test('return null if fails to create triggerTemplate', async () => {
       execStub.onFirstCall().resolves({ error: null, stdout: JSON.stringify(pipeline), stderr: '' });
-      cliStub.onFirstCall().resolves({ error: 'error', stdout: '' });
+      execStub.onSecondCall().resolves({ error: 'error', stdout: '' });
       const result = await addTrigger(createTrigger);
       expect(result).equals(null);
     });
 
     test('return null if fails to create eventListener', async () => {
       execStub.onFirstCall().resolves({ error: null, stdout: JSON.stringify(pipeline), stderr: '' });
-      cliStub.onFirstCall().resolves({ error: null, stdout: JSON.stringify({kind: 'TriggerTemplate'}), stderr: '' });
-      execStub.onSecondCall().resolves({ error: null,
+      execStub.onSecondCall().resolves({ error: null, stdout: JSON.stringify({kind: 'TriggerTemplate'}), stderr: '' });
+      execStub.onThirdCall().resolves({ error: null,
         stdout: tknVersion,
         stderr: '' });
-      cliStub.onSecondCall().resolves({ error: 'error', stdout: '', stderr: '' });
+      execStub.onCall(3).resolves({ error: 'error', stdout: '', stderr: '' });
       const result = await addTrigger(createTrigger);
       expect(result).equals(null);
     });

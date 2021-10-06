@@ -90,7 +90,7 @@ suite('tool configuration', () => {
       sb.stub(shelljs, 'which').returns({ stdout: 'tkn' } as string & shelljs.ShellReturnValue);
       sb.stub(fsex, 'pathExists').resolves(false);
       getVersionStub.returns(ToolsConfig.tool['tkn'].version);
-      const toolLocation = await ToolsConfig.detectOrDownload();
+      const toolLocation = await ToolsConfig.detectOrDownload('tkn');
       assert.equal(toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
     });
 
@@ -98,7 +98,7 @@ suite('tool configuration', () => {
       sb.stub(shelljs, 'which');
       sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.returns(ToolsConfig.tool['tkn'].version);
-      const toolLocation = await ToolsConfig.detectOrDownload();
+      const toolLocation = await ToolsConfig.detectOrDownload('tkn');
       assert.equal(toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
     });
 
@@ -110,7 +110,7 @@ suite('tool configuration', () => {
       const stub = sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tool['tkn'].sha256sum);
       stub.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
       sb.stub(Archive, 'unzip').resolves();
-      const toolLocation = await ToolsConfig.detectOrDownload();
+      const toolLocation = await ToolsConfig.detectOrDownload('tkn');
       assert.ok(showInfo.calledOnce);
       assert.ok(withProgress.calledOnce);
       assert.equal(toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
@@ -122,7 +122,7 @@ suite('tool configuration', () => {
       sb.stub(fsex, 'pathExists').resolves(true);
       getVersionStub.resolves('0.0.0');
       const showInfo = sb.stub(vscode.window, 'showInformationMessage').resolves('Cancel');
-      const toolLocation = await ToolsConfig.detectOrDownload();
+      const toolLocation = await ToolsConfig.detectOrDownload('tkn');
       assert.ok(showInfo.calledOnce);
       assert.equal(toolLocation, undefined);
     });
@@ -137,7 +137,7 @@ suite('tool configuration', () => {
       fromFile.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
       sb.stub(fsex, 'remove').resolves();
       sb.stub(Archive, 'unzip').resolves();
-      const toolLocation = await ToolsConfig.detectOrDownload();
+      const toolLocation = await ToolsConfig.detectOrDownload('tkn');
       assert.ok(withProgress.calledTwice);
       assert.ok(showInfo.calledTwice);
       assert.equal(toolLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool['tkn'].cmdFileName));
@@ -153,7 +153,7 @@ suite('tool configuration', () => {
       fromFile.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
       sb.stub(fsex, 'remove').resolves();
       sb.stub(Archive, 'unzip').resolves();
-      const toolLocation = await ToolsConfig.detectOrDownload();
+      const toolLocation = await ToolsConfig.detectOrDownload('tkn');
       assert.ok(withProgress.calledOnce);
       assert.ok(showInfo.calledTwice);
       assert.equal(toolLocation, undefined);
@@ -177,7 +177,7 @@ suite('tool configuration', () => {
         const stub = sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tool['tkn'].sha256sum);
         stub.onSecondCall().returns(ToolsConfig.tool['tkn'].sha256sum);
         sb.stub(Archive, 'unzip').resolves();
-        await ToolsConfig.detectOrDownload();
+        await ToolsConfig.detectOrDownload('tkn');
         assert.ok(!chmodStub.called);
       });
     });
@@ -198,7 +198,7 @@ suite('tool configuration', () => {
         sb.stub(vscode.window, 'showInformationMessage').resolves(`Download and install v${ToolsConfig.tool['tkn'].version}`);
         sb.stub(hasha, 'fromFile').onFirstCall().returns(ToolsConfig.tool['tkn'].sha256sum);
         sb.stub(Archive, 'unzip').resolves();
-        await ToolsConfig.detectOrDownload();
+        await ToolsConfig.detectOrDownload('tkn');
         assert.ok(chmodStub.called);
       });
     });

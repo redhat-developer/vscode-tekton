@@ -11,7 +11,6 @@ import * as sinon from 'sinon';
 import { TknImpl } from '../../src/tkn';
 import * as vscode from 'vscode';
 import { ContextType } from '../../src/context-type';
-import { cli } from '../../src/cli';
 import * as telemetry from '../../src/telemetry';
 import { TestItem } from '../tekton/testTektonitem';
 import { cancelTaskRun } from '../../src/debugger/cancel-taskrun';
@@ -30,7 +29,7 @@ suite('debug/TaskRunCancel', () => {
   setup(() => {
     sandbox.stub(telemetry, 'telemetryLogError');
     showErrorMessageStub = sandbox.stub(vscode.window, 'showErrorMessage').resolves();
-    cliExecStub = sandbox.stub(cli, 'execute').resolves({error: null, stdout: '', stderr: ''});
+    cliExecStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({error: null, stdout: '', stderr: ''});
   });
 
   teardown(() => {

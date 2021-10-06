@@ -12,7 +12,6 @@ import { TknImpl } from '../../src/tkn';
 import * as vscode from 'vscode';
 import * as tkn from '../../src/tkn';
 import { ContextType } from '../../src/context-type';
-import { cli } from '../../src/cli';
 import * as telemetry from '../../src/telemetry';
 import { TestItem } from '../tekton/testTektonitem';
 import { Command } from '../../src/cli-command';
@@ -28,7 +27,7 @@ suite('debug/TaskRunContinue', () => {
   const taskRunNode = new TestItem(TknImpl.ROOT, 'test-task-run', ContextType.TASKRUN, null);
 
   setup(() => {
-    cliExecStub = sandbox.stub(cli, 'execute').resolves({error: null, stdout: JSON.stringify({
+    cliExecStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({error: null, stdout: JSON.stringify({
       metadata: {
         name: 'test',
         namespace: 'test'
