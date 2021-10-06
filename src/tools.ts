@@ -76,7 +76,7 @@ export class ToolsConfig {
         }
         if (response !== downloadVersion && cmd === 'kubectl') {
           response = await vscode.window.showInformationMessage(
-            `Cannot find ${ToolsConfig.tool[cmd].description} ${ToolsConfig.tool[cmd].versionRangeLabel}.`, installRequest, 'Cancel');
+            `Cannot find ${ToolsConfig.tool[cmd].description} v${ToolsConfig.tool[cmd].version}.`, installRequest, 'Cancel');
         }
         await fsex.ensureDir(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
         if (response === installRequest || response === downloadVersion) {
