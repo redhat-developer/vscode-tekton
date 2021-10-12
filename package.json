@@ -1031,7 +1031,7 @@
     "@kubernetes/client-node": "^0.12.2",
     "@redhat-developer/alizer": "^0.0.1",
     "@redhat-developer/vscode-redhat-telemetry": "^0.4.2",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "binary-search": "^1.3.5",
     "byline": "^5.0.0",
     "debounce": "^1.2.0",
