@@ -16,7 +16,7 @@ import { HubTask, HubTaskInstallation, InstalledTask, isInstalledTask } from '..
 import { Loader } from '../common/loader';
 import { dropDownForTags, enterEvent, hideList, initList, keyUpDown, listGroup } from './search_dropdown';
 
-
+let installingButton;
 export class SearchInput {
 
   private inputListener: Listener<string> | undefined;
@@ -150,6 +150,7 @@ export class TaskItem extends BaseWidget {
 
         this.sendInstall();
         installButton.textContent = 'Installing';
+        installingButton = installButton;
       };
       installEl.appendChild(installButton);
     }
@@ -362,6 +363,12 @@ export class TaskView {
       this.recommendedList.tknVersion = this.taskList.tknVersion;
     }
     this.recommendedList.show(tasks);
+  }
+
+  cancelInstall(): void {
+    if (installingButton){
+      installingButton.textContent = 'Install';
+    }
   }
 
 }

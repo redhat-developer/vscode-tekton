@@ -33,6 +33,9 @@ window.addEventListener('message', event => {
     case 'recommendedTasks':
       view.setRecommendedTasks(event.data.data);
       break;
+    case 'cancelInstall':
+      view.cancelInstall();
+      break;
     default: 
       console.error(`Cannot handle: ${JSON.stringify(event.data)}`);
 

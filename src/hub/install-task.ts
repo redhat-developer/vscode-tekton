@@ -62,7 +62,7 @@ async function doInstallTask(task: HubTaskInstallation): Promise<boolean> {
             if (overwriteResult !== 'Overwrite') {
               return false;
             }
-            installedVersion = rawTask.metadata.labels['app.kubernetes.io/version'];
+            installedVersion = (rawTask.metadata.labels ?? [])['app.kubernetes.io/version'];
             needToUpgrade = true;
           }
         }
@@ -70,14 +70,17 @@ async function doInstallTask(task: HubTaskInstallation): Promise<boolean> {
       
       let result: CliExitData;
       let message: string;
-      if (needToUpgrade && installedVersion) {
-        if (installedVersion === task.taskVersion.version){
-          return true; // we already install this task
-        }
-        if (parseFloat(installedVersion) < parseFloat(task.taskVersion.version)){
-          result = await tkn.execute(Command.hubTaskUpgrade(task.name, task.taskVersion.version));
+      if (needToUpgrade){
+        if (installedVersion) {
+          if (installedVersion === task.taskVersion.version){
+            result = await tkn.execute(Command.hubTaskReinstall(task.name, task.taskVersion.version))
+          } else if (parseFloat(installedVersion) < parseFloat(task.taskVersion.version)){
+            result = await tkn.execute(Command.hubTaskUpgrade(task.name, task.taskVersion.version));
+          } else {
+            result = await tkn.execute(Command.hubTaskDowngrade(task.name, task.taskVersion.version));
+          }
         } else {
-          result = await tkn.execute(Command.hubTaskDowngrade(task.name, task.taskVersion.version));
+          result = await tkn.execute(Command.hubTaskReinstall(task.name, task.taskVersion.version))
         }
       } else {
         result = await tkn.execute(Command.hubInstall(task.name, task.taskVersion.version));

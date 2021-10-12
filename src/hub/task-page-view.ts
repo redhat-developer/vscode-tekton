@@ -109,6 +109,8 @@ export class TaskPageView extends Disposable {
       (this.task as InstalledTask).installedVersion = task.taskVersion;
       (this.task as InstalledTask).clusterTask = task.asClusterTask;
       this.sendTask();
+    } else {
+      this.postMessage({type: 'cancelInstall'});
     }
   }
 
