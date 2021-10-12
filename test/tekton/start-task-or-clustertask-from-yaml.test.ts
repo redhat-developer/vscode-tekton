@@ -11,10 +11,10 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { cli } from '../../src/cli';
 import * as telemetry from '../../src/telemetry';
 import { startTaskOrClusterTaskFromJson } from '../../src/tekton/start-task-or-clustertask-from-yaml';
 import { StartObject } from '../../src/tekton';
+import { TknImpl } from '../../src/tkn';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -51,7 +51,7 @@ suite('Tekton/Start Task|ClusterTask', () => {
     sandbox.stub(telemetry, 'telemetryLogError');
     writeFileStub = sandbox.stub(fs, 'writeFile').resolves();
     unlinkStub = sandbox.stub(fs, 'unlink').resolves();
-    cliExecStub = sandbox.stub(cli, 'execute').resolves({error: null, stdout: '', stderr: ''});
+    cliExecStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({error: null, stdout: '', stderr: ''});
     showErrorMessageStub = sandbox.stub(vscode.window, 'showErrorMessage').resolves();
     showInformationMessageStub = sandbox.stub(vscode.window, 'showInformationMessage').resolves();
   });

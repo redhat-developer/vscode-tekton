@@ -4,6 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { V1ContainerState as ContainerState } from '@kubernetes/client-node';
+import { Debugger } from 'inspector';
 import { ObjectMetadata } from './tekton/triggertype';
 import { K8sResourceKind } from './tekton/triggertype';
 
@@ -30,11 +31,17 @@ interface K8sTask {
   spec: K8sTaskSpec;
 }
 
+interface Debugger {
+  breakpoint: string[];
+}
+
 interface TknTaskRunSpec {
   params?: Param[];
+  status?: string;
   resources?: Resource;
   workspaces?: Workspace[];
   serviceAccountName?: string;
+  debug?: Debugger;
   taskRef?: {
     name: string;
     kind: string;
@@ -56,8 +63,8 @@ interface InputAndOutput {
 export interface TknTaskRun {
   apiVersion?: string;
   kind?: string;
-  metadata: ObjectMetadata;
-  spec: TknTaskRunSpec;
+  metadata?: ObjectMetadata;
+  spec?: TknTaskRunSpec;
   status?: {
     succeededCondition?: string;
     creationTimestamp?: string;
@@ -65,6 +72,8 @@ export interface TknTaskRun {
     conditions?: PipelineRunConditions[];
     startTime?: string;
     completionTime?: string;
+    podName?: string;
+    steps?: Steps[];
   };
 }
 
@@ -423,13 +432,19 @@ export interface PipelineTaskRunData {
     conditions: [{
       status: string;
     }];
+    podName: string;
+    steps: Steps[];
   };
-  spec: {
+  spec?: {
     taskRef: {
       name: string;
       kind: string;
     };
   };
+}
+
+interface Steps {
+  container: string;
 }
 
 export interface ConditionCheckStatus {

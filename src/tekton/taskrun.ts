@@ -7,7 +7,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { TektonItem } from './tektonitem';
 import { window, workspace } from 'vscode';
-import { cli, CliCommand } from '../cli';
+import { CliCommand } from '../cli';
 import { showLogInEditor } from '../util/log-in-editor';
 import { PipelineTaskRunData, TknTaskRun } from '../tekton';
 import * as fs from 'fs-extra';
@@ -18,6 +18,7 @@ import { getStderrString } from '../util/stderrstring';
 import { ContextType } from '../context-type';
 import { TektonNode } from '../tree-view/tekton-node';
 import { Command } from '../cli-command';
+import { tkn } from '../tkn';
 
 
 export class TaskRun extends TektonItem {
@@ -55,7 +56,7 @@ export class TaskRun extends TektonItem {
     const fsPath = path.join(tempPath, `${taskRunTemplate.metadata.generateName}.yaml`);
     const taskRunYaml = yaml.dump(taskRunTemplate);
     await fs.writeFile(fsPath, taskRunYaml, 'utf8');
-    const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
+    const result = await tkn.execute(Command.create(`${quote}${fsPath}${quote}`));
     if (result.error) {
       telemetryLogError(commandId, result.error.toString().replace(fsPath, 'user path'));
       window.showErrorMessage(`Fail to restart TaskRun: ${getStderrString(result.error)}`);
@@ -130,7 +131,7 @@ export class TaskRun extends TektonItem {
 
   static async openConditionDefinition(conditionRun: TektonNode, commandId?: string): Promise<void | string> {
     if (!conditionRun) return null;
-    const result = await cli.execute(Command.getTaskRun(conditionRun.getName()));
+    const result = await tkn.execute(Command.getTaskRun(conditionRun.getName()));
     if (result.error) {
       telemetryLogError(commandId, result.error);
       window.showErrorMessage(`${result.error}  Std.err when processing condition Definition`);

@@ -1740,7 +1740,7 @@ export const ResourceApiAxiosParamCreator = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        resourceQuery: async (name?: string, catalogs?: Array<string>, kinds?: Array<string>, tags?: Array<string>, limit?: number, match?: 'exact' | 'contains', options: any = {}): Promise<RequestArgs> => {
+        resourceQuery: async (name?: string, catalogs?: Array<string>, kinds?: Array<string>, tags?: Array<string>, limit?: number, match?: 'exact' | 'contains', categories?: Array<string>, options: any = {}): Promise<RequestArgs> => {
             const localVarPath = `/query`;
             const localVarUrlObj = globalImportUrl.parse(localVarPath, true);
             let baseOptions;
@@ -1765,6 +1765,10 @@ export const ResourceApiAxiosParamCreator = function (configuration?: Configurat
 
             if (tags) {
                 localVarQueryParameter['tags'] = tags;
+            }
+
+            if (categories) {
+                localVarQueryParameter['categories'] = categories;
             }
 
             if (limit !== undefined) {
@@ -1921,8 +1925,8 @@ export const ResourceApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async resourceQuery(name?: string, catalogs?: Array<string>, kinds?: Array<string>, tags?: Array<string>, limit?: number, match?: 'exact' | 'contains', options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Resources>> {
-            const localVarAxiosArgs = await ResourceApiAxiosParamCreator(configuration).resourceQuery(name, catalogs, kinds, tags, limit, match, options);
+        async resourceQuery(name?: string, catalogs?: Array<string>, kinds?: Array<string>, tags?: Array<string>, limit?: number, match?: 'exact' | 'contains', categories?: Array<string>, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Resources>> {
+            const localVarAxiosArgs = await ResourceApiAxiosParamCreator(configuration).resourceQuery(name, catalogs, kinds, tags, limit, match, categories, options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
                 return axios.request(axiosRequestArgs);
@@ -2121,8 +2125,8 @@ export class ResourceApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof ResourceApi
      */
-    public resourceQuery(name?: string, catalogs?: Array<string>, kinds?: Array<string>, tags?: Array<string>, limit?: number, match?: 'exact' | 'contains', options?: any) {
-        return ResourceApiFp(this.configuration).resourceQuery(name, catalogs, kinds, tags, limit, match, options).then((request) => request(this.axios, this.basePath));
+    public resourceQuery(name?: string, catalogs?: Array<string>, kinds?: Array<string>, tags?: Array<string>, limit?: number, match?: 'exact' | 'contains', categories?: Array<string>,options?: any) {
+        return ResourceApiFp(this.configuration).resourceQuery(name, catalogs, kinds, tags, limit, match, categories, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

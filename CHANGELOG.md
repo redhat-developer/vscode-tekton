@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.0.0 (October 06, 2021)
+
+This release brings to you:
+
+* [#350](https://github.com/redhat-developer/vscode-tekton/issues/350) Streaming logs output from a pipelineRun on start.
+* [#355](https://github.com/redhat-developer/vscode-tekton/issues/355) Multiple pipeline templates in code completion.
+* [#452](https://github.com/redhat-developer/vscode-tekton/issues/452) TektonHub: add ability to search task with tag or category.
+* [#613](https://github.com/redhat-developer/vscode-tekton/issues/613) kubectl install.
+* [#623](https://github.com/redhat-developer/vscode-tekton/issues/623) Add debug support for taskRun.
+* [#625](https://github.com/redhat-developer/vscode-tekton/pull/625) Update schemas.
+
 ## 0.18.0 (July 08, 2021)
 
 This release brings to you:

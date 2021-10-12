@@ -29,4 +29,5 @@ export enum ContextType {
   CONDITIONS = 'conditions',
   PIPELINERUNNODE = 'pipelinerunnode',
   CONDITIONTASKRUN = 'tr',
+  DEBUGGER = 'debugger'
 }

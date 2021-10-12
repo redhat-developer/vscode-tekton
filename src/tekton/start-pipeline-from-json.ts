@@ -4,10 +4,10 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { window } from 'vscode';
-import { cli } from '../cli';
 import { Command } from '../cli-command';
 import { StartObject, TknPipelineTrigger } from '../tekton';
 import { telemetryLogError } from '../telemetry';
+import { tkn } from '../tkn';
 import { getParams, getPipelineRunResources, getWorkspaces } from '../util/create-resource-spec';
 import { PipelineRunModel } from '../util/resource-kind';
 import { k8sCreate } from './addtrigger';
@@ -33,7 +33,7 @@ export async function getPipelineRun(formValue: StartObject, commandId?: string)
       serviceAccountName: formValue.serviceAccount
     },
   };
-  const result = await cli.execute(Command.getPipeline(formValue.name));
+  const result = await tkn.execute(Command.getPipeline(formValue.name));
   let pipeline: TknPipelineTrigger;
   if (result.error) {
     telemetryLogError(commandId, result.error.toString())

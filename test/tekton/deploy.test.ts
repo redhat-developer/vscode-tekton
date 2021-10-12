@@ -10,7 +10,6 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 import * as fs from 'fs-extra';
 import * as vscode from 'vscode';
-import { cli } from '../../src/cli';
 import * as sinonChai from 'sinon-chai';
 import { updateTektonResource } from '../../src/tekton/deploy';
 import { contextGlobalState } from '../../src/extension';
@@ -18,6 +17,7 @@ import { tektonYaml } from '../../src/yaml-support/tkn-yaml';
 import { pipelineExplorer } from '../../src/pipeline/pipelineExplorer';
 import { Platform } from '../../src/util/platform';
 import { Command } from '../../src/cli-command';
+import { TknImpl } from '../../src/tkn';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -123,7 +123,7 @@ suite('Deploy File', () => {
     showInformationMessageStub = sandbox.stub(vscode.window, 'showInformationMessage').resolves();
     workspaceStateGetStub = sandbox.stub(contextGlobalState.workspaceState, 'get').resolves();
     workspaceStateUpdateStub = sandbox.stub(contextGlobalState.workspaceState, 'update').resolves();
-    execStub = sandbox.stub(cli, 'execute').resolves();
+    execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves();
     sandbox.stub(pipelineExplorer, 'refresh').resolves();
     sandbox.stub(tektonYaml, 'isTektonYaml').resolves('ClusterTask');
     hasGetDiagnosticsStub = sandbox.stub(vscode.languages, 'getDiagnostics').returns([]);

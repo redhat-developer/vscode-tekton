@@ -9,8 +9,8 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { cli } from '../../src/cli';
 import { getPipelineRun } from '../../src/tekton/start-pipeline-from-json';
+import { TknImpl } from '../../src/tkn';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -73,7 +73,7 @@ suite('Tekton/startPipeline', () => {
 
   setup(() => {
     sandbox.stub(vscode.window, 'showInputBox').resolves();
-    execStub = sandbox.stub(cli, 'execute').resolves();
+    execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves();
   });
 
   teardown(() => {
