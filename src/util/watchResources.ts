@@ -12,6 +12,10 @@ import { window, workspace } from 'vscode';
 import { getResourceList } from './list-tekton-resource';
 import { telemetryLog, telemetryLogError } from '../telemetry';
 import { humanizer } from '../humanizer';
+import { TknVersion, version } from './tknversion';
+import semver = require('semver');
+import { checkEnableApiFields, debugName, FeatureFlag } from '../debugger/debug';
+import { watchTaskRunContainer } from '../debugger/debug-tree-view';
 
 export const pipelineTriggerStatus = new Map<string, boolean>();
 export const treeRefresh = new Map<string, boolean>();
@@ -62,7 +66,8 @@ export class WatchResources {
   }
 
   async refreshResources(resourceName: string, resourceUidAtStart: { [x: string]: boolean}, id = undefined): Promise<void> {
-    await kubectl.watchAllResource(KubectlCommands.watchResources(resourceName), (run) => {
+    const getNewELSupport: TknVersion = await version();
+    await kubectl.watchAllResource(KubectlCommands.watchResources(resourceName), async (run) => {
       if (!resourceUidAtStart[run.metadata.uid] && id !== run.metadata.uid) {
         if (telemetryWatchResource[run.kind]) {
           telemetryLog(`tekton.watch.create.${run.kind}`, `New tekton resource successfully created ${run.kind}: ${run.metadata.name}`)
@@ -88,6 +93,15 @@ export class WatchResources {
         if (treeRefresh.get('treeRefresh')) {
           treeRefresh.set('treeRefresh', false);
           pipelineExplorer.refresh();
+        }
+      } else if (run.kind === 'TaskRun' && run.spec?.['debug'] && semver.satisfies('0.26.0', `<=${getNewELSupport.pipeline}`) && run.status.conditions[0]?.status === 'Unknown') {
+        const featureFlagData: FeatureFlag = await checkEnableApiFields();
+        if (!featureFlagData) return null;
+        if (featureFlagData.data['enable-api-fields'] === 'alpha') {
+          if (!debugName.get(run.metadata.name)) {
+            debugName.set(run.metadata.name, true);
+            watchTaskRunContainer(run.metadata.name, run.kind);
+          }
         }
       }
       id = run.metadata.uid;

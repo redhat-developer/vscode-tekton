@@ -21,7 +21,10 @@ import { watchTaskRunContainer } from './debug-tree-view';
 import { TknVersion, version } from '../util/tknversion';
 import { tkn } from '../tkn';
 
-interface FeatureFlag {
+
+export const debugName: Map<string, boolean> = new Map();
+
+export interface FeatureFlag {
   data: {
     'enable-api-fields': string;
   };
@@ -38,24 +41,29 @@ export async function startDebugger(taskRun: TektonNode): Promise<string> {
     window.showWarningMessage('Debugger is supported above pipeline version: `0.26.0`');
     return null;
   }
-  const result = await tkn.execute(Command.featureFlags(), process.cwd(), false);
-  if (result.error) {
-    window.showErrorMessage(`Fail to fetch data: ${getStderrString(result.error)}`);
-    return null;
-  }
-  const featureFlagData: FeatureFlag = JSON.parse(result.stdout);
+  const featureFlagData: FeatureFlag = await checkEnableApiFields();
+  if (!featureFlagData) return null;
   if (featureFlagData.data['enable-api-fields'] === 'alpha') {
     const resourceName = await startTaskRunWithDebugger(taskRun, 'debug_start');
     if (!resourceName) return null;
-    // sessions.set(resourceName, {resourceType: taskRun.contextValue});
-    watchTaskRunContainer(resourceName, taskRun.contextValue);
-    // debugExplorer.refresh();
+    if (!debugName.get(resourceName)) {
+      debugName.set(resourceName, true);
+      watchTaskRunContainer(resourceName, taskRun.contextValue);
+    }
   } else {
     window.showWarningMessage('To enable debugger change enable-api-fields to alpha in ConfigMap namespace tekton-pipelines');
     return null;
   }
 }
 
+export async function checkEnableApiFields(): Promise<FeatureFlag> {
+  const result = await tkn.execute(Command.featureFlags(), process.cwd(), false);
+  if (result.error) {
+    window.showErrorMessage(`Fail to fetch data: ${getStderrString(result.error)}`);
+    return null;
+  }
+  return JSON.parse(result.stdout);
+}
 
 async function startTaskRunWithDebugger(taskRun: TektonNode, commandId?: string): Promise<string> {
   const taskRunTemplate: TknTaskRun = {
