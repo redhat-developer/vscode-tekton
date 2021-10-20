@@ -21,7 +21,7 @@ import { Command } from '../cli-command';
 import { tkn } from '../tkn';
 
 
-export class TaskRun extends TektonItem {
+export class TaskRun {
 
   static async getTaskRunData(taskRunName: string): Promise<TknTaskRun>{
     const result = await tkn.execute(Command.getTaskRun(taskRunName), undefined, false);
@@ -72,23 +72,23 @@ export class TaskRun extends TektonItem {
 
   static async listFromPipelineRun(pipelineRun: TektonNode): Promise<void> {
     if (!pipelineRun) {
-      pipelineRun = await window.showQuickPick(await TaskRun.getPipelineRunNames(), { placeHolder: 'Select PipelineRun to list TaskRun', ignoreFocusOut: true });
+      pipelineRun = await window.showQuickPick(await TektonItem.getPipelineRunNames(), { placeHolder: 'Select PipelineRun to list TaskRun', ignoreFocusOut: true });
     }
     if (!pipelineRun) return null;
-    TaskRun.tkn.executeInTerminal(Command.listTaskRunsForPipelineRunInTerminal(pipelineRun.getName()));
+    tkn.executeInTerminal(Command.listTaskRunsForPipelineRunInTerminal(pipelineRun.getName()));
   }
 
   static async listFromTask(taskRun: TektonNode): Promise<void> {
     if (!taskRun) {
-      taskRun = await window.showQuickPick(await TaskRun.getTaskNames(), { placeHolder: 'Select Task to list TaskRun', ignoreFocusOut: true });
+      taskRun = await window.showQuickPick(await TektonItem.getTaskNames(), { placeHolder: 'Select Task to list TaskRun', ignoreFocusOut: true });
     }
     if (!taskRun) return null;
-    TaskRun.tkn.executeInTerminal(Command.listTaskRunsForTasksInTerminal(taskRun.getName()));
+    tkn.executeInTerminal(Command.listTaskRunsForTasksInTerminal(taskRun.getName()));
   }
 
   static async logs(taskRun: TektonNode): Promise<void> {
     if (!taskRun) {
-      taskRun = await window.showQuickPick(await TaskRun.getTaskRunNames(), { placeHolder: 'Select Task Run to see logs', ignoreFocusOut: true });
+      taskRun = await window.showQuickPick(await TektonItem.getTaskRunNames(), { placeHolder: 'Select Task Run to see logs', ignoreFocusOut: true });
     }
     if (!taskRun) {
       return;
@@ -96,13 +96,13 @@ export class TaskRun extends TektonItem {
     if (workspace.getConfiguration('vs-tekton').get('showLogInEditor')) {
       showLogInEditor(Command.showTaskRunLogs(taskRun.getName()), `Log: ${taskRun.getName()}`);
     } else {
-      TaskRun.tkn.executeInTerminal(Command.showTaskRunLogs(taskRun.getName()));
+      tkn.executeInTerminal(Command.showTaskRunLogs(taskRun.getName()));
     }
   }
 
   static async followLogs(taskRun: TektonNode): Promise<void> {
     if (!taskRun) {
-      taskRun = await window.showQuickPick(await TaskRun.getTaskRunNames(), { placeHolder: 'Select Task Run to see follow logs', ignoreFocusOut: true });
+      taskRun = await window.showQuickPick(await TektonItem.getTaskRunNames(), { placeHolder: 'Select Task Run to see follow logs', ignoreFocusOut: true });
     }
     if (!taskRun) {
       return;
@@ -110,7 +110,7 @@ export class TaskRun extends TektonItem {
     if (workspace.getConfiguration('vs-tekton').get('showLogInEditor')) {
       showLogInEditor(Command.showTaskRunFollowLogs(taskRun.getName()), `Log: ${taskRun.getName()}`);
     } else {
-      TaskRun.tkn.executeInTerminal(Command.showTaskRunFollowLogs(taskRun.getName()));
+      tkn.executeInTerminal(Command.showTaskRunFollowLogs(taskRun.getName()));
     }
   }
 
@@ -120,7 +120,7 @@ export class TaskRun extends TektonItem {
 
   static async openDefinition(taskRun: TektonNode, commandId?: string): Promise<void> {
     if (!taskRun) {
-      taskRun = await window.showQuickPick(await TaskRun.getTaskRunNames(), { placeHolder: 'Select Task Run to Open Task Definition', ignoreFocusOut: true });
+      taskRun = await window.showQuickPick(await TektonItem.getTaskRunNames(), { placeHolder: 'Select Task Run to Open Task Definition', ignoreFocusOut: true });
     }
     if (!taskRun) return null;
     const taskName = await TaskRun.getTaskNameByTaskRun(taskRun.getName());
@@ -153,7 +153,7 @@ export class TaskRun extends TektonItem {
   }
 
   private static async getTaskNameByTaskRun(taskRunName: string): Promise<[string, string] | undefined> {
-    const result = await TaskRun.tkn.execute(Command.getTaskRun(taskRunName), undefined, false);
+    const result = await tkn.execute(Command.getTaskRun(taskRunName), undefined, false);
     if (result.error) {
       window.showErrorMessage(`TaskRun may not have started yet, try again when it starts running. "${result.error}"`)
       return;
