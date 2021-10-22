@@ -10,7 +10,6 @@ import * as yaml from 'js-yaml';
 import { window } from 'vscode';
 import semver = require('semver');
 import { Command } from '../cli-command';
-import { TaskRun } from '../tekton/taskrun';
 import { TektonNode } from '../tree-view/tekton-node';
 import { Platform } from '../util/platform';
 import { Progress } from '../util/progress';
@@ -20,9 +19,8 @@ import { TknTaskRun } from '../tekton';
 import { watchTaskRunContainer } from './debug-tree-view';
 import { TknVersion, version } from '../util/tknversion';
 import { tkn } from '../tkn';
-
-
-export const debugName: Map<string, boolean> = new Map();
+import { getTaskRunData } from '../util/task-run-data';
+import { debugName } from '../util/map-object';
 
 export interface FeatureFlag {
   data: {
@@ -73,7 +71,8 @@ async function startTaskRunWithDebugger(taskRun: TektonNode, commandId?: string)
       generateName: `${taskRun.getName()}-`
     }
   }
-  const taskRunContent = await TaskRun.getTaskRunData(taskRun.getName());
+  const taskRunContent = await getTaskRunData(taskRun.getName());
+  if (!taskRunContent) return null;
   taskRunTemplate.spec = taskRunContent.spec;
   taskRunTemplate.metadata.labels = taskRunContent.metadata.labels;
   taskRunTemplate.spec.debug = {breakpoint: ['onFailure']};

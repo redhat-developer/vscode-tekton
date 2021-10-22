@@ -4,8 +4,9 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { telemetryLog } from '../telemetry';
+import { pipelineTriggerStatus } from './map-object';
 import { version } from './tknversion';
-import { pipelineTriggerStatus, watchResources } from './watchResources';
+import { watchResources } from './watchResources';
 
 export async function watchTektonResources(extensionStartUpCheck?: boolean): Promise<void> {
   const tknVersion = await version();
@@ -24,5 +25,5 @@ export async function watchTektonResources(extensionStartUpCheck?: boolean): Pro
     if (extensionStartUpCheck) telemetryLog('startUp_watch_tekton_Trigger_resource', 'startUp trigger watch');
     watchResources.watchCommand(resourceList, resourceUidAtStart);
     pipelineTriggerStatus.set('trigger', true);
-  }   
+  }
 }

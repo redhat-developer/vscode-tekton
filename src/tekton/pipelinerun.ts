@@ -19,6 +19,7 @@ export class PipelineRun extends TektonItem {
   static async restart(pipelineRun: TektonNode, commandId?: string): Promise<void> {
     if (!pipelineRun) return null;
     const trigger = await pipelineRunData(pipelineRun);
+    if (!trigger) return null;
     if (commandId) trigger.commandId = commandId;
     if (trigger.pipelineRun.workspaces.length === 0 && trigger.pipelineRun.resources.length === 0 && trigger.pipelineRun.params.length === 0) {
       await startPipelineFromJson(trigger);

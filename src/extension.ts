@@ -45,6 +45,8 @@ import { showDebugContinue } from './debugger/debug-continue';
 import { cancelTaskRun } from './debugger/cancel-taskrun';
 import { showDebugFailContinue } from './debugger/debug-fail-continue';
 import { openContainerInTerminal } from './debugger/show-in-terminal';
+import { debugName, debugSessions, pipelineTriggerStatus } from './util/map-object';
+import { deleteDebugger } from './debugger/delete-debugger';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -171,11 +173,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   if (configurationApi.available) {
     const confApi = configurationApi.api;
     confApi.onDidChangeContext(() => {
-      if (ToolsConfig.getTknLocation('kubectl')) {
-        checkClusterStatus(true);
-      }
-      pipelineExplorer.refresh();
+      refreshTreeView();
     });
+    confApi.onDidChangeNamespace(() => {
+      pipelineTriggerStatus.set('pipeline', false);
+      refreshTreeView();
+    })
   }
   vscode.workspace.onDidSaveTextDocument(async (document: vscode.TextDocument) => {
     await updateTektonResource(document);
@@ -288,4 +291,19 @@ function expandMoreItem(context: number, parent: TektonNode, treeViewId: string)
     customTektonExplorer.refresh(parent);
   }
 
+}
+
+function refreshTreeView(): void {
+  if (ToolsConfig.getTknLocation('kubectl')) {
+    checkClusterStatus(true);
+  }
+  pipelineExplorer.refresh();
+  debugName.clear();
+  if (debugSessions && debugSessions.size !== 0) {
+    for (const [key] of debugSessions) {
+      deleteDebugger(key);
+    }
+  }
+  debugSessions.clear();
+  debugExplorer.refresh();
 }

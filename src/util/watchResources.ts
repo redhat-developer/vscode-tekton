@@ -14,10 +14,10 @@ import { telemetryLog, telemetryLogError } from '../telemetry';
 import { humanizer } from '../humanizer';
 import { TknVersion, version } from './tknversion';
 import semver = require('semver');
-import { checkEnableApiFields, debugName, FeatureFlag } from '../debugger/debug';
+import { checkEnableApiFields, FeatureFlag } from '../debugger/debug';
 import { watchTaskRunContainer } from '../debugger/debug-tree-view';
+import { debugName, pipelineTriggerStatus } from './map-object';
 
-export const pipelineTriggerStatus = new Map<string, boolean>();
 export const treeRefresh = new Map<string, boolean>();
 const kubeConfigFolder: string = path.join(Platform.getUserHomePath(), '.kube');
 
@@ -79,11 +79,11 @@ export class WatchResources {
       } else if (run.status?.completionTime !== undefined && !(resourceUidAtStart[run.metadata.uid] && (run.status?.conditions?.[0].status === 'False' || run.status?.conditions?.[0].status === 'True'))) {
         if (checkPipelineRunNotifications()) {
           if (run.kind === ResourceType.pipelineRun) {
-            if (run.status.conditions[0].status === 'True') {
+            if (run.status?.conditions[0].status === 'True') {
               const successfulPipelineRun = `PipelineRun: ${run.metadata.name} is successfully completed. Duration to complete the execution 'Time: ${humanizer(Date.parse(run.status.completionTime) - Date.parse(run.status.startTime))}'`;
               telemetryLog('watch.pipelineRun.complete.status', successfulPipelineRun);
               window.showInformationMessage(successfulPipelineRun);
-            } else if (run.status.conditions[0].status === 'False') {
+            } else if (run.status?.conditions[0].status === 'False') {
               const failPipelineRun = `PipelineRun: ${run.metadata.name} fails. Reason: ${run.status.conditions?.[0].reason} and Message: ${run.status.conditions?.[0].message}`;
               telemetryLogError('watch.pipelineRun.error', failPipelineRun)
               window.showErrorMessage(failPipelineRun);
@@ -94,7 +94,7 @@ export class WatchResources {
           treeRefresh.set('treeRefresh', false);
           pipelineExplorer.refresh();
         }
-      } else if (run.kind === 'TaskRun' && run.spec?.['debug'] && semver.satisfies('0.26.0', `<=${getNewELSupport.pipeline}`) && run.status.conditions[0]?.status === 'Unknown') {
+      } else if (run.kind === 'TaskRun' && run.spec?.['debug'] && semver.satisfies('0.26.0', `<=${getNewELSupport.pipeline}`) && run.status?.conditions[0]?.status === 'Unknown') {
         const featureFlagData: FeatureFlag = await checkEnableApiFields();
         if (!featureFlagData) return null;
         if (featureFlagData.data['enable-api-fields'] === 'alpha') {

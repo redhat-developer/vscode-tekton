@@ -13,9 +13,9 @@ import * as vscode from 'vscode';
 import { ContextType } from '../../src/context-type';
 import * as telemetry from '../../src/telemetry';
 import { TestItem } from '../tekton/testTektonitem';
-import { sessions } from '../../src/debugger/debug-tree-view';
 import { Command } from '../../src/cli-command';
 import { showDebugFailContinue } from '../../src/debugger/debug-fail-continue';
+import { debugSessions } from '../../src/util/map-object';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -44,13 +44,13 @@ suite('debug/TaskRunContinue', () => {
     });
 
     test('Debug and fail continue taskRun', async () => {
-      sandbox.stub(sessions, 'get').returns({containerName: 'test-task-run', podName: 'test', namespace: 'test'});
+      sandbox.stub(debugSessions, 'get').returns({containerName: 'test-task-run', podName: 'test', namespace: 'test'});
       await showDebugFailContinue(taskRunNode);
       expect(cliExecStub).calledOnceWith(Command.debugFailContinue('test-task-run', 'test', 'test'));
     });
 
     test('check if any error appear from debugger', async () => {
-      sandbox.stub(sessions, 'get').returns({resourceName: 'test-task-run'});
+      sandbox.stub(debugSessions, 'get').returns({resourceName: 'test-task-run'});
       cliExecStub.resolves({error: 'fails'})
       const result = await showDebugFailContinue(taskRunNode);
       showErrorMessageStub.calledOnce;
