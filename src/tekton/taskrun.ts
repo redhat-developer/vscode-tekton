@@ -19,7 +19,7 @@ import { ContextType } from '../context-type';
 import { TektonNode } from '../tree-view/tekton-node';
 import { Command } from '../cli-command';
 import { tkn } from '../tkn';
-import { getTaskRunData } from '../util/task-run-data';
+import { getTaskRunData } from './task-run-data';
 
 
 export class TaskRun extends TektonItem {

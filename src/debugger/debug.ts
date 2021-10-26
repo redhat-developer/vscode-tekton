@@ -19,7 +19,7 @@ import { TknTaskRun } from '../tekton';
 import { watchTaskRunContainer } from './debug-tree-view';
 import { TknVersion, version } from '../util/tknversion';
 import { tkn } from '../tkn';
-import { getTaskRunData } from '../util/task-run-data';
+import { getTaskRunData } from '../tekton/task-run-data';
 import { debugName } from '../util/map-object';
 
 export interface FeatureFlag {
@@ -71,7 +71,7 @@ async function startTaskRunWithDebugger(taskRun: TektonNode, commandId?: string)
       generateName: `${taskRun.getName()}-`
     }
   }
-  const taskRunContent = await getTaskRunData(taskRun.getName());
+  const taskRunContent: TknTaskRun | null = await getTaskRunData(taskRun.getName());
   if (!taskRunContent) return null;
   taskRunTemplate.spec = taskRunContent.spec;
   taskRunTemplate.metadata.labels = taskRunContent.metadata.labels;

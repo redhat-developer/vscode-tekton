@@ -67,6 +67,7 @@ export class WatchResources {
 
   async refreshResources(resourceName: string, resourceUidAtStart: { [x: string]: boolean}, id = undefined): Promise<void> {
     const getNewELSupport: TknVersion = await version();
+    const supportedDebugPipelineVersion = '0.26.0';
     await kubectl.watchAllResource(KubectlCommands.watchResources(resourceName), async (run) => {
       if (!resourceUidAtStart[run.metadata.uid] && id !== run.metadata.uid) {
         if (telemetryWatchResource[run.kind]) {
@@ -94,7 +95,7 @@ export class WatchResources {
           treeRefresh.set('treeRefresh', false);
           pipelineExplorer.refresh();
         }
-      } else if (run.kind === 'TaskRun' && run.spec?.['debug'] && semver.satisfies('0.26.0', `<=${getNewELSupport.pipeline}`) && run.status?.conditions[0]?.status === 'Unknown') {
+      } else if (run.kind === 'TaskRun' && run.spec?.['debug'] && semver.satisfies(supportedDebugPipelineVersion, `<=${getNewELSupport.pipeline}`) && run.status?.conditions[0]?.status === 'Unknown') {
         const featureFlagData: FeatureFlag = await checkEnableApiFields();
         if (!featureFlagData) return null;
         if (featureFlagData.data['enable-api-fields'] === 'alpha') {

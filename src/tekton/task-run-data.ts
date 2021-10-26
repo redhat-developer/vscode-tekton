@@ -13,7 +13,7 @@ export async function getTaskRunData(taskRunName: string): Promise<TknTaskRun>{
   const result = await tkn.execute(Command.getTaskRun(taskRunName), undefined, false);
   if (result.error) {
     window.showErrorMessage(`TaskRun not Found: ${result.error}`)
-    return;
+    return null;
   }
   let data: TknTaskRun;
   try {
