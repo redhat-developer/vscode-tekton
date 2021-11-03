@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { TreeItemCollapsibleState, window } from 'vscode';
+import { TreeItemCollapsibleState } from 'vscode';
 import { Command } from '../cli-command';
 import { ContextType } from '../context-type';
 import { kubectl } from '../kubectl';
@@ -11,11 +11,13 @@ import { TknTaskRun } from '../tekton';
 import { tkn } from '../tkn';
 import { DebuggerNodeImpl } from '../tree-view/debug-node';
 import { TektonNode } from '../tree-view/tekton-node';
+import { debugSessions } from '../util/map-object';
 import { getStderrString } from '../util/stderrstring';
 import { debugExplorer } from './debugExplorer';
+import { deleteDebugger } from './delete-debugger';
 
 
-interface DebugSessionEntry {
+export interface DebugSessionEntry {
   label?: string;
   name?: string;
   status?: string;
@@ -27,13 +29,10 @@ interface DebugSessionEntry {
   namespace?: string;
 }
 
-export const sessions: Map<string, DebugSessionEntry> = new Map();
-
-
 export async function debugTreeView(): Promise<TektonNode[]> {
-  if (sessions && sessions.size !== 0) {
+  if (debugSessions && debugSessions.size !== 0) {
     const children = [];
-    for (const [key] of sessions) {
+    for (const [key] of debugSessions) {
       const obj: DebuggerNodeImpl = new DebuggerNodeImpl(
         null,
         key,
@@ -53,9 +52,9 @@ export async function watchTaskRunContainer(resourceName: string, resourceType: 
       try {
         if (taskRunData?.status?.podName && taskRunData?.status?.steps?.[0]?.container) {
           const checkDebugStatus = await tkn.execute(Command.isContainerStoppedOnDebug(taskRunData.status.steps[0].container, taskRunData.status.podName, taskRunData.metadata.namespace), process.cwd(), false);
-          if (!sessions.get(taskRunData.metadata.name)?.count && checkDebugStatus.stdout.trim() && checkDebugStatus.stdout.trim().length !== 0) {
+          if (!debugSessions.get(taskRunData.metadata.name)?.count && checkDebugStatus.stdout.trim() && checkDebugStatus.stdout.trim().length !== 0) {
             tkn.executeInTerminal(Command.loginToContainer(taskRunData.status.steps[0].container, taskRunData.status.podName, taskRunData.metadata.namespace), taskRunData.metadata.name);
-            sessions.set(taskRunData.metadata.name, {
+            debugSessions.set(taskRunData.metadata.name, {
               count: true,
               podName: taskRunData.status.podName,
               containerName: taskRunData.status.steps[0].container,
@@ -66,36 +65,25 @@ export async function watchTaskRunContainer(resourceName: string, resourceType: 
           }
 
           const containerPass = new RegExp('current phase is Succeeded');
-          if (containerPass.test(getStderrString(checkDebugStatus.error)) && sessions.get(taskRunData.metadata.name)) {
-            deleteDebugger(taskRunData);
+          if (containerPass.test(getStderrString(checkDebugStatus.error)) && debugSessions.get(taskRunData.metadata.name)) {
+            deleteDebugger(taskRunData.metadata.name);
           }
 
-          if (!checkDebugStatus.stdout.trim() && sessions.get(taskRunData.metadata.name)?.count) {
-            deleteDebugger(taskRunData);
+          if (!checkDebugStatus.stdout.trim() && debugSessions.get(taskRunData.metadata.name)?.count) {
+            deleteDebugger(taskRunData.metadata.name);
           }
         }
         if (taskRunData?.status?.conditions?.[0].reason === 'TaskRunCancelled' || taskRunData?.status?.conditions?.[0].status === 'False') {
-          sessions.delete(resourceName);
+          debugSessions.delete(resourceName);
           debugExplorer.refresh();
         }
       } catch (e) {
-        sessions.delete(resourceName);
+        debugSessions.delete(resourceName);
         debugExplorer.refresh();
       }
     });
   } catch (e) {
-    sessions.delete(resourceName);
+    debugSessions.delete(resourceName);
     debugExplorer.refresh();
   }
-}
-
-function deleteDebugger(taskRunData: TknTaskRun): void {
-  sessions.delete(taskRunData.metadata.name);
-  const activeTerminal = window.terminals;
-  activeTerminal.map((terminal) => {
-    if (terminal.name.trim() === `Tekton:${taskRunData.metadata.name}`) {
-      terminal.dispose();
-    }
-  });
-  debugExplorer.refresh();
 }

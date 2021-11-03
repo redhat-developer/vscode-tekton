@@ -7,7 +7,7 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import sinon = require('sinon');
 import { DebugExplorer } from '../../src/debugger/debugExplorer';
-import { sessions } from '../../src/debugger/debug-tree-view';
+import { debugSessions } from '../../src/util/map-object';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -18,7 +18,7 @@ suite('Tekton Application Explorer', () => {
 
   setup(() => {
     tektonInstance = new DebugExplorer();
-    sandbox.stub(sessions, 'size').returns(1);
+    sandbox.stub(debugSessions, 'size').returns(1);
   });
 
   teardown(() => {
@@ -26,10 +26,10 @@ suite('Tekton Application Explorer', () => {
   });
 
   test('delegate calls to TektonObject instance', async () => {
-    sessions.set('test', {});
+    debugSessions.set('test', {});
     const pipelineNodes = await tektonInstance.getChildren();
     expect(pipelineNodes.length).equals(1);
-    sessions.delete('test');
+    debugSessions.delete('test');
   });
 
   test('return null if no tree item found', async () => {

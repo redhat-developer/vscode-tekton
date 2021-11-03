@@ -9,7 +9,7 @@ import { TektonItem } from './tektonitem';
 import { window, workspace } from 'vscode';
 import { CliCommand } from '../cli';
 import { showLogInEditor } from '../util/log-in-editor';
-import { PipelineTaskRunData, TknTaskRun } from '../tekton';
+import { PipelineTaskRunData } from '../tekton';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
@@ -19,24 +19,10 @@ import { ContextType } from '../context-type';
 import { TektonNode } from '../tree-view/tekton-node';
 import { Command } from '../cli-command';
 import { tkn } from '../tkn';
+import { getTaskRunData } from './task-run-data';
 
 
 export class TaskRun extends TektonItem {
-
-  static async getTaskRunData(taskRunName: string): Promise<TknTaskRun>{
-    const result = await TaskRun.tkn.execute(Command.getTaskRun(taskRunName), undefined, false);
-    if (result.error) {
-      window.showErrorMessage(`TaskRun not Found: ${result.error}`)
-      return;
-    }
-    let data: TknTaskRun;
-    try {
-      data = JSON.parse(result.stdout);
-      // eslint-disable-next-line no-empty
-    } catch (ignore) {
-    }
-    return data;
-  }
 
   static async restartTaskRun(taskRun: TektonNode, commandId?: string): Promise<boolean> {
     const taskRunTemplate = {
@@ -46,7 +32,8 @@ export class TaskRun extends TektonItem {
         generateName: `${taskRun.getName()}-`
       }
     }
-    const taskRunContent = await TaskRun.getTaskRunData(taskRun.getName());
+    const taskRunContent = await getTaskRunData(taskRun.getName());
+    if (!taskRunContent) return null;
     taskRunTemplate['spec'] = taskRunContent.spec;
     const tempPath = os.tmpdir();
     if (!tempPath) {

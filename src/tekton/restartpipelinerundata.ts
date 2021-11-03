@@ -8,6 +8,7 @@ import { TektonItem } from './tektonitem';
 import { TknSpec } from '../tekton';
 import { TektonNode } from '../tree-view/tekton-node';
 import { Command } from '../cli-command';
+import { window } from 'vscode';
 
 interface PipelineData {
   params: {};
@@ -40,6 +41,10 @@ export async function pipelineRunData(pipelineRunContent: TektonNode): Promise<T
     workspaces: {}
   }
   const getPipelineContent = await TektonItem.tkn.execute(Command.getPipeline(pipelineRunContent['item'].metadata.labels['tekton.dev/pipeline']), process.cwd(), false);
+  if (getPipelineContent.error) {
+    window.showErrorMessage(`TaskRun not Found: ${getPipelineContent.error}`)
+    return null;
+  }
   let data: TknSpec;
   try {
     data = JSON.parse(getPipelineContent.stdout).spec;

@@ -10,7 +10,6 @@ import * as yaml from 'js-yaml';
 import { window } from 'vscode';
 import semver = require('semver');
 import { Command } from '../cli-command';
-import { TaskRun } from '../tekton/taskrun';
 import { TektonNode } from '../tree-view/tekton-node';
 import { Platform } from '../util/platform';
 import { Progress } from '../util/progress';
@@ -20,8 +19,10 @@ import { TknTaskRun } from '../tekton';
 import { watchTaskRunContainer } from './debug-tree-view';
 import { TknVersion, version } from '../util/tknversion';
 import { tkn } from '../tkn';
+import { getTaskRunData } from '../tekton/task-run-data';
+import { debugName } from '../util/map-object';
 
-interface FeatureFlag {
+export interface FeatureFlag {
   data: {
     'enable-api-fields': string;
   };
@@ -38,24 +39,29 @@ export async function startDebugger(taskRun: TektonNode): Promise<string> {
     window.showWarningMessage('Debugger is supported above pipeline version: `0.26.0`');
     return null;
   }
-  const result = await tkn.execute(Command.featureFlags(), process.cwd(), false);
-  if (result.error) {
-    window.showErrorMessage(`Fail to fetch data: ${getStderrString(result.error)}`);
-    return null;
-  }
-  const featureFlagData: FeatureFlag = JSON.parse(result.stdout);
+  const featureFlagData: FeatureFlag = await checkEnableApiFields();
+  if (!featureFlagData) return null;
   if (featureFlagData.data['enable-api-fields'] === 'alpha') {
     const resourceName = await startTaskRunWithDebugger(taskRun, 'debug_start');
     if (!resourceName) return null;
-    // sessions.set(resourceName, {resourceType: taskRun.contextValue});
-    watchTaskRunContainer(resourceName, taskRun.contextValue);
-    // debugExplorer.refresh();
+    if (!debugName.get(resourceName)) {
+      debugName.set(resourceName, true);
+      watchTaskRunContainer(resourceName, taskRun.contextValue);
+    }
   } else {
     window.showWarningMessage('To enable debugger change enable-api-fields to alpha in ConfigMap namespace tekton-pipelines');
     return null;
   }
 }
 
+export async function checkEnableApiFields(): Promise<FeatureFlag> {
+  const result = await tkn.execute(Command.featureFlags(), process.cwd(), false);
+  if (result.error) {
+    window.showErrorMessage(`Fail to fetch data: ${getStderrString(result.error)}`);
+    return null;
+  }
+  return JSON.parse(result.stdout);
+}
 
 async function startTaskRunWithDebugger(taskRun: TektonNode, commandId?: string): Promise<string> {
   const taskRunTemplate: TknTaskRun = {
@@ -65,7 +71,8 @@ async function startTaskRunWithDebugger(taskRun: TektonNode, commandId?: string)
       generateName: `${taskRun.getName()}-`
     }
   }
-  const taskRunContent = await TaskRun.getTaskRunData(taskRun.getName());
+  const taskRunContent: TknTaskRun | null = await getTaskRunData(taskRun.getName());
+  if (!taskRunContent) return null;
   taskRunTemplate.spec = taskRunContent.spec;
   taskRunTemplate.metadata.labels = taskRunContent.metadata.labels;
   taskRunTemplate.spec.debug = {breakpoint: ['onFailure']};

@@ -61,6 +61,5 @@ export class DebugExplorer implements TreeDataProvider<TektonNode>, Disposable {
     return this.treeView.visible;
   }
 }
-  
+
 export const debugExplorer = new DebugExplorer();
-  

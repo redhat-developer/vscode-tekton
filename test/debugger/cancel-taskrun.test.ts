@@ -14,8 +14,8 @@ import { ContextType } from '../../src/context-type';
 import * as telemetry from '../../src/telemetry';
 import { TestItem } from '../tekton/testTektonitem';
 import { cancelTaskRun } from '../../src/debugger/cancel-taskrun';
-import { sessions } from '../../src/debugger/debug-tree-view';
 import { Command } from '../../src/cli-command';
+import { debugSessions } from '../../src/util/map-object';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -44,13 +44,13 @@ suite('debug/TaskRunCancel', () => {
     });
 
     test('exit from debugger', async () => {
-      sandbox.stub(sessions, 'get').returns({resourceName: 'test-task-run'});
+      sandbox.stub(debugSessions, 'get').returns({resourceName: 'test-task-run'});
       await cancelTaskRun(taskRunNode);
       expect(cliExecStub).calledOnceWith(Command.cancelTaskRun('test-task-run'));
     });
 
     test('check if any error appear exit from debugger', async () => {
-      sandbox.stub(sessions, 'get').returns({resourceName: 'test-task-run'});
+      sandbox.stub(debugSessions, 'get').returns({resourceName: 'test-task-run'});
       cliExecStub.resolves({error: 'fails'})
       const result = await cancelTaskRun(taskRunNode);
       showErrorMessageStub.calledOnce;
