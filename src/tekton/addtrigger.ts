@@ -121,6 +121,7 @@ function newParam(params: Param[]): void {
   params.map(val => {
     val.value = val.default
     delete val.default
+    delete val?.type
   })
 }
 
@@ -145,34 +146,37 @@ export async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues, 
       params: inputAddTrigger.params,
       resources: inputAddTrigger.resources,
       workspaces: getPipelineRunWorkspaces(inputAddTrigger.workspaces, inputAddTrigger.volumeClaimTemplate),
-      serviceAccountName: inputAddTrigger.serviceAccount,
     },
   };
+  if (inputAddTrigger?.serviceAccount?.trim()) {
+    pipelineRunData.spec.serviceAccountName = inputAddTrigger.serviceAccount;
+  }
   return await getPipelineRunData(pipelineRunData, options);
 }
 
 export function getPipelineRunWorkspaces(workspaces: Workspaces[], volumeClaimTemplate?: VCT[]): Workspace[] {
   const newWorkspace = [];
-  if (workspaces && workspaces.length === 0) return newWorkspace;
-  workspaces.map((workspaceData: Workspaces) => {
-    const newWorkspaceObject = {};
-    const workspaceResourceObject = {};
-    newWorkspaceObject['name'] = workspaceData.name;
-    if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.Secret) {
-      workspaceResourceObject['secretName'] = workspaceData.workspaceName;
-    } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.ConfigMap) {
-      workspaceResourceObject['name'] = workspaceData.workspaceName;
-    } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.PersistentVolumeClaim) {
-      workspaceResourceObject['claimName'] = workspaceData.workspaceName;
-    } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.EmptyDirectory) {
-      workspaceResourceObject['emptyDir']
-    }
-    if (workspaceData.item && workspaceData.item.length !== 0) {
-      workspaceResourceObject['items'] = workspaceData.item;
-    }
-    newWorkspaceObject[WorkspaceResource[workspaceData.workspaceType]] = workspaceResourceObject;
-    newWorkspace.push(newWorkspaceObject);
-  });
+  if (workspaces && workspaces.length !== 0) {
+    workspaces.map((workspaceData: Workspaces) => {
+      const newWorkspaceObject = {};
+      const workspaceResourceObject = {};
+      newWorkspaceObject['name'] = workspaceData.name;
+      if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.Secret) {
+        workspaceResourceObject['secretName'] = workspaceData.workspaceName;
+      } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.ConfigMap) {
+        workspaceResourceObject['name'] = workspaceData.workspaceName;
+      } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.PersistentVolumeClaim) {
+        workspaceResourceObject['claimName'] = workspaceData.workspaceName;
+      } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.EmptyDirectory) {
+        workspaceResourceObject['emptyDir']
+      }
+      if (workspaceData.item && workspaceData.item.length !== 0) {
+        workspaceResourceObject['items'] = workspaceData.item;
+      }
+      newWorkspaceObject[WorkspaceResource[workspaceData.workspaceType]] = workspaceResourceObject;
+      newWorkspace.push(newWorkspaceObject);
+    });
+  }
   if (volumeClaimTemplate && volumeClaimTemplate.length !== 0) {
     volumeClaimTemplate.map(value => {
       const workspaceObject = {};
@@ -180,6 +184,7 @@ export function getPipelineRunWorkspaces(workspaces: Workspaces[], volumeClaimTe
       workspaceObject[value.kind] = {
         spec: value.spec
       }
+      workspaceObject[value.kind].spec.volumeMode = 'Filesystem';
       newWorkspace.push(workspaceObject);
     })
   }
