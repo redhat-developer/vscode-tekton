@@ -314,7 +314,6 @@ suite('Tekton/Pipeline', () => {
           resources: [],
           status: null,
           workspaces: [],
-          serviceAccountName: undefined
         }
       });
     });

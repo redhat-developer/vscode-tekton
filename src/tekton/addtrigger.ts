@@ -156,7 +156,7 @@ export async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues, 
 
 export function getPipelineRunWorkspaces(workspaces: Workspaces[], volumeClaimTemplate?: VCT[]): Workspace[] {
   const newWorkspace = [];
-  if (workspaces && workspaces.length === 0) {
+  if (workspaces && workspaces.length !== 0) {
     workspaces.map((workspaceData: Workspaces) => {
       const newWorkspaceObject = {};
       const workspaceResourceObject = {};
