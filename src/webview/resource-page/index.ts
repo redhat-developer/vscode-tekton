@@ -7,7 +7,7 @@ import '../common/reset.css';
 import '../common/vscode.css';
 import 'vscode-codicons/dist/codicon.css';
 import { ViewState, VSMessage } from '../common/vscode-api';
-import { TaskWidget } from './task-widget';
+import { TaskWidget } from './resource-widget';
 
 
 declare const acquireVsCodeApi: () => ViewState & VSMessage;

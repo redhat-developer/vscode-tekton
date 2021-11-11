@@ -5,13 +5,14 @@
 
 import { ResourceData, ResourceVersionData } from '../tekton-hub-client/api';
 
-export interface HubTaskInstallation {
+export interface HubResourceInstallation {
   url: string;
   name: string;
+  kind: string;
   tknVersion?: string;
   minPipelinesVersion?: string;
   asClusterTask: boolean;
-  taskVersion?: ResourceVersionData;
+  resourceVersion?: ResourceVersionData;
   view: string;
 }
 
@@ -20,13 +21,13 @@ export interface HubTaskUninstall {
   clusterTask: boolean;
 }
 
-export interface InstalledTask extends ResourceData {
+export interface InstalledResource extends ResourceData {
   installedVersion?: ResourceVersionData;
   clusterTask?: boolean;
 }
 
-export type HubTask = (InstalledTask | ResourceData) & { view?: string }
+export type HubResource = (InstalledResource | ResourceData) & { view?: string }
 
-export function isInstalledTask(task: HubTask): task is InstalledTask {
-  return (task as InstalledTask).installedVersion !== undefined;
+export function isInstalledTask(task: HubResource): task is InstalledResource {
+  return (task as InstalledResource).installedVersion !== undefined;
 }

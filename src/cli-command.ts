@@ -236,11 +236,7 @@ export class Command {
     return newK8sCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'kubectl', 'get', 'pipeline.tekton.dev');
   }
 
-  static updateYaml(fsPath: string): CliCommand {
-    return newK8sCommand('apply', '-f', fsPath);
-  }
-
-  static hubInstall(name: string, version: string): CliCommand {
+  static hubInstallTask(name: string, version: string): CliCommand {
     return newTknCommand('hub', 'install', 'task', name, '--version', version);
   }
 
@@ -254,6 +250,10 @@ export class Command {
   
   static hubTaskReinstall(name: string, version: string): CliCommand {
     return newTknCommand('hub', 'reinstall', 'task', name, '--version', version);
+  }
+
+  static hubGetPipeline(name: string): CliCommand {
+    return newTknCommand('hub', 'get', 'pipeline', name);
   }
 
   static listTaskRun(): CliCommand {

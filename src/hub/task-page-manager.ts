@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 import { ViewColumn } from 'vscode';
 import { Disposable } from '../util/disposable';
-import { HubTask } from './hub-common';
+import { HubResource } from './hub-common';
 import { TaskPageView } from './task-page-view';
 
 
@@ -18,7 +18,7 @@ export class TaskPageManager extends Disposable {
     super();
   }
 
-  showTaskPageView(task: HubTask, tknVersion: string): void {
+  showTaskPageView(task: HubResource, tknVersion: string): void {
     if (!this.activePreview){
       this.createTaskPageView(task, tknVersion);
 
@@ -27,7 +27,7 @@ export class TaskPageManager extends Disposable {
     }
   }
 
-  createTaskPageView(task: HubTask, tknVersion: string): TaskPageView {
+  createTaskPageView(task: HubResource, tknVersion: string): TaskPageView {
     const preview = TaskPageView.create(task, tknVersion, ViewColumn.One);
 
     this.activePreview = preview;

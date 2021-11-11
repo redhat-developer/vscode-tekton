@@ -5,6 +5,8 @@
 import './hub.css';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const taskSvg = require('./task.svg');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const pipelineSvg = require('./pipeline.svg');
 import { VSMessage, ViewState} from '../common/vscode-api';
 import { debounce } from 'debounce';
 import {ResourceData} from '../../tekton-hub-client/api';
@@ -12,7 +14,7 @@ import { BaseWidget, Listener, Widget } from '../common/widget';
 import { CollapsibleList, CollapsibleListState, ListWidget } from '../common/list-widget';
 import { createDiv, createSpan } from '../common/dom-util';
 import * as semver from 'semver';
-import { HubTask, HubTaskInstallation, InstalledTask, isInstalledTask } from '../../hub/hub-common';
+import { HubResource, HubResourceInstallation, InstalledResource, isInstalledTask } from '../../hub/hub-common';
 import { Loader } from '../common/loader';
 import { dropDownForTags, enterEvent, hideList, initList, keyUpDown, listGroup } from './search_dropdown';
 
@@ -52,16 +54,16 @@ export class SearchInput {
   }
 }
 
-export class TaskItem extends BaseWidget {
+export class ResourceItem extends BaseWidget {
 
   
-  constructor(private task: HubTask, private messageSender: VSMessage, private loader: Loader, private viewType: string, private tknVersion?: string) {
+  constructor(private task: HubResource, icon: string, private messageSender: VSMessage, private loader: Loader, private viewType: string, private tknVersion?: string) {
     super();
     this.element = createDiv('task-list-item');
     const iconContainer = createDiv('icon-container');
     this.element.appendChild(iconContainer);
     const image = document.createElement('img');
-    image.src = taskSvg;
+    image.src = icon;
     image.classList.add('icon');
     iconContainer.appendChild(image);
     this.createDetails();
@@ -96,7 +98,7 @@ export class TaskItem extends BaseWidget {
     header.appendChild(name);
 
     const version = createSpan('version');
-    version.innerText = this.task.latestVersion ? this.task.latestVersion.version : (this.task as InstalledTask).installedVersion.version;
+    version.innerText = this.task.latestVersion ? this.task.latestVersion.version : (this.task as InstalledResource).installedVersion.version;
     header.appendChild(version);
 
     const ratings = createSpan('ratings');
@@ -113,7 +115,7 @@ export class TaskItem extends BaseWidget {
   private createDescription(details: HTMLDivElement): void {
     const description = createDiv('description');
     description.classList.add('ellipsis');
-    description.textContent = this.task.latestVersion ? this.task.latestVersion.description : (this.task as InstalledTask).installedVersion.description;
+    description.textContent = this.task.latestVersion ? this.task.latestVersion.description : (this.task as InstalledResource).installedVersion.description;
     details.appendChild(description);
   }
 
@@ -136,7 +138,7 @@ export class TaskItem extends BaseWidget {
     const installEl = document.createElement('li');
     installEl.classList.add('action-item');
     
-    if (!(this.task as InstalledTask).installedVersion) {
+    if (!(this.task as InstalledResource).installedVersion) {
       const installButton = document.createElement('a');
       installButton.classList.add('action-label', 'codicon', 'extension-action', 'install');
   
@@ -169,8 +171,10 @@ export class TaskItem extends BaseWidget {
       minPipelinesVersion: this.task.latestVersion.minPipelinesVersion,
       tknVersion: this.tknVersion,
       taskVersion: this.task.latestVersion,
-      view: this.viewType
-    } as HubTaskInstallation});
+      kind: this.task.kind,
+      view: this.viewType,
+      asClusterTask: false,
+    } as HubResourceInstallation});
   }
 
   private addVersionCheck(container: HTMLUListElement): void {
@@ -201,7 +205,7 @@ export class TaskItem extends BaseWidget {
 
 }
 
-export class TaskList extends ListWidget<HubTask> {
+export class ResourceList extends ListWidget<HubResource> {
 
   tknVersion: string | undefined;
 
@@ -213,13 +217,13 @@ export class TaskList extends ListWidget<HubTask> {
     this.element.innerText = message;
   }
 
-  createItemWidget(item: HubTask): Widget {
-    return new TaskItem(item, this.messageSender, this.loader, this.type, this.tknVersion);
+  createItemWidget(item: HubResource): Widget {
+    return new ResourceItem(item, item.kind === 'Task' ? taskSvg : pipelineSvg, this.messageSender, this.loader, this.type, this.tknVersion);
   }
 
-  show(items: HubTask[]): void {
+  show(items: HubResource[]): void {
     if (items.length === 0) {
-      this.showPlaceholder('No tasks found.');
+      this.showPlaceholder('No resource found.');
       if (this.itemListChangedListener) {
         this.itemListChangedListener(items);
       }
@@ -230,16 +234,16 @@ export class TaskList extends ListWidget<HubTask> {
 
 }
 
-export class TaskView {
+export class ResourceView {
 
   private searchInput: SearchInput;
-  private taskList: TaskList;
-  private installedTasks: Map<string, InstalledTask>;
-  private welcomeList: CollapsibleList<HubTask>;
+  private taskList: ResourceList;
+  private installedTasks: Map<string, InstalledResource>;
+  private welcomeList: CollapsibleList<HubResource>;
   private mainContainer: HTMLElement;
   private loader: Loader;
-  private installedList: TaskList | undefined;
-  private recommendedList: TaskList | undefined;
+  private installedList: ResourceList | undefined;
+  private recommendedList: ResourceList | undefined;
   private state: TaskViewState;
   private searchTasks: ResourceData[];
 
@@ -280,7 +284,7 @@ export class TaskView {
     const taskListContainer = createDiv();
     taskListContainer.id = 'tasksList';
     taskListContainer.className = 'contain-style';
-    this.taskList = new TaskList(taskListContainer, this.vscodeAPI, this.loader, 'searchView');
+    this.taskList = new ResourceList(taskListContainer, this.vscodeAPI, this.loader, 'searchView');
 
     this.mainContainer = document.getElementById('mainContainer');
     const listContainer = createDiv('collapsibleListContainer');
@@ -319,12 +323,12 @@ export class TaskView {
   private updateSearchList(): void {
     if (this.installedTasks){
       for (const task of this.searchTasks){
-        if (this.installedTasks.has(task.name)){
-          (task as InstalledTask).installedVersion = this.installedTasks.get(task.name).installedVersion;
-          (task as InstalledTask).clusterTask = this.installedTasks.get(task.name).clusterTask;
-        } else if ((task as InstalledTask).installedVersion && !this.installedTasks.has(task.name)){
-          delete (task as InstalledTask).installedVersion;
-          delete (task as InstalledTask).clusterTask;
+        if (this.installedTasks.has(task.name) && this.installedTasks.get(task.name).kind === task.kind){
+          (task as InstalledResource).installedVersion = this.installedTasks.get(task.name).installedVersion;
+          (task as InstalledResource).clusterTask = this.installedTasks.get(task.name).clusterTask;
+        } else if ((task as InstalledResource).installedVersion && (!this.installedTasks.has(task.name) || this.installedTasks.get(task.name).kind !== task.kind)){
+          delete (task as InstalledResource).installedVersion;
+          delete (task as InstalledResource).clusterTask;
         }
       }
     }
@@ -340,12 +344,12 @@ export class TaskView {
     this.taskList.tknVersion = version;
   }
 
-  setInstalledTasks(tasks: InstalledTask[]): void {
+  setInstalledResources(tasks: InstalledResource[]): void {
     this.loader.hide();
     this.installedTasks = new Map(tasks.map(it => [it.name, it]));
     if (!this.installedList){
       const installedElement = createDiv();
-      this.installedList = new TaskList(installedElement, this.vscodeAPI, this.loader, 'installedView');
+      this.installedList = new ResourceList(installedElement, this.vscodeAPI, this.loader, 'installedView');
       this.welcomeList.addSubList('INSTALLED', this.installedList);
       this.installedList.tknVersion = this.taskList.tknVersion;
     }
@@ -358,7 +362,7 @@ export class TaskView {
   setRecommendedTasks(tasks: ResourceData[]): void {
     if (!this.recommendedList){
       const recommendedElement = createDiv();
-      this.recommendedList = new TaskList(recommendedElement, this.vscodeAPI, this.loader, 'recommendedView');
+      this.recommendedList = new ResourceList(recommendedElement, this.vscodeAPI, this.loader, 'recommendedView');
       this.welcomeList.addSubList('RECOMMENDED', this.recommendedList);
       this.recommendedList.tknVersion = this.taskList.tknVersion;
     }

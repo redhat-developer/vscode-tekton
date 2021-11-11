@@ -5,7 +5,7 @@
 
 import { tkn } from '../tkn';
 import * as vscode from 'vscode';
-import { HubTaskInstallation } from './hub-common';
+import { HubResourceInstallation } from './hub-common';
 import * as semver from 'semver';
 import * as os from 'os';
 import * as path from 'path';
@@ -16,15 +16,16 @@ import { getStderrString } from '../util/stderrstring';
 import { Command } from '../cli-command';
 import { telemetryLog, telemetryLogError } from '../telemetry';
 import { CliExitData } from '../cli';
+import { getPipelineList } from '../util/list-tekton-resource';
 
-const installEventEmitter = new vscode.EventEmitter<HubTaskInstallation>()
+const installEventEmitter = new vscode.EventEmitter<HubResourceInstallation>()
 export const installEvent = installEventEmitter.event;
 
-export async function installTask(task: HubTaskInstallation): Promise<boolean> {
+export async function installResource(task: HubResourceInstallation): Promise<boolean> {
   try {
     if (task.tknVersion && task.minPipelinesVersion){
       if (semver.lt(task.tknVersion, task.minPipelinesVersion)){
-        const result = await vscode.window.showWarningMessage(`This task requires Tekton Pipelines >= ${task.minPipelinesVersion} and is incompatible with the version of Tekton Pipelines installed on your cluster. Install anyway?`, 'Install', 'Cancel')
+        const result = await vscode.window.showWarningMessage(`This resource requires Tekton Pipelines >= ${task.minPipelinesVersion} and is incompatible with the version of Tekton Pipelines installed on your cluster. Install anyway?`, 'Install', 'Cancel')
         if (result === 'Install'){
           return doInstall(task);
         } else {
@@ -40,7 +41,11 @@ export async function installTask(task: HubTaskInstallation): Promise<boolean> {
   }
 }
 
-async function doInstall(task: HubTaskInstallation): Promise<boolean> {
+async function doInstall(task: HubResourceInstallation): Promise<boolean> {
+  if (task.kind === 'Pipeline'){
+    return doInstallPipeline(task);
+  }
+
   if (task.asClusterTask) {
     return doInstallClusterTask(task);
   } else {
@@ -49,7 +54,65 @@ async function doInstall(task: HubTaskInstallation): Promise<boolean> {
 
 }
 
-async function doInstallTask(task: HubTaskInstallation): Promise<boolean> {
+async function doInstallPipeline(resource: HubResourceInstallation): Promise<boolean> {
+  return await vscode.window.withProgress({title: `Installing ${resource.name}`,location: vscode.ProgressLocation.Notification}, async () => {
+    try {
+      const pipelines = await getPipelineList();
+      if (pipelines) {
+        for (const rawPipeline of pipelines) {
+          if (rawPipeline.metadata.name === resource.name) {
+            const overwriteResult = await vscode.window.showWarningMessage(`You already has Pipeline '${resource.name}'. Do you want to overwrite it?`, 'Overwrite', 'Cancel');
+            if (overwriteResult !== 'Overwrite') {
+              return false;
+            }
+          }
+        }
+      }
+      
+      let message: string;
+      const result = await tkn.execute(Command.hubGetPipeline(resource.name));
+    
+
+      if (result.error){
+        message = `Pipeline installation failed: ${getStderrString(result.error)}`;
+        telemetryLogError('tekton.hub', message);
+        vscode.window.showWarningMessage(message);
+      } else {
+        const pipelineContent = result.stdout;
+        const url = vscode.Uri.parse(resource.url);
+        const tempFile = path.join(os.tmpdir(), path.basename(url.fsPath));
+
+        const yaml = jsYaml.safeLoadAll(pipelineContent);
+        if (yaml[0]) {
+          if (!yaml[0].metadata) {
+            yaml[0].metadata = [];
+          }
+          yaml[0].metadata.labels['hub.tekton.dev/catalog'] = 'tekton';
+          await fs.writeFile(tempFile, jsYaml.dump(yaml[0]));
+        }
+        const applyResult = await tkn.execute(Command.apply(tempFile));
+        let message: string;
+        await fs.unlink(tempFile);
+        if (applyResult.error) {
+          telemetryLogError('tekton.hub', applyResult.error.toString().replace(tempFile, 'user path'));
+          vscode.window.showWarningMessage(`Pipeline installation failed: ${getStderrString(applyResult.error)}`);
+        } else {
+          message = `Pipeline ${resource.name} installed.`;
+          vscode.window.showInformationMessage(message);
+          telemetryLog('tekton.hub.install.pipeline', message);
+          installEventEmitter.fire(resource);
+          return true;
+        }
+      }
+    } catch (err) {
+      telemetryLogError('tekton.hub.catch', err.toString());
+      vscode.window.showErrorMessage(err.toString());
+    }
+    return false;
+  });
+}
+
+async function doInstallTask(task: HubResourceInstallation): Promise<boolean> {
   return await vscode.window.withProgress({title: `Installing ${task.name}`,location: vscode.ProgressLocation.Notification}, async () => {
     try {
       const tasks = await tkn.getRawTasks();
@@ -72,18 +135,18 @@ async function doInstallTask(task: HubTaskInstallation): Promise<boolean> {
       let message: string;
       if (needToUpgrade){
         if (installedVersion) {
-          if (installedVersion === task.taskVersion.version){
-            result = await tkn.execute(Command.hubTaskReinstall(task.name, task.taskVersion.version))
-          } else if (parseFloat(installedVersion) < parseFloat(task.taskVersion.version)){
-            result = await tkn.execute(Command.hubTaskUpgrade(task.name, task.taskVersion.version));
+          if (installedVersion === task.resourceVersion.version){
+            result = await tkn.execute(Command.hubTaskReinstall(task.name, task.resourceVersion.version))
+          } else if (parseFloat(installedVersion) < parseFloat(task.resourceVersion.version)){
+            result = await tkn.execute(Command.hubTaskUpgrade(task.name, task.resourceVersion.version));
           } else {
-            result = await tkn.execute(Command.hubTaskDowngrade(task.name, task.taskVersion.version));
+            result = await tkn.execute(Command.hubTaskDowngrade(task.name, task.resourceVersion.version));
           }
         } else {
-          result = await tkn.execute(Command.hubTaskReinstall(task.name, task.taskVersion.version))
+          result = await tkn.execute(Command.hubTaskReinstall(task.name, task.resourceVersion.version))
         }
       } else {
-        result = await tkn.execute(Command.hubInstall(task.name, task.taskVersion.version));
+        result = await tkn.execute(Command.hubInstallTask(task.name, task.resourceVersion.version));
       }
 
       if (result.error){
@@ -108,7 +171,7 @@ async function doInstallTask(task: HubTaskInstallation): Promise<boolean> {
   });
 }
 
-async function doInstallClusterTask(task: HubTaskInstallation): Promise<boolean> {
+async function doInstallClusterTask(task: HubResourceInstallation): Promise<boolean> {
   return await vscode.window.withProgress({title: `Installing ${task.name}`,location: vscode.ProgressLocation.Notification}, async () => {
     try {
       const tasks = await tkn.getRawClusterTasks();
@@ -137,7 +200,7 @@ async function doInstallClusterTask(task: HubTaskInstallation): Promise<boolean>
           await fs.writeFile(tempFile, jsYaml.dump(yaml[0]));
         }
       }
-      const result = await tkn.execute(Command.updateYaml(tempFile));
+      const result = await tkn.execute(Command.apply(tempFile));
       let message: string;
       await fs.unlink(tempFile);
       if (result.error) {
