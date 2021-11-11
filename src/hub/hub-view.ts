@@ -10,7 +10,7 @@ import { taskPageManager } from './task-page-manager';
 import { installTask, installEvent } from './install-task';
 import { version } from '../util/tknversion';
 import { getRawTasks } from '../yaml-support/tkn-tasks-provider';
-import { InstalledTask, isInstalledTask } from './hub-common';
+import { HubTaskInstallation, InstalledTask, isInstalledTask } from './hub-common';
 import { uninstallTaskEvent } from './uninstall-task';
 import { startDetectingLanguage } from './hub-recommendation';
 import * as fuzzysort from 'fuzzysort';
@@ -70,7 +70,7 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
           this.openTaskPage(e.data);
           break;
         case 'installTask':
-          installTask(e.data);
+          this.doInstallTask(e.data);
           break;
       }
     }));
@@ -87,7 +87,15 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
     <body>
       <div id="root" style="width: 100%; height: 100%;">
         <div id="header">
-          <input type="text" placeholder="Search Tasks in TektonHub" id="taskInput" />
+        <ul class="ul-color select-list-group" id="slg">
+          <li class="li-style">
+              <input type="text" placeholder="Search Tasks in TektonHub" id="taskInput" />
+              <ul class="ul-color ul-position" data-toggle="false">
+                <li class="li-style" data-display="true">@tag:</li>
+                <li class="li-style" data-display="true">@categories:</li>
+              </ul>
+           </li>
+        </ul>
         </div>
         <div class="listContainer" id="mainContainer">
         </div>
@@ -141,6 +149,13 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
       console.error(err);
     }
 
+  }
+
+  private async doInstallTask(task: HubTaskInstallation): Promise<void> {
+    const result = await installTask(task);
+    if (!result){
+      this.sendMessage({type: 'cancelInstall'});
+    }
   }
 
   private async loadInstalledTasks(): Promise<void> {

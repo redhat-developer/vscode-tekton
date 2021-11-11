@@ -6,7 +6,7 @@
 import { customTektonExplorer } from '../pipeline/customTektonExplorer'
 import { pipelineExplorer } from '../pipeline/pipelineExplorer'
 import { Pipeline } from '../tekton/pipeline';
-import { cli, CliCommand } from '../cli';
+import { CliCommand } from '../cli';
 import { Condition } from '../tekton/condition';
 import { PipelineResource } from '../tekton/pipelineresource';
 import { PipelineRun } from '../tekton/pipelinerun';
@@ -88,7 +88,7 @@ async function doDelete(items: TektonNode[], toRefresh: Refreshable, commandId?:
       if (value === 'Yes') {
         return Progress.execFunctionWithProgress('Deleting...', async () => {
           for (const del of toDelete.values()) {
-            const result = await cli.execute(del);
+            const result = await tkn.execute(del);
             if (result.error) {
               telemetryLogError(commandId, result.error);
               window.showErrorMessage(`Failed to delete: '${result.error}'.`)

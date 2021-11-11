@@ -188,7 +188,7 @@ function updatePipelineRunTasks(pipelineRun: PipelineRunData, tasks: DeclaredTas
 
         runTask.finishedSteps = finishedSteps;
       }
-      const retriesStatus = (taskRun as TaskRun).status.retriesStatus;
+      const retriesStatus = (taskRun as TaskRun).status?.retriesStatus;
       if (retriesStatus) {
         runTask.retryNumber = retriesStatus.length;
       }

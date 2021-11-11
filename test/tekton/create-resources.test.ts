@@ -12,7 +12,7 @@ import * as sinon from 'sinon';
 import * as yaml from 'js-yaml';
 import * as sinonChai from 'sinon-chai';
 import { createNewResource } from '../../src/tekton/create-resources';
-import { cli } from '../../src/cli';
+import { TknImpl } from '../../src/tkn';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -20,11 +20,11 @@ chai.use(sinonChai);
 suite('create resources', () => {
 
   const sandbox = sinon.createSandbox();
-  let cliStub: sinon.SinonStub;
   let osStub: sinon.SinonStub;
   let writeFileStub: sinon.SinonStub;
   let unlinkStub: sinon.SinonStub;
   let safeDumpStub: sinon.SinonStub;
+  let execStub: sinon.SinonStub;
 
   const pvcResource = [{
     apiVersion: 'test',
@@ -44,7 +44,7 @@ suite('create resources', () => {
   }];
 
   setup(() => {
-    cliStub = sandbox.stub(cli, 'execute').resolves({ error: null, stdout: '', stderr: '' });
+    execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({ error: null, stdout: '', stderr: '' });
     osStub = sandbox.stub(os, 'tmpdir').returns('path');
     writeFileStub = sandbox.stub(fs, 'writeFile').resolves();
     unlinkStub = sandbox.stub(fs, 'unlink').resolves();
@@ -61,7 +61,7 @@ suite('create resources', () => {
   });
 
   test('create new resource for pipeline', async () => {
-    cliStub.onFirstCall().resolves({ error: null, stdout: 'successful', stderr: '' });
+    execStub.onFirstCall().resolves({ error: null, stdout: 'successful', stderr: '' });
     await createNewResource(pvcResource);
     safeDumpStub.calledOnce;
     osStub.calledOnce;

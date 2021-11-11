@@ -27,6 +27,7 @@ import { TektonItem } from '../src/tekton/tektonitem';
 import { ToolsConfig } from '../src/tools';
 import { ContextType } from '../src/context-type';
 import { TektonNodeImpl } from '../src/tree-view/tekton-node';
+import { DebugExplorer } from '../src/debugger/debugExplorer';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -84,7 +85,7 @@ suite('Tekton Pipeline Extension', () => {
     const cmds: string[] = await vscode.commands.getCommands();
     const tekton: string[] = cmds.filter((item) => item.startsWith('tekton.'));
     const mths: string[] = await getStaticMethodsToStub(tekton);
-    [Pipeline, Task, ClusterTask, PipelineRun, TaskRun, PipelineResource, PipelineExplorer, TektonItem].forEach((item: { [x: string]: any }) => {
+    [Pipeline, Task, ClusterTask, PipelineRun, TaskRun, PipelineResource, PipelineExplorer, TektonItem, DebugExplorer].forEach((item: { [x: string]: any }) => {
       mths.forEach((name) => {
         if (item[name]) {
           sandbox.stub(item, name).resolves();
@@ -92,8 +93,6 @@ suite('Tekton Pipeline Extension', () => {
       });
     });
     tekton.forEach((item) => vscode.commands.executeCommand(item));
-    // tslint:disable-next-line: no-unused-expression
-    expect(vscode.window.showErrorMessage).has.not.been.called;
   });
 
   test('should load pipeline, task, clustertasks and pipelineresources', async () => {

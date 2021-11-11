@@ -9,6 +9,7 @@ import { SpawnOptions, spawn } from 'child_process';
 import * as stream from 'stream';
 import * as JStream from 'jstream';
 import * as events from 'events';
+import { ToolsConfig } from './tools';
 
 export interface CliExitData {
   readonly error: string | Error;
@@ -151,6 +152,11 @@ export class CliImpl implements Cli {
   }
 
   executeWatchJSON(cmd: CliCommand, opts: SpawnOptions = {}): JSONWatchProcess {
+    const toolLocation = ToolsConfig.getTknLocation(cmd.cliCommand);
+    if (toolLocation) {
+      // eslint-disable-next-line require-atomic-updates
+      cmd.cliCommand = cmd.cliCommand.replace(cmd.cliCommand, `"${toolLocation}"`).replace(new RegExp(`&& ${cmd.cliCommand}`, 'g'), `&& "${toolLocation}"`);
+    }
     const proc = this.executeWatch(cmd, opts);
     proc.stdout.pipe(new JStream()).on('data', (obj) => {
       proc.emit('object', obj);

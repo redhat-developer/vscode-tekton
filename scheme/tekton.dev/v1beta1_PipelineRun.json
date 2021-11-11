@@ -601,6 +601,17 @@
     },
     "EmbeddedTask": {
       "properties": {
+        "apiVersion": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "spec": {
+          "properties": {},
+          "additionalProperties": true,
+          "type": "object"
+        },
         "metadata": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/PipelineTaskMetadata"
@@ -732,6 +743,16 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "EphemeralVolumeSource": {
+      "properties": {
+        "volumeClaimTemplate": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/PersistentVolumeClaimTemplate"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "ExecAction": {
       "properties": {
         "command": {
@@ -768,11 +789,6 @@
           "type": "array"
         }
       },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "FieldsV1": {
-      "properties": {},
       "additionalProperties": false,
       "type": "object"
     },
@@ -930,6 +946,21 @@
         },
         "tcpSocket": {
           "$ref": "#/definitions/TCPSocketAction"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "HostAlias": {
+      "properties": {
+        "ip": {
+          "type": "string"
+        },
+        "hostnames": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -1121,8 +1152,9 @@
           "type": "string"
         },
         "fieldsV1": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/FieldsV1"
+          "properties": {},
+          "additionalProperties": true,
+          "type": "object"
         }
       },
       "additionalProperties": false,
@@ -1412,7 +1444,6 @@
           "$ref": "#/definitions/ObjectMeta"
         },
         "spec": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/PersistentVolumeClaimSpec"
         },
         "status": {
@@ -1462,6 +1493,7 @@
           "type": "array"
         },
         "selector": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/LabelSelector"
         },
         "resources": {
@@ -1509,6 +1541,22 @@
             "$ref": "#/definitions/PersistentVolumeClaimCondition"
           },
           "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "PersistentVolumeClaimTemplate": {
+      "required": [
+        "spec"
+      ],
+      "properties": {
+        "metadata": {
+          "$ref": "#/definitions/ObjectMeta"
+        },
+        "spec": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/PersistentVolumeClaimSpec"
         }
       },
       "additionalProperties": false,
@@ -1626,7 +1674,7 @@
           "$ref": "#/definitions/PipelineResourceRef"
         },
         "type": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "additionalProperties": false,
@@ -1735,6 +1783,45 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "PipelineRunRunStatus": {
+      "properties": {
+        "pipelineTaskName": {
+          "type": "string"
+        },
+        "status": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/RunStatus"
+        },
+        "whenExpressions": {
+          "items": {
+            "required": [
+              "input",
+              "operator",
+              "values"
+            ],
+            "properties": {
+              "input": {
+                "type": "string"
+              },
+              "operator": {
+                "type": "string"
+              },
+              "values": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "additionalProperties": false,
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "PipelineRunSpec": {
       "properties": {
         "pipelineRef": {
@@ -1770,6 +1857,10 @@
         },
         "status": {
           "type": "string"
+        },
+        "timeouts": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TimeoutFields"
         },
         "timeout": {
           "pattern": "^[-+]?([0-9]*(\\.[0-9]*)?(ns|us|µs|μs|ms|s|m|h))+$",
@@ -1842,6 +1933,15 @@
             ".*": {
               "$schema": "http://json-schema.org/draft-04/schema#",
               "$ref": "#/definitions/PipelineRunTaskRunStatus"
+            }
+          },
+          "type": "object"
+        },
+        "runs": {
+          "patternProperties": {
+            ".*": {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "$ref": "#/definitions/PipelineRunRunStatus"
             }
           },
           "type": "object"
@@ -2208,7 +2308,6 @@
       ],
       "properties": {
         "labelSelector": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/LabelSelector"
         },
         "namespaces": {
@@ -2219,6 +2318,9 @@
         },
         "topologyKey": {
           "type": "string"
+        },
+        "namespaceSelector": {
+          "$ref": "#/definitions/LabelSelector"
         }
       },
       "additionalProperties": false,
@@ -2314,6 +2416,9 @@
         },
         "fsGroupChangePolicy": {
           "type": "string"
+        },
+        "seccompProfile": {
+          "$ref": "#/definitions/SeccompProfile"
         }
       },
       "additionalProperties": false,
@@ -2380,6 +2485,9 @@
           "type": "integer"
         },
         "failureThreshold": {
+          "type": "integer"
+        },
+        "terminationGracePeriodSeconds": {
           "type": "integer"
         }
       },
@@ -2532,6 +2640,65 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "RunResult": {
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "RunStatus": {
+      "properties": {
+        "observedGeneration": {
+          "type": "integer"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/definitions/Condition"
+          },
+          "type": "array"
+        },
+        "annotations": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "data-time"
+        },
+        "completionTime": {
+          "type": "string",
+          "format": "data-time"
+        },
+        "results": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/RunResult"
+          },
+          "type": "array"
+        },
+        "extraFields": {
+          "properties": {},
+          "additionalProperties": true,
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "SELinuxOptions": {
       "properties": {
         "user": {
@@ -2586,6 +2753,21 @@
         },
         "readOnly": {
           "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "SeccompProfile": {
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "localhostProfile": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -2715,6 +2897,10 @@
         },
         "procMount": {
           "type": "string"
+        },
+        "seccompProfile": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/SeccompProfile"
         }
       },
       "additionalProperties": false,
@@ -2832,6 +3018,12 @@
         },
         "script": {
           "type": "string"
+        },
+        "workspaces": {
+          "items": {
+            "$ref": "#/definitions/WorkspaceUsage"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -3005,6 +3197,16 @@
         },
         "timeout": {
           "pattern": "^[-+]?([0-9]*(\\.[0-9]*)?(ns|us|µs|μs|ms|s|m|h))+$",
+          "type": "string"
+        },
+        "workspaces": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/WorkspaceUsage"
+          },
+          "type": "array"
+        },
+        "onError": {
           "type": "string"
         }
       },
@@ -3376,8 +3578,33 @@
           },
           "type": "array"
         },
+        "hostAliases": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/HostAlias"
+          },
+          "type": "array"
+        },
         "hostNetwork": {
           "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TimeoutFields": {
+      "properties": {
+        "pipeline": {
+          "pattern": "^[-+]?([0-9]*(\\.[0-9]*)?(ns|us|µs|μs|ms|s|m|h))+$",
+          "type": "string"
+        },
+        "tasks": {
+          "pattern": "^[-+]?([0-9]*(\\.[0-9]*)?(ns|us|µs|μs|ms|s|m|h))+$",
+          "type": "string"
+        },
+        "finally": {
+          "pattern": "^[-+]?([0-9]*(\\.[0-9]*)?(ns|us|µs|μs|ms|s|m|h))+$",
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -3543,6 +3770,10 @@
         "csi": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/CSIVolumeSource"
+        },
+        "ephemeral": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/EphemeralVolumeSource"
         }
       },
       "additionalProperties": false,
@@ -3734,6 +3965,22 @@
           "type": "string"
         },
         "subPath": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "WorkspaceUsage": {
+      "required": [
+        "name",
+        "mountPath"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "mountPath": {
           "type": "string"
         }
       },

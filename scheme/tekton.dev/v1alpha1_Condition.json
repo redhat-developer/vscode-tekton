@@ -195,11 +195,6 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "FieldsV1": {
-      "properties": {},
-      "additionalProperties": false,
-      "type": "object"
-    },
     "HTTPGetAction": {
       "required": [
         "port"
@@ -312,8 +307,9 @@
           "type": "string"
         },
         "fieldsV1": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/FieldsV1"
+          "properties": {},
+          "additionalProperties": true,
+          "type": "object"
         }
       },
       "additionalProperties": false,
@@ -500,6 +496,9 @@
         },
         "failureThreshold": {
           "type": "integer"
+        },
+        "terminationGracePeriodSeconds": {
+          "type": "integer"
         }
       },
       "additionalProperties": false,
@@ -594,6 +593,21 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "SeccompProfile": {
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "localhostProfile": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "SecretEnvSource": {
       "properties": {
         "name": {
@@ -658,6 +672,10 @@
         },
         "procMount": {
           "type": "string"
+        },
+        "seccompProfile": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/SeccompProfile"
         }
       },
       "additionalProperties": false,
@@ -770,6 +788,16 @@
         "timeout": {
           "pattern": "^[-+]?([0-9]*(\\.[0-9]*)?(ns|us|µs|μs|ms|s|m|h))+$",
           "type": "string"
+        },
+        "workspaces": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/WorkspaceUsage"
+          },
+          "type": "array"
+        },
+        "onError": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -843,6 +871,22 @@
           "type": "string"
         },
         "runAsUserName": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "WorkspaceUsage": {
+      "required": [
+        "name",
+        "mountPath"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "mountPath": {
           "type": "string"
         }
       },

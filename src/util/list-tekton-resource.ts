@@ -3,9 +3,10 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { cli, CliCommand } from '../cli';
+import { CliCommand } from '../cli';
 import { Command } from '../cli-command';
 import { TknPipeline } from '../tekton';
+import { tkn } from '../tkn';
 
 export async function getPipelineList(): Promise<TknPipeline[]> {
   return await executeCommand(Command.listPipelines());
@@ -16,7 +17,7 @@ export async function getResourceList(resource: string): Promise<TknPipeline[]> 
 }
 
 async function executeCommand(command: CliCommand): Promise<TknPipeline[]> {
-  const result = await cli.execute(command);
+  const result = await tkn.execute(command);
   let data: TknPipeline[] = [];
   try {
     const r = JSON.parse(result.stdout);

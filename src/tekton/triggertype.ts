@@ -56,6 +56,7 @@ export interface Param {
   name: string;
   default?: string;
   value?: string | string[];
+  type?: string;
 }
 
 export interface PipelineParam extends Param {

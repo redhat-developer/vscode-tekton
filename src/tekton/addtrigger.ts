@@ -18,7 +18,6 @@ import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
 import { exposeRoute, RouteModel } from './expose';
 import { Progress } from '../util/progress';
-import { cli } from '../cli';
 import { TknVersion, version } from '../util/tknversion';
 import { NewPvc } from './create-resources';
 import { getExposeURl } from '../util/exposeurl';
@@ -29,6 +28,7 @@ import semver = require('semver');
 import { ClusterTaskModel, EventListenerModel, PipelineRunModel, TaskModel, TriggerTemplateModel } from '../util/resource-kind';
 import { showPipelineRunPreview } from '../pipeline/pipeline-preview';
 import { PipelineRun } from './pipelinerun';
+import { tkn } from '../tkn';
 
 export enum WorkspaceResource {
   Secret = 'secret',
@@ -84,7 +84,7 @@ export async function k8sCreate(trigger: TriggerTemplateKind | EventListenerKind
   }
   const fsPath = path.join(tempPath, `${trigger.metadata.name || trigger.metadata.generateName}.yaml`);
   await fs.writeFile(fsPath, triggerYaml, 'utf8');
-  const result = await cli.execute(Command.create(`${quote}${fsPath}${quote}`));
+  const result = await tkn.execute(Command.create(`${quote}${fsPath}${quote}`));
   if (result.error) {
     telemetryLogError(commandId, result.error.toString().replace(fsPath, 'user path'));
     vscode.window.showErrorMessage(`Fail to deploy Resources: ${getStderrString(result.error)}`);
@@ -121,6 +121,7 @@ function newParam(params: Param[]): void {
   params.map(val => {
     val.value = val.default
     delete val.default
+    delete val?.type
   })
 }
 
@@ -145,34 +146,37 @@ export async function getPipelineRunFrom(inputAddTrigger: AddTriggerFormValues, 
       params: inputAddTrigger.params,
       resources: inputAddTrigger.resources,
       workspaces: getPipelineRunWorkspaces(inputAddTrigger.workspaces, inputAddTrigger.volumeClaimTemplate),
-      serviceAccountName: inputAddTrigger.serviceAccount,
     },
   };
+  if (inputAddTrigger?.serviceAccount?.trim()) {
+    pipelineRunData.spec.serviceAccountName = inputAddTrigger.serviceAccount;
+  }
   return await getPipelineRunData(pipelineRunData, options);
 }
 
 export function getPipelineRunWorkspaces(workspaces: Workspaces[], volumeClaimTemplate?: VCT[]): Workspace[] {
   const newWorkspace = [];
-  if (workspaces && workspaces.length === 0) return newWorkspace;
-  workspaces.map((workspaceData: Workspaces) => {
-    const newWorkspaceObject = {};
-    const workspaceResourceObject = {};
-    newWorkspaceObject['name'] = workspaceData.name;
-    if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.Secret) {
-      workspaceResourceObject['secretName'] = workspaceData.workspaceName;
-    } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.ConfigMap) {
-      workspaceResourceObject['name'] = workspaceData.workspaceName;
-    } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.PersistentVolumeClaim) {
-      workspaceResourceObject['claimName'] = workspaceData.workspaceName;
-    } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.EmptyDirectory) {
-      workspaceResourceObject['emptyDir']
-    }
-    if (workspaceData.item && workspaceData.item.length !== 0) {
-      workspaceResourceObject['items'] = workspaceData.item;
-    }
-    newWorkspaceObject[WorkspaceResource[workspaceData.workspaceType]] = workspaceResourceObject;
-    newWorkspace.push(newWorkspaceObject);
-  });
+  if (workspaces && workspaces.length !== 0) {
+    workspaces.map((workspaceData: Workspaces) => {
+      const newWorkspaceObject = {};
+      const workspaceResourceObject = {};
+      newWorkspaceObject['name'] = workspaceData.name;
+      if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.Secret) {
+        workspaceResourceObject['secretName'] = workspaceData.workspaceName;
+      } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.ConfigMap) {
+        workspaceResourceObject['name'] = workspaceData.workspaceName;
+      } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.PersistentVolumeClaim) {
+        workspaceResourceObject['claimName'] = workspaceData.workspaceName;
+      } else if (WorkspaceResource[workspaceData.workspaceType] === WorkspaceResource.EmptyDirectory) {
+        workspaceResourceObject['emptyDir']
+      }
+      if (workspaceData.item && workspaceData.item.length !== 0) {
+        workspaceResourceObject['items'] = workspaceData.item;
+      }
+      newWorkspaceObject[WorkspaceResource[workspaceData.workspaceType]] = workspaceResourceObject;
+      newWorkspace.push(newWorkspaceObject);
+    });
+  }
   if (volumeClaimTemplate && volumeClaimTemplate.length !== 0) {
     volumeClaimTemplate.map(value => {
       const workspaceObject = {};
@@ -180,6 +184,7 @@ export function getPipelineRunWorkspaces(workspaces: Workspaces[], volumeClaimTe
       workspaceObject[value.kind] = {
         spec: value.spec
       }
+      workspaceObject[value.kind].spec.volumeMode = 'Filesystem';
       newWorkspace.push(workspaceObject);
     })
   }

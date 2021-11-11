@@ -161,7 +161,7 @@ function startUpdatingState(): void {
 
   // the default values of each option are outlined below:
   const defaults = {
-    menuRadius: function(ele){ return 50; }, // the outer radius (node center to the end of the menu) in pixels. It is added to the rendered size of the node. Can either be a number or function as in the example.
+    menuRadius: function(){ return 50; }, // the outer radius (node center to the end of the menu) in pixels. It is added to the rendered size of the node. Can either be a number or function as in the example.
     selector: 'node[taskRunName]', // elements matching this Cytoscape.js selector will trigger cxtmenus
     commands: [ // an array of commands to list in the menu or a function that returns the array
     

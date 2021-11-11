@@ -4,28 +4,20 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { CliCommand, cli} from './cli';
-import { newK8sCommand, newOcCommand } from './cli-command';
+import { newK8sCommand } from './cli-command';
 import { PipelineRunData, TknTaskRun } from './tekton';
-import { ocFallBack } from './util/check-cluster-status';
 
 export const KubectlCommands = {
   watchPipelineRuns(name: string): CliCommand {
-    if (ocFallBack.get('ocFallBack')) {
-      return newOcCommand('get', 'pipelinerun', name, '-w', '-o', 'json');
-    } else {
-      return newK8sCommand('get', 'pipelinerun', name, '-w', '-o', 'json');
-    }
+    return newK8sCommand('get', 'pipelinerun', name, '-w', '-o', 'json');
   },
   watchResources(resource: string): CliCommand {
-    if (ocFallBack.get('ocFallBack')) {
-      return newOcCommand('get', resource, '-w', '-o', 'json');
-    } else {
-      return newK8sCommand('get', resource, '-w', '-o', 'json');
-    }
+    return newK8sCommand('get', resource, '-w', '-o', 'json');
   }
 }
 
 export type PipelineRunCallback = (pr: PipelineRunData) => void;
+export type TaskRunCallback = (pr: TknTaskRun) => void;
 export type watchAllPipelineAndTriggerResources = (pr: PipelineRunData | TknTaskRun) => void;
 
 export interface WatchControl {
@@ -59,7 +51,7 @@ export class Kubectl {
     });
   }
 
-  watchRunCommand(command: CliCommand, callback?: PipelineRunCallback): Promise<void> {
+  watchRunCommand(command: CliCommand, callback?: PipelineRunCallback | TaskRunCallback): Promise<void> {
     return new Promise((resolve, reject) => {
       const watch = cli.executeWatchJSON(command);
       watch.on('object', obj => {
@@ -86,7 +78,7 @@ export class Kubectl {
     });
   }
 
-  watchPipelineRunWithControl(name: string, callback?: PipelineRunCallback): WatchControl {
+  watchPipelineRunWithControl(name: string, callback?: PipelineRunCallback | TaskRunCallback): WatchControl {
     const watch = cli.executeWatchJSON(KubectlCommands.watchPipelineRuns(name));
     const finish = new Promise<void>((resolve, reject) => {
       watch.on('object', obj => {

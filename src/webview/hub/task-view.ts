@@ -14,8 +14,9 @@ import { createDiv, createSpan } from '../common/dom-util';
 import * as semver from 'semver';
 import { HubTask, HubTaskInstallation, InstalledTask, isInstalledTask } from '../../hub/hub-common';
 import { Loader } from '../common/loader';
+import { dropDownForTags, enterEvent, hideList, initList, keyUpDown, listGroup } from './search_dropdown';
 
-
+let installingButton;
 export class SearchInput {
 
   private inputListener: Listener<string> | undefined;
@@ -32,6 +33,10 @@ export class SearchInput {
 
   disable(): void {
     this.input.disabled = true;
+  }
+
+  get inputElement(): HTMLInputElement {
+    return this.input;
   }
 
   onInputChange(listener: Listener<string>): void {
@@ -145,6 +150,7 @@ export class TaskItem extends BaseWidget {
 
         this.sendInstall();
         installButton.textContent = 'Installing';
+        installingButton = installButton;
       };
       installEl.appendChild(installButton);
     }
@@ -239,11 +245,23 @@ export class TaskView {
 
   constructor(private vscodeAPI: VSMessage & ViewState) {
     this.searchInput = new SearchInput(document.getElementById('taskInput') as HTMLInputElement, vscodeAPI);
+    this.searchInput.inputElement.addEventListener('keypress', (e) => {
+      if (e.code === 'Enter') {
+        enterEvent(e);
+      }
+      hideList(listGroup);
+      initList();
+    });
+    this.searchInput.inputElement.addEventListener('click', () => {
+      keyUpDown();
+    });
     this.searchInput.onInputChange((input) => {
       if (input) {
+        dropDownForTags(input);
         this.loader.show();
         this.vscodeAPI.postMessage({type: 'search', data: input});
       } else {
+        hideList(listGroup);
         this.showWelcomeList();
       }
     });
@@ -258,10 +276,10 @@ export class TaskView {
     const rootElement = document.getElementById('root')
     rootElement.insertBefore(this.loader.getElement(), rootElement.firstChild);
     this.loader.show();
-    
-    // 
+
     const taskListContainer = createDiv();
     taskListContainer.id = 'tasksList';
+    taskListContainer.className = 'contain-style';
     this.taskList = new TaskList(taskListContainer, this.vscodeAPI, this.loader, 'searchView');
 
     this.mainContainer = document.getElementById('mainContainer');
@@ -345,6 +363,12 @@ export class TaskView {
       this.recommendedList.tknVersion = this.taskList.tknVersion;
     }
     this.recommendedList.show(tasks);
+  }
+
+  cancelInstall(): void {
+    if (installingButton){
+      installingButton.textContent = 'Install';
+    }
   }
 
 }

@@ -4,10 +4,10 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { window } from 'vscode';
-import { cli } from '../cli';
 import { Command } from '../cli-command';
 import { K8sTask, StartObject, TknTaskRun } from '../tekton';
 import { telemetryLogError } from '../telemetry';
+import { tkn } from '../tkn';
 import { getParams, getTaskRunResources, getWorkspaces } from '../util/create-resource-spec';
 import { TaskRunModel } from '../util/resource-kind';
 import { k8sCreate } from './addtrigger';
@@ -35,7 +35,7 @@ export async function getTaskRun(formValue: StartObject, commandId?: string): Pr
   if (formValue.serviceAccount) {
     taskRunData.spec.serviceAccountName = formValue.serviceAccount;
   }
-  const result = await cli.execute(Command.getTask(formValue.name, (formValue.startTask) ? 'task.tekton' : 'clustertask'));
+  const result = await tkn.execute(Command.getTask(formValue.name, (formValue.startTask) ? 'task.tekton' : 'clustertask'));
   let task: K8sTask;
   if (result.error) {
     telemetryLogError(commandId, result.error.toString())
