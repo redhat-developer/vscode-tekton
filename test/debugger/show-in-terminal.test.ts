@@ -16,6 +16,7 @@ import * as telemetry from '../../src/telemetry';
 import { TestItem } from '../tekton/testTektonitem';
 import { Command } from '../../src/cli-command';
 import { openContainerInTerminal } from '../../src/debugger/show-in-terminal';
+import { debugSessions } from '../../src/util/map-object';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -56,10 +57,10 @@ suite('debug/TaskRunContinue', () => {
     });
 
     test('Debug and fail continue taskRun', async () => {
+      sandbox.stub(debugSessions, 'get').returns({containerName: 'test-task-run', podName: 'test', namespace: 'test'});
       sandbox.stub(vscode.window, 'terminals').resolves([{name: 'Tekton:test-task-run'}]);
       await openContainerInTerminal(taskRunNode);
-      expect(cliExecStub).calledOnceWith(Command.getTaskRun(taskRunNode.getName()));
-      expect(executeInTerminalStub).calledOnceWith(Command.loginToContainer('test', 'test', 'test'));
+      expect(executeInTerminalStub).calledOnceWith(Command.loginToContainer('test-task-run', 'test', 'test'));
     });
 
   });

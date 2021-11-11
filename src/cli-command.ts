@@ -273,7 +273,7 @@ export class Command {
   }
 
   static loginToContainer(container: string, podName: string, namespace: string): CliCommand {
-    return newK8sCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', 'bash');
+    return newK8sCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', 'sh');
   }
 
   static isContainerStoppedOnDebug(container: string, podName: string, namespace: string): CliCommand {
