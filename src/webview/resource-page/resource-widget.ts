@@ -216,18 +216,20 @@ export class TaskWidget extends BaseWidget {
     }
     this.installButton = installButton;
     installLi.appendChild(installButton);
-    const tknDropdown = createDiv('monaco-dropdown');
 
-    const dropdownLabel = createDiv('dropdown-label');
-    const dropdownButton = document.createElement('a');
-    dropdownButton.classList.add('action-label', 'dropdown', 'codicon-chevron-down', 'extension-action', 'label', 'action-dropdown', 'codicon');
-    dropdownButton.onclick = (e) => {
-      e.stopPropagation();
-      this.showInstallOptions(dropdownButton);
+    if (this.task.kind === 'Task'){
+      const tknDropdown = createDiv('monaco-dropdown');
+      const dropdownLabel = createDiv('dropdown-label');
+      const dropdownButton = document.createElement('a');
+      dropdownButton.classList.add('action-label', 'dropdown', 'codicon-chevron-down', 'extension-action', 'label', 'action-dropdown', 'codicon');
+      dropdownButton.onclick = (e) => {
+        e.stopPropagation();
+        this.showInstallOptions(dropdownButton);
+      }
+      dropdownLabel.appendChild(dropdownButton);
+      tknDropdown.appendChild(dropdownLabel);
+      installLi.appendChild(tknDropdown);
     }
-    dropdownLabel.appendChild(dropdownButton);
-    tknDropdown.appendChild(dropdownLabel);
-    installLi.appendChild(tknDropdown);
     actionsContainer.appendChild(installLi);
   }
 
