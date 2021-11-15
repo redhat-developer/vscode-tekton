@@ -120,7 +120,7 @@ function convertTasksToNode(tasks: PipelineRunTask[], includePositions = true): 
   tasks.forEach((task: DeclaredTask) => tasksMap.set( task.id, task));
 
   for (const task of tasks) {
-    result.push({ data: { id: task.id, label: getLabel(task), type: task.kind, taskRef: task.taskRef, state: task.state, yamlPosition: includePositions ? task.position : undefined, final: task.final, steps: task.steps ?? undefined } as NodeData });
+    result.push({ data: { id: task.id, label: getLabel(task), type: task.kind, taskRef: task.taskRef, state: task.state, yamlPosition: includePositions ? task.position : undefined, final: task.final, steps: task.steps ?? undefined, taskRunName: task.taskRunName } as NodeData });
     for (const after of task.runAfter ?? []) {
       if (tasksMap.has(after)) {
         result.push({ data: { source: after, target: task.id, id: `${after}-${ task.id}`, state: tasksMap.get(after).state } as EdgeData });
@@ -163,15 +163,17 @@ function updatePipelineRunTasks(pipelineRun: PipelineRunData, tasks: DeclaredTas
     const runTask = task as PipelineRunTask;
 
     let taskRun: TaskRun | PipelineRunConditionCheckStatus;
+    let taskRunName: string;
     if (task.kind === 'Condition') {
-      taskRun = findConditionInTaskRun(task.name, taskRuns);
+      [taskRun, taskRunName] = findConditionInTaskRun(task.name, taskRuns);
     } else {
-      taskRun = findTaskInTaskRun(task.name, taskRuns);
+      [taskRun, taskRunName] = findTaskInTaskRun(task.name, taskRuns);
     }
     if (taskRun) {
       runTask.completionTime = taskRun.status?.completionTime;
       runTask.startTime = taskRun.status?.startTime;
       runTask.state = getPipelineRunTaskState(taskRun.status);
+      runTask.taskRunName = taskRunName;
       const steps = (taskRun as TaskRun).status?.steps;
       if (steps) {
         runTask.stepsCount = steps.length;
@@ -198,27 +200,29 @@ function updatePipelineRunTasks(pipelineRun: PipelineRunData, tasks: DeclaredTas
   return tasks as PipelineRunTask[];
 }
 
-function findTaskInTaskRun(name: string, taskRuns: TaskRuns): TaskRun | undefined {
+function findTaskInTaskRun(name: string, taskRuns: TaskRuns): [TaskRun, string] {
   for (const taskRun in taskRuns) {
     const element = taskRuns[taskRun];
     if (element.pipelineTaskName === name) {
-      return element;
+      return [element, taskRun];
     }
   }
+  return [undefined, undefined];
 }
 
-function findConditionInTaskRun(name: string, taskRuns: TaskRuns): PipelineRunConditionCheckStatus | undefined {
+function findConditionInTaskRun(name: string, taskRuns: TaskRuns): [PipelineRunConditionCheckStatus, string] {
   for (const taskRun in taskRuns) {
     const element = taskRuns[taskRun];
     if (element.conditionChecks) {
       for (const conditionRunName in element.conditionChecks) {
         const condition = element.conditionChecks[conditionRunName];
         if (condition.conditionName === name) {
-          return condition;
+          return [condition, conditionRunName];
         }
       }
     }
   }
+  return [undefined, undefined];
 }
 
 async function getPipelineTaskSteps(document: vscode.TextDocument | VirtualDocument, task: NodeData): Promise<StepData[] | undefined> {
