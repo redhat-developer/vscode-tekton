@@ -20,5 +20,5 @@ export async function openContainerInTerminal(taskRun: TektonNode, commandId?: s
   });
   const debugTaskRun = debugSessions.get(taskRun.getName());
   telemetryLog(commandId, 'Open container in terminal command click')
-  tkn.executeInTerminal(Command.loginToContainer(debugTaskRun.containerName, debugTaskRun.podName, debugTaskRun.namespace), `${debugTaskRun.resourceName}-${debugTaskRun.containerName}`);
+  tkn.executeInTerminal(Command.loginToContainer(debugTaskRun.containerName, debugTaskRun.podName, debugTaskRun.namespace), debugTaskRun.resourceName);
 }

@@ -52,7 +52,7 @@ export async function watchTaskRunContainer(resourceName: string, resourceType: 
       try {
         if (taskRunData?.status?.podName && taskRunData?.status?.steps.length !== 0) {
           for (const containerData of taskRunData.status.steps) {
-            const debugTaskName = `${taskRunData.metadata.name}-${containerData.container}`;
+            const debugTaskName = taskRunData.metadata.name;
             const checkDebugStatus = await tkn.execute(Command.isContainerStoppedOnDebug(containerData.container, taskRunData.status.podName, taskRunData.metadata.namespace), process.cwd(), false);
             if (!debugSessions.get(debugTaskName)?.count && checkDebugStatus.stdout.trim() && checkDebugStatus.stdout.trim().length !== 0) {
               tkn.executeInTerminal(Command.loginToContainer(containerData.container, taskRunData.status.podName, taskRunData.metadata.namespace), debugTaskName);
@@ -77,36 +77,21 @@ export async function watchTaskRunContainer(resourceName: string, resourceType: 
           }
         }
         if (taskRunData?.status?.conditions?.[0].reason === 'TaskRunCancelled' || taskRunData?.status?.conditions?.[0].status === 'False') {
-          deleteDebugSessions(taskRunData);
+          deleteDebugSessions(resourceName);
         }
       } catch (e) {
-        deleteMapDebugSessions(resourceName);
+        deleteDebugSessions(resourceName);
       }
     });
   } catch (e) {
-    deleteMapDebugSessions(resourceName);
+    deleteDebugSessions(resourceName);
   }
 }
 
-function deleteDebugSessions(taskRunData: TknTaskRun): void {
-  if (taskRunData?.status?.podName && taskRunData?.status?.steps.length !== 0) {
-    for (const containerData of taskRunData.status.steps) {
-      const debugTaskName = `${taskRunData.metadata.name}-${containerData.container}`;
-      if (debugSessions.get(debugTaskName)?.count) {
-        debugSessions.delete(debugTaskName);
-        debugExplorer.refresh();
-      }
-    }
+function deleteDebugSessions(debugTaskName: string): void {
+  if (debugSessions.get(debugTaskName)?.count) {
+    debugSessions.delete(debugTaskName);
+    debugExplorer.refresh();
   }
 }
 
-function deleteMapDebugSessions(resourceName: string): void {
-  if (debugSessions && debugSessions.size !== 0) {
-    for (const [key, value] of debugSessions) {
-      if (value.resourceName === resourceName) {
-        debugSessions.delete(key);
-        debugExplorer.refresh();
-      }
-    }
-  }
-}

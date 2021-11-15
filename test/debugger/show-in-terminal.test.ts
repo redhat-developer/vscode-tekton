@@ -24,25 +24,11 @@ chai.use(sinonChai);
 suite('debug/TaskRunContinue', () => {
   const sandbox = sinon.createSandbox();
   let executeInTerminalStub: sinon.SinonStub;
-  let cliExecStub: sinon.SinonStub;
   const taskRunNode = new TestItem(TknImpl.ROOT, 'test-task-run', ContextType.TASKRUN, null);
 
   setup(() => {
-    cliExecStub = sandbox.stub(TknImpl.prototype, 'execute').resolves({error: null, stdout: JSON.stringify({
-      metadata: {
-        name: 'test',
-        namespace: 'test'
-      },
-      status: {
-        podName: 'test',
-        steps: [
-          {container: 'test'}
-        ]
-      }
-    }), stderr: ''});
     sandbox.stub(telemetry, 'telemetryLog');
     executeInTerminalStub = sandbox.stub(tkn.tkn, 'executeInTerminal');
-
   });
 
   teardown(() => {
