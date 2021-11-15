@@ -16,8 +16,9 @@ export interface HubResourceInstallation {
   view: string;
 }
 
-export interface HubTaskUninstall {
+export interface HubResourceUninstall {
   name: string;
+  kind: string;
   clusterTask: boolean;
 }
 

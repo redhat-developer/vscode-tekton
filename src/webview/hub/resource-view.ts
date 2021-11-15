@@ -170,7 +170,7 @@ export class ResourceItem extends BaseWidget {
       name: this.task.name,
       minPipelinesVersion: this.task.latestVersion.minPipelinesVersion,
       tknVersion: this.tknVersion,
-      taskVersion: this.task.latestVersion,
+      resourceVersion: this.task.latestVersion,
       kind: this.task.kind,
       view: this.viewType,
       asClusterTask: false,

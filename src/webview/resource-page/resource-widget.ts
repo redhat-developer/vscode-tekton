@@ -8,7 +8,7 @@ import { createDiv, createSpan } from '../common/dom-util';
 import { BaseWidget } from '../common/widget';
 import { VSMessage } from '../common/vscode-api';
 import * as hljs from 'highlight.js/lib/core';
-import { HubResourceInstallation, HubTaskUninstall, InstalledResource, isInstalledTask } from '../../hub/hub-common';
+import { HubResourceInstallation, HubResourceUninstall, InstalledResource, isInstalledTask } from '../../hub/hub-common';
 import * as yaml from 'highlight.js/lib/languages/yaml';
 import {CodeLineNumbers} from 'code-line-numbers';
 import * as semver from 'semver';
@@ -258,7 +258,7 @@ export class TaskWidget extends BaseWidget {
       tknVersion: this.tknVersion,
       asClusterTask: asCluster,
       kind: this.task.kind,
-      taskVersion: this.currentVersion,
+      resourceVersion: this.currentVersion,
       view: ''
     } as HubResourceInstallation});
   }
@@ -267,8 +267,9 @@ export class TaskWidget extends BaseWidget {
     if (isInstalledTask(this.task)) {
       this.messageSender.postMessage({type: 'uninstallTask', data: {
         clusterTask: this.task.clusterTask,
-        name: this.task.name
-      } as HubTaskUninstall});
+        name: this.task.name,
+        kind: this.task.kind,
+      } as HubResourceUninstall});
     }
   }
 

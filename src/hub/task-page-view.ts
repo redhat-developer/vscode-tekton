@@ -12,7 +12,7 @@ import { ResourceData } from '../tekton-hub-client';
 import { getTaskByVersion, getVersions } from './hub-client';
 import { installEvent, installResource } from './install-resource';
 import { uninstallTask } from './uninstall-task';
-import { HubResource, HubResourceInstallation, HubTaskUninstall, InstalledResource, isInstalledTask } from './hub-common';
+import { HubResource, HubResourceInstallation, HubResourceUninstall, InstalledResource, isInstalledTask } from './hub-common';
 
 
 export class TaskPageView extends Disposable {
@@ -40,7 +40,7 @@ export class TaskPageView extends Disposable {
   private readonly onDidChangeViewStateEmitter = new vscode.EventEmitter<vscode.WebviewPanelOnDidChangeViewStateEvent>();
   public readonly onDidChangeViewState = this.onDidChangeViewStateEmitter.event;
 
-  constructor(webview: vscode.WebviewPanel, private task: HubResource, private tknVersion: string) {
+  constructor(webview: vscode.WebviewPanel, private resource: HubResource, private tknVersion: string) {
     super();
     this.webviewPanel = webview;
     this.register(this.webviewPanel.onDidDispose(() => {
@@ -48,9 +48,9 @@ export class TaskPageView extends Disposable {
     }));
 
     this.register(installEvent(e => {
-      if (this.task.name === e.name) {
-        (this.task as InstalledResource).installedVersion = e.resourceVersion;
-        (this.task as InstalledResource).clusterTask = e.asClusterTask;
+      if (this.resource.name === e.name) {
+        (this.resource as InstalledResource).installedVersion = e.resourceVersion;
+        (this.resource as InstalledResource).clusterTask = e.asClusterTask;
         this.sendTask();
       }
     }));
@@ -98,27 +98,27 @@ export class TaskPageView extends Disposable {
   }
 
   update(task: ResourceData): void {
-    this.task = task;
+    this.resource = task;
     this.webviewPanel.title = getTitle(task);
     this.sendTask();
   }
 
-  private async installTask(task: HubResourceInstallation): Promise<void>{
-    const isInstalled = await installResource(task);
+  private async installTask(resource: HubResourceInstallation): Promise<void>{
+    const isInstalled = await installResource(resource);
     if (isInstalled) {
-      (this.task as InstalledResource).installedVersion = task.resourceVersion;
-      (this.task as InstalledResource).clusterTask = task.asClusterTask;
+      (this.resource as InstalledResource).installedVersion = resource.resourceVersion;
+      (this.resource as InstalledResource).clusterTask = resource.asClusterTask;
       this.sendTask();
     } else {
       this.postMessage({type: 'cancelInstall'});
     }
   }
 
-  private async uninstallTask(task: HubTaskUninstall): Promise<void>{
+  private async uninstallTask(task: HubResourceUninstall): Promise<void>{
     await uninstallTask(task);
-    if (isInstalledTask(this.task)){
-      this.task.installedVersion = undefined;
-      this.task.clusterTask = undefined;
+    if (isInstalledTask(this.resource)){
+      this.resource.installedVersion = undefined;
+      this.resource.clusterTask = undefined;
       this.sendTask();
     }
   }
@@ -134,7 +134,7 @@ export class TaskPageView extends Disposable {
   }
 
   private sendTask(): void {
-    this.postMessage({type: 'showTask', data: {task: this.task, tknVersion: this.tknVersion }});
+    this.postMessage({type: 'showTask', data: {task: this.resource, tknVersion: this.tknVersion }});
   }
 
   private async doUpdate(): Promise<void> {

@@ -21,19 +21,19 @@ import { getPipelineList } from '../util/list-tekton-resource';
 const installEventEmitter = new vscode.EventEmitter<HubResourceInstallation>()
 export const installEvent = installEventEmitter.event;
 
-export async function installResource(task: HubResourceInstallation): Promise<boolean> {
+export async function installResource(resource: HubResourceInstallation): Promise<boolean> {
   try {
-    if (task.tknVersion && task.minPipelinesVersion){
-      if (semver.lt(task.tknVersion, task.minPipelinesVersion)){
-        const result = await vscode.window.showWarningMessage(`This resource requires Tekton Pipelines >= ${task.minPipelinesVersion} and is incompatible with the version of Tekton Pipelines installed on your cluster. Install anyway?`, 'Install', 'Cancel')
+    if (resource.tknVersion && resource.minPipelinesVersion){
+      if (semver.lt(resource.tknVersion, resource.minPipelinesVersion)){
+        const result = await vscode.window.showWarningMessage(`This resource requires Tekton Pipelines >= ${resource.minPipelinesVersion} and is incompatible with the version of Tekton Pipelines installed on your cluster. Install anyway?`, 'Install', 'Cancel')
         if (result === 'Install'){
-          return doInstall(task);
+          return doInstall(resource);
         } else {
           return false;
         }
       }
     }
-    return doInstall(task);
+    return doInstall(resource);
     
   } catch (err) {
     vscode.window.showErrorMessage(err.toString());
