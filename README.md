@@ -13,7 +13,7 @@ Using this extension:
 
    * Developer can create Tekton resource easily by using [Deploy resource on save](#deploy-resource-on-save).
    * Install Task/ClusterTask from TektonHub [TektonHub integration](#TektonHub).
-   * Support for start Pipeline, Workspace and create new PVC(PersistentVolumeClam) [Wizard for Pipeline Start](#Wizard-for-Pipeline-Start).
+   * Support for start Pipeline, Workspace and create new PVC(PersistentVolumeClaim) [Wizard for Pipeline Start](#Wizard-for-Pipeline-Start).
    * Show Tekton TaskRun/PipelineRun Logs in Editor [Show logs](#show-tekton-taskrunpipelinerun-logs-in-editor).
    * Support for [Adding Trigger](#add-trigger-support).
    * Tekton variables [code completion](#tekton-variables-code-completion).
@@ -21,11 +21,11 @@ Using this extension:
 
 ### Tekton version
 
-This extension designed to work with Tekton Pipelines 0.11+
+This extension is designed to work with Tekton Pipelines 0.11+.
 
 ### Tekton API version
 
-We support `v1beta1` API. Previous version `v1alpha1` may work, but we not guarantee that all features will work properly. If you have `v1alpha1` pipelines/tasks please use [migrating document](https://github.com/tektoncd/pipeline/blob/master/docs/migrating-v1alpha1-to-v1beta1.md) to migrate to `v1beta1`.
+We support `v1beta1` API. Previous version `v1alpha1` may work, but we cannot guarantee that all features will work properly. If you have `v1alpha1` pipelines/tasks please use [migrating document](https://github.com/tektoncd/pipeline/blob/master/docs/migrating-v1alpha1-to-v1beta1.md) to migrate to `v1beta1`.
 
 A Visual Studio Code extension for interacting with Tekton Pipelines.
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/demo_0.2.0.gif" width="800" height="500" /></div>
@@ -34,7 +34,7 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 ### TektonHub
 
-   * TektonHub integration:
+   * TektonHub Integration:
 
       <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/tekton_hub_0.8.0.gif" width="1080" height="675" /></div>
 
@@ -69,12 +69,12 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/add_trigger.gif" width="800" height="450" /></div>
 
-### Restart pipeline with previous pipelineRun content
+### Restart Pipeline with previous PipelineRun content
 
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/restart_pipeline_run.gif" width="800" height="450" /></div>
 
 ### Deploy resource on save
->Note: This is experimental feature, you need to enable it in preferences
+>Note: This is experimental feature, you need to enable it in VSCode Setting Preferences
 
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/deploy_on_save_0.2.0.gif" width="800" height="500" /></div>
 
@@ -82,21 +82,21 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/go_to_definition_0.1.0.gif" width="800" height="651" /></div>
 
-### Tekton tree auto refresh and open resource from inline command
+### Tekton tree auto refresh and open resource from an inline command
 
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/tree_refresh_0.0.8.gif" width="800" height="450" /></div>
 
-### PipelineRun preview
+### PipelineRun Preview
 
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/new/pipeline_run_preview_0.0.7.gif" width="800" height="450" /></div>
 
-### Setup kubernetes cluster to use with extension
+### Setup Kubernetes Cluster to use with the Extension
 
 To use the extension, developers can deploy Tekton Pipelines into a minikube instance or use [Red Hat CodeReady Containers](https://developers.redhat.com/products/codeready-containers).
 
 #### Red Hat CodeReady Containers
 
-Red Hat CodeReady Containers is a simple way to start OpenShift Cluster on your laptop in a matter of minutes, follow [this documentation](https://code-ready.github.io/crc/) to get it up and running. After cluster is started follow [this steps](https://github.com/openshift/pipelines-tutorial/#install-openshift-pipelines) to deploy OpenShift Pipelines into a OpenShift cluster.
+Red Hat CodeReady Containers is a simple way to start OpenShift Cluster on your laptop in a matter of minutes, follow [this documentation](https://crc.dev/crc/) to get it up and running. After cluster is started follow [this steps](https://github.com/openshift/pipelines-tutorial/#install-openshift-pipelines) to deploy OpenShift Pipelines into an OpenShift cluster.
 
 #### minikube
 
@@ -162,7 +162,7 @@ This extension uses the [Tekton CLI](https://github.com/tektoncd/cli):  `tkn`
 
 #### Extensions
 
-This extension depends on Kubernetes Extension form Microsoft which is going to be installed automatically along with the Tekton Pipelines Extension. The image belows demonstrates the Kubernetes Extension public API displaying Tekton specific resources: ClusterTasks, Tasks, Pipelines, Pipeline Resources, Pipelineruns, Taskruns in the Kubernetes Clusters View.
+This extension depends on Kubernetes Extension from Microsoft which is going to be installed automatically along with the Tekton Pipelines Extension. The image below demonstrates the Kubernetes Extension public API displaying Tekton specific resources: ClusterTasks, Tasks, Pipelines, Pipeline Resources, PipelineRun, TaskRun in the Kubernetes Clusters View.
 
 ## Release notes
 
