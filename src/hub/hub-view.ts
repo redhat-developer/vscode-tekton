@@ -4,16 +4,17 @@
  *-----------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { Disposable } from '../util/disposable';
-import { getTaskById, getTaskByNameAndVersion, getTektonHubStatus, getTopRatedTasks, listTasks, searchTask, TektonHubStatusEnum } from './hub-client';
+import { getPipelineByNameAndVersion, getTaskById, getTaskByNameAndVersion, getTektonHubStatus, getTopRatedTasks, listTasks, searchTask, TektonHubStatusEnum } from './hub-client';
 import { ResourceData } from '../tekton-hub-client';
 import { taskPageManager } from './task-page-manager';
-import { installTask, installEvent } from './install-task';
+import { installResource, installEvent } from './install-resource';
 import { version } from '../util/tknversion';
 import { getRawTasks } from '../yaml-support/tkn-tasks-provider';
-import { HubTaskInstallation, InstalledTask, isInstalledTask } from './hub-common';
+import { HubResourceInstallation, InstalledResource, isInstalledTask } from './hub-common';
 import { uninstallTaskEvent } from './uninstall-task';
 import { startDetectingLanguage } from './hub-recommendation';
 import * as fuzzysort from 'fuzzysort';
+import { getPipelineList } from '../util/list-tekton-resource';
 
 const MAX_RECOMMENDED_TASK = 7;
 
@@ -21,7 +22,7 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
 
   private webviewView: vscode.WebviewView;
   private tknVersion: string | undefined;
-  private installedTasks: InstalledTask[] | undefined;
+  private installedResources: InstalledResource[] | undefined;
 
   constructor(
     private readonly extensionUri: vscode.Uri,
@@ -30,14 +31,14 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
 
     installEvent(async () => {
       if (this.webviewView?.visible) {
-        await this.loadInstalledTasks();
+        await this.loadInstalledResources();
         await this.loadRecommendedTasks();
       }
     });
 
     uninstallTaskEvent(() => {
       if (this.webviewView?.visible) {
-        this.loadInstalledTasks();
+        this.loadInstalledResources();
       }
     });
   }
@@ -89,12 +90,12 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
         <div id="header">
         <ul class="ul-color select-list-group" id="slg">
           <li class="li-style">
-              <input type="text" placeholder="Search Tasks in TektonHub" id="taskInput" />
+              <input type="text" placeholder="Search for resources..." id="taskInput" />
               <ul class="ul-color ul-position" data-toggle="false">
                 <li class="li-style" data-display="true">@tag:</li>
                 <li class="li-style" data-display="true">@categories:</li>
               </ul>
-           </li>
+          </li>
         </ul>
         </div>
         <div class="listContainer" id="mainContainer">
@@ -114,7 +115,7 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
     try {
       const hubAvailable = await this.doCheckHub();
       if (hubAvailable) {
-        await this.loadInstalledTasks();
+        await this.loadInstalledResources();
         await this.loadRecommendedTasks();
       }
     } catch (err) {
@@ -151,14 +152,14 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
 
   }
 
-  private async doInstallTask(task: HubTaskInstallation): Promise<void> {
-    const result = await installTask(task);
+  private async doInstallTask(task: HubResourceInstallation): Promise<void> {
+    const result = await installResource(task);
     if (!result){
       this.sendMessage({type: 'cancelInstall'});
     }
   }
 
-  private async loadInstalledTasks(): Promise<void> {
+  private async loadInstalledResources(): Promise<void> {
     const rawTasks = await getRawTasks(true);
     const installedTasksRaw = rawTasks.filter(task => {
       if (!task.metadata?.labels) {
@@ -167,27 +168,48 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
       return task.metadata?.labels['hub.tekton.dev/catalog'] !== undefined;
     });
 
-    const installedTasks: InstalledTask[] = [];
+    const installedResources: InstalledResource[] = [];
     for (const installedTask of installedTasksRaw) {
       try {
         const installedVersion = await getTaskByNameAndVersion(installedTask.metadata.labels['hub.tekton.dev/catalog'], installedTask.metadata.name, installedTask.metadata.labels['app.kubernetes.io/version']);
-        const task: InstalledTask = installedVersion.resource;
+        const task: InstalledResource = installedVersion.resource;
         task.installedVersion = installedVersion;
         const tmpTask = Object.assign({}, task);
         tmpTask.installedVersion.resource = undefined;
         tmpTask.clusterTask = installedTask.kind === 'ClusterTask';
-        installedTasks.push(tmpTask);
+        installedResources.push(tmpTask);
       } catch (err) {
         // ignore errors
       }
     }
-    this.installedTasks = installedTasks;
-    this.sendMessage({ type: 'installedTasks', data: installedTasks });
+    const rawPipelines = await getPipelineList();
+    const installedPipelineRaw = rawPipelines.filter(pipeline => {
+      if (!pipeline.metadata?.labels) {
+        return false;
+      }
+      return pipeline.metadata?.labels['hub.tekton.dev/catalog'] !== undefined;
+    });
+
+    for (const installedPipeline of installedPipelineRaw) {
+      try {
+        const installedVersion = await getPipelineByNameAndVersion(installedPipeline.metadata.labels['hub.tekton.dev/catalog'], installedPipeline.metadata.name, installedPipeline.metadata.labels['app.kubernetes.io/version']);
+        const task: InstalledResource = installedVersion.resource;
+        task.installedVersion = installedVersion;
+        const tmpPipeline = Object.assign({}, task);
+        tmpPipeline.installedVersion.resource = undefined;
+        installedResources.push(tmpPipeline);
+      } catch (err) {
+        // ignore errors
+      }
+    }
+
+    this.installedResources = installedResources;
+    this.sendMessage({ type: 'installedResources', data: installedResources });
   }
 
-  private async openTaskPage(task: ResourceData | InstalledTask): Promise<void> {
+  private async openTaskPage(task: ResourceData | InstalledResource): Promise<void> {
     if (isInstalledTask(task)) {
-      const taskData: InstalledTask = await getTaskById(task.id);
+      const taskData: InstalledResource = await getTaskById(task.id);
       taskData.installedVersion = task.installedVersion;
       taskData.clusterTask = task.clusterTask;
       task = taskData;
@@ -219,8 +241,8 @@ export class TektonHubTasksViewProvider extends Disposable implements vscode.Web
         recommendedTasks.push(...await getTopRatedTasks(MAX_RECOMMENDED_TASK));
       }
       let result = [];
-      if (this.installedTasks) {
-        const installedId = this.installedTasks.map((it) => it.id);
+      if (this.installedResources) {
+        const installedId = this.installedResources.map((it) => it.id);
 
         for (const task of recommendedTasks) {
           if (installedId.indexOf(task.id) === -1) {

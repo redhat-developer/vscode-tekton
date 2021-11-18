@@ -12,7 +12,7 @@ module.exports = {
     'pipeline-preview': {import: './src/webview/pipeline-preview/index.ts', filename: 'webview/[name]/index.js'},
     'pipeline-wizard': {import: './src/webview/pipeline/app/index.ts', filename: 'webview/[name]/index.js'},
     'tekton-hub': {import: './src/webview/hub/index.ts', filename: 'webview/[name]/index.js'},
-    'task-view': {import: './src/webview/task-page/index.ts', filename: 'webview/[name]/index.js'}
+    'resource-view': {import: './src/webview/resource-page/index.ts', filename: 'webview/[name]/index.js'}
   },
   module: {
     rules: [

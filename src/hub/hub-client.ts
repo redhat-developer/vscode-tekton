@@ -38,11 +38,11 @@ export async function searchTask(name: string): Promise<hubApi.ResourceData[]> {
     let result;
     const resApi = createResourceApi();
     if (name?.trim().match('@tag:(.*)')) {
-      result = await resApi.resourceQuery(undefined, undefined, ['task'], [name?.trim().match('@tag:(.*)')[1]], undefined, 'contains', undefined);
+      result = await resApi.resourceQuery(undefined, undefined, undefined, [name?.trim().match('@tag:(.*)')[1]], undefined, 'contains', undefined);
     } else if (name?.trim().match('@categories:(.*)')) {
-      result = await resApi.resourceQuery(undefined, undefined, ['task'], undefined, undefined, 'contains', [name?.trim().match('@categories:(.*)')[1]]);
+      result = await resApi.resourceQuery(undefined, undefined, undefined, undefined, undefined, 'contains', [name?.trim().match('@categories:(.*)')[1]]);
     } else {
-      result = await resApi.resourceQuery(name, undefined, ['task'], undefined, undefined, 'contains', undefined);
+      result = await resApi.resourceQuery(name, undefined, undefined, undefined, undefined, 'contains', undefined);
     }
     return result.data.data;
   } catch (err) {
@@ -77,6 +77,12 @@ export async function getTaskByVersion(taskId: number): Promise<hubApi.ResourceV
 export async function getTaskByNameAndVersion(catalog: string, name: string, version: string): Promise<hubApi.ResourceVersionData> {
   const restApi = createResourceApi();
   const result = await restApi.resourceByCatalogKindNameVersion(catalog, 'task', name, version);
+  return result.data.data;
+}
+
+export async function getPipelineByNameAndVersion(catalog: string, name: string, version: string): Promise<hubApi.ResourceVersionData> {
+  const restApi = createResourceApi();
+  const result = await restApi.resourceByCatalogKindNameVersion(catalog, 'pipeline', name, version);
   return result.data.data;
 }
 

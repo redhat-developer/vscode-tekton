@@ -10,16 +10,16 @@ import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
 import { ResourceData } from '../tekton-hub-client';
 import { getTaskByVersion, getVersions } from './hub-client';
-import { installEvent, installTask } from './install-task';
+import { installEvent, installResource } from './install-resource';
 import { uninstallTask } from './uninstall-task';
-import { HubTask, HubTaskInstallation, HubTaskUninstall, InstalledTask, isInstalledTask } from './hub-common';
+import { HubResource, HubResourceInstallation, HubResourceUninstall, InstalledResource, isInstalledTask } from './hub-common';
 
 
 export class TaskPageView extends Disposable {
   static viewType = 'tekton.pipeline.start.wizard';
   static title: string;
 
-  public static create(task: HubTask, tknVersion: string, previewColumn: vscode.ViewColumn): TaskPageView {
+  public static create(task: HubResource, tknVersion: string, previewColumn: vscode.ViewColumn): TaskPageView {
     TaskPageView.title = getTitle(task);
     const webview = vscode.window.createWebviewPanel(
       'task-view',
@@ -40,7 +40,7 @@ export class TaskPageView extends Disposable {
   private readonly onDidChangeViewStateEmitter = new vscode.EventEmitter<vscode.WebviewPanelOnDidChangeViewStateEvent>();
   public readonly onDidChangeViewState = this.onDidChangeViewStateEmitter.event;
 
-  constructor(webview: vscode.WebviewPanel, private task: HubTask, private tknVersion: string) {
+  constructor(webview: vscode.WebviewPanel, private resource: HubResource, private tknVersion: string) {
     super();
     this.webviewPanel = webview;
     this.register(this.webviewPanel.onDidDispose(() => {
@@ -48,9 +48,9 @@ export class TaskPageView extends Disposable {
     }));
 
     this.register(installEvent(e => {
-      if (this.task.name === e.name) {
-        (this.task as InstalledTask).installedVersion = e.taskVersion;
-        (this.task as InstalledTask).clusterTask = e.asClusterTask;
+      if (this.resource.name === e.name) {
+        (this.resource as InstalledResource).installedVersion = e.resourceVersion;
+        (this.resource as InstalledResource).clusterTask = e.asClusterTask;
         this.sendTask();
       }
     }));
@@ -98,27 +98,27 @@ export class TaskPageView extends Disposable {
   }
 
   update(task: ResourceData): void {
-    this.task = task;
+    this.resource = task;
     this.webviewPanel.title = getTitle(task);
     this.sendTask();
   }
 
-  private async installTask(task: HubTaskInstallation): Promise<void>{
-    const isInstalled = await installTask(task);
+  private async installTask(resource: HubResourceInstallation): Promise<void>{
+    const isInstalled = await installResource(resource);
     if (isInstalled) {
-      (this.task as InstalledTask).installedVersion = task.taskVersion;
-      (this.task as InstalledTask).clusterTask = task.asClusterTask;
+      (this.resource as InstalledResource).installedVersion = resource.resourceVersion;
+      (this.resource as InstalledResource).clusterTask = resource.asClusterTask;
       this.sendTask();
     } else {
       this.postMessage({type: 'cancelInstall'});
     }
   }
 
-  private async uninstallTask(task: HubTaskUninstall): Promise<void>{
+  private async uninstallTask(task: HubResourceUninstall): Promise<void>{
     await uninstallTask(task);
-    if (isInstalledTask(this.task)){
-      this.task.installedVersion = undefined;
-      this.task.clusterTask = undefined;
+    if (isInstalledTask(this.resource)){
+      this.resource.installedVersion = undefined;
+      this.resource.clusterTask = undefined;
       this.sendTask();
     }
   }
@@ -134,7 +134,7 @@ export class TaskPageView extends Disposable {
   }
 
   private sendTask(): void {
-    this.postMessage({type: 'showTask', data: {task: this.task, tknVersion: this.tknVersion }});
+    this.postMessage({type: 'showTask', data: {task: this.resource, tknVersion: this.tknVersion }});
   }
 
   private async doUpdate(): Promise<void> {
@@ -179,7 +179,7 @@ export class TaskPageView extends Disposable {
   private getScripts(nonce: string): string {
     const out: string[] = [];
     out.push(`<script
-        src="${escapeAttribute(this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/out/webview/task-view/index.js'))))}"
+        src="${escapeAttribute(this.webviewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(contextGlobalState.extensionPath, '/out/webview/resource-view/index.js'))))}"
         nonce="${nonce}"
         charset="UTF-8"></script>`);
     return out.join('\n');

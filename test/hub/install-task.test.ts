@@ -8,7 +8,7 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import { tkn } from '../../src/tkn';
-import { installTask } from '../../src/hub/install-task';
+import { installResource } from '../../src/hub/install-resource';
 import { DownloadUtil } from '../../src/util/download';
 import * as os from 'os';
 import * as fs from 'fs-extra'; 
@@ -46,15 +46,16 @@ suite('Install Task', () => {
   test('install Task', async () => {
     getRawTasksStub.resolves([]);
     executeStub.resolves({});
-    await installTask({
+    await installResource({
       name: 'foo',
       url: 'https://some/path/task.yaml',
+      kind: 'Task',
       asClusterTask: false,
-      taskVersion: {version: '1.0'} as ResourceVersionData,
+      resourceVersion: {version: '1.0'} as ResourceVersionData,
       view: 'test'
     });
 
-    expect(executeStub).calledOnceWith(Command.hubInstall('foo', '1.0'));
+    expect(executeStub).calledOnceWith(Command.hubInstallTask('foo', '1.0'));
     expect(showInformationMessageStub).calledOnceWith('Task foo installed.');
   });
 
@@ -64,15 +65,16 @@ suite('Install Task', () => {
     executeStub.resolves({});
     tmpdirStub.returns('/foo');
     unlinkStub.resolves();
-    await installTask({
+    await installResource({
       name: 'foo',
+      kind: 'Task',
       url: 'https://some/path/task.yaml',
       asClusterTask: true,
       view: 'test'
     });
     const tempPath = path.join('/foo','task.yaml');
     expect(downloadStub).calledOnceWith('https://some/path/task.yaml', tempPath);
-    expect(executeStub).calledOnceWith(Command.updateYaml(tempPath));
+    expect(executeStub).calledOnceWith(Command.apply(tempPath));
     expect(unlinkStub).calledOnceWith(tempPath);
     expect(showInformationMessageStub).calledOnceWith('ClusterTask foo installed.');
   });

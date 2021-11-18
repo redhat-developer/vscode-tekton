@@ -8,12 +8,12 @@ import '../common/vscode.css';
 import 'vscode-codicons/dist/codicon.css';
 import * as api from '../../tekton-hub-client/index';
 import { ViewState, VSMessage } from '../common/vscode-api';
-import { TaskView } from './task-view';
+import { ResourceView } from './resource-view';
 
 declare const acquireVsCodeApi: () => ViewState & VSMessage;
 export const vscode = acquireVsCodeApi();
 
-const view = new TaskView(vscode);
+const view = new ResourceView(vscode);
 window.addEventListener('message', event => {
   switch (event.data.type) {
     case 'showTasks':{
@@ -27,8 +27,8 @@ window.addEventListener('message', event => {
     case 'tknVersion': 
       view.setTknVersion(event.data.data);
       break;
-    case 'installedTasks':
-      view.setInstalledTasks(event.data.data);
+    case 'installedResources':
+      view.setInstalledResources(event.data.data);
       break;
     case 'recommendedTasks':
       view.setRecommendedTasks(event.data.data);

@@ -8,13 +8,16 @@ import { createDiv, createSpan } from '../common/dom-util';
 import { BaseWidget } from '../common/widget';
 import { VSMessage } from '../common/vscode-api';
 import * as hljs from 'highlight.js/lib/core';
-import { HubTaskInstallation, HubTaskUninstall, InstalledTask, isInstalledTask } from '../../hub/hub-common';
+import { HubResourceInstallation, HubResourceUninstall, InstalledResource, isInstalledTask } from '../../hub/hub-common';
 import * as yaml from 'highlight.js/lib/languages/yaml';
 import {CodeLineNumbers} from 'code-line-numbers';
 import * as semver from 'semver';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const taskSvg = require('../hub/task.svg');
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const pipelineSvg = require('../hub/pipeline.svg');
 
 import * as MarkdownIt from 'markdown-it';
 import './yaml-highlight.css';
@@ -44,7 +47,7 @@ export class TaskWidget extends BaseWidget {
     this.md = new MarkdownIt();
   }
 
-  showTask(task: ResourceData | InstalledTask, tknVersion: string): void {
+  showTask(task: ResourceData | InstalledResource, tknVersion: string): void {
     this.task = task;
     if (isInstalledTask(task)){
       this.currentVersion = task.installedVersion;
@@ -93,7 +96,7 @@ export class TaskWidget extends BaseWidget {
   private createHeader(header: HTMLDivElement): void {
     const iconContainer = createDiv('icon-container');
     const image = document.createElement('img');
-    image.src = taskSvg;
+    image.src = this.task.kind === 'Task' ? taskSvg : pipelineSvg;
     image.classList.add('icon');
     iconContainer.appendChild(image);
     header.appendChild(iconContainer);
@@ -213,18 +216,20 @@ export class TaskWidget extends BaseWidget {
     }
     this.installButton = installButton;
     installLi.appendChild(installButton);
-    const tknDropdown = createDiv('monaco-dropdown');
 
-    const dropdownLabel = createDiv('dropdown-label');
-    const dropdownButton = document.createElement('a');
-    dropdownButton.classList.add('action-label', 'dropdown', 'codicon-chevron-down', 'extension-action', 'label', 'action-dropdown', 'codicon');
-    dropdownButton.onclick = (e) => {
-      e.stopPropagation();
-      this.showInstallOptions(dropdownButton);
+    if (this.task.kind === 'Task'){
+      const tknDropdown = createDiv('monaco-dropdown');
+      const dropdownLabel = createDiv('dropdown-label');
+      const dropdownButton = document.createElement('a');
+      dropdownButton.classList.add('action-label', 'dropdown', 'codicon-chevron-down', 'extension-action', 'label', 'action-dropdown', 'codicon');
+      dropdownButton.onclick = (e) => {
+        e.stopPropagation();
+        this.showInstallOptions(dropdownButton);
+      }
+      dropdownLabel.appendChild(dropdownButton);
+      tknDropdown.appendChild(dropdownLabel);
+      installLi.appendChild(tknDropdown);
     }
-    dropdownLabel.appendChild(dropdownButton);
-    tknDropdown.appendChild(dropdownLabel);
-    installLi.appendChild(tknDropdown);
     actionsContainer.appendChild(installLi);
   }
 
@@ -252,16 +257,19 @@ export class TaskWidget extends BaseWidget {
       minPipelinesVersion: this.currentVersion.minPipelinesVersion,
       tknVersion: this.tknVersion,
       asClusterTask: asCluster,
-      taskVersion: this.currentVersion
-    } as HubTaskInstallation});
+      kind: this.task.kind,
+      resourceVersion: this.currentVersion,
+      view: ''
+    } as HubResourceInstallation});
   }
 
   private sendUninstall(): void {
     if (isInstalledTask(this.task)) {
       this.messageSender.postMessage({type: 'uninstallTask', data: {
         clusterTask: this.task.clusterTask,
-        name: this.task.name
-      } as HubTaskUninstall});
+        name: this.task.name,
+        kind: this.task.kind,
+      } as HubResourceUninstall});
     }
   }
 
