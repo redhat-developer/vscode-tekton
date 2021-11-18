@@ -273,11 +273,11 @@ export class Command {
   }
 
   static loginToContainer(container: string, podName: string, namespace: string): CliCommand {
-    return newK8sCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', 'bash');
+    return newK8sCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', 'sh');
   }
 
   static isContainerStoppedOnDebug(container: string, podName: string, namespace: string): CliCommand {
-    return newK8sCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', 'awk \'END{print NR}\' tekton/termination');
+    return newK8sCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', 'awk \'END{print NR}\' /tekton/termination');
   }
 
   static debugContinue(container: string, podName: string, namespace: string): CliCommand {

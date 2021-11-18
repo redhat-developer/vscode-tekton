@@ -5,10 +5,10 @@
 
 import { window } from 'vscode';
 import { Command } from '../cli-command';
-import { TknTaskRun } from '../tekton';
 import { telemetryLog } from '../telemetry';
 import { tkn } from '../tkn';
 import { TektonNode } from '../tree-view/tekton-node';
+import { debugSessions } from '../util/map-object';
 
 export async function openContainerInTerminal(taskRun: TektonNode, commandId?: string): Promise<void> {
   if (!taskRun) return null;
@@ -18,8 +18,7 @@ export async function openContainerInTerminal(taskRun: TektonNode, commandId?: s
       terminal.dispose();
     }
   });
-  const result = await tkn.execute(Command.getTaskRun(taskRun.getName()), process.cwd(), false);
-  const taskRunData: TknTaskRun = JSON.parse(result.stdout);
+  const debugTaskRun = debugSessions.get(taskRun.getName());
   telemetryLog(commandId, 'Open container in terminal command click')
-  tkn.executeInTerminal(Command.loginToContainer(taskRunData.status.steps[0].container, taskRunData.status.podName, taskRunData.metadata.namespace), taskRunData.metadata.name);
+  tkn.executeInTerminal(Command.loginToContainer(debugTaskRun.containerName, debugTaskRun.podName, debugTaskRun.namespace), debugTaskRun.resourceName);
 }
