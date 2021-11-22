@@ -4,5 +4,4 @@ metadata:
   name: ${1:git-source}
 spec:
   type: ${2|git,image,pullRequest,cluster,storage,gcs,build-gcs,cloudevent|}
-  $LINE_COMMENT params:
-    $LINE_COMMENT Check https://github.com/tektoncd/pipeline/blob/master/docs/resources.md#pipelineresources for more applicable parameters
+  $LINE_COMMENT params: $LINE_COMMENT Check https://github.com/tektoncd/pipeline/blob/master/docs/resources.md#pipelineresources for more applicable parameters

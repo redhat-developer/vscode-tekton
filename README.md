@@ -1,8 +1,8 @@
-# Tekton Pipelines Extension  <img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/tekton.png" alt="tekton" width="50"/>
+# Tekton Pipelines Extension  <img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/main/images/tekton.png" alt="tekton" width="50"/>
 
 | System | Status |
 | - | - |
-| Build ([master](https://github.com/redhat-developer/vscode-tekton/tree/master) branch) | ![build](https://github.com/redhat-developer/vscode-tekton/workflows/CI/badge.svg) [![Unit Tests Code Coverage](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/master/graph/badge.svg)](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/master) [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/redhat-developer/vscode-tekton/blob/master/LICENSE)|
+| Build ([main](https://github.com/redhat-developer/vscode-tekton/tree/main) branch) | ![build](https://github.com/redhat-developer/vscode-tekton/workflows/CI/badge.svg) [![Unit Tests Code Coverage](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/main/graph/badge.svg)](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/main) [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/redhat-developer/vscode-tekton/blob/main/LICENSE)|
 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-tekton-pipelines) | [![Visual Studio Marketplace](https://vsmarketplacebadge.apphb.com/version/redhat.vscode-tekton-pipelines.svg)](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-tekton-pipelines)
 
 ## Overview
@@ -25,7 +25,7 @@ This extension is designed to work with Tekton Pipelines 0.11+.
 
 ### Tekton API version
 
-We support `v1beta1` API. Previous version `v1alpha1` may work, but we cannot guarantee that all features will work properly. If you have `v1alpha1` pipelines/tasks please use [migrating document](https://github.com/tektoncd/pipeline/blob/master/docs/migrating-v1alpha1-to-v1beta1.md) to migrate to `v1beta1`.
+We support `v1beta1` API. Previous version `v1alpha1` may work, but we cannot guarantee that all features will work properly. If you have `v1alpha1` pipelines/tasks please use [migrating document](https://github.com/tektoncd/pipeline/blob/main/docs/migrating-v1alpha1-to-v1beta1.md) to migrate to `v1beta1`.
 
 A Visual Studio Code extension for interacting with Tekton Pipelines.
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/demo_0.2.0.gif" width="800" height="500" /></div>
@@ -139,7 +139,7 @@ Development of the Tekton Pipelines Extension is largely following development o
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/T.png" width="15" height="15" /><span style="margin: 20px">Task Node</span></div>
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/CT.png" width="15" height="15" /><span style="margin: 20px">ClusterTask Node</span></div>
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/PLR.png" width="15" height="15" /><span style="margin: 20px">PipelineResource Node</span></div>
-<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/master/images/running.gif" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Running</span></div>
+<div><img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/main/images/running.gif" width="15" height="15" /><span style="margin: 20px">PipelineRun/TaskRun Running</span></div>
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/tree/error/PLR.png" width="15" height="15" /><span style="margin: 20px">PipelineRun Failed</span></div>
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/tree/error/TR.png" width="15" height="15" /><span style="margin: 20px">TaskRun Failed</span></div>
 <div><img src="https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/tree/error/C.png" width="15" height="15" /><span style="margin: 20px">Condition Failed</span></div>
@@ -191,7 +191,7 @@ Feedback & Questions
 ====================
 If you discover an issue please file a bug and we will fix it as soon as possible.
 * File a bug in [GitHub Issues](https://github.com/redhat-developer/vscode-tekton/issues).
-* Or contact us in [Tekton Slack](https://github.com/tektoncd/community/blob/master/contact.md#slack) `#ide-integration` channel
+* Or contact us in [Tekton Slack](https://github.com/tektoncd/community/blob/main/contact.md#slack) `#ide-integration` channel
 
 License
 =======

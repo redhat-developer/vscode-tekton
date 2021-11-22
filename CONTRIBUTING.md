@@ -31,7 +31,7 @@ There are only a few guidelines that we need contributors to follow and we are o
 
 4. Once the extension is installed and reloaded, you should see a Tekton Icon on the View Container, as shown in the image below.
 
-![View Tekton Pipelines](https://github.com/redhat-developer/vscode-tekton/blob/master/images/tekton.svg)
+![View Tekton Pipelines](https://github.com/redhat-developer/vscode-tekton/blob/main/images/tekton.svg)
 
 > If you have any questions or run into any problems, please post an [issue](issues) - we'll be very happy to help.
 
