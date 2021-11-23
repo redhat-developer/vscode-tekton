@@ -962,7 +962,7 @@
     "icons-build": "node ./out/build/build-svg-icons.js",
     "build:webview": "webpack-cli --mode production",
     "watch:webview": "webpack-cli -w --mode development",
-    "generate:hub-client": "openapi-generator-cli generate -i https://raw.githubusercontent.com/tektoncd/hub/master/api/gen/http/openapi3.json -g typescript-axios -o src/tekton-hub-client --additional-properties=supportsES6=true",
+    "generate:hub-client": "openapi-generator-cli generate -i https://raw.githubusercontent.com/tektoncd/hub/main/api/gen/http/openapi3.json -g typescript-axios -o src/tekton-hub-client --additional-properties=supportsES6=true",
     "ui-test": "extest setup-and-run ./out/ui-test/all.js"
   },
   "devDependencies": {
@@ -1062,4 +1062,3 @@
     "vscode-kubernetes-tools-api": "1.3.0"
   }
 }
-
