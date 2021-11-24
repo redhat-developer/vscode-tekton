@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.0.0 (November 23, 2021)
+## 1.0.0 (November 24, 2021)
 
 This release brings to you:
 
