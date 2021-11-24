@@ -8,7 +8,7 @@ node('rhel8'){
     }
 
     stage ('Install vscode-tekton build requirements') {
-        def nodeHome = tool 'nodejs-16.11.0'
+        def nodeHome = tool 'nodejs-lts'
         env.PATH="${env.PATH}:${nodeHome}/bin"
         sh "npm install -g typescript vsce"
     }
