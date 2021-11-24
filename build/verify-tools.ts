@@ -40,6 +40,7 @@ async function verifyTools(): Promise<void> {
 
 const fileCheckRegex = /\w*tools.json/;
 cp.exec('git diff --name-only origin/main -- .', async (error, stdout) => {
+
   if (error) {
     throw error;
   }
