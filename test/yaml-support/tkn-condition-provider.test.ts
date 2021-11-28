@@ -7,6 +7,7 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { tkn } from '../../src/tkn';
 import { getTknConditionsSnippets } from '../../src/yaml-support/tkn-conditions-provider';
+import { ToolsConfig } from '../../src/tools';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -18,6 +19,7 @@ suite('ConditionRef provider', () => {
 
   setup(() => {
     tknExecute = sandbox.stub(tkn, 'execute');
+    sandbox.stub(ToolsConfig, 'getTknLocation').returns('kubectl');
   });
 
   teardown(() => {

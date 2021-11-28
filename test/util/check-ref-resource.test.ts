@@ -12,6 +12,7 @@ import { TestItem } from '../tekton/testTektonitem';
 import { TknImpl } from '../../src/tkn';
 import { ContextType } from '../../src/context-type';
 import { getPipelineList } from '../../src/util/list-tekton-resource';
+import { ToolsConfig } from '../../src/tools';
 
 
 
@@ -65,6 +66,7 @@ suite('Reference Task/ClusterTask', () => {
 
   setup(() => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves();
+    sandbox.stub(ToolsConfig, 'getTknLocation').returns('kubectl');
   });
 
   teardown(() => {
