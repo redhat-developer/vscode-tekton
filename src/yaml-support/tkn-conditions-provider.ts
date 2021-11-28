@@ -5,9 +5,11 @@
 
 import { Command } from '../cli-command';
 import { tkn } from '../tkn';
+import { ToolsConfig } from '../tools';
 
 
 export async function getTknConditionsSnippets(): Promise<string[]> {
+  if (!ToolsConfig.getTknLocation('kubectl')) return [];
   const result = await tkn.execute(Command.listConditions());
   let data = [];
   if (result.error) {

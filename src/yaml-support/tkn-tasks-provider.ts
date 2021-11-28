@@ -56,12 +56,14 @@ interface Param {
 }
 
 export async function getRawTasks(forceLoad?: boolean): Promise<TknTask[]> {
-  let allRawTasks: TknTask[];
+  let allRawTasks: TknTask[] = [];
   if (cache.has(tasksKey) && !forceLoad){
     allRawTasks = cache.get(tasksKey);
   } else {
     const [rawClusterTasks, rawTasks] = await Promise.all([tkn.getRawClusterTasks(), tkn.getRawTasks()]);
-    allRawTasks = rawClusterTasks.concat(rawTasks);
+    if (rawClusterTasks) {
+      allRawTasks = rawClusterTasks.concat(rawTasks);
+    }
     cache.set(tasksKey, allRawTasks);
   }
   return allRawTasks;
@@ -75,7 +77,7 @@ export async function getTknTasksSnippets(): Promise<Snippet<TaskSnippet>[]> {
 
 export function convertTasksToSnippet(rawTasks: TknTask[]): Snippet<TaskSnippet>[] {
   const result: Snippet<TaskSnippet>[] = [];
-
+  if (!rawTasks) return result;
   for (const task of rawTasks) {
     result.push({
       label: task.metadata.name,

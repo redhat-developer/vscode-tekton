@@ -464,6 +464,7 @@ export class TknImpl implements Tkn {
 
   async getRawTasks(): Promise<TknTask[]> {
     let data: TknTask[] = [];
+    if (!ToolsConfig.getTknLocation('kubectl')) return null;
     const result = await this.execute(Command.listTasks());
     if (result.error) {
       console.error(result + 'Std.err when processing tasks');
@@ -523,6 +524,7 @@ export class TknImpl implements Tkn {
 
   async getRawClusterTasks(): Promise<TknTask[]> {
     let data: TknTask[] = [];
+    if (!ToolsConfig.getTknLocation('kubectl')) return null;
     const result = await this.execute(Command.listClusterTasks());
     if (result.error) {
       console.log(result + 'Std.err when processing tasks');

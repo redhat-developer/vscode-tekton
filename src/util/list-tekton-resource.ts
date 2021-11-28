@@ -7,6 +7,7 @@ import { CliCommand } from '../cli';
 import { Command } from '../cli-command';
 import { TknPipeline } from '../tekton';
 import { tkn } from '../tkn';
+import { ToolsConfig } from '../tools';
 
 export async function getPipelineList(): Promise<TknPipeline[]> {
   return await executeCommand(Command.listPipelines());
@@ -17,6 +18,7 @@ export async function getResourceList(resource: string): Promise<TknPipeline[]> 
 }
 
 async function executeCommand(command: CliCommand): Promise<TknPipeline[]> {
+  if (!ToolsConfig.getTknLocation('kubectl')) return [];
   const result = await tkn.execute(command);
   let data: TknPipeline[] = [];
   try {
