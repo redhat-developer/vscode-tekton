@@ -7,6 +7,7 @@ import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import * as taskProvider from '../../src/yaml-support/tkn-tasks-provider';
 import * as tkn from '../../src/tkn';
+import { ToolsConfig } from '../../src/tools';
 
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -18,6 +19,7 @@ suite('Task provider', () => {
 
   setup(() => {
     execStub = sandbox.stub(tknCli, 'execute');
+    sandbox.stub(ToolsConfig, 'getTknLocation').returns('kubectl');
   });
 
   teardown(() => {

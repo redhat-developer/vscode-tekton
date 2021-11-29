@@ -38,6 +38,7 @@ suite('tkn', () => {
     sandbox.stub(telemetry, 'telemetryLogError');
     sandbox.stub(ToolsConfig, 'getVersion').resolves('0.2.0');
     execStubCli = sandbox.stub(CliImpl.prototype, 'execute').resolves();
+    sandbox.stub(ToolsConfig, 'getTknLocation').returns('kubectl');
   });
 
   teardown(() => {
