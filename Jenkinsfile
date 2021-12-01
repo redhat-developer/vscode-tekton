@@ -4,7 +4,8 @@ node('rhel8'){
 
     stage ('Checkout vscode-tekton code') {
         deleteDir()
-        git branch: 'main', url: 'https://github.com/redhat-developer/vscode-tekton.git'
+        git url: 'https://github.com/redhat-developer/vscode-tekton.git',
+          branch: "${BRANCH}"
     }
 
     stage ('Install vscode-tekton build requirements') {
