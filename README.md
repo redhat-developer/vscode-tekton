@@ -1,9 +1,9 @@
 # Tekton Pipelines Extension  <img src="https://raw.githubusercontent.com/redhat-developer/vscode-tekton/main/images/tekton.png" alt="tekton" width="50"/>
 
-| System | Status |
-| - | - |
-| Build ([main](https://github.com/redhat-developer/vscode-tekton/tree/main) branch) | ![build](https://github.com/redhat-developer/vscode-tekton/workflows/CI/badge.svg) [![Unit Tests Code Coverage](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/main/graph/badge.svg)](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/main) [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/redhat-developer/vscode-tekton/blob/main/LICENSE)|
-| [Marketplace](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-tekton-pipelines) | [![Visual Studio Marketplace](https://vsmarketplacebadge.apphb.com/version/redhat.vscode-tekton-pipelines.svg)](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-tekton-pipelines)
+[![Visual Studio Marketplace](https://img.shields.io/visual-studio-marketplace/v/redhat.vscode-tekton-pipelines?style=for-the-badge&label=VS%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-tekton-pipelines)
+[![Build Status](https://img.shields.io/github/workflow/status/redhat-developer/vscode-tekton/CI?logo=github&style=for-the-badge)](https://github.com/redhat-developer/vscode-tekton/actions?query=workflow%3ACI)
+[![Unit Tests Code Coverage](https://img.shields.io/codecov/c/github/redhat-developer/vscode-tekton?logo=codecov&style=for-the-badge)](https://codecov.io/gh/redhat-developer/vscode-tekton/branch/main/graph/badge.svg)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=for-the-badge)](https://github.com/redhat-developer/vscode-tekton/blob/main/LICENSE)
 
 ## Overview
 
