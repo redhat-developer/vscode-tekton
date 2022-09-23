@@ -195,6 +195,22 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "GRPCAction": {
+      "required": [
+        "port",
+        "service"
+      ],
+      "properties": {
+        "port": {
+          "type": "integer"
+        },
+        "service": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "HTTPGetAction": {
       "required": [
         "port"
@@ -240,21 +256,6 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "Handler": {
-      "properties": {
-        "exec": {
-          "$ref": "#/definitions/ExecAction"
-        },
-        "httpGet": {
-          "$ref": "#/definitions/HTTPGetAction"
-        },
-        "tcpSocket": {
-          "$ref": "#/definitions/TCPSocketAction"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
     "IntOrString": {
       "required": [
         "Type",
@@ -279,10 +280,25 @@
       "properties": {
         "postStart": {
           "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/Handler"
+          "$ref": "#/definitions/LifecycleHandler"
         },
         "preStop": {
-          "$ref": "#/definitions/Handler"
+          "$ref": "#/definitions/LifecycleHandler"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "LifecycleHandler": {
+      "properties": {
+        "exec": {
+          "$ref": "#/definitions/ExecAction"
+        },
+        "httpGet": {
+          "$ref": "#/definitions/HTTPGetAction"
+        },
+        "tcpSocket": {
+          "$ref": "#/definitions/TCPSocketAction"
         }
       },
       "additionalProperties": false,
@@ -310,6 +326,9 @@
           "properties": {},
           "additionalProperties": true,
           "type": "object"
+        },
+        "subresource": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -481,6 +500,10 @@
         "tcpSocket": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/TCPSocketAction"
+        },
+        "grpc": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/GRPCAction"
         },
         "initialDelaySeconds": {
           "type": "integer"
@@ -872,6 +895,9 @@
         },
         "runAsUserName": {
           "type": "string"
+        },
+        "hostProcess": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false,
