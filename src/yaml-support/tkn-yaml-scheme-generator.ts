@@ -88,14 +88,6 @@ function injectResourceName(templateObj: any, resNames: string[]): {} {
   return templateObj;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// function injectConditionRefs(templateObj: any, conditions: string[]): {} {
-//   if (conditions && conditions.length > 0) {
-//     templateObj.definitions.PipelineTaskCondition.properties.conditionRef.enum = conditions;
-//   }
-//   return templateObj;
-// }
-
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function injectMarkdownDescription(templateObj: any): {} {
@@ -188,7 +180,6 @@ async function generate(doc: vscode.TextDocument, schemaPath: string): Promise<s
   const template = await readFile(schemaPath, 'UTF8');
   if (schemaPath.endsWith(path.join('tekton.dev', 'v1beta1_Pipeline.json'))) {
     const snippets = await getTknTasksSnippets();
-    // const conditions = await getTknConditionsSnippets();
     const definedTasks = pipelineYaml.getPipelineTasksName(doc);
     const declaredResources = pipelineYaml.getDeclaredResources(doc);
     const yamlDocs = yamlLocator.getTknDocuments(doc);
@@ -204,7 +195,6 @@ async function generate(doc: vscode.TextDocument, schemaPath: string): Promise<s
     }
     templateWithSnippets = injectTasksName(templateWithSnippets, definedTasks, tasksRef);
     templateWithSnippets = injectResourceName(templateWithSnippets, resNames);
-    // templateWithSnippets = injectConditionRefs(templateWithSnippets, conditions);
     templateWithSnippets = injectMarkdownDescription(templateWithSnippets);
     templateWithSnippets = injectVariables(templateWithSnippets, yamlDocs, clusterTasks);
     return JSON.stringify(templateWithSnippets);
