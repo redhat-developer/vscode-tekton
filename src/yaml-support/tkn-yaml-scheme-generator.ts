@@ -9,7 +9,6 @@ import { getRawTasks, getTknTasksSnippets } from './tkn-tasks-provider';
 import { schemeStorage } from './tkn-scheme-storage'
 import { pipelineYaml } from './tkn-yaml';
 import { Snippet } from './snippet';
-import { getTknConditionsSnippets } from './tkn-conditions-provider';
 import { yamlLocator } from './yaml-locator';
 import { TknDocument } from '../model/document';
 import { Pipeline } from '../model/pipeline/pipeline-model';
@@ -90,12 +89,12 @@ function injectResourceName(templateObj: any, resNames: string[]): {} {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function injectConditionRefs(templateObj: any, conditions: string[]): {} {
-  if (conditions && conditions.length > 0) {
-    templateObj.definitions.PipelineTaskCondition.properties.conditionRef.enum = conditions;
-  }
-  return templateObj;
-}
+// function injectConditionRefs(templateObj: any, conditions: string[]): {} {
+//   if (conditions && conditions.length > 0) {
+//     templateObj.definitions.PipelineTaskCondition.properties.conditionRef.enum = conditions;
+//   }
+//   return templateObj;
+// }
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -189,7 +188,7 @@ async function generate(doc: vscode.TextDocument, schemaPath: string): Promise<s
   const template = await readFile(schemaPath, 'UTF8');
   if (schemaPath.endsWith(path.join('tekton.dev', 'v1beta1_Pipeline.json'))) {
     const snippets = await getTknTasksSnippets();
-    const conditions = await getTknConditionsSnippets();
+    // const conditions = await getTknConditionsSnippets();
     const definedTasks = pipelineYaml.getPipelineTasksName(doc);
     const declaredResources = pipelineYaml.getDeclaredResources(doc);
     const yamlDocs = yamlLocator.getTknDocuments(doc);
@@ -205,7 +204,7 @@ async function generate(doc: vscode.TextDocument, schemaPath: string): Promise<s
     }
     templateWithSnippets = injectTasksName(templateWithSnippets, definedTasks, tasksRef);
     templateWithSnippets = injectResourceName(templateWithSnippets, resNames);
-    templateWithSnippets = injectConditionRefs(templateWithSnippets, conditions);
+    // templateWithSnippets = injectConditionRefs(templateWithSnippets, conditions);
     templateWithSnippets = injectMarkdownDescription(templateWithSnippets);
     templateWithSnippets = injectVariables(templateWithSnippets, yamlDocs, clusterTasks);
     return JSON.stringify(templateWithSnippets);
