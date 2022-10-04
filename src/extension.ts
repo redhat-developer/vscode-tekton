@@ -47,6 +47,7 @@ import { showDebugFailContinue } from './debugger/debug-fail-continue';
 import { openContainerInTerminal } from './debugger/show-in-terminal';
 import { debugName, debugSessions, pipelineTriggerStatus } from './util/map-object';
 import { deleteDebugger } from './debugger/delete-debugger';
+import { bundleWizard } from './tekton/bundle-pipeline-task';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -61,6 +62,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   const disposables = [
     vscode.commands.registerCommand('tekton.about', () => execute(Pipeline.about, 'tekton.about')),
+    vscode.commands.registerCommand('tekton.bundle', () => bundleWizard(), 'tekton.bundle'),
     vscode.commands.registerCommand('tekton.pipeline.preview', () => execute(showPipelinePreview, 'tekton.pipeline.preview')),
     vscode.commands.registerCommand('tekton.output', () => execute(Pipeline.showTektonOutput, 'tekton.output')),
     vscode.commands.registerCommand('tekton.explorer.refresh', () => execute(Pipeline.refresh, 'tekton.explorer.refresh')),
