@@ -11,6 +11,7 @@ module.exports = {
   entry: {
     'pipeline-preview': {import: './src/webview/pipeline-preview/index.ts', filename: 'webview/[name]/index.js'},
     'pipeline-wizard': {import: './src/webview/pipeline/app/index.ts', filename: 'webview/[name]/index.js'},
+    'bundle': {import: './src/webview/bundle/index.tsx', filename: 'webview/[name]/index.js'},
     'tekton-hub': {import: './src/webview/hub/index.ts', filename: 'webview/[name]/index.js'},
     'resource-view': {import: './src/webview/resource-page/index.ts', filename: 'webview/[name]/index.js'}
   },

@@ -52,6 +52,7 @@
     "onCommand:tekton.taskrun.followLogs",
     "onCommand:tekton.explorer.refresh",
     "onCommand:tekton.about",
+    "onCommand:tekton.bundle",
     "onCommand:tekton.output",
     "onCommand:tekton.explorer.reportIssue",
     "onLanguage:yaml",
@@ -492,6 +493,16 @@
         }
       },
       {
+        "command": "tekton.bundle",
+        "title": "Create Bundle",
+        "category": "Tekton",
+        "enablement": "tekton:tkn",
+        "icon": {
+          "dark": "images/dark/build.svg",
+          "light": "images/light/build.svg"
+        }
+      },
+      {
         "command": "tekton.explorer.enterZenMode",
         "title": "Select Tekton resources (use Shift to multi-select)",
         "category": "Tekton",
@@ -786,19 +797,24 @@
       ],
       "view/title": [
         {
-          "command": "tekton.explorer.enterZenMode",
+          "command": "tekton.bundle",
           "when": "view == tektonPipelineExplorerView",
           "group": "navigation@1"
         },
         {
-          "command": "tekton.explorer.refresh",
+          "command": "tekton.explorer.enterZenMode",
           "when": "view == tektonPipelineExplorerView",
           "group": "navigation@2"
         },
         {
-          "command": "tekton.about",
+          "command": "tekton.explorer.refresh",
           "when": "view == tektonPipelineExplorerView",
           "group": "navigation@3"
+        },
+        {
+          "command": "tekton.about",
+          "when": "view == tektonPipelineExplorerView",
+          "group": "navigation@4"
         },
         {
           "command": "tekton.explorer.reportIssue",
@@ -1099,7 +1115,7 @@
     "rimraf": "^3.0.2",
     "simple-svg-tools": "^1.1.12",
     "sinon": "^7.3.2",
-    "sinon-chai": "^3.3.0",
+    "sinon-chai": "^3.7.0",
     "source-map-support": "^0.5.16",
     "style-loader": "^1.2.1",
     "tmp": "0.1.0",
@@ -1114,6 +1130,7 @@
   },
   "dependencies": {
     "@kubernetes/client-node": "^0.12.2",
+    "@material-ui/core": "^4.12.4",
     "@redhat-developer/alizer": "^0.0.1",
     "@redhat-developer/vscode-redhat-telemetry": "0.5.2",
     "axios": "^0.21.2",
@@ -1135,6 +1152,8 @@
     "node-cache": "^5.1.2",
     "node-yaml-parser": "0.0.9",
     "pluralize": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "request": "^2.88.0",
     "request-progress": "^3.0.0",
     "semver": "^6.3.0",
