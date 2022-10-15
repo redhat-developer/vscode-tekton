@@ -3,57 +3,62 @@
     "description": "Kubernetes CLI tool",
     "vendor": "Google",
     "name": "kubectl",
-    "version": "1.18.8",
-    "versionRange": "1.17.0 - 1.22.0",
-    "versionRangeLabel": "v1.18.0",
+    "version": "1.25.3",
+    "versionRange": "1.17.0 - 1.25.3",
+    "versionRangeLabel": "v1.25.3",
     "dlFileName": "kubectl",
     "cmdFileName": "kubectl",
     "filePrefix": "",
     "platform": {
       "win32": {
-        "url": "https://storage.googleapis.com/kubernetes-release/release/v1.18.8/bin/windows/amd64/kubectl.exe",
-        "sha256sum": "4e19391f236d060448e41316119a8b184af7ed120561293cc9642356c3b88233",
+        "url": "https://dl.k8s.io/v1.25.3/bin/windows/amd64/kubectl.exe",
+        "sha256sum": "ff78c3cb3cba7ce397db01ca4ac4769c476efbbccbd5ff007a7d4b976a6e4ac1",
         "dlFileName": "kubectl.exe",
         "cmdFileName": "kubectl.exe"
       },
       "darwin": {
-        "url": "https://storage.googleapis.com/kubernetes-release/release/v1.18.8/bin/darwin/amd64/kubectl",
-        "sha256sum": "13a366761418571311fc539d99888779f2501328ea9c6b2eb17a93b6733412f7",
+        "url": "https://dl.k8s.io/v1.25.3/bin/darwin/amd64/kubectl",
+        "sha256sum": "161e3377f68a4c1184b6224198e34aa93a051c0dc394efe500e3652e245b8723",
+        "dlFileName": "kubectl"
+      },
+      "darwin-arm64": {
+        "url": "https://dl.k8s.io/v1.25.3/bin/darwin/arm64/kubectl",
+        "sha256sum": "dc95ba99247ead3c8ba0becfcc3877054a045b411eeeca4585f960bd5efce1fe",
         "dlFileName": "kubectl"
       },
       "linux": {
-        "url": "https://storage.googleapis.com/kubernetes-release/release/v1.18.8/bin/linux/amd64/kubectl",
-        "sha256sum": "a076f5eff0710de94d1eb77bee458ea43b8f4d9572bbb3a3aec1edf0dde0a3e7",
+        "url": "https://dl.k8s.io/v1.25.3/bin/linux/amd64/kubectl",
+        "sha256sum": "f57e568495c377407485d3eadc27cda25310694ef4ffc480eeea81dea2b60624",
         "dlFileName": "kubectl"
       }
     }
   },
   "tkn": {
     "description": "A CLI for interacting with Tekton",
-    "vendor": "",
+    "vendor": "Red Hat, Inc.",
     "name": "tkn",
-    "version": "0.17.0",
-    "versionRange": "0.17.x",
-    "versionRangeLabel": "v0.17.x",
+    "version": "0.27.0",
+    "versionRange": "0.27.x",
+    "versionRangeLabel": "v0.27.x",
     "dlFileName": "tkn",
     "cmdFileName": "tkn",
     "filePrefix": "",
     "platform": {
       "win32": {
-        "url": "https://github.com/tektoncd/cli/releases/download/v0.17.0/tkn_0.17.0_Windows_x86_64.zip",
-        "sha256sum": "f7b380d43499693137240883502cdf18bc42f6d15f5cc23991dac6488c8d93f1",
-        "dlFileName": "tkn_0.17.0_Windows_x86_64.zip",
+        "url": "https://github.com/tektoncd/cli/releases/download/v0.27.0/tkn_0.27.0_Windows_x86_64.zip",
+        "sha256sum": "096c8e18315903a327d54fd2f79d4a84f46916cfdf5f4a53af3638891d5b9097",
+        "dlFileName": "tkn_0.27.0_Windows_x86_64.zip",
         "cmdFileName": "tkn.exe"
       },
       "darwin": {
-        "url": "https://github.com/tektoncd/cli/releases/download/v0.17.0/tkn_0.17.0_Darwin_x86_64.tar.gz",
-        "sha256sum": "ba185e6e1b818d06616fafb3a336a826217870e36eb6a6a0960f068f9a220322",
-        "dlFileName": "tkn_0.17.0_Darwin_x86_64.tar.gz"
+        "url": "https://github.com/tektoncd/cli/releases/download/v0.27.0/tkn_0.27.0_Darwin_all.tar.gz",
+        "sha256sum": "66cec8fbbec2639c6fd8f73f84ef55b8958aa68a68b8306ed8c518f43551f617",
+        "dlFileName": "tkn_0.27.0_Darwin_x86_64.tar.gz"
       },
       "linux": {
-        "url": "https://github.com/tektoncd/cli/releases/download/v0.17.0/tkn_0.17.0_Linux_x86_64.tar.gz",
-        "sha256sum": "398e2cfd3c481742aa89b83a413828fdab937deb73b84c5ee9b065eced925ffc",
-        "dlFileName": "tkn_0.17.0_Linux_x86_64.tar.gz"
+        "url": "https://github.com/tektoncd/cli/releases/download/v0.27.0/tkn_0.27.0_Linux_x86_64.tar.gz",
+        "sha256sum": "f63be8c6817dd08df7c6be95490325d5298eae6558d2d86fa06ce69509b2c0be",
+        "dlFileName": "tkn_0.27.0_Linux_x86_64.tar.gz"
       }
     }
   }
