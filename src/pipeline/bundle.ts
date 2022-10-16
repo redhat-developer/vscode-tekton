@@ -10,18 +10,17 @@ import { contextGlobalState } from '../extension';
 import * as path from 'path';
 import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
-import { TknResourceItem } from '../tekton/collect-data-for-wizard';
 
-export interface PipelineWizardInput {
+export interface TektonType {
   readonly resourceColumn?: vscode.ViewColumn;
-  readonly trigger?: TknResourceItem;
+  readonly storePipelineTaskClusterTask?: {tektonType: string, name: string}[];
 }
 
 export class BuildWizard extends Disposable {
-  static viewType = 'tekton.pipeline.start.wizard';
+  static viewType = 'tekton.bundle';
   static title: string;
 
-  public static create(input: PipelineWizardInput, previewColumn: vscode.ViewColumn): BuildWizard {
+  public static create(input: TektonType, previewColumn: vscode.ViewColumn): BuildWizard {
     const buildTitle = 'Create Build';
     BuildWizard.title = buildTitle;
     const webview = vscode.window.createWebviewPanel(
@@ -43,7 +42,7 @@ export class BuildWizard extends Disposable {
   private readonly onDidChangeViewStateEmitter = new vscode.EventEmitter<vscode.WebviewPanelOnDidChangeViewStateEvent>();
   public readonly onDidChangeViewState = this.onDidChangeViewStateEmitter.event;
 
-  constructor(webview: vscode.WebviewPanel, private input: PipelineWizardInput) {
+  constructor(webview: vscode.WebviewPanel, private input: TektonType) {
     super();
     this.editor = webview;
     this.register(this.editor.onDidDispose(() => {
@@ -91,7 +90,7 @@ export class BuildWizard extends Disposable {
     this.setContent(html);
 
     try {
-      this.postMessage({ type: 'trigger', data: this.input.trigger });
+      this.postMessage({ type: 'tekton_bundle', data: this.input.storePipelineTaskClusterTask });
     } catch (err) {
       console.error(err);
     }

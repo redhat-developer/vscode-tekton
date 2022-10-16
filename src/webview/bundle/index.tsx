@@ -8,14 +8,30 @@
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 import { ViewState, VSMessage } from '../common/vscode-api';
-import TransferList from './SelectAllTransferList';
+import LimitTags from './SelectAllTransferList';
 
-declare const acquireVsCodeApi: () => ViewState & VSMessage;
+declare const acquireVsCodeApi: () => ({ getState(): {tektonType: string, name: string}[]; setState(data: {tektonType: string, name: string}[]): void; postMessage: (msg: unknown) => void });
 export const vscode = acquireVsCodeApi();
-
+debugger;
 const rootElement = document.getElementById('root');
 
-ReactDOM.render(
-  <TransferList />,
-  rootElement,
-);
+window.addEventListener('message', event => {
+  switch (event.data.type) {
+    case 'tekton_bundle':
+      vscode.setState(event.data.data);
+      ReactDOM.render(
+        <LimitTags />,
+        rootElement,
+      );
+  }
+}, false);
+
+const previousState = vscode.getState();
+if (previousState) {
+  ReactDOM.render(
+    <LimitTags />,
+    rootElement,
+  );
+}
+
+
