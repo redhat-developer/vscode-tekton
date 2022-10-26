@@ -13,7 +13,7 @@ import { tkn } from '../tkn';
 
 
 export async function bundleWizard(): Promise<void> {
-  let storePipelineTaskClusterTask: TektonType["storePipelineTaskClusterTask"] = []
+  const storePipelineTaskClusterTask: TektonType['storePipelineTaskClusterTask'] = []
   const pipeline: CliExitData = await tkn.execute(Command.listPipelines(), process.cwd(), false);
   if (pipeline.stdout) {
     const listPipeline: TknPipeline[] = JSON.parse(pipeline.stdout).items;

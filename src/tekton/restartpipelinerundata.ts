@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
+/* eslint-disable @typescript-eslint/ban-types */
+
 import { TknResourceItem, TknPipelineRun } from './collect-data-for-wizard';
 import { TektonItem } from './tektonitem';
 import { TknSpec } from '../tekton';

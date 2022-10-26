@@ -3,8 +3,6 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-
-
 import * as vscode from 'vscode';
 import { contextGlobalState } from '../extension';
 import * as path from 'path';
@@ -96,6 +94,7 @@ export class BuildWizard extends Disposable {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   private postMessage(msg: {}): void {
     if (!this.disposed) {
       this.editor.webview.postMessage(msg);
