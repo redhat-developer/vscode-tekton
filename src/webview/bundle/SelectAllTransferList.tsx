@@ -10,9 +10,9 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { vscode } from './index';
 
-export default function LimitTags() {
+export function LimitTags() {
   const filterOptions = createFilterOptions({
-    matchFrom: "any",
+    matchFrom: 'any',
     stringify: (option: any) => `${option.relationship} ${option.companyName}`
   });
 
@@ -41,8 +41,8 @@ export default function LimitTags() {
         <TextField
           {...params}
           variant="outlined"
-          label="Relationships/Companies"
-          placeholder="Relationships/Companies"
+          label="Tekton Resources"
+          placeholder="Tekton Resources"
         />
       )}
     />
