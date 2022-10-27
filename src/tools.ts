@@ -23,6 +23,14 @@ export class ToolsConfig {
     const req = JSON.parse(JSON.stringify(requirements));
     for (const object in requirements) {
       if (req[object].platform) {
+        if (process.arch === 'arm64' && platform === 'darwin') {
+          // eslint-disable-next-line no-param-reassign
+          platform = `${platform}-arm64`;
+        }
+        if (object === 'tkn' && platform === 'darwin-arm64') {
+          // eslint-disable-next-line no-param-reassign
+          platform = Platform.OS;
+        }
         if (req[object].platform[platform]) {
           Object.assign(req[object], req[object].platform[platform]);
           delete req[object].platform;
