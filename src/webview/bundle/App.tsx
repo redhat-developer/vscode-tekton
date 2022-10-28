@@ -5,13 +5,13 @@
 
 
 import * as React from 'react';
-import { FormDemo } from './FormDemo';
+import { Form } from './Form';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export default function App() {
   return (
     <div>
-      <FormDemo />
+      <Form />
     </div>
   );
 }

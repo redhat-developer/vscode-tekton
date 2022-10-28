@@ -4,31 +4,20 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as React from 'react';
-import { Controller } from 'react-hook-form';
 import TextField from '@material-ui/core/TextField';
 import { FormInputProps } from './FormInputProps';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function FormInputText ({ name, control, label }: FormInputProps) {
+export function FormInputText({label, setValue }: FormInputProps) {
   return (
-    <Controller
-      name={name}
-      control={control}
-      render={({
-        field: { onChange, value },
-        fieldState: { error },
-      }) => (
-        <TextField
-          helperText={error ? error.message : null}
-          size="small"
-          error={!!error}
-          onChange={onChange}
-          value={value}
-          fullWidth
-          label={label}
-          variant="outlined"
-        />
-      )}
+    <TextField
+      fullWidth
+      required
+      onChange={(text) => {
+        return setValue(text.target.value.trim());
+      }}
+      label={label}
+      variant="outlined"
     />
   );
 }

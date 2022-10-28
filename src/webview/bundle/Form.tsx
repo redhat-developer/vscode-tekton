@@ -8,7 +8,7 @@ import { Button, Paper, Typography } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import { FormInputText } from './form-components/FormInputText';
 import * as React from 'react';
-import { LimitTags } from './SelectAllTransferList';
+import { LimitTags } from './form-components/SelectAllTransferList';
 
 interface IFormInput {
   textValue: string;
@@ -29,31 +29,43 @@ const defaultValues = {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function FormDemo () {
+export function Form () {
   const methods = useForm<IFormInput>({ defaultValues: defaultValues });
   const { handleSubmit, reset, control, setValue, watch } = methods;
   const onSubmit = (data: IFormInput) => console.log(data);
-  const [btnDisabled, setBtnDisabled] = React.useState(false);
-
+  const [image, setImage] = React.useState('');
+  const [resource, setResource]: any[] = React.useState([]);
 
   return (
-    <Paper
+    <div 
       style={{
-        display: 'grid',
-        gridRowGap: '20px',
-        padding: '20px',
-        margin: '10px 300px',
-        position: 'absolute'
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        // Change the size to fit the parent element of this div
+        width: '100%',
+        height: '100%',
       }}
     >
-      <Typography variant="h6"> Create Bundle</Typography>
+      <Paper
+        style={{
+          display: 'grid',
+          gridRowGap: '20px',
+          padding: '20px',
+          margin: '10px 300px',
+          // position: 'absolute'
+        }}
+      >
+        <Typography variant="h6"> Create Bundle</Typography>
 
-      <FormInputText name="textValue" control={control} label="Image Name" />
-      <LimitTags/>
-      <Button onClick={handleSubmit(onSubmit)} variant={'contained'}>
-        {' '}
-        Submit{' '}
-      </Button>
-    </Paper>
+        <FormInputText label="Image Name" setValue={setImage} />
+        <LimitTags setValue={setResource}/>
+        <Button onClick={handleSubmit(onSubmit)} variant={'contained'} disabled={!image || resource.length === 0}>
+          {' '}
+          Submit{' '}
+        </Button>
+      </Paper>
+    </div>
   );
 }
