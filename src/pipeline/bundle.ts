@@ -88,16 +88,16 @@ export class BuildWizard extends Disposable {
     this.setContent(html);
 
     try {
-      this.postMessage({ type: 'tekton_bundle', data: this.input.storePipelineTaskClusterTask });
+      await this.postMessage({ type: 'tekton_bundle', data: this.input.storePipelineTaskClusterTask });
     } catch (err) {
       console.error(err);
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types
-  private postMessage(msg: {}): void {
+  private async postMessage(msg: {}): Promise<void> {
     if (!this.disposed) {
-      this.editor.webview.postMessage(msg);
+      await this.editor.webview.postMessage(msg);
     }
   }
 
