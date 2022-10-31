@@ -16,6 +16,7 @@ if (!tty.getWindowSize) {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const config: {} = {
   ui: 'tdd',
   timeout: 15000,
@@ -25,6 +26,7 @@ const config: {} = {
 
 const mocha = new Mocha(config);
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function run(testsRoots: string, cb: (error: {}, failures?: number) => void): void {
 
   const testsRoot = path.resolve(__dirname);

@@ -204,6 +204,7 @@ class PipelineCodeActionProvider implements vscode.CodeActionProvider {
     content = lines.join('\n');
 
     const taskPart = jsYaml.load(content);
+    // eslint-disable-next-line @typescript-eslint/ban-types
     let metadataPart: {} = undefined;
     if (taskPart.metadata) {
       metadataPart = taskPart.metadata;

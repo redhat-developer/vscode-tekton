@@ -1187,6 +1187,7 @@ suite('tkn', () => {
     });
 
     test('TaskRun should contains condition run node', () => {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const json = require(path.join('..', '..', 'test', 'pipelinerun.json')) as PipelineRunData;
       const pipelineRun = new PipelineRun(pipelineItem, json.metadata.name, undefined, json, TreeItemCollapsibleState.Expanded);
 

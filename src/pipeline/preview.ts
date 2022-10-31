@@ -207,6 +207,7 @@ export class PipelinePreview extends Disposable {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   private postMessage(msg: {}): void {
     if (!this.disposed) {
       this.editor.webview.postMessage(msg);
