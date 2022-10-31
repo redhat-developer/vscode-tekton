@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { ViewColumn, window } from 'vscode';
-import { CliExitData } from '../cli';
+import { cli, CliExitData } from '../cli';
 import { Command } from '../cli-command';
 import { checkEnableApiFields, FeatureFlag } from '../debugger/debug';
 import { BuildWizard, TektonType } from '../pipeline/bundle';
@@ -15,6 +15,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
+import { getStderrString } from '../util/stderrstring';
 
 interface BundleType {
   imageDetail: string;
@@ -61,6 +62,23 @@ export const getRandomChars = (len = 7): string => {
     .substr(1, len);
 }
 
+const authRegex = /UNAUTHORIZED: authentication required/gm;
+
+async function showInputBox(promptMessage: string, passwordType?: boolean, inputValidMessage?: string): Promise<string> {
+  // eslint-disable-next-line no-return-await
+  return await window.showInputBox({
+    ignoreFocusOut: true,
+    prompt: promptMessage,
+    password: passwordType,
+    validateInput: (value: string) => {
+      if (!value?.trim()) {
+        return inputValidMessage;
+      }
+      return null;
+    },
+  });
+}
+
 
 export async function createBuild(bundleInfo: BundleType): Promise<void> {
   const template: TknPipelineTrigger = {
@@ -82,5 +100,24 @@ export async function createBuild(bundleInfo: BundleType): Promise<void> {
     const taskOrPipelineOrClusterTaskYaml = yaml.dump(template);
     await fs.appendFile(fsPath, `${taskOrPipelineOrClusterTaskYaml}\n---\n`, {encoding: 'utf8'});
   })
-  
+  const result = await cli.execute(Command.bundle(bundleInfo.imageDetail, `${quote}${fsPath}${quote}`));
+  if (result.error) {
+    if (authRegex.test(getStderrString(result.error))) {
+      const userName = await showInputBox('Provide username for image registry.', false, 'Provide an username for image registry.');
+      if (!userName) return;
+      const userPassword = await showInputBox('Provide password for image registry.', false, 'Provide a password for image registry.');
+      if (!userPassword) return;
+      const result = await cli.execute(Command.bundle(bundleInfo.imageDetail, `${quote}${fsPath}${quote}`, userName, userPassword));
+      if (result.error) {
+        window.showErrorMessage(`Failed to push bundle error: ${getStderrString(result.error)}`);
+        return;
+      }
+      window.showInformationMessage('Bundle successfully push.');
+      return;
+    }
+    window.showErrorMessage(`Failed to push bundle error: ${getStderrString(result.error)}`);
+    return;
+  }
+  window.showInformationMessage('Bundle successfully push.');
+  return;
 }

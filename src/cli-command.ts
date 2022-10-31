@@ -240,6 +240,13 @@ export class Command {
     return newTknCommand('hub', 'install', 'task', name, '--version', version);
   }
 
+  static bundle(image: string, fileName: string, username?: string, password?: string): CliCommand {
+    if (username) {
+      return newTknCommand('bundle', 'push', image, '-f', fileName, '--remote-username', username, '--remote-password', password);
+    }
+    return newTknCommand('bundle', 'push', image, '-f', fileName);
+  }
+
   static hubTaskUpgrade(name: string, version: string): CliCommand {
     return newTknCommand('hub', 'upgrade', 'task', name, '--to', version);
   }
