@@ -50,8 +50,10 @@ export class BuildWizard extends Disposable {
 
     this.register(this.editor.webview.onDidReceiveMessage(async e => {
       switch (e.type) {
-        case 'startPipeline':
-          console.log('jkjkjkjkjk')
+        case 'tekton_bundle':
+          // eslint-disable-next-line no-case-declarations
+          const bundleInfo = e.body;
+          this.dispose();
       }
     }));
 
@@ -88,16 +90,19 @@ export class BuildWizard extends Disposable {
     this.setContent(html);
 
     try {
-      await this.postMessage({ type: 'tekton_bundle', data: this.input.storePipelineTaskClusterTask });
+      setTimeout(() => {
+        this.postMessage({ type: 'tekton_bundle', data: this.input.storePipelineTaskClusterTask });
+      }, 800);
+      
     } catch (err) {
       console.error(err);
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types
-  private async postMessage(msg: {}): Promise<void> {
+  private postMessage(msg: {}): void {
     if (!this.disposed) {
-      await this.editor.webview.postMessage(msg);
+      this.editor.webview.postMessage(msg);
     }
   }
 

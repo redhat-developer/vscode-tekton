@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import { FormInputText } from './form-components/FormInputText';
 import * as React from 'react';
 import { LimitTags } from './form-components/SelectAllTransferList';
+import { vscode } from './index';
 
 interface IFormInput {
   textValue: string;
@@ -19,22 +20,22 @@ interface IFormInput {
   sliderValue: number;
 }
 
-const defaultValues = {
-  textValue: '',
-  radioValue: '',
-  checkboxValue: [],
-  dateValue: new Date(),
-  dropdownValue: '',
-  sliderValue: 0,
-};
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function Form () {
-  const methods = useForm<IFormInput>({ defaultValues: defaultValues });
-  const { handleSubmit, reset, control, setValue, watch } = methods;
-  const onSubmit = (data: IFormInput) => console.log(data);
+  const methods = useForm<IFormInput>();
+  const { handleSubmit} = methods;
   const [image, setImage] = React.useState('');
   const [resource, setResource]: any[] = React.useState([]);
+  const onSubmit = () => {
+    // eslint-disable-next-line no-debugger
+    debugger;
+    console.log(resource, image ,'nmnmnmnmnmnmnmnmnmnm');
+    vscode.postMessage({
+      type: 'tekton_bundle',
+      body: {imageDetail: image, resourceDetail: resource}
+    });
+  }
 
   return (
     <div 
