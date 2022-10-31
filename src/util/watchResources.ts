@@ -58,6 +58,7 @@ export class WatchResources {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   async watchCommand(resourceList: string[], resourceUidAtStart: {}): Promise<void> {
     for (const resource of resourceList) {
       await this.collectResourceUidAtStart(resource, resourceUidAtStart);

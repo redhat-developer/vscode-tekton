@@ -102,6 +102,7 @@ export interface PipelineResource {
 export interface PipelineWorkspace extends Param {
   type: string;
   data?: {
+    // eslint-disable-next-line @typescript-eslint/ban-types
     [volumeType: string]: VolumeTypeSecret | VolumeTypeConfigMaps | VolumeTypePVC | {};
   };
 }

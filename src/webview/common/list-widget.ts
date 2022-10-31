@@ -6,11 +6,6 @@ import './list.css';
 import { createDiv } from './dom-util';
 import { BaseWidget, Listener, Widget } from './widget';
 
-interface SizeAndPosition {
-  top: number;
-  width: number;
-}
-
 export abstract class ListWidget<T> extends BaseWidget {
   protected itemListChangedListener: Listener<T[]> | undefined;
 

@@ -45,7 +45,7 @@ export function generateScheme(vsDocument: vscode.TextDocument, schemaPath: stri
 }
 
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
 function injectTaskSnippets(templateObj: any, snippets: Snippet<{}>[]): {} {
   snippets.push({
     label: 'inline task',
@@ -66,7 +66,7 @@ function injectTaskSnippets(templateObj: any, snippets: Snippet<{}>[]): {} {
   return templateObj;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
 function injectTasksName(templateObj: any, tasks: string[], tasksRef: string[]): {} {
   templateObj.definitions.PipelineTask.properties.runAfter.items.enum = tasks;
 
@@ -78,7 +78,7 @@ function injectTasksName(templateObj: any, tasks: string[], tasksRef: string[]):
   return templateObj;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
 function injectResourceName(templateObj: any, resNames: string[]): {} {
   if (resNames && resNames.length > 0) {
     templateObj.definitions.PipelineTaskInputResource.properties.resource.enum = resNames;
@@ -89,7 +89,7 @@ function injectResourceName(templateObj: any, resNames: string[]): {} {
 }
 
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
 function injectMarkdownDescription(templateObj: any): {} {
   templateObj.definitions.Pipeline.properties.apiVersion.markdownDescription = 'Specifies the API version, for example `tekton.dev/v1beta1`. [more](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/#required-fields)';
   templateObj.definitions.Pipeline.properties.kind.markdownDescription = 'Identifies this resource object as a `Pipeline` object. [more](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/#required-fields)';

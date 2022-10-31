@@ -73,6 +73,7 @@ export interface Tkn {
   getClusterTasks(clustertask?: TektonNode): Promise<TektonNode[]>;
   getRawClusterTasks(): Promise<TknTask[]>;
   execute(command: CliCommand, cwd?: string, fail?: boolean): Promise<CliExitData>;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   executeWatch(command: CliCommand, opts?: {}): WatchProcess;
   executeInTerminal(command: CliCommand, resourceName?: string, cwd?: string): void;
   getTaskRunsForTasks(task: TektonNode): Promise<TektonNode[]>;

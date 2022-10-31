@@ -82,6 +82,7 @@ export class PipelineDefinitionProvider implements TknTypeDefinitionProvider {
 
   private findResourceDeclaration(resName: string, doc: TknDocument): TknElement | undefined {
     const pipeline = doc.getChildren<Pipeline>();
+    // eslint-disable-next-line no-unsafe-optional-chaining
     for (const param of pipeline.spec.resources?.getChildren()) {
       if (param.name.value === resName) {
         return param.name;

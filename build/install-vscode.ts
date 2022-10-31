@@ -6,6 +6,7 @@
 import cp = require('child_process');
 import path = require('path');
 import { platform } from 'os';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const downloadAndUnzipVSCode = require('vscode-test').downloadAndUnzipVSCode;
 downloadAndUnzipVSCode().then((executable: string) => {
   if (platform() === 'darwin') {
