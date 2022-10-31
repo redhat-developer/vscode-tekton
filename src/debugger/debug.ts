@@ -25,6 +25,7 @@ import { debugName } from '../util/map-object';
 export interface FeatureFlag {
   data: {
     'enable-api-fields': string;
+    'enable-tekton-oci-bundles': string;
   };
 }
 

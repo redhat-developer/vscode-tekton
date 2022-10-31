@@ -267,6 +267,7 @@ export interface TknInputs {
 }
 
 export interface TknOutputs {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   results?: {};
   resources?: TaskResource[];
 }
@@ -285,8 +286,9 @@ export interface TknWorkspaces {
 
 export interface TknPipelineTrigger {
   apiVersion?: string;
-  metadata: TknMetadata;
-  spec: TknSpec;
+  kind?: string;
+  metadata?: TknMetadata;
+  spec?: TknSpec;
 }
 
 export interface TknPipelineResource {
@@ -370,6 +372,7 @@ export interface VolumeTypeClaim {
 }
 
 export interface Workspace extends Param {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   [volumeType: string]: VolumeTypeSecret | VolumeTypeConfigMaps | VolumeTypePVC | VolumeTypeClaim | {};
 }
 

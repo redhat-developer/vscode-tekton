@@ -19,7 +19,7 @@ const imageResource = {
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function LimitTags({ setValue }: FormInputProps) {
+export function LimitTags({ setValue, getValue }: FormInputProps) {
   const options3 = vscode.getState().map((option) => {
     return {
       ...option
@@ -34,10 +34,16 @@ export function LimitTags({ setValue }: FormInputProps) {
       options={options3}
       groupBy={(option) => option.tektonType}
       getOptionLabel={(option: { tektonType: string; name: string; }) => option.name}
-      // getOptionDisabled={(options) => {
-      //   console.log(options)
-      //   return false;
-      // }}
+      getOptionDisabled={(options) => {
+        console.log(getValue.length);
+        if (getValue.length === 10) {
+          return true;
+        }
+        return false;
+      }}
+      isOptionEqualToValue={(event, newValue) => {
+        return event.name === newValue.name;
+      }}
       renderOption={(props, option) => (
         <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
           <img
