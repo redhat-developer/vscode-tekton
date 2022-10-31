@@ -14,11 +14,8 @@ export const vscode = acquireVsCodeApi();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const rootElement: any = document.getElementById('root');
 const root = createRoot(rootElement);
-// eslint-disable-next-line no-debugger
-debugger;
+
 window.addEventListener('message', event => {
-  // eslint-disable-next-line no-debugger
-  debugger;
   switch (event.data.type) {
     case 'tekton_bundle':
       vscode.setState(event.data.data);
@@ -28,9 +25,8 @@ window.addEventListener('message', event => {
         </React.StrictMode>
       );
   }
-}, false);
-// eslint-disable-next-line no-debugger
-debugger;
+});
+
 const previousState = vscode.getState();
 if (previousState) {
   root.render(
