@@ -8,6 +8,7 @@ import { contextGlobalState } from '../extension';
 import * as path from 'path';
 import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
+import { createBuild } from '../tekton/bundle-pipeline-task';
 
 export interface TektonType {
   readonly resourceColumn?: vscode.ViewColumn;
@@ -54,6 +55,7 @@ export class BuildWizard extends Disposable {
           // eslint-disable-next-line no-case-declarations
           const bundleInfo = e.body;
           this.dispose();
+          await createBuild(bundleInfo);
       }
     }));
 

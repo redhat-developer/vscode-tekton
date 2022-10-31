@@ -26,11 +26,10 @@ export function Form () {
   const methods = useForm<IFormInput>();
   const { handleSubmit} = methods;
   const [image, setImage] = React.useState('');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [resource, setResource]: any[] = React.useState([]);
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const onSubmit = () => {
-    // eslint-disable-next-line no-debugger
-    debugger;
-    console.log(resource, image ,'nmnmnmnmnmnmnmnmnmnm');
     vscode.postMessage({
       type: 'tekton_bundle',
       body: {imageDetail: image, resourceDetail: resource}
@@ -61,7 +60,7 @@ export function Form () {
         <Typography variant="h6"> Create Bundle</Typography>
 
         <FormInputText label="Image Name" setValue={setImage} />
-        <LimitTags setValue={setResource}/>
+        <LimitTags setValue={setResource} getValue={resource}/>
         <Button onClick={handleSubmit(onSubmit)} variant={'contained'} disabled={!image || resource.length === 0}>
           {' '}
           Submit{' '}

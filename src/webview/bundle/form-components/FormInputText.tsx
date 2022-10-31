@@ -13,6 +13,7 @@ export function FormInputText({label, setValue }: FormInputProps) {
     <TextField
       fullWidth
       required
+      placeholder='Use the schema registry/repository/image:version'
       onChange={(text) => {
         return setValue(text.target.value.trim());
       }}
