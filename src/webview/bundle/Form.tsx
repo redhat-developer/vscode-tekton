@@ -53,7 +53,7 @@ export function Form () {
           display: 'grid',
           gridRowGap: '20px',
           padding: '20px',
-          margin: '10px 300px',
+          margin: '190px 300px',
           // position: 'absolute'
         }}
       >
