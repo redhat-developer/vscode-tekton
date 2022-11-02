@@ -8,6 +8,7 @@ import { Button, Paper, Typography } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import { FormInputText } from './form-components/FormInputText';
 import * as React from 'react';
+import { makeStyles } from '@mui/styles';
 import { LimitTags } from './form-components/SelectAllTransferList';
 import { vscode } from './index';
 
@@ -20,9 +21,23 @@ interface IFormInput {
   sliderValue: number;
 }
 
+const useStyles = makeStyles({
+  root: {
+    color: 'var(--vscode-button-foreground)',
+    backgroundColor: 'var(--vscode-button-foreground)',
+    '&:hover': {
+      color: 'var(--vscode-button-foreground)',
+      backgroundColor: '#BE0000',
+    },
+    textTransform: 'none'
+  },
+});
+
+
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function Form () {
+  const classes = useStyles();
   const methods = useForm<IFormInput>();
   const { handleSubmit} = methods;
   const [image, setImage] = React.useState('');
@@ -54,14 +69,23 @@ export function Form () {
           gridRowGap: '20px',
           padding: '20px',
           margin: '190px 300px',
+          border: '1px solid var(--vscode-settings-focusedRowBorder)',
+          background: 'var(--vscode-editor-background)'
           // position: 'absolute'
         }}
       >
-        <Typography variant="h6"> Create Bundle</Typography>
+        <Typography variant="h6" style={{
+          fontSize: '1.25rem',
+          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+          fontWeight: '500',
+          lineHeight: '1.6',
+          letterSpacing: '0.0075em',
+          color: 'var(--vscode-foreground)'
+        }}> Create Bundle</Typography>
 
         <FormInputText label="Image Name" setValue={setImage} />
         <LimitTags setValue={setResource} getValue={resource}/>
-        <Button onClick={handleSubmit(onSubmit)} variant={'contained'} disabled={!image || resource.length === 0}>
+        <Button onClick={handleSubmit(onSubmit)} className={classes.root} variant={'contained'} disabled={!image || resource.length === 0}>
           {' '}
           Submit{' '}
         </Button>
