@@ -105,7 +105,7 @@ export async function createBuild(bundleInfo: BundleType): Promise<void> {
     if (authRegex.test(getStderrString(result.error))) {
       const userName = await showInputBox('Provide username for image registry.', false, 'Provide an username for image registry.');
       if (!userName) return;
-      const userPassword = await showInputBox('Provide password for image registry.', false, 'Provide a password for image registry.');
+      const userPassword = await showInputBox('Provide password for image registry.', true, 'Provide a password for image registry.');
       if (!userPassword) return;
       const result = await cli.execute(Command.bundle(bundleInfo.imageDetail, `${quote}${fsPath}${quote}`, userName, userPassword));
       if (result.error) {
