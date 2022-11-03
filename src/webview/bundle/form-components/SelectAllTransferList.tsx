@@ -30,6 +30,10 @@ export function LimitTags({ setValue, getValue }: FormInputProps) {
     <Autocomplete
       multiple
       limitTags={2}
+      style={{
+        fontFamily: 'var(--vscode-editor-font-family)',
+        width: 500
+      }}
       id="checkboxes-tags-demo"
       options={options3}
       groupBy={(option) => option.tektonType}
@@ -59,7 +63,6 @@ export function LimitTags({ setValue, getValue }: FormInputProps) {
       onChange={(event, newValue) => {
         setValue(newValue);
       }}
-      style={{ width: 500 }}
       renderInput={(params) => (
         <TextField
           required

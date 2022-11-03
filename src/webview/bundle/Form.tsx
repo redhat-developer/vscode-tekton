@@ -8,9 +8,10 @@ import { Button, Paper, Typography } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import { FormInputText } from './form-components/FormInputText';
 import * as React from 'react';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { LimitTags } from './form-components/SelectAllTransferList';
 import { vscode } from './index';
+import bundleStyle from './bundle.style';
 
 interface IFormInput {
   textValue: string;
@@ -21,18 +22,7 @@ interface IFormInput {
   sliderValue: number;
 }
 
-const useStyles = makeStyles({
-  root: {
-    color: 'var(--vscode-button-foreground)',
-    backgroundColor: 'var(--vscode-button-foreground)',
-    '&:hover': {
-      color: 'var(--vscode-button-foreground)',
-      backgroundColor: '#BE0000',
-    },
-    textTransform: 'none'
-  },
-});
-
+const useStyles = makeStyles(bundleStyle);
 
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -85,7 +75,7 @@ export function Form () {
 
         <FormInputText label="Image Name" setValue={setImage} />
         <LimitTags setValue={setResource} getValue={resource}/>
-        <Button onClick={handleSubmit(onSubmit)} className={classes.root} variant={'contained'} disabled={!image || resource.length === 0}>
+        <Button onClick={handleSubmit(onSubmit)} className={classes.button} variant={'contained'} disabled={!image || resource.length === 0}>
           {' '}
           Submit{' '}
         </Button>
