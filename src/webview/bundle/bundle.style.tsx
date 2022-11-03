@@ -16,31 +16,29 @@ export default (theme: Theme) =>
     root: {
       '& .MuiFormLabel-root': {
         color: 'var(--vscode-disabledForeground)',
-      },
-      '& .MuiButton-contained.Mui-disabled': {
-        opacity: '0.4',
-        backgroundColor: 'var(--vscode-button-background)',
       }
     },
     button: {
       whiteSpace: 'nowrap',
       display: 'inline-block',
-      marginTop: theme.spacing(1),
-      marginRight: theme.spacing(1),
       backgroundColor: 'var(--vscode-button-background)',
+      background: 'var(--vscode-button-background)',
       color: 'var(--vscode-button-foreground)',
+      border: '1px solid var(--vscode-activityBar-border)',
       '&:hover' :{
         color: 'var(--vscode-button-foreground)',
         backgroundColor: 'var(--vscode-button-hoverBackground)',
-        cursor: 'pointer'
+        cursor: 'pointer',
       },
       '&:focus': {
         backgroundColor: 'var(--vscode-button-hoverBackground)',
-        cursor: 'pointer'
+        cursor: 'pointer',
       },
       '&:disabled' :{
-        opacity: 0.4
-      }
+        color: 'var(--vscode-disabledForeground)',
+        opacity: '0.6',
+        border: '1px solid',
+        background: 'var(--vscode-button-background)',
+      },
     },
-
   })
