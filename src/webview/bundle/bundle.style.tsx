@@ -41,4 +41,9 @@ export default (theme: Theme) =>
         background: 'var(--vscode-button-background)',
       },
     },
+    inputLabel: {
+      '&.shrink': {
+        color: 'var(--vscode-keybindingLabel-foreground)'
+      }
+    }
   })
