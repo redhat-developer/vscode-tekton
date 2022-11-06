@@ -16,7 +16,7 @@ export default (theme: Theme) =>
     root: {
       '& .MuiFormLabel-root': {
         color: 'var(--vscode-disabledForeground)',
-      }
+      },
     },
     button: {
       whiteSpace: 'nowrap',
@@ -45,5 +45,13 @@ export default (theme: Theme) =>
       '&.shrink': {
         color: 'var(--vscode-keybindingLabel-foreground)'
       }
-    }
+    },
+    autocompleteLabel: {
+      '& .MuiInputLabel-outlined:not(.MuiInputLabel-shrink)': {
+        color: 'var(--vscode-keybindingLabel-foreground)'
+      },
+      '&.Mui-focused .MuiInputLabel-outlined': {
+        color: 'var(--vscode-keybindingLabel-foreground)'
+      }
+    },
   })
