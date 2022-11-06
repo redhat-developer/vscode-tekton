@@ -6,11 +6,53 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import * as React from 'react';
-import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { vscode } from '../index';
 import { FormInputProps } from './FormInputProps';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
+import Autocomplete from '@mui/material/Autocomplete';
+import styled from '@emotion/styled';
+import Popper from '@mui/material/Popper';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { MyChip } from './customChip';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    borderRadius: '2px',
+    '& .MuiInputLabel-outlined.MuiInputLabel-shrink': {
+      color: 'var(--vscode-keybindingLabel-foreground)'
+    },
+    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'var(--vscode-contrastBorder)',
+    },
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'var(--vscode-focusBorder)',
+    },
+    '.css-1gywuxd-MuiInputBase-root-MuiOutlinedInput-root': {
+      borderColor: 'var(--vscode-focusBorder)',
+    },
+  },
+  // '@global': {
+  //   '.css-1qqsdnr-MuiAutocomplete-root.Mui-focused .MuiAutocomplete-clearIndicator': {
+  //     color: 'red'
+  //   },
+  //   '.css-1qqsdnr-MuiAutocomplete-root:hover .MuiAutocomplete-clearIndicator': {
+  //     color: 'red'
+  //   },
+  // },
+}));
+
+const StyledPopper = styled(Popper)(({ theme }) => ({
+  '& .MuiAutocomplete-groupLabel': {
+    backgroundColor: 'var(--vscode-dropdown-background)',
+    color: 'var(--vscode-foreground)',
+  },
+  '& .MuiAutocomplete-paper': {
+    backgroundColor: 'var(--vscode-dropdown-background)',
+    color: 'var(--vscode-foreground)',
+  }
+}));
+
 
 const imageResource = {
   'Task': 'T',
@@ -20,6 +62,7 @@ const imageResource = {
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function LimitTags({ setValue, getValue }: FormInputProps) {
+  const classes = useStyles();
   const options3 = vscode.getState().map((option) => {
     return {
       ...option
@@ -28,6 +71,8 @@ export function LimitTags({ setValue, getValue }: FormInputProps) {
 
   return (
     <Autocomplete
+      PopperComponent={StyledPopper}
+      classes={classes}
       multiple
       limitTags={2}
       style={{
@@ -63,13 +108,20 @@ export function LimitTags({ setValue, getValue }: FormInputProps) {
       onChange={(event, newValue) => {
         setValue(newValue);
       }}
+      renderTags={(tagValue, getTagProps) => {
+        return tagValue.map((option, index) => (
+          <MyChip {...getTagProps({ index })} label={option.name} />
+        ));
+      }}
       renderInput={(params) => (
         <TextField
           required
           {...params}
           variant="outlined"
           label="Tekton Resources"
-          placeholder="Tekton Resources"
+          InputLabelProps={{
+            sx: { color: 'var(--vscode-disabledForeground)' }
+          }}
         />
       )}
     />
