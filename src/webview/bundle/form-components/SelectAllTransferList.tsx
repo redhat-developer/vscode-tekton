@@ -32,14 +32,6 @@ const useStyles = makeStyles((theme) => ({
       borderColor: 'var(--vscode-focusBorder)',
     },
   },
-  // '@global': {
-  //   '.css-1qqsdnr-MuiAutocomplete-root.Mui-focused .MuiAutocomplete-clearIndicator': {
-  //     color: 'red'
-  //   },
-  //   '.css-1qqsdnr-MuiAutocomplete-root:hover .MuiAutocomplete-clearIndicator': {
-  //     color: 'red'
-  //   },
-  // },
 }));
 
 const StyledPopper = styled(Popper)(({ theme }) => ({
