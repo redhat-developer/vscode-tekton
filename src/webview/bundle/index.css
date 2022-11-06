@@ -15,4 +15,7 @@ code {
 .MuiSvgIcon-root {
   color: var(--vscode-keybindingLabel-foreground);
 }
-  
+
+.css-1qqsdnr-MuiAutocomplete-root .MuiAutocomplete-tag {
+  color: var(--vscode-keybindingLabel-foreground);
+}
