@@ -41,7 +41,7 @@ export class BundleWizard extends Disposable {
         ...getWebviewOptions()
       }
     );
-    return new BundleWizard(webview, input);
+    BundleWizard.currentPanel = new BundleWizard(webview, input);
   }
 
   private editor: vscode.WebviewPanel;
@@ -73,6 +73,7 @@ export class BundleWizard extends Disposable {
   }
 
   dispose(): void {
+    BundleWizard.currentPanel = undefined;
     if (this.disposed) {
       return;
     }
