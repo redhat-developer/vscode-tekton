@@ -64,6 +64,7 @@ export function LimitTags({ setValue, getValue }: FormInputProps) {
   return (
     <Autocomplete
       PopperComponent={StyledPopper}
+      filterSelectedOptions={ true }
       classes={classes}
       multiple
       limitTags={2}
@@ -76,14 +77,13 @@ export function LimitTags({ setValue, getValue }: FormInputProps) {
       groupBy={(option) => option.tektonType}
       getOptionLabel={(option: { tektonType: string; name: string; }) => option.name}
       getOptionDisabled={(options) => {
-        console.log(getValue.length);
         if (getValue.length === 10) {
           return true;
         }
         return false;
       }}
       isOptionEqualToValue={(event, newValue) => {
-        return event.name === newValue.name;
+        return (event.name === newValue.name && event.tektonType === newValue.tektonType);
       }}
       renderOption={(props, option) => (
         <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>

@@ -12,4 +12,7 @@ export interface FormInputProps {
     label?: string;
     setValue?: any;
     getValue?: any;
+    placeHolder?: string;
+    requiredField?: boolean;
+    fieldType?: string;
 }

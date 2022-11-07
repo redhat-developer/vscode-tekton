@@ -52,7 +52,7 @@ export const theme = createTheme({
 });
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function FormInputText({label, setValue }: FormInputProps) {
+export function FormInputText({label, setValue, placeHolder, requiredField, fieldType }: FormInputProps) {
   const classes = useStyles();
   return (
     <MuiThemeProvider theme={theme}>
@@ -65,8 +65,9 @@ export function FormInputText({label, setValue }: FormInputProps) {
           }
         }}
         fullWidth
-        required
-        placeholder='Use the schema registry/repository/image:version'
+        required={requiredField}
+        type={fieldType}
+        placeholder={placeHolder}
         onChange={(text) => {
           return setValue(text.target.value.trim());
         }}
