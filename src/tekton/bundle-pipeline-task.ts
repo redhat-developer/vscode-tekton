@@ -4,10 +4,10 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import { ViewColumn, window } from 'vscode';
-import { cli, CliExitData } from '../cli';
+import { CliExitData } from '../cli';
 import { Command } from '../cli-command';
 import { checkEnableApiFields, FeatureFlag } from '../debugger/debug';
-import { BuildWizard, TektonType } from '../pipeline/bundle';
+import { BundleWizard, TektonType } from '../pipeline/bundle';
 import { K8sTask, TknPipeline, TknPipelineTrigger } from '../tekton';
 import { tkn } from '../tkn';
 import * as os from 'os';
@@ -51,7 +51,7 @@ export async function bundleWizard(): Promise<void> {
       storePipelineTaskClusterTask.push({tektonType: value.kind, name: value.metadata.name});
     });
   }
-  BuildWizard.create({storePipelineTaskClusterTask, resourceColumn: ViewColumn.Active}, ViewColumn.Active);
+  BundleWizard.create({storePipelineTaskClusterTask, resourceColumn: ViewColumn.One}, ViewColumn.One);
 }
 
 
@@ -94,20 +94,20 @@ export async function createBuild(bundleInfo: BundleType): Promise<void> {
   }
   const quote = Platform.OS === 'win32' ? '"' : '\'';
   const fsPath = path.join(tempPath, `${getRandomChars()}.yaml`);
-  bundleInfo.resourceDetail.map(async (value) => {
-    template.kind = value.tektonType;
-    template.metadata.name = value.name;
+  for (const resource of bundleInfo.resourceDetail) {
+    template.kind = resource.tektonType;
+    template.metadata.name = resource.name;
     const taskOrPipelineOrClusterTaskYaml = yaml.dump(template);
     await fs.appendFile(fsPath, `${taskOrPipelineOrClusterTaskYaml}\n---\n`, {encoding: 'utf8'});
-  })
-  const result = await cli.execute(Command.bundle(bundleInfo.imageDetail, `${quote}${fsPath}${quote}`));
+  }
+  const result = await tkn.execute(Command.bundle(bundleInfo.imageDetail, `${quote}${fsPath}${quote}`), process.cwd(), false);
   if (result.error) {
     if (authRegex.test(getStderrString(result.error))) {
       const userName = await showInputBox('Provide username for image registry.', false, 'Provide an username for image registry.');
       if (!userName) return;
       const userPassword = await showInputBox('Provide password for image registry.', true, 'Provide a password for image registry.');
       if (!userPassword) return;
-      const result = await cli.execute(Command.bundle(bundleInfo.imageDetail, `${quote}${fsPath}${quote}`, userName, userPassword));
+      const result = await tkn.execute(Command.bundle(bundleInfo.imageDetail, `${quote}${fsPath}${quote}`, userName, userPassword), process.cwd(), false);
       if (result.error) {
         window.showErrorMessage(`Failed to push bundle error: ${getStderrString(result.error)}`);
         return;

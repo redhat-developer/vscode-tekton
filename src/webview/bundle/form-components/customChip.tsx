@@ -8,6 +8,7 @@ import Chip from '@material-ui/core/Chip';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = makeStyles((theme) => ({
   label: {
     color: 'black',

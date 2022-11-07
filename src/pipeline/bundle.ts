@@ -15,15 +15,25 @@ export interface TektonType {
   readonly storePipelineTaskClusterTask?: {tektonType: string, name: string}[];
 }
 
-export class BuildWizard extends Disposable {
+export class BundleWizard extends Disposable {
   static viewType = 'tekton.bundle';
   static title: string;
+  public static currentPanel: BundleWizard | undefined;
 
-  public static create(input: TektonType, previewColumn: vscode.ViewColumn): BuildWizard {
+
+  public static create(input: TektonType, previewColumn: vscode.ViewColumn): BundleWizard {
+    const column = vscode.window.activeTextEditor
+      ? vscode.window.activeTextEditor.viewColumn
+      : undefined;
+
+    if (BundleWizard.currentPanel) {
+      BundleWizard.currentPanel.editor.reveal(column);
+      return;
+    }
     const buildTitle = 'Create Build';
-    BuildWizard.title = buildTitle;
+    BundleWizard.title = buildTitle;
     const webview = vscode.window.createWebviewPanel(
-      BuildWizard.viewType,
+      BundleWizard.viewType,
       buildTitle,
       previewColumn,
       {
@@ -31,7 +41,7 @@ export class BuildWizard extends Disposable {
         ...getWebviewOptions()
       }
     );
-    return new BuildWizard(webview, input);
+    return new BundleWizard(webview, input);
   }
 
   private editor: vscode.WebviewPanel;
@@ -109,7 +119,7 @@ export class BuildWizard extends Disposable {
   }
 
   private setContent(html: string): void {
-    this.editor.title = BuildWizard.title;
+    this.editor.title = BundleWizard.title;
     // this.editor.iconPath = this.iconPath; //TODO: implement
     this.editor.webview.options = getWebviewOptions();
     this.editor.webview.html = html;

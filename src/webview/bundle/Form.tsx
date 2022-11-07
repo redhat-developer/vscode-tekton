@@ -72,8 +72,9 @@ export function Form () {
           letterSpacing: '0.0075em',
           color: 'var(--vscode-foreground)'
         }}> Create Bundle</Typography>
-
-        <FormInputText label="Image Name" setValue={setImage} />
+        <FormInputText label="Image Name" setValue={setImage} placeHolder={'Use the schema registry/repository/image:version'} requiredField={true} fieldType={'text'}/>
+        <FormInputText label="Username" setValue={setImage} placeHolder={'Provide username(optional)'} requiredField={false} fieldType={'text'}/>
+        <FormInputText label="Password" setValue={setImage} placeHolder={'Provide password(optional)'} requiredField={false} fieldType={'password'}/>
         <LimitTags setValue={setResource} getValue={resource}/>
         <Button onClick={handleSubmit(onSubmit)} className={classes.button} variant={'contained'} disabled={!image || resource.length === 0}>
           {' '}
