@@ -64,8 +64,8 @@ export class BundleWizard extends Disposable {
         case 'tekton_bundle':
           // eslint-disable-next-line no-case-declarations
           const bundleInfo = e.body;
-          this.dispose();
-          await createBuild(bundleInfo);
+          // this.dispose();
+          await createBuild(bundleInfo, this);
       }
     }));
 
