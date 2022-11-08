@@ -54,7 +54,7 @@ export function Form () {
   const onSubmit = () => {
     vscode.postMessage({
       type: 'tekton_bundle',
-      body: {imageDetail: image, resourceDetail: resource}
+      body: {imageDetail: image, resourceDetail: resource, userDetail: username, passwordDetail: password}
     });
   }
 
