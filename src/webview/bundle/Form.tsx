@@ -24,6 +24,21 @@ interface IFormInput {
 
 const useStyles = makeStyles(bundleStyle);
 
+export const inputLabel: {image: string, userName: string, password: string } = {
+  image: 'Image Name',
+  userName: 'Username',
+  password: 'Password'
+}
+
+const imageRegex = RegExp('[^/]+\\.[^/.]+\\/([^/.]+)(?:\\/[\\w\\s._-]*([\\w\\s._-]))*(?::[a-z0-9\\.-]+)?$');
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function validateButton(image: string, username: string, password: string, resource: any[]): boolean {
+  if (imageRegex.test(image.trim()) && resource.length !== 0 && username?.trim() === '' && password?.trim() === '') return false;
+  if (imageRegex.test(image.trim()) && resource.length !== 0 && username?.trim() && password?.trim()) return false;
+  return true;
+}
+
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function Form () {
@@ -31,6 +46,8 @@ export function Form () {
   const methods = useForm<IFormInput>();
   const { handleSubmit} = methods;
   const [image, setImage] = React.useState('');
+  const [username, setUserName] = React.useState('');
+  const [password, setPassword] = React.useState('');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [resource, setResource]: any[] = React.useState([]);
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -72,11 +89,11 @@ export function Form () {
           letterSpacing: '0.0075em',
           color: 'var(--vscode-foreground)'
         }}> Create Bundle</Typography>
-        <FormInputText label="Image Name" setValue={setImage} placeHolder={'Use the schema registry/repository/image:version'} requiredField={true} fieldType={'text'}/>
-        <FormInputText label="Username" setValue={setImage} placeHolder={'Provide username(optional)'} requiredField={false} fieldType={'text'}/>
-        <FormInputText label="Password" setValue={setImage} placeHolder={'Provide password(optional)'} requiredField={false} fieldType={'password'}/>
+        <FormInputText label={inputLabel.image} setValue={setImage} placeHolder={'Use the schema registry/repository/image:version'} requiredField={true} fieldType={'text'}/>
+        <FormInputText label={inputLabel.userName} setValue={setUserName} placeHolder={'Provide username (optional if credentials are stored)'} requiredField={false} fieldType={'text'}/>
+        <FormInputText label={inputLabel.password} setValue={setPassword} placeHolder={'Provide password (optional if credentials are stored)'} requiredField={false} fieldType={'password'}/>
         <LimitTags setValue={setResource} getValue={resource}/>
-        <Button onClick={handleSubmit(onSubmit)} className={classes.button} variant={'contained'} disabled={!image || resource.length === 0}>
+        <Button onClick={handleSubmit(onSubmit)} className={classes.button} variant={'contained'} disabled={validateButton(image, username, password, resource)}>
           {' '}
           Submit{' '}
         </Button>

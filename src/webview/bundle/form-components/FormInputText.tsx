@@ -8,6 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import { FormInputProps } from './FormInputProps';
 import { createTheme, makeStyles, MuiThemeProvider } from '@material-ui/core/styles';
 import bundleStyle from '../bundle.style';
+import { inputLabel } from '../Form';
 
 const useStyles = makeStyles(bundleStyle);
 
@@ -69,7 +70,15 @@ export function FormInputText({label, setValue, placeHolder, requiredField, fiel
         type={fieldType}
         placeholder={placeHolder}
         onChange={(text) => {
-          return setValue(text.target.value.trim());
+          if (label === inputLabel.image) {
+            return setValue(text.target.value.trim());
+          }
+          if (label === inputLabel.password) {
+            return setValue(text.target.value.trim());
+          }
+          if (label === inputLabel.userName) {
+            return setValue(text.target.value.trim());
+          }
         }}
         label={label}
         variant="outlined"
