@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as React from 'react';
-import { createRoot } from 'react-dom/client';
+import * as ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 
@@ -13,26 +13,27 @@ export const vscode = acquireVsCodeApi();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const rootElement: any = document.getElementById('root');
-const root = createRoot(rootElement);
 
 window.addEventListener('message', event => {
   switch (event.data.type) {
     case 'tekton_bundle':
       vscode.setState(event.data.data);
-      root.render(
+      ReactDOM.render(
         <React.StrictMode>
           <App />
-        </React.StrictMode>
+        </React.StrictMode>,
+        rootElement
       );
   }
 });
 
 const previousState = vscode.getState();
 if (previousState) {
-  root.render(
+  ReactDOM.render(
     <React.StrictMode>
       <App />
-    </React.StrictMode>
+    </React.StrictMode>,
+    rootElement
   );
 }
 

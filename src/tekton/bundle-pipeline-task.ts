@@ -19,7 +19,9 @@ import { getStderrString } from '../util/stderrstring';
 
 interface BundleType {
   imageDetail: string;
-  resourceDetail: {tektonType: string, name: string}[]
+  resourceDetail: {tektonType: string, name: string}[];
+  userDetail: string;
+  passwordDetail: string;
 }
 
 export async function bundleWizard(): Promise<void> {
@@ -62,23 +64,6 @@ export const getRandomChars = (len = 7): string => {
     .substr(1, len);
 }
 
-const authRegex = /UNAUTHORIZED: authentication required/gm;
-
-async function showInputBox(promptMessage: string, passwordType?: boolean, inputValidMessage?: string): Promise<string> {
-  // eslint-disable-next-line no-return-await
-  return await window.showInputBox({
-    ignoreFocusOut: true,
-    prompt: promptMessage,
-    password: passwordType,
-    validateInput: (value: string) => {
-      if (!value?.trim()) {
-        return inputValidMessage;
-      }
-      return null;
-    },
-  });
-}
-
 
 export async function createBuild(bundleInfo: BundleType): Promise<void> {
   const template: TknPipelineTrigger = {
@@ -100,21 +85,8 @@ export async function createBuild(bundleInfo: BundleType): Promise<void> {
     const taskOrPipelineOrClusterTaskYaml = yaml.dump(template);
     await fs.appendFile(fsPath, `${taskOrPipelineOrClusterTaskYaml}\n---\n`, {encoding: 'utf8'});
   }
-  const result = await tkn.execute(Command.bundle(bundleInfo.imageDetail, `${quote}${fsPath}${quote}`), process.cwd(), false);
+  const result = await tkn.execute(Command.bundle(bundleInfo.imageDetail, `${quote}${fsPath}${quote}`, bundleInfo.userDetail, bundleInfo.passwordDetail), process.cwd(), false);
   if (result.error) {
-    if (authRegex.test(getStderrString(result.error))) {
-      const userName = await showInputBox('Provide username for image registry.', false, 'Provide an username for image registry.');
-      if (!userName) return;
-      const userPassword = await showInputBox('Provide password for image registry.', true, 'Provide a password for image registry.');
-      if (!userPassword) return;
-      const result = await tkn.execute(Command.bundle(bundleInfo.imageDetail, `${quote}${fsPath}${quote}`, userName, userPassword), process.cwd(), false);
-      if (result.error) {
-        window.showErrorMessage(`Failed to push bundle error: ${getStderrString(result.error)}`);
-        return;
-      }
-      window.showInformationMessage('Bundle successfully push.');
-      return;
-    }
     window.showErrorMessage(`Failed to push bundle error: ${getStderrString(result.error)}`);
     return;
   }

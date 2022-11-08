@@ -1066,6 +1066,7 @@
     "ui-test": "extest setup-and-run ./out/ui-test/all.js"
   },
   "devDependencies": {
+    "@babel/core": "7.19.6",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@openapitools/openapi-generator-cli": "^2.3.5",
@@ -1157,8 +1158,8 @@
     "node-cache": "^5.1.2",
     "node-yaml-parser": "0.0.9",
     "pluralize": "^4.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-hook-form": "^7.37.0",
     "request": "^2.88.0",
     "request-progress": "^3.0.0",
