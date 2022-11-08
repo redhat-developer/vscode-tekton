@@ -93,7 +93,16 @@ export function Form () {
         <FormInputText label={inputLabel.userName} setValue={setUserName} placeHolder={'Provide username (optional if credentials are stored)'} requiredField={false} fieldType={'text'}/>
         <FormInputText label={inputLabel.password} setValue={setPassword} placeHolder={'Provide password (optional if credentials are stored)'} requiredField={false} fieldType={'password'}/>
         <LimitTags setValue={setResource} getValue={resource}/>
-        <Button onClick={handleSubmit(onSubmit)} className={classes.button} variant={'contained'} disabled={validateButton(image, username, password, resource)}>
+        <Button
+          onClick={handleSubmit(onSubmit)}
+          className={classes.button}
+          variant={'contained'}
+          disabled={validateButton(image, username, password, resource)}
+          style={{
+            width: 200,
+            left: '158px'
+          }}
+        >
           {' '}
           Submit{' '}
         </Button>

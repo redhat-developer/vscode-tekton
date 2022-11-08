@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { ViewColumn, window } from 'vscode';
+import { ProgressLocation, ViewColumn, window } from 'vscode';
 import { CliExitData } from '../cli';
 import { Command } from '../cli-command';
 import { checkEnableApiFields, FeatureFlag } from '../debugger/debug';
@@ -65,7 +65,8 @@ export const getRandomChars = (len = 7): string => {
 }
 
 
-export async function createBuild(bundleInfo: BundleType): Promise<void> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+export async function createBuild(bundleInfo: BundleType, buildWizard: any): Promise<void> {
   const template: TknPipelineTrigger = {
     apiVersion: 'tekton.dev/v1beta1',
     kind: '',
@@ -85,11 +86,14 @@ export async function createBuild(bundleInfo: BundleType): Promise<void> {
     const taskOrPipelineOrClusterTaskYaml = yaml.dump(template);
     await fs.appendFile(fsPath, `${taskOrPipelineOrClusterTaskYaml}\n---\n`, {encoding: 'utf8'});
   }
-  const result = await tkn.execute(Command.bundle(bundleInfo.imageDetail, `${quote}${fsPath}${quote}`, bundleInfo.userDetail, bundleInfo.passwordDetail), process.cwd(), false);
-  if (result.error) {
-    window.showErrorMessage(`Failed to push bundle error: ${getStderrString(result.error)}`);
+  return await window.withProgress({title: 'Bundling image.....', location: ProgressLocation.Notification}, async () => {
+    const result = await tkn.execute(Command.bundle(bundleInfo.imageDetail, `${quote}${fsPath}${quote}`, bundleInfo.userDetail, bundleInfo.passwordDetail), process.cwd(), false);
+    if (result.error) {
+      window.showErrorMessage(`Failed to push bundle error: ${getStderrString(result.error)}`);
+      return;
+    }
+    buildWizard.dispose();
+    window.showInformationMessage('Bundle successfully push.');
     return;
-  }
-  window.showInformationMessage('Bundle successfully push.');
-  return;
+  });
 }
