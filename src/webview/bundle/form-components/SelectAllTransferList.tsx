@@ -64,6 +64,7 @@ export function LimitTags({ setValue, getValue }: FormInputProps) {
   return (
     <Autocomplete
       PopperComponent={StyledPopper}
+      disableCloseOnSelect
       filterSelectedOptions={ true }
       classes={classes}
       multiple
