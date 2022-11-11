@@ -66,7 +66,7 @@ export const getRandomChars = (len = 7): string => {
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-export async function createBuild(bundleInfo: BundleType, buildWizard: any): Promise<void> {
+export async function createBundle(bundleInfo: BundleType, bundleWizard: any): Promise<void> {
   const template: TknPipelineTrigger = {
     apiVersion: 'tekton.dev/v1beta1',
     kind: '',
@@ -92,7 +92,7 @@ export async function createBuild(bundleInfo: BundleType, buildWizard: any): Pro
       window.showErrorMessage(`Failed to push bundle error: ${getStderrString(result.error)}`);
       return;
     }
-    buildWizard.dispose();
+    bundleWizard.dispose();
     window.showInformationMessage('Bundle successfully push.');
     return;
   });

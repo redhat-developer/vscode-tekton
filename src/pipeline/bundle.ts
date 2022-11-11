@@ -8,7 +8,7 @@ import { contextGlobalState } from '../extension';
 import * as path from 'path';
 import { Disposable } from '../util/disposable';
 import { debounce } from 'debounce';
-import { createBuild } from '../tekton/bundle-pipeline-task';
+import { createBundle } from '../tekton/bundle-pipeline-task';
 
 export interface TektonType {
   readonly resourceColumn?: vscode.ViewColumn;
@@ -30,11 +30,11 @@ export class BundleWizard extends Disposable {
       BundleWizard.currentPanel.editor.reveal(column);
       return;
     }
-    const buildTitle = 'Create Build';
-    BundleWizard.title = buildTitle;
+    const bundleTitle = 'Create Bundle';
+    BundleWizard.title = bundleTitle;
     const webview = vscode.window.createWebviewPanel(
       BundleWizard.viewType,
-      buildTitle,
+      bundleTitle,
       previewColumn,
       {
         enableFindWidget: true,
@@ -65,7 +65,7 @@ export class BundleWizard extends Disposable {
           // eslint-disable-next-line no-case-declarations
           const bundleInfo = e.body;
           // this.dispose();
-          await createBuild(bundleInfo, this);
+          await createBundle(bundleInfo, this);
       }
     }));
 
