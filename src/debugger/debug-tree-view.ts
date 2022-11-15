@@ -71,7 +71,7 @@ export async function watchTaskRunContainer(resourceName: string, resourceType: 
               deleteDebugger(debugTaskName);
             }
 
-            if (!checkDebugStatus.stdout.trim() && debugSessions.get(debugTaskName)?.count) {
+            if (!checkDebugStatus.stdout.trim() && debugSessions.get(debugTaskName)?.count && debugSessions.get(debugTaskName)?.containerName === containerData.container) {
               deleteDebugger(debugTaskName);
             }
           }

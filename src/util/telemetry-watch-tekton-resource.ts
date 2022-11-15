@@ -15,7 +15,7 @@ export async function watchTektonResources(extensionStartUpCheck?: boolean): Pro
     pipelineTriggerStatus.set('trigger', false);
   }
   if (!pipelineTriggerStatus.get('pipeline')) {
-    const resourceList = ['pipeline', 'pipelinerun', 'taskrun', 'task', 'clustertask', 'pipelineresources', 'condition'];
+    const resourceList = ['pipeline', 'pipelinerun', 'taskrun', 'task', 'clustertask', 'pipelineresources'];
     if (extensionStartUpCheck) telemetryLog('startUp_watch_tekton_Pipeline_resource', 'startUp Pipeline watch');
     watchResources.watchCommand(resourceList, resourceUidAtStart);
     pipelineTriggerStatus.set('pipeline', true);
