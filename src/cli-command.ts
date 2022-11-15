@@ -277,6 +277,7 @@ export class Command {
   }
 
   static isContainerStoppedOnDebug(container: string, podName: string, namespace: string): CliCommand {
+    // eslint-disable-next-line quotes
     return newK8sCommand('exec', '-it', '-n', namespace, '-c', container, podName, '--', "awk \"END{print NR}\" /tekton/termination");
   }
 
