@@ -47,7 +47,7 @@ export async function registerYamlSchemaSupport(context: vscode.ExtensionContext
     return;
   }
 
-  schemaPaths = (await fs.readFile(context.asAbsolutePath('scheme/index.properties'))).toString().split('\n');
+  schemaPaths = (await fs.readFile(context.asAbsolutePath('scheme/index.properties'))).toString().split('\r\n');
 
   yamlPlugin.registerContributor('tekton', requestYamlSchemaUriCallback, requestYamlSchemaContentCallback, 'apiVersion:tekton.dev/v1beta1');
   yamlPlugin.registerContributor('triggers-tekton', requestYamlSchemaUriCallback, requestYamlSchemaContentCallback, 'apiVersion:triggers.tekton.dev/v1alpha1');
