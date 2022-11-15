@@ -95,7 +95,7 @@ export class WatchResources {
           treeRefresh.set('treeRefresh', false);
           pipelineExplorer.refresh();
         }
-      } else if (run.kind === 'TaskRun' && run.spec?.['debug'] && semver.satisfies(supportedDebugPipelineVersion, `<=${getNewELSupport.pipeline}`) && run.status?.conditions[0]?.status === 'Unknown') {
+      } else if (run.kind === 'TaskRun' && run.spec?.['debug'] && semver.satisfies(supportedDebugPipelineVersion, `<=${getNewELSupport?.pipeline}`) && run.status?.conditions[0]?.status === 'Unknown') {
         const featureFlagData: FeatureFlag = await checkEnableApiFields();
         if (!featureFlagData) return null;
         if (featureFlagData.data['enable-api-fields'] === 'alpha') {
