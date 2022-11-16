@@ -170,7 +170,7 @@ export class Command {
   }
 
   static showDiagnosticData(name: string): CliCommand {
-    return newK8sCommand('get', 'pods', name, '-o', 'jsonpath=\'{range .status.conditions[?(.reason)]}{"reason: "}{.reason}{"\\n"}{"message: "}{.message}{"\\n"}{end}\'');
+    return newK8sCommand('get', 'pods', name, '-o', 'jsonpath="{range .status.conditions[?(.reason)]}{\'reason: \'}{.reason}{\'\\n\'}{\'message: \'}{.message}{\'\\n\'}{end}"');
   }
 
   static getPipelineRunAndTaskRunData(resource: string, name: string): CliCommand {

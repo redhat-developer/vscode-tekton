@@ -555,18 +555,18 @@
           {
             "id": "Create Resources",
             "title": "Create new resource",
-            "description": "The plugin provide a smart yaml-code completion support which make it easy to create any Tekton resource by using the IDE editor. To create new resource open new file in editor and save file <name>.yaml and once you have done editing it on save you can deploy the resource.",
+            "description": "The plugin allows creating a new Tekton resource directly from the YAML in the editor and deploying it using the Kubernetes: Create command available from the Kubernetes extension.",
             "media": {
-              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/createPipeline.gif",
+              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/create-resource.gif",
               "altText": "create Resources"
             }
           },
           {
             "id": "Start a pipeline/task",
             "title": "Start a pipeline/task",
-            "description": "After having created/edited your pipeline/task and successfully deployed it on cluster, you can run it by executing the `Start Pipeline/Task` action.\n A wizard will pop up leading you through the process of setting all inputs necessary to get it started (params, workspaces, service account, ..).\n Note: By default if the pipeline/task has no inputs, it will get started directly without the wizard popping up.\n If you already run a pipeline/task earlier and wants to run it again with the same inputs you did last time, you can achieve it by executing the `Start Last Run` action from the Pipelines/Tasks context menu nodes.\n Opposite, if you want to start a pipeline/task with the same inputs of a specific old run (not the latest), you can do it by selecting the old pipelinerun/taskrun node and execute the `Restart` action. This will open up the wizard pre-filled with the inputs used to start that pipeline/task in the past",
+            "description": "After having created/edited your pipeline/task and successfully deployed it on cluster, you can run it by executing the `Start Pipeline/Task` action.\n A wizard will pop up leading you through the process of setting all inputs necessary to get it started (params, workspaces, service account, ..).\n Note: By default if the pipeline/task has no inputs, it will get started directly without the wizard popping up.\n If you already run a pipeline earlier and wants to run it again with the same inputs you did last time, you can achieve it by executing the `Start Last Run` action from the Pipelines context menu nodes.\n If you want to run old pipelinerun with the same inputs, you can do it by selecting the old pipelinerun node and execute the `Restart` action from the pipelinerun context menu node. This will open up the wizard pre-filled with the inputs used to start that pipeline in past.\n If you want to `Restart` taskrun you can do it by selecting the old taskrun node and execute the `Restart` action from the taskrun context menu node. This will directly restart the taskrun without opening the wizard.",
             "media": {
-              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/startRestartPipeline.gif",
+              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/start-pipeline.gif",
               "altText": "Start pipeline/task"
             }
           },
@@ -575,7 +575,7 @@
             "title": "Logs and diagnostic data",
             "description": "Logs are displayed automatically after a pipeline or a task starts and/or can be retrieved by using the `Show Logs` and `Follow Logs` actions.\n In case logs are not enough to identify the issue or they are not printed out at all (e.g. a pvc with a size larger than the one supported by the cluster is needed and the pipelinerun/taskrun fails at starting) you can fetch additional data from the resources created by the operator (pods, pvc, ..).\n To do this, just execute the `Show Diagnostic Data` action available when right clicking a pipelinerun or taskrun node.",
             "media": {
-              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/logDiagnostic.gif",
+              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/log-diagnostic.gif",
               "altText": "Logs and diagnostic data"
             }
           },
