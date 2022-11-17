@@ -550,20 +550,20 @@
       {
         "id": "TektonWalkthrough",
         "title": "Getting Started with Tekton Pipeline",
-        "description": "Start creating, running, and managing your Tekton pipelines on OpenShift and Kubernetes",
+        "description": "Start creating, running, and managing your Tekton Pipelines on OpenShift and Kubernetes",
         "steps": [
           {
             "id": "Create Resources",
             "title": "Create new resource",
-            "description": "The plugin allows creating a new Tekton resource directly from the YAML in the editor and deploying it using the Kubernetes: Create command available from the Kubernetes extension.",
+            "description": "Create a new Tekton resource directly from the YAML in the editor and deploy it using the `Kubernetes: Create` command.",
             "media": {
               "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/create-resource.gif",
               "altText": "create Resources"
             }
           },
           {
-            "id": "Start a pipeline/task",
-            "title": "Start a pipeline/task",
+            "id": "Start a Pipeline/Task",
+            "title": "Start a Pipeline/Task",
             "description": "After having created/edited your pipeline/task and successfully deployed it on cluster, you can run it by executing the `Start Pipeline/Task` action.\n A wizard will pop up leading you through the process of setting all inputs necessary to get it started (params, workspaces, service account, ..).\n Note: By default if the pipeline/task has no inputs, it will get started directly without the wizard popping up.\n If you already run a pipeline earlier and wants to run it again with the same inputs you did last time, you can achieve it by executing the `Start Last Run` action from the Pipelines context menu nodes.\n If you want to run old pipelinerun with the same inputs, you can do it by selecting the old pipelinerun node and execute the `Restart` action from the pipelinerun context menu node. This will open up the wizard pre-filled with the inputs used to start that pipeline in past.\n If you want to `Restart` taskrun you can do it by selecting the old taskrun node and execute the `Restart` action from the taskrun context menu node. This will directly restart the taskrun without opening the wizard.",
             "media": {
               "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/start-pipeline.gif",
