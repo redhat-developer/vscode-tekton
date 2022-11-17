@@ -75,7 +75,7 @@ export function Form () {
           display: 'grid',
           gridRowGap: '20px',
           padding: '20px',
-          margin: '190px 300px',
+          margin: '76px 300px',
           border: '1px solid var(--vscode-settings-focusedRowBorder)',
           background: 'var(--vscode-editor-background)'
           // position: 'absolute'
