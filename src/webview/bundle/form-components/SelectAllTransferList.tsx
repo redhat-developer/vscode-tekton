@@ -6,7 +6,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import * as React from 'react';
-import TextField from '@mui/material/TextField';
 import { vscode } from '../index';
 import { FormInputProps } from './FormInputProps';
 import Box from '@mui/material/Box';
@@ -15,21 +14,27 @@ import styled from '@emotion/styled';
 import Popper from '@mui/material/Popper';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { MyChip } from './customChip';
+import { InputLabel, TextField } from '@mui/material';
+import '../index.css';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     borderRadius: '2px',
-    '& .MuiInputLabel-outlined.MuiInputLabel-shrink': {
-      color: 'var(--vscode-keybindingLabel-foreground)'
+    '& .MuiOutlinedInput-root': {
+      '& > fieldset': { borderColor: 'var(--vscode-contrastBorder)' },
     },
-    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'var(--vscode-contrastBorder)',
-    },
-    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'var(--vscode-focusBorder)',
-    },
+    '& .MuiOutlinedInput-root:hover': {
+      '& > fieldset': {
+        borderColor: 'var(--vscode-contrastBorder)'
+      }
+    }, 
+    '& .MuiOutlinedInput-root.Mui-focused': {
+      '& > fieldset': {
+        borderColor: 'var(--vscode-contrastBorder)'
+      }
+    }, 
     '.css-1gywuxd-MuiInputBase-root-MuiOutlinedInput-root': {
-      borderColor: 'var(--vscode-focusBorder)',
+      borderColor: 'var(--vscode-contrastBorder)',
     },
   },
 }));
@@ -42,6 +47,9 @@ const StyledPopper = styled(Popper)(({ theme }) => ({
   '& .MuiAutocomplete-paper': {
     backgroundColor: 'var(--vscode-dropdown-background)',
     color: 'var(--vscode-foreground)',
+    transform: 'translate(-1px, 1px)',
+    width: '500px',
+    position: 'absolute',
   }
 }));
 
@@ -62,61 +70,75 @@ export function LimitTags({ setValue, getValue }: FormInputProps) {
   });
 
   return (
-    <Autocomplete
-      PopperComponent={StyledPopper}
-      disableCloseOnSelect
-      filterSelectedOptions={ true }
-      classes={classes}
-      multiple
-      limitTags={2}
-      style={{
-        fontFamily: 'var(--vscode-editor-font-family)',
-        width: 500
-      }}
-      id="checkboxes-tags-demo"
-      options={options3}
-      groupBy={(option) => option.tektonType}
-      getOptionLabel={(option: { tektonType: string; name: string; }) => option.name}
-      getOptionDisabled={(options) => {
-        if (getValue.length === 10) {
-          return true;
-        }
-        return false;
-      }}
-      isOptionEqualToValue={(event, newValue) => {
-        return (event.name === newValue.name && event.tektonType === newValue.tektonType);
-      }}
-      renderOption={(props, option) => (
-        <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-          <img
-            loading="lazy"
-            width="30"
-            src={`https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/${imageResource[option.tektonType]}.png`}
-            srcSet={`https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/${imageResource[option.tektonType]}.png`}
-            alt=""
-          />
-          {option.name}
-        </Box>
-      )}
-      onChange={(event, newValue) => {
-        setValue(newValue);
-      }}
-      renderTags={(tagValue, getTagProps) => {
-        return tagValue.map((option, index) => (
-          <MyChip {...getTagProps({ index })} label={option.name} />
-        ));
-      }}
-      renderInput={(params) => (
-        <TextField
-          required
-          {...params}
-          variant="outlined"
-          label="Tekton Resources"
-          InputLabelProps={{
-            sx: { color: 'var(--vscode-disabledForeground)' }
+    <div>
+      <InputLabel htmlFor='bootstrap-input'
+        style={{
+          color: 'var(--vscode-settings-textInputForeground)'
+        }}>
+        Tekton Resources
+      </InputLabel>
+      <div style={{ paddingTop: '10px' }}>
+        <Autocomplete
+          PopperComponent={StyledPopper}
+          disableCloseOnSelect
+          filterSelectedOptions={ true }
+          classes={classes}
+          multiple
+          limitTags={2}
+          style={{
+            fontFamily: 'var(--vscode-editor-font-family)',
+            color: 'var(--vscode-settings-textInputForeground)',
+            backgroundColor: 'var(--vscode-settings-textInputBackground)',
+            width: 500,
+            borderRadius: '4px'
           }}
+          id="checkboxes-tags-demo"
+          options={options3}
+          groupBy={(option) => option.tektonType}
+          getOptionLabel={(option: { tektonType: string; name: string; }) => option.name}
+          getOptionDisabled={(options) => {
+            if (getValue.length === 10) {
+              return true;
+            }
+            return false;
+          }}
+          isOptionEqualToValue={(event, newValue) => {
+            return (event.name === newValue.name && event.tektonType === newValue.tektonType);
+          }}
+          renderOption={(props, option) => (
+            <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+              <img
+                loading="lazy"
+                width="30"
+                src={`https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/${imageResource[option.tektonType]}.png`}
+                srcSet={`https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/${imageResource[option.tektonType]}.png`}
+                alt=""
+              />
+              {option.name}
+            </Box>
+          )}
+          onChange={(event, newValue) => {
+            setValue(newValue);
+          }}
+          renderTags={(tagValue, getTagProps) => {
+            return tagValue.map((option, index) => (
+              <MyChip {...getTagProps({ index })} label={option.name} />
+            ));
+          }}
+          size="small"
+          renderInput={(params) => (
+            <TextField
+              required
+              {...params}
+              variant="outlined"
+              style={{ width: '100%' }}
+              InputLabelProps={{
+                sx: { color: 'var(--vscode-disabledForeground)' }
+              }}
+            />
+          )}
         />
-      )}
-    />
+      </div>
+    </div>
   );
 }

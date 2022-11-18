@@ -1,0 +1,12 @@
+.buttonStyle {
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--vscode-button-foreground);
+  
+    &:hover {
+        background-color: '#BE0000' !important;
+    }
+  
+    text-transform: none;
+  }

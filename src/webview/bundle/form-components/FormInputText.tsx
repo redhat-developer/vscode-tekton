@@ -4,69 +4,43 @@
  *-----------------------------------------------------------------------------------------------*/
 
 import * as React from 'react';
-import TextField from '@material-ui/core/TextField';
 import { FormInputProps } from './FormInputProps';
-import { createTheme, makeStyles, MuiThemeProvider } from '@material-ui/core/styles';
-import bundleStyle from '../bundle.style';
+import { InputLabel, TextField } from '@mui/material';
 import { inputLabel } from '../Form';
 
-const useStyles = makeStyles(bundleStyle);
-
-export const theme = createTheme({
-  overrides: {
-    MuiFormLabel: {
-      root: {
-        '&$focused': {
-          color: 'var(--vscode-keybindingLabel-foreground)'
-        }
-      }
-    },
-    MuiOutlinedInput: {
-      input: {
-        color: 'var(--vscode-foreground)',
-      },
-      root: {
-        borderRadius: '2px',
-        '& $notchedOutline': {
-          // background: 'var(--vscode-input-background)',
-          borderColor: 'var(--vscode-contrastBorder)'
-        },
-        '&:hover $notchedOutline': {
-          borderColor: 'var(--vscode-contrastBorder)'
-        },
-        '&$focused $notchedOutline': {
-          borderColor: 'var(--vscode-focusBorder)'
-        }
-      }
-    },
-    MuiInputLabel: {
-      outlined: {
-        color: 'var(--vscode-disabledForeground)',
-      }
-    },
-    MuiFormControl: {
-      fullWidth: {
-        background: 'var(--vscode-input-background)'
-      }
-    }
-  }
-});
-
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function FormInputText({label, setValue, placeHolder, requiredField, fieldType }: FormInputProps) {
-  const classes = useStyles();
+export function FormInputText({label, setValue, placeHolder, fieldType }: FormInputProps) {
   return (
-    <MuiThemeProvider theme={theme}>
+    <div>
+      <InputLabel htmlFor='bootstrap-input'
+        style={{
+          color: 'var(--vscode-settings-textInputForeground)'
+        }}>
+        {label}
+      </InputLabel>
       <TextField
-        InputLabelProps={{
-          classes: {
-            root: classes.inputLabel,
-            focused: 'focused',
-            shrink: 'shrink'
+        id='bootstrap-input'
+        size='small'
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            '& > fieldset': { borderColor: 'var(--vscode-contrastBorder)' },
+          },
+          '& .MuiOutlinedInput-root:hover': {
+            '& > fieldset': {
+              borderColor: 'var(--vscode-contrastBorder)'
+            }
+          }, 
+          '& .MuiOutlinedInput-root.Mui-focused': {
+            '& > fieldset': {
+              borderColor: 'var(--vscode-contrastBorder)'
+            }
+          },
+          input: {
+            color: 'var(--vscode-settings-textInputForeground)',
+            backgroundColor: 'var(--vscode-settings-textInputBackground)',
+            borderRadius: '4px'
           }
         }}
-        fullWidth
-        required={requiredField}
         type={fieldType}
         placeholder={placeHolder}
         onChange={(text) => {
@@ -80,9 +54,8 @@ export function FormInputText({label, setValue, placeHolder, requiredField, fiel
             return setValue(text.target.value.trim());
           }
         }}
-        label={label}
-        variant="outlined"
+        style={{ width: '100%', paddingTop: '10px' }}
       />
-    </MuiThemeProvider>
+    </div>
   );
 }

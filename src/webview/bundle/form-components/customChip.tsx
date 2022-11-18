@@ -22,7 +22,8 @@ export const MyChip = (props) => {
     <Chip
       classes={{
         label: classes.label
-      }}
+      }} 
+      size="small"
       {...props}
     />
   );
