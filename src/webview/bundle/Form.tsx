@@ -12,6 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { LimitTags } from './form-components/SelectAllTransferList';
 import { vscode } from './index';
 import bundleStyle from './bundle.style';
+import './style.scss';
 
 interface IFormInput {
   textValue: string;
@@ -89,19 +90,16 @@ export function Form () {
           letterSpacing: '0.0075em',
           color: 'var(--vscode-foreground)'
         }}> Create Bundle</Typography>
-        <FormInputText label={inputLabel.image} setValue={setImage} placeHolder={'Use the schema registry/repository/image:version'} requiredField={true} fieldType={'text'}/>
-        <FormInputText label={inputLabel.userName} setValue={setUserName} placeHolder={'Provide username (optional if credentials are stored)'} requiredField={false} fieldType={'text'}/>
-        <FormInputText label={inputLabel.password} setValue={setPassword} placeHolder={'Provide password (optional if credentials are stored)'} requiredField={false} fieldType={'password'}/>
+        <FormInputText label={inputLabel.image} setValue={setImage} placeHolder={'Use the schema registry/repository/image:version'} fieldType={'text'}/>
+        <FormInputText label={inputLabel.userName} setValue={setUserName} placeHolder={'Provide username (optional if credentials are stored)'} fieldType={'text'}/>
+        <FormInputText label={inputLabel.password} setValue={setPassword} placeHolder={'Provide password (optional if credentials are stored)'} fieldType={'password'}/>
         <LimitTags setValue={setResource} getValue={resource}/>
         <Button
           onClick={handleSubmit(onSubmit)}
           className={classes.button}
           variant={'contained'}
           disabled={validateButton(image, username, password, resource)}
-          style={{
-            width: 200,
-            left: '158px'
-          }}
+          style={{ backgroundColor: '#EE0000', textTransform: 'none', color: 'white', width: 200, left: '158px' }}
         >
           {' '}
           Submit{' '}
