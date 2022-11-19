@@ -549,78 +549,87 @@
     "walkthroughs": [
       {
         "id": "TektonWalkthrough",
-        "title": "Getting Started with Tekton Pipeline",
+        "title": "Getting Started with Tekton Pipelines",
         "description": "Start creating, running, and managing your Tekton Pipelines on OpenShift and Kubernetes",
         "steps": [
           {
-            "id": "Create Resources",
-            "title": "Create new resource",
-            "description": "Create a new Tekton resource directly from the YAML in the editor and deploy it using the `Kubernetes: Create` command.",
+            "id": "Tekton Introduction",
+            "title": "What is Tekton Pipelines",
+            "description": "The Tekton Pipelines project provides k8s-style resources for declaring CI/CD-style pipelines. It Runs on Kubernetes, have Kubernetes clusters as a first class type and use containers as their building blocks.\n\n This extension allows you to work with Tekton supporting all its capabilities from the IDE.",
             "media": {
-              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/create-resource.gif",
+              "image": "images/walkthrough/tekton-logo.png",
+              "altText": "tekton introduction"
+            }
+          },
+          {
+            "id": "Create Resources",
+            "title": "Create new Tekton Resource",
+            "description": "The plugin allows creating a new Tekton resource directly from the YAML in the editor and deploying it using the `Kubernetes: Create` command available from the Kubernetes extension.",
+            "media": {
+              "image": "images/walkthrough/create-resource.gif",
               "altText": "create Resources"
             }
           },
           {
             "id": "Start a Pipeline/Task",
             "title": "Start a Pipeline/Task",
-            "description": "After having created/edited your pipeline/task and successfully deployed it on cluster, you can run it by executing the `Start Pipeline/Task` action.\n A wizard will pop up leading you through the process of setting all inputs necessary to get it started (params, workspaces, service account, ..).\n Note: By default if the pipeline/task has no inputs, it will get started directly without the wizard popping up.\n If you already run a pipeline earlier and wants to run it again with the same inputs you did last time, you can achieve it by executing the `Start Last Run` action from the Pipelines context menu nodes.\n If you want to run old pipelinerun with the same inputs, you can do it by selecting the old pipelinerun node and execute the `Restart` action from the pipelinerun context menu node. This will open up the wizard pre-filled with the inputs used to start that pipeline in past.\n If you want to `Restart` taskrun you can do it by selecting the old taskrun node and execute the `Restart` action from the taskrun context menu node. This will directly restart the taskrun without opening the wizard.",
+            "description": "Start -- Run the Pipeline/Task by executing the `Start` action and providing the required parameters.\n\n Start last Run -- Run the last executed run.\n\n Restart -- Run any previous pipelines with the pre-filled parameters.",
             "media": {
-              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/start-pipeline.gif",
+              "image": "images/walkthrough/start-pipeline.gif",
               "altText": "Start pipeline/task"
             }
           },
           {
-            "id": "Logs and diagnostic",
-            "title": "Logs and diagnostic data",
-            "description": "Logs are displayed automatically after a pipeline or a task starts and/or can be retrieved by using the `Show Logs` and `Follow Logs` actions.\n In case logs are not enough to identify the issue or they are not printed out at all (e.g. a pvc with a size larger than the one supported by the cluster is needed and the pipelinerun/taskrun fails at starting) you can fetch additional data from the resources created by the operator (pods, pvc, ..).\n To do this, just execute the `Show Diagnostic Data` action available when right clicking a pipelinerun or taskrun node.",
+            "id": "Tekton Hub",
+            "title": "Install from Tekton Hub",
+            "description": "Discover, search and share reusable Tasks and Pipelines using Tekton Hub from extension view.\n The Recommended view suggests pipelines and tasks based on the active project opened in workspace.\n\n Users can select the specific version from the wizard opened in the editor.",
             "media": {
-              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/log-diagnostic.gif",
+              "image": "images/walkthrough/tektonHub.gif",
+              "altText": "Tekton hub"
+            }
+          },
+          {
+            "id": "Logs and diagnostic",
+            "title": "View Logs and Diagnostic data",
+            "description": "Allows to view logs using `Show Logs` and `Follow Logs` actions.\n\n  Show Diagnostic Data -- Displays additional information for the resources created by operators. Right click on any Pipeline and execute the action.",
+            "media": {
+              "image": "images/walkthrough/log-diagnostic.gif",
               "altText": "Logs and diagnostic data"
             }
           },
           {
             "id": "Debug in Tekton",
             "title": "Debug in Tekton",
-            "description": "When a task fails its execution and looking at the logs it is not enough to identify the issue, you can think at starting it in debug mode. This way the container where the taskrun is executed will be kept running even when the run fails. A terminal connected to the container will be opened in the IDE allowing you to interact with it and identify any possible misbehavior/error in the environment (e.g some dependencies not downloaded correctly in the previous steps).\n `Start in Debug mode` action is enabled and visible for TaskRun nodes if and only if the version of the Tekton operator installed on cluster is greater than 0.26.0 and its alpha mode is enabled. To verify it, check that the `enable-api-fields` property is set to `alpha` in the configmap `name: feature-flags` under namespace tekton-pipelines.",
+            "description": "Run the task in debug mode in the terminal connected to the container.\n\n `Start in Debug mode` action is enabled and visible for TaskRun nodes if the version of the Tekton operator installed on cluster is `>0.26.0` and its `alpha` mode is enabled.",
             "media": {
-              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/debug.gif",
+              "image": "images/walkthrough/debug.gif",
               "altText": "Debug in tekton"
-            }
-          },
-          {
-            "id": "Tekton Hub",
-            "title": "Tekton Hub",
-            "description": "The plugin provides a direct access to the Tekton Hub to search and import reusable pipelines and tasks from the IDE.\n The Recommended view suggests pipelines and tasks based on the active project open in IDE.\n Each resource has its own version and the newest one is always installed by default.\n It is also possible to import an older version by selecting the resource from tekton hub, wizard will open in editor and you can select the version to install.",
-            "media": {
-              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/tektonHub.gif",
-              "altText": "Tekton hub"
             }
           },
           {
             "id": "List taskRef",
             "title": "List all tasks for taskRef field",
-            "description": "When adding a taskRef clause to a step, the plugin provide the list of all the available tasks to select the ones needed.",
+            "description": "List of all the available tasks is suggested when adding a `taskRef` clause to a step.",
             "media": {
-              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/taskRef.gif",
+              "image": "images/walkthrough/taskRef.gif",
               "altText": "List taskRef"
             }
           },
           {
             "id": "RunAfter task",
             "title": "List all tasks in current pipeline for runAfter field.",
-            "description": "When adding a runAfter clause to a step, the plugin provides the list of all tasks available in the pipeline to select the ones needed.",
+            "description": "List of all tasks available in the pipeline is suggested when adding a `runAfter` clause to a step.",
             "media": {
-              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/runAfter.gif",
+              "image": "images/walkthrough/runAfter.gif",
               "altText": "RunAfter task"
             }
           },
           {
             "id": "Suggest input",
             "title": "Suggest inputs for step resources.",
-            "description": "When filling the params, workspaces, resources field in a task step, the plugin shows up the list of pipeline inputs that can be used within the step.",
+            "description": "List of pipeline inputs that can be used within the step is suggested when filling the params, workspaces, resources field in a task step.",
             "media": {
-              "image": "https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/walkthroughs/inputCompletion.gif",
+              "image": "images/walkthrough/inputCompletion.gif",
               "altText": "Suggest input"
             }
           }
