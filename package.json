@@ -670,7 +670,7 @@
     "viewsWelcome": [
       {
         "view": "tektonPipelineExplorerView",
-        "contents": "Cluster is not accessible. Use install tool to start Cluster or any other cluster which is active. \n[Kind](https://kubernetes.io/docs/tasks/tools/#kind)\n[Minikube](https://kubernetes.io/docs/tasks/tools/#minikube)\n[Red Hat CodeReady Containers](https://developers.redhat.com/products/codeready-containers/overview)",
+        "contents": "Cluster is not accessible. Use install tool to Start Cluster or any other cluster which is active. \n[Kind](https://kubernetes.io/docs/tasks/tools/#kind)\n[Minikube](https://kubernetes.io/docs/tasks/tools/#minikube)\n[Red Hat OpenShift Local](https://developers.redhat.com/products/openshift-local/overview)",
         "when": "tekton.cluster"
       },
       {
