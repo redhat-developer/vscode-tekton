@@ -92,11 +92,11 @@ A Visual Studio Code extension for interacting with Tekton Pipelines.
 
 ### Setup Kubernetes Cluster to use with the Extension
 
-To use the extension, developers can deploy Tekton Pipelines into a minikube instance or use [Red Hat CodeReady Containers](https://developers.redhat.com/products/codeready-containers).
+To use the extension, developers can deploy Tekton Pipelines into a `minikube` instance or use [Red Hat OpenShift Local](https://developers.redhat.com/products/openshift-local/overview).
 
-#### Red Hat CodeReady Containers
+#### Red Hat OpenShift Local
 
-Red Hat CodeReady Containers is a simple way to start OpenShift Cluster on your laptop in a matter of minutes, follow [this documentation](https://crc.dev/crc/) to get it up and running. After cluster is started follow [this steps](https://github.com/openshift/pipelines-tutorial/#install-openshift-pipelines) to deploy OpenShift Pipelines into an OpenShift cluster.
+Red Hat OpenShift Local is the quickest way to get started building OpenShift clusters. It is designed to run on a local computer to simplify setup and testing, and to emulate the cloud development environment locally with all of the tools needed to develop container-based applications. Follow [this documentation](https://access.redhat.com/documentation/en-us/red_hat_openshift_local/2.10/html/getting_started_guide/index) to get it up and running. After cluster is started follow [these steps](https://github.com/openshift/pipelines-tutorial/#install-openshift-pipelines) to deploy OpenShift Pipelines into an OpenShift cluster.
 
 #### minikube
 
