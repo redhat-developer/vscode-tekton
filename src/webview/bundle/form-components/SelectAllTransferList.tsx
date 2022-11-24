@@ -48,6 +48,8 @@ const StyledPopper = styled(Popper)(({ theme }) => ({
     backgroundColor: 'var(--vscode-dropdown-background)',
     color: 'var(--vscode-foreground)',
     transform: 'translate(1px, -1px)',
+    position: 'absolute',
+    width: '500px'
   }
 }));
 
@@ -87,7 +89,7 @@ export function LimitTags({ setValue, getValue }: FormInputProps) {
             fontFamily: 'var(--vscode-editor-font-family)',
             color: 'var(--vscode-settings-textInputForeground)',
             backgroundColor: 'var(--vscode-settings-textInputBackground)',
-            width: '40%',
+            width: '500px',
             borderRadius: '4px'
           }}
           id="checkboxes-tags-demo"
