@@ -4,7 +4,7 @@
  *-----------------------------------------------------------------------------------------------*/
 
 
-import { Button, Paper, Typography } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import { FormInputText } from './form-components/FormInputText';
 import * as React from 'react';
@@ -60,51 +60,27 @@ export function Form () {
   }
 
   return (
-    <div 
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        // Change the size to fit the parent element of this div
-        width: '100%',
-        height: '100%',
-      }}
-    >
-      <Paper
-        style={{
-          display: 'grid',
-          gridRowGap: '20px',
-          padding: '20px',
-          margin: '76px 300px',
-          border: '1px solid var(--vscode-settings-focusedRowBorder)',
-          background: 'var(--vscode-editor-background)'
-          // position: 'absolute'
-        }}
+    <div className='mainContainer margin' >
+      <div className='title'>
+        <Typography variant="h5" > Create Bundle</Typography>
+      </div>
+      <div className='subTitle'>
+        <Typography>This workflow will help to create a bundle and push it to remote registry.</Typography>
+      </div>
+      <FormInputText label={inputLabel.image} setValue={setImage} placeHolder={'Use the schema registry/repository/image:version'} fieldType={'text'}/>
+      <FormInputText label={inputLabel.userName} setValue={setUserName} placeHolder={'Provide username (optional if credentials are stored)'} fieldType={'text'}/>
+      <FormInputText label={inputLabel.password} setValue={setPassword} placeHolder={'Provide password (optional if credentials are stored)'} fieldType={'password'}/>
+      <LimitTags setValue={setResource} getValue={resource}/>
+      <Button
+        onClick={handleSubmit(onSubmit)}
+        className={classes.button}
+        variant={'contained'}
+        disabled={validateButton(image, username, password, resource)}
+        style={{ backgroundColor: '#EE0000', textTransform: 'none', color: 'white', width: 200, left: '4px' }}
       >
-        <Typography variant="h6" style={{
-          fontSize: '1.25rem',
-          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-          fontWeight: '500',
-          lineHeight: '1.6',
-          letterSpacing: '0.0075em',
-          color: 'var(--vscode-foreground)'
-        }}> Create Bundle</Typography>
-        <FormInputText label={inputLabel.image} setValue={setImage} placeHolder={'Use the schema registry/repository/image:version'} fieldType={'text'}/>
-        <FormInputText label={inputLabel.userName} setValue={setUserName} placeHolder={'Provide username (optional if credentials are stored)'} fieldType={'text'}/>
-        <FormInputText label={inputLabel.password} setValue={setPassword} placeHolder={'Provide password (optional if credentials are stored)'} fieldType={'password'}/>
-        <LimitTags setValue={setResource} getValue={resource}/>
-        <Button
-          onClick={handleSubmit(onSubmit)}
-          className={classes.button}
-          variant={'contained'}
-          disabled={validateButton(image, username, password, resource)}
-          style={{ backgroundColor: '#EE0000', textTransform: 'none', color: 'white', width: 200, left: '158px' }}
-        >
-          {' '}
+        {' '}
           Submit{' '}
-        </Button>
-      </Paper>
+      </Button>
     </div>
   );
 }

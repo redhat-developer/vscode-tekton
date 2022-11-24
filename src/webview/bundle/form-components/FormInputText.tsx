@@ -54,7 +54,7 @@ export function FormInputText({label, setValue, placeHolder, fieldType }: FormIn
             return setValue(text.target.value.trim());
           }
         }}
-        style={{ width: '100%', paddingTop: '10px' }}
+        style={{ width: '40%', paddingTop: '10px', paddingBottom: '10px' }}
       />
     </div>
   );

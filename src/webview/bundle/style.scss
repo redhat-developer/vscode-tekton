@@ -9,4 +9,33 @@
     }
   
     text-transform: none;
-  }
+}
+
+.mainContainer,
+.formContainer,
+.form {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--vscode-font-family);
+    // overflow-y: scroll;
+}
+
+.margin {
+    margin: 3rem;
+}
+
+.title {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.subTitle {
+    margin-bottom: 2rem;
+    max-width: 59rem;
+    justify-content: center;
+    word-spacing: 5px;
+    text-align: justify;
+    color: var(--vscode-foreground);
+    font-weight: normal;
+    font-size: 14px;
+}
