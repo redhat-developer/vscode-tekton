@@ -47,9 +47,7 @@ const StyledPopper = styled(Popper)(({ theme }) => ({
   '& .MuiAutocomplete-paper': {
     backgroundColor: 'var(--vscode-dropdown-background)',
     color: 'var(--vscode-foreground)',
-    transform: 'translate(-1px, 1px)',
-    width: '500px',
-    position: 'absolute',
+    transform: 'translate(1px, -1px)',
   }
 }));
 
@@ -77,7 +75,7 @@ export function LimitTags({ setValue, getValue }: FormInputProps) {
         }}>
         Tekton Resources
       </InputLabel>
-      <div style={{ paddingTop: '10px' }}>
+      <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
         <Autocomplete
           PopperComponent={StyledPopper}
           disableCloseOnSelect
@@ -89,7 +87,7 @@ export function LimitTags({ setValue, getValue }: FormInputProps) {
             fontFamily: 'var(--vscode-editor-font-family)',
             color: 'var(--vscode-settings-textInputForeground)',
             backgroundColor: 'var(--vscode-settings-textInputBackground)',
-            width: 500,
+            width: '40%',
             borderRadius: '4px'
           }}
           id="checkboxes-tags-demo"
