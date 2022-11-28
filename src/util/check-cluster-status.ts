@@ -10,6 +10,7 @@ import { ContextType } from '../context-type';
 import { telemetryLog, telemetryLogError } from '../telemetry';
 import { tkn } from '../tkn';
 import { TektonNode, TektonNodeImpl } from '../tree-view/tekton-node';
+import { clusterPipelineStatus } from './map-object';
 import { getStderrString } from './stderrstring';
 import { watchTektonResources } from './telemetry-watch-tekton-resource';
 import { watchResources } from './watchResources';
@@ -50,6 +51,7 @@ export async function checkClusterStatus(extensionStartUpCheck?: boolean): Promi
       return;
     }
     telemetryLogError(identifier, loginError);
+    clusterPipelineStatus.set('tekton.cluster', true);
     commands.executeCommand('setContext', 'tekton.pipeline', false);
     commands.executeCommand('setContext', 'tekton.cluster', true);
     return [];
@@ -63,10 +65,14 @@ export async function checkClusterStatus(extensionStartUpCheck?: boolean): Promi
       return;
     }
     telemetryLog(identifier, message);
+    clusterPipelineStatus.set('tekton.cluster', false);
+    clusterPipelineStatus.set('tekton.pipeline', true);
     commands.executeCommand('setContext', 'tekton.cluster', false);
     commands.executeCommand('setContext', 'tekton.pipeline', true);
     return [];
   }
+  clusterPipelineStatus.set('tekton.cluster', false);
+  clusterPipelineStatus.set('tekton.pipeline', false);
   await watchTektonResources(extensionStartUpCheck);
   return null;
 }

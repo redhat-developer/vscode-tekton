@@ -17,6 +17,7 @@ import semver = require('semver');
 import { checkEnableApiFields, FeatureFlag } from '../debugger/debug';
 import { watchTaskRunContainer } from '../debugger/debug-tree-view';
 import { debugName, pipelineTriggerStatus } from './map-object';
+import { checkOpenShiftCluster, clusterVersion } from '../check-cluster';
 
 export const treeRefresh = new Map<string, boolean>();
 const kubeConfigFolder: string = path.join(Platform.getUserHomePath(), '.kube');
@@ -97,7 +98,8 @@ export class WatchResources {
           pipelineExplorer.refresh();
         }
       } else if (run.kind === 'TaskRun' && run.spec?.['debug'] && semver.satisfies(supportedDebugPipelineVersion, `<=${getNewELSupport?.pipeline}`) && run.status?.conditions[0]?.status === 'Unknown') {
-        const featureFlagData: FeatureFlag = await checkEnableApiFields();
+        const ocpCluster: clusterVersion = await checkOpenShiftCluster();
+        const featureFlagData: FeatureFlag = await checkEnableApiFields(ocpCluster);
         if (!featureFlagData) return null;
         if (featureFlagData.data['enable-api-fields'] === 'alpha') {
           if (!debugName.get(run.metadata.name)) {

@@ -21,6 +21,7 @@ import { TknVersion, version } from '../util/tknversion';
 import { tkn } from '../tkn';
 import { getTaskRunData } from '../tekton/task-run-data';
 import { debugName } from '../util/map-object';
+import { checkOpenShiftCluster, clusterVersion } from '../check-cluster';
 
 export interface FeatureFlag {
   data: {
@@ -40,7 +41,9 @@ export async function startDebugger(taskRun: TektonNode): Promise<string> {
     window.showWarningMessage('Debugger is supported above pipeline version: `0.26.0`');
     return null;
   }
-  const featureFlagData: FeatureFlag = await checkEnableApiFields();
+
+  const ocpCluster: clusterVersion = await checkOpenShiftCluster();
+  const featureFlagData: FeatureFlag = await checkEnableApiFields(ocpCluster);
   if (!featureFlagData) return null;
   if (featureFlagData.data['enable-api-fields'] === 'alpha') {
     const resourceName = await startTaskRunWithDebugger(taskRun, 'debug_start');
@@ -50,13 +53,13 @@ export async function startDebugger(taskRun: TektonNode): Promise<string> {
       watchTaskRunContainer(resourceName, taskRun.contextValue);
     }
   } else {
-    window.showWarningMessage('To enable debugger change enable-api-fields to alpha in ConfigMap namespace tekton-pipelines');
+    window.showWarningMessage(`To enable debugger change enable-api-fields to alpha in ConfigMap namespace ${ocpCluster ? 'openshift-pipelines' : 'tekton-pipelines'}`);
     return null;
   }
 }
 
-export async function checkEnableApiFields(): Promise<FeatureFlag> {
-  const result = await tkn.execute(Command.featureFlags(), process.cwd(), false);
+export async function checkEnableApiFields(ocpCluster: clusterVersion): Promise<FeatureFlag> {
+  const result = await tkn.execute(Command.featureFlags(ocpCluster ? 'openshift-pipelines' : 'tekton-pipelines'), process.cwd(), false);
   if (result.error) {
     window.showErrorMessage(`Fail to fetch data: ${getStderrString(result.error)}`);
     return null;

@@ -16,6 +16,8 @@ import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
 import { getStderrString } from '../util/stderrstring';
+import { checkOpenShiftCluster, clusterVersion } from '../check-cluster';
+import { clusterPipelineStatus } from '../util/map-object';
 
 interface BundleType {
   imageDetail: string;
@@ -25,10 +27,19 @@ interface BundleType {
 }
 
 export async function bundleWizard(): Promise<void> {
-  const featureFlagData: FeatureFlag = await checkEnableApiFields();
+  if (clusterPipelineStatus.get('tekton.cluster')) {
+    window.showWarningMessage('Please check that your cluster is working fine and try again.');
+    return;
+  }
+  if (clusterPipelineStatus.get('tekton.pipeline')) {
+    window.showWarningMessage('Please install the Pipelines Operator.');
+    return;
+  }
+  const ocpCluster: clusterVersion = await checkOpenShiftCluster();
+  const featureFlagData: FeatureFlag = await checkEnableApiFields(ocpCluster);
   if (!featureFlagData) return null;
   if (featureFlagData.data['enable-tekton-oci-bundles'] !== 'true') {
-    window.showWarningMessage('To enable bundles change enable-tekton-oci-bundles to "true" in "feature-flags" ConfigMap namespace tekton-pipelines');
+    window.showWarningMessage(`Create Bundles workflow will work once the tekton-oci-bundles are enabled in the namespace. To enable Bundles, update the 'feature-flags' YAML in ConfigMap under the namespace ${ocpCluster ? 'openshift-pipelines' : 'tekton-pipelines'} and set 'enable-tekton-oci-bundles' to true`);
     return null;
   }
   const storePipelineTaskClusterTask: TektonType['storePipelineTaskClusterTask'] = []
@@ -89,11 +100,11 @@ export async function createBundle(bundleInfo: BundleType, bundleWizard: any): P
   return await window.withProgress({title: 'Bundling image.....', location: ProgressLocation.Notification}, async () => {
     const result = await tkn.execute(Command.bundle(bundleInfo.imageDetail, `${quote}${fsPath}${quote}`, bundleInfo.userDetail, bundleInfo.passwordDetail), process.cwd(), false);
     if (result.error) {
-      window.showErrorMessage(`Failed to push bundle error: ${getStderrString(result.error)}`);
+      window.showErrorMessage(`Failed to push the bundle. Please check the following error: ${getStderrString(result.error)}`);
       return;
     }
     bundleWizard.dispose();
-    window.showInformationMessage('Bundle successfully push.');
+    window.showInformationMessage('Tekton Bundle successfully pushed and added to the tekton manifest.');
     return;
   });
 }

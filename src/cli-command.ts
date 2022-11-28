@@ -61,6 +61,10 @@ export class Command {
     return newK8sCommand('get', 'taskrun', '-l', `tekton.dev/clusterTask=${clusterTask}`, '-o', 'json');
   }
 
+  static checkOcpCluster(): CliCommand {
+    return newK8sCommand('get', 'clusterversion', '-ojson');
+  }
+
   static resourceList(resource: string): CliCommand {
     return newK8sCommand('get', resource, '-o', 'json');
   }
@@ -106,8 +110,8 @@ export class Command {
     return newK8sCommand('get', 'eventlistener', '-o', 'json');
   }
 
-  static featureFlags(): CliCommand {
-    return newK8sCommand('get', '-n', 'tekton-pipelines', 'configmap', 'feature-flags', '-o', 'json');
+  static featureFlags(ns: string): CliCommand {
+    return newK8sCommand('get', '-n', ns, 'configmap', 'feature-flags', '-o', 'json');
   }
 
   static deleteTriggerTemplate(name: string): CliCommand {

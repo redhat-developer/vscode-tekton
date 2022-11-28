@@ -19,9 +19,7 @@ window.addEventListener('message', event => {
     case 'tekton_bundle':
       vscode.setState(event.data.data);
       ReactDOM.render(
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>,
+        <App />,
         rootElement
       );
   }
@@ -30,9 +28,7 @@ window.addEventListener('message', event => {
 const previousState = vscode.getState();
 if (previousState) {
   ReactDOM.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
+    <App />,
     rootElement
   );
 }
