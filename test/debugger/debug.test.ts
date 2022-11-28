@@ -106,7 +106,8 @@ suite('debug', () => {
     test('return null if debugger is not enable', async () => {
       const tknVersion = 'Client version: 0.12.1\nPipeline version: v0.26.3\nTriggers version: v0.5.0\n';
       cliExecStub.onFirstCall().resolves({ error: null, stdout: tknVersion, stderr: '' });
-      cliExecStub.onSecondCall().resolves({ error: null, stdout: JSON.stringify({
+      cliExecStub.onSecondCall().resolves({ error: null, stdout: null, stderr: '' });
+      cliExecStub.onThirdCall().resolves({ error: null, stdout: JSON.stringify({
         data: {
           'enable-api-fields': 'stable'  
         }
@@ -114,28 +115,30 @@ suite('debug', () => {
       const result = await startDebugger(taskRunNode);
       expect(result).equals(null);
       showWarningMessageStub.calledOnce;
-      expect(cliExecStub).calledTwice;
+      expect(cliExecStub).calledThrice;
     });
 
     test('return null if fail to fetch the feature-flags data', async () => {
       const tknVersion = 'Client version: 0.12.1\nPipeline version: v0.26.3\nTriggers version: v0.5.0\n';
       cliExecStub.onFirstCall().resolves({ error: null, stdout: tknVersion, stderr: '' });
-      cliExecStub.onSecondCall().resolves({ error: 'err', stdout: '', stderr: '' });
+      cliExecStub.onSecondCall().resolves({ error: null, stdout: null, stderr: '' });
+      cliExecStub.onThirdCall().resolves({ error: 'err', stdout: '', stderr: '' });
       const result = await startDebugger(taskRunNode);
       expect(result).equals(null);
       showErrorMessageStub.calledOnce;
-      expect(cliExecStub).calledTwice;
+      expect(cliExecStub).calledThrice;
     });
 
     test('return null if fail to create taskRun for debugger', async () => {
       const tknVersion = 'Client version: 0.12.1\nPipeline version: v0.26.3\nTriggers version: v0.5.0\n';
       cliExecStub.onFirstCall().resolves({ error: null, stdout: tknVersion, stderr: '' });
-      cliExecStub.onSecondCall().resolves({ error: null, stdout: JSON.stringify({
+      cliExecStub.onSecondCall().resolves({ error: null, stdout: null, stderr: '' });
+      cliExecStub.onThirdCall().resolves({ error: null, stdout: JSON.stringify({
         data: {
           'enable-api-fields': 'alpha'  
         }
       }), stderr: '' });
-      cliExecStub.onThirdCall().resolves({ error: null, stdout: JSON.stringify({
+      cliExecStub.onCall(3).resolves({ error: null, stdout: JSON.stringify({
         metadata: {
           labels: {
             test: 'test'
@@ -149,7 +152,7 @@ suite('debug', () => {
           status: 'string'
         }
       }), stderr: '' });
-      cliExecStub.onCall(3).resolves({ error: 'err', stdout: null, stderr: '' });
+      cliExecStub.onCall(4).resolves({ error: 'err', stdout: null, stderr: '' });
       const result = await startDebugger(taskRunNode);
       expect(result).equals(null);
       showErrorMessageStub.calledOnce;
@@ -162,12 +165,13 @@ suite('debug', () => {
     test('start taskRun in debug mode', async () => {
       const tknVersion = 'Client version: 0.12.1\nPipeline version: v0.26.3\nTriggers version: v0.5.0\n';
       cliExecStub.onFirstCall().resolves({ error: null, stdout: tknVersion, stderr: '' });
-      cliExecStub.onSecondCall().resolves({ error: null, stdout: JSON.stringify({
+      cliExecStub.onSecondCall().resolves({ error: null, stdout: null, stderr: '' });
+      cliExecStub.onThirdCall().resolves({ error: null, stdout: JSON.stringify({
         data: {
           'enable-api-fields': 'alpha'  
         }
       }), stderr: '' });
-      cliExecStub.onThirdCall().resolves({ error: null, stdout: JSON.stringify({
+      cliExecStub.onCall(3).resolves({ error: null, stdout: JSON.stringify({
         metadata: {
           labels: {
             test: 'test'
@@ -181,7 +185,7 @@ suite('debug', () => {
           status: 'string'
         }
       }), stderr: '' });
-      cliExecStub.onCall(3).resolves({ error: null, stdout: JSON.stringify(taskRunData), stderr: '' });
+      cliExecStub.onCall(4).resolves({ error: null, stdout: JSON.stringify(taskRunData), stderr: '' });
       await startDebugger(taskRunNode);
       safeDumpStub.calledOnce;
       osStub.calledOnce;
