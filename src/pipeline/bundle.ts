@@ -30,7 +30,7 @@ export class BundleWizard extends Disposable {
       BundleWizard.currentPanel.editor.reveal(column);
       return;
     }
-    const bundleTitle = 'Create Bundle';
+    const bundleTitle = 'Create Tekton Bundle';
     BundleWizard.title = bundleTitle;
     const webview = vscode.window.createWebviewPanel(
       BundleWizard.viewType,
@@ -41,6 +41,7 @@ export class BundleWizard extends Disposable {
         ...getWebviewOptions()
       }
     );
+    webview.iconPath = vscode.Uri.file(path.join(contextGlobalState.extensionPath, 'images/tekton.png'));
     BundleWizard.currentPanel = new BundleWizard(webview, input);
   }
 

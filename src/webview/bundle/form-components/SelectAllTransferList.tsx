@@ -110,8 +110,8 @@ export function LimitTags({ setValue, getValue }: FormInputProps) {
               <img
                 loading="lazy"
                 width="30"
-                src={`https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/${imageResource[option.tektonType]}.png`}
-                srcSet={`https://raw.githubusercontent.com/wiki/redhat-developer/vscode-tekton/images/readme/${imageResource[option.tektonType]}.png`}
+                src={require(`../../../../images/${imageResource[option.tektonType]}.svg`)}
+                srcSet={require(`../../../../images/${imageResource[option.tektonType]}.svg`)}
                 alt=""
               />
               {option.name}

@@ -26,7 +26,7 @@ interface IFormInput {
 const useStyles = makeStyles(bundleStyle);
 
 export const inputLabel: {image: string, userName: string, password: string } = {
-  image: 'Image Name',
+  image: 'Image Registry',
   userName: 'Username',
   password: 'Password'
 }
@@ -62,12 +62,12 @@ export function Form () {
   return (
     <div className='mainContainer margin' >
       <div className='title'>
-        <Typography variant="h5" > Create Bundle</Typography>
+        <Typography variant="h5" > Publish Tekton Resources as bundles on OCI registry </Typography>
       </div>
       <div className='subTitle'>
-        <Typography>This workflow will help to create a bundle and push it to remote registry.</Typography>
+        <Typography>This workflow will help to create your own Tekton bundle, push it to the remote registry and reference that in your Tekton manifest. Before running this command make sure you are authenticated to the remote image registry and valid credentials are there in order to push to that registry.</Typography>
       </div>
-      <FormInputText label={inputLabel.image} setValue={setImage} placeHolder={'Use the schema registry/repository/image:version'} fieldType={'text'}/>
+      <FormInputText label={inputLabel.image} setValue={setImage} placeHolder={'Use the schema: registry/repository/image:version'} fieldType={'text'}/>
       <FormInputText label={inputLabel.userName} setValue={setUserName} placeHolder={'Provide username (optional if credentials are stored)'} fieldType={'text'}/>
       <FormInputText label={inputLabel.password} setValue={setPassword} placeHolder={'Provide password (optional if credentials are stored)'} fieldType={'password'}/>
       <LimitTags setValue={setResource} getValue={resource}/>
@@ -76,7 +76,7 @@ export function Form () {
         className={classes.button}
         variant={'contained'}
         disabled={validateButton(image, username, password, resource)}
-        style={{ backgroundColor: '#EE0000', textTransform: 'none', color: 'white', width: 200, left: '4px' }}
+        style={{ backgroundColor: '#EE0000', textTransform: 'none', color: 'white', width: '124px', left: '4px', marginTop: '1%' }}
       >
         {' '}
           Submit{' '}
