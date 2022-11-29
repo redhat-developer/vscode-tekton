@@ -86,7 +86,7 @@ textarea::placeholder {
 .contain-style {
 	top: 2%;
     position: relative;
-	padding-left: 5%;
+	left: 17px;
 }
 
 li.li-style { 
