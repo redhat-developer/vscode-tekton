@@ -6,7 +6,6 @@
 import { ProgressLocation, ViewColumn, window } from 'vscode';
 import { CliExitData } from '../cli';
 import { Command } from '../cli-command';
-import { checkEnableApiFields, FeatureFlag } from '../debugger/debug';
 import { BundleWizard, TektonType } from '../pipeline/bundle';
 import { K8sTask, TknPipeline, TknPipelineTrigger } from '../tekton';
 import { tkn } from '../tkn';
@@ -16,7 +15,6 @@ import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
 import { getStderrString } from '../util/stderrstring';
-import { checkOpenShiftCluster, clusterVersion } from '../check-cluster';
 import { clusterPipelineStatus } from '../util/map-object';
 
 interface BundleType {
@@ -34,13 +32,6 @@ export async function bundleWizard(): Promise<void> {
   if (clusterPipelineStatus.get('tekton.pipeline')) {
     window.showWarningMessage('Please install the Pipelines Operator.');
     return;
-  }
-  const ocpCluster: clusterVersion = await checkOpenShiftCluster();
-  const featureFlagData: FeatureFlag = await checkEnableApiFields(ocpCluster);
-  if (!featureFlagData) return null;
-  if (featureFlagData.data['enable-tekton-oci-bundles'] !== 'true') {
-    window.showWarningMessage(`Create Bundles workflow will work once the tekton-oci-bundles are enabled in the namespace. To enable Bundles, update the 'feature-flags' YAML in ConfigMap under the namespace ${ocpCluster ? 'openshift-pipelines' : 'tekton-pipelines'} and set 'enable-tekton-oci-bundles' to true`);
-    return null;
   }
   const storePipelineTaskClusterTask: TektonType['storePipelineTaskClusterTask'] = []
   const pipeline: CliExitData = await tkn.execute(Command.listPipelines(), process.cwd(), false);
