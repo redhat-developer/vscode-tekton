@@ -73,12 +73,6 @@
           "default": "yaml",
           "description": "Output format for Tekton specs. One of 'json' or 'yaml' (default)."
         },
-        "redhat.telemetry.enabled": {
-          "type": "boolean",
-          "default": null,
-          "markdownDescription": "Enable usage data and errors to be sent to Red Hat servers. Read our [privacy statement](https://developers.redhat.com/article/tool-data-collection).",
-          "scope": "window"
-        },
         "vs-tekton.pipelineRunNotifications": {
           "Title": "Show pipelineRun notification",
           "type": "boolean",
@@ -1121,7 +1115,7 @@
   "dependencies": {
     "@kubernetes/client-node": "^0.12.2",
     "@redhat-developer/alizer": "^0.0.1",
-    "@redhat-developer/vscode-redhat-telemetry": "^0.4.2",
+    "@redhat-developer/vscode-redhat-telemetry": "0.5.2",
     "axios": "^0.21.2",
     "binary-search": "^1.3.5",
     "byline": "^5.0.0",
