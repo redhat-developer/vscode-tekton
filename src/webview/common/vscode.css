@@ -84,9 +84,9 @@ textarea::placeholder {
 }
 
 .contain-style {
-	top: 2%;
-    position: relative;
-	left: 17px;
+	top: 17%;
+    position: absolute;
+    left: 17px;
 }
 
 li.li-style { 
