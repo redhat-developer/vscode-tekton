@@ -174,13 +174,14 @@ function updatePipelineRunTasks(pipelineRun: PipelineRunData, tasks: DeclaredTas
       runTask.startTime = taskRun.status?.startTime;
       runTask.state = getPipelineRunTaskState(taskRun.status);
       runTask.taskRunName = taskRunName;
-      const steps = (taskRun as TaskRun).status?.steps;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const steps: any = (taskRun as TaskRun).status?.steps;
       if (steps) {
         runTask.stepsCount = steps.length;
         runTask.steps = steps;
         let finishedSteps = 0;
         for (const step of steps) {
-          const terminated = step.terminated;
+          const terminated = step?.terminated;
           if (terminated) {
             finishedSteps++;
           }
