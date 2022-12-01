@@ -33,13 +33,13 @@ There are only a few guidelines that we need contributors to follow and we are o
 
 ![View Tekton Pipelines](https://github.com/redhat-developer/vscode-tekton/blob/main/images/tekton.svg)
 
-> If you have any questions or run into any problems, please post an [issue](issues) - we'll be very happy to help.
+> If you have any questions or run into any problems, please post an [issue](https://github.com/redhat-developer/vscode-tekton/issues) - we'll be very happy to help.
 
 ## Build the extension snippets
 
 All templates are placed in yaml files in [rawsnippets](./rawsnippets).
 If you want to add/change snippets body, you need to edit proper `yaml` file in [rawsnippets](./rawsnippets).
-Label and description for each snippet are placesd in [build-snippets.ts](build/build-snippets.ts) script.
+Label and description for each snippet are placed in [build-snippets.ts](build/build-snippets.ts) script.
 To generate new snippet json, run:
 ```bash
 $ npm run snippets-build
@@ -48,7 +48,7 @@ npm script from extension root.
 
 ## Generate new icons
 
-If you want to change icons for PipelieRun, TaskRun or Condition, you may want to generate new state icons for failed and pending state.
+If you want to change icons for PipelineRun, TaskRun or Condition, you may want to generate new state icons for failed and pending state.
 To do that run:
 ```bash
 $ npm run icon-build
