@@ -1,7 +1,7 @@
 {
   "name": "vscode-tekton-pipelines",
   "displayName": "Tekton Pipelines",
-  "description": "Tekton Pipelines extension by Red Hat",
+  "description": "Cloud Native CI/CD using Tekton Pipelines",
   "version": "1.1.0",
   "license": "MIT",
   "publisher": "redhat",
@@ -24,7 +24,8 @@
     "Tekton",
     "k8s",
     "kubernetes",
-    "openshift"
+    "openshift",
+    "ci/cd"
   ],
   "icon": "images/tekton.png",
   "activationEvents": [

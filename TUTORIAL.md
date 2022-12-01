@@ -13,9 +13,9 @@ The tutorial assumes you have:
 
 ## Configure Visual Studio Code and Install Required Extensions
 
-For this tutorial you need to install required extensions from Visual Studio Code marketplace:
+For this tutorial you need to install required extensions from Visual Studio Code Marketplace:
 * Tekton Pipelines - https://marketplace.visualstudio.com/items?itemName=redhat.vscode-tekton-pipelines
-* OpenSift Connector - https://marketplace.visualstudio.com/items?itemName=redhat.vscode-openshift-connector
+* OpenShift Connector - https://marketplace.visualstudio.com/items?itemName=redhat.vscode-openshift-connector
 
 ## OpenShift and Tekton Task Catalogs Git Repositories
 
@@ -27,9 +27,10 @@ in this tutorial you are going to use two github repositories:
 ### Pipelines Tutorial Git Repository
 
 You will use resources from original tutorial repository to deploy your application on the cluster:
-* Pipeline Tutorial - https://github.com/openshift/pipelines-tutorial
+* OpenShift Pipeline Tutorial - https://github.com/openshift/pipelines-tutorial
+* Tekton Pipelines Tutorial - https://github.com/tektoncd/pipeline/blob/master/docs/tutorial.md
 
-## Let's get started
+## Demo Video
 
 [![](http://img.youtube.com/vi/gte70CuQXbM/0.jpg)](http://www.youtube.com/watch?v=gte70CuQXbM "")
 
