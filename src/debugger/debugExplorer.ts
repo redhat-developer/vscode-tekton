@@ -53,6 +53,7 @@ export class DebugExplorer implements TreeDataProvider<TektonNode>, Disposable {
     this.treeView.reveal(item);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getSelection(): any {
     return this.treeView.selection;
   }
