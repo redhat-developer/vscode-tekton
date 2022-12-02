@@ -11,7 +11,7 @@ import * as vscode from 'vscode';
 class LogDocumentProvider implements vscode.TextDocumentContentProvider {
   onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
   onDidChange = this.onDidChangeEmitter.event;
-  
+
   private documentMap = new Map<string, string>();
 
   provideTextDocumentContent(uri: vscode.Uri): vscode.ProviderResult<string> {
@@ -48,9 +48,9 @@ export async function showLogInEditor(command: CliCommand, title: string): Promi
 
   logProvider.addDocument(uri);
   vscode.window.showTextDocument(uri);
-  
-  process.stdout.setEncoding('UTF8');
-  process.stderr.setEncoding('UTF8');
+
+  process.stdout.setEncoding('utf8');
+  process.stderr.setEncoding('utf8');
   process.stdout.on('data', (chunk) => {
     logProvider.updateDocument(uri, chunk);
   });
