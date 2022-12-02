@@ -53,7 +53,7 @@ export class DebugExplorer implements TreeDataProvider<TektonNode>, Disposable {
     this.treeView.reveal(item);
   }
 
-  getSelection(): TektonNode[] | undefined {
+  getSelection(): any {
     return this.treeView.selection;
   }
 
