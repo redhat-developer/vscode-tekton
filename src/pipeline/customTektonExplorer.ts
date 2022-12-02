@@ -164,7 +164,8 @@ export class CustomTektonExplorer implements TreeDataProvider<TektonNode>, Dispo
     return this.treeView.visible;
   }
 
-  getSelection(): TektonNode[] | undefined {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getSelection(): any {
     return this.treeView.selection;
   }
 

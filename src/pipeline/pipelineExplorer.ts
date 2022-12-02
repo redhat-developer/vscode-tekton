@@ -60,7 +60,8 @@ export class PipelineExplorer implements TreeDataProvider<TektonNode>, Disposabl
     this.treeView.reveal(item);
   }
 
-  getSelection(): TektonNode[] | undefined {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getSelection(): any {
     return this.treeView.selection;
   }
 
