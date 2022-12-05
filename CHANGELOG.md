@@ -1,4 +1,11 @@
 # Change Log
+## 1.1.0 (December 2, 2022)
+
+* [694](https://github.com/redhat-developer/vscode-tekton/pull/694) Add support for Tekton Bundles
+* [669](https://github.com/redhat-developer/vscode-tekton/pull/669) Update apiVersions for trigger snippets
+* [693](https://github.com/redhat-developer/vscode-tekton/pull/693) Updated Tekton schemas
+* [698](https://github.com/redhat-developer/vscode-tekton/pull/698) Update tkn to `0.27.0` and kubectl to `1.25.3` version
+* [701](https://github.com/redhat-developer/vscode-tekton/pull/701) Add Getting Started Walthrough for Tekton extension
 
 ## 1.0.1 (December 1, 2021)
 
@@ -339,7 +346,7 @@ This release brings to you:
 
 * [#121](https://github.com/redhat-developer/vscode-tekton/issues/121)Allow to use Tekton Catalog for creating and editing tekton related resources
 * [#108](https://github.com/redhat-developer/vscode-tekton/issues/108) Change color for "running" pipelineruns and taskruns
-* [#133](https://github.com/redhat-developer/vscode-tekton/issues/133) Show complete PipelineRun names 
+* [#133](https://github.com/redhat-developer/vscode-tekton/issues/133) Show complete PipelineRun names
 * Bugfixes for minor issues:
   * [#134](https://github.com/redhat-developer/vscode-tekton/issues/134) Update info message to refect pipeline start
 
