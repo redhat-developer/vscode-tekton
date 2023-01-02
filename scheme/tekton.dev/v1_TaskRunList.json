@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "$ref": "#/definitions/Pipeline",
+  "$ref": "#/definitions/TaskRunList",
   "definitions": {
     "AWSElasticBlockStoreVolumeSource": {
       "required": [
@@ -18,6 +18,24 @@
         },
         "readOnly": {
           "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Affinity": {
+      "properties": {
+        "nodeAffinity": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/NodeAffinity"
+        },
+        "podAffinity": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/PodAffinity"
+        },
+        "podAntiAffinity": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/PodAntiAffinity"
         }
       },
       "additionalProperties": false,
@@ -168,6 +186,35 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "Condition": {
+      "required": [
+        "type",
+        "status"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string"
+        },
+        "lastTransitionTime": {
+          "type": "string",
+          "format": "data-time"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "ConfigMapEnvSource": {
       "properties": {
         "name": {
@@ -237,6 +284,26 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "ConfigSource": {
+      "properties": {
+        "uri": {
+          "type": "string"
+        },
+        "digest": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "entryPoint": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "ContainerPort": {
       "required": [
         "containerPort"
@@ -255,6 +322,60 @@
           "type": "string"
         },
         "hostIP": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ContainerStateRunning": {
+      "properties": {
+        "startedAt": {
+          "type": "string",
+          "format": "data-time"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ContainerStateTerminated": {
+      "required": [
+        "exitCode"
+      ],
+      "properties": {
+        "exitCode": {
+          "type": "integer"
+        },
+        "signal": {
+          "type": "integer"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "data-time"
+        },
+        "finishedAt": {
+          "type": "string",
+          "format": "data-time"
+        },
+        "containerID": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ContainerStateWaiting": {
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "message": {
           "type": "string"
         }
       },
@@ -305,80 +426,6 @@
         },
         "defaultMode": {
           "type": "integer"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "EmbeddedTask": {
-      "properties": {
-        "apiVersion": {
-          "type": "string"
-        },
-        "kind": {
-          "type": "string"
-        },
-        "spec": {
-          "properties": {},
-          "additionalProperties": true,
-          "type": "object"
-        },
-        "metadata": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/PipelineTaskMetadata"
-        },
-        "resources": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/TaskResources"
-        },
-        "params": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/ParamSpec"
-          },
-          "type": "array"
-        },
-        "description": {
-          "type": "string"
-        },
-        "steps": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/Step"
-          },
-          "type": "array"
-        },
-        "volumes": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/Volume"
-          },
-          "type": "array"
-        },
-        "stepTemplate": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/StepTemplate"
-        },
-        "sidecars": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/Sidecar"
-          },
-          "type": "array"
-        },
-        "workspaces": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/WorkspaceDeclaration"
-          },
-          "type": "array"
-        },
-        "results": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/TaskResult"
-          },
-          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -663,6 +710,21 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "HostAlias": {
+      "properties": {
+        "ip": {
+          "type": "string"
+        },
+        "hostnames": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "HostPathVolumeSource": {
       "required": [
         "path"
@@ -836,6 +898,24 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "ListMeta": {
+      "properties": {
+        "selfLink": {
+          "type": "string"
+        },
+        "resourceVersion": {
+          "type": "string"
+        },
+        "continue": {
+          "type": "string"
+        },
+        "remainingItemCount": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "LocalObjectReference": {
       "properties": {
         "name": {
@@ -875,18 +955,6 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "Matrix": {
-      "properties": {
-        "params": {
-          "items": {
-            "$ref": "#/definitions/Param"
-          },
-          "type": "array"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
     "NFSVolumeSource": {
       "required": [
         "server",
@@ -901,6 +969,80 @@
         },
         "readOnly": {
           "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "NodeAffinity": {
+      "properties": {
+        "requiredDuringSchedulingIgnoredDuringExecution": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/NodeSelector"
+        },
+        "preferredDuringSchedulingIgnoredDuringExecution": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/PreferredSchedulingTerm"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "NodeSelector": {
+      "required": [
+        "nodeSelectorTerms"
+      ],
+      "properties": {
+        "nodeSelectorTerms": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/NodeSelectorTerm"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "NodeSelectorRequirement": {
+      "required": [
+        "key",
+        "operator"
+      ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "operator": {
+          "type": "string"
+        },
+        "values": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "NodeSelectorTerm": {
+      "properties": {
+        "matchExpressions": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/NodeSelectorRequirement"
+          },
+          "type": "array"
+        },
+        "matchFields": {
+          "items": {
+            "$ref": "#/definitions/NodeSelectorRequirement"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -1091,6 +1233,58 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "PersistentVolumeClaim": {
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "apiVersion": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/definitions/ObjectMeta"
+        },
+        "spec": {
+          "$ref": "#/definitions/PersistentVolumeClaimSpec"
+        },
+        "status": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/PersistentVolumeClaimStatus"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "PersistentVolumeClaimCondition": {
+      "required": [
+        "type",
+        "status"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "lastProbeTime": {
+          "type": "string",
+          "format": "data-time"
+        },
+        "lastTransitionTime": {
+          "type": "string",
+          "format": "data-time"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "PersistentVolumeClaimSpec": {
       "properties": {
         "accessModes": {
@@ -1121,6 +1315,47 @@
         },
         "dataSourceRef": {
           "$ref": "#/definitions/TypedLocalObjectReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "PersistentVolumeClaimStatus": {
+      "properties": {
+        "phase": {
+          "type": "string"
+        },
+        "accessModes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "capacity": {
+          "patternProperties": {
+            ".*": {
+              "$ref": "#/definitions/Quantity"
+            }
+          },
+          "type": "object"
+        },
+        "conditions": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/PersistentVolumeClaimCondition"
+          },
+          "type": "array"
+        },
+        "allocatedResources": {
+          "patternProperties": {
+            ".*": {
+              "$ref": "#/definitions/Quantity"
+            }
+          },
+          "type": "object"
+        },
+        "resizeStatus": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -1172,300 +1407,143 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "Pipeline": {
-      "required": [
-        "spec"
-      ],
+    "PodAffinity": {
       "properties": {
-        "kind": {
-          "type": "string"
+        "requiredDuringSchedulingIgnoredDuringExecution": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/PodAffinityTerm"
+          },
+          "type": "array"
         },
-        "apiVersion": {
-          "type": "string"
-        },
-        "metadata": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/ObjectMeta"
-        },
-        "spec": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/PipelineSpec"
+        "preferredDuringSchedulingIgnoredDuringExecution": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/WeightedPodAffinityTerm"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
       "type": "object"
     },
-    "PipelineDeclaredResource": {
+    "PodAffinityTerm": {
       "required": [
-        "name",
-        "type"
+        "topologyKey"
       ],
       "properties": {
-        "name": {
+        "labelSelector": {
+          "$ref": "#/definitions/LabelSelector"
+        },
+        "namespaces": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "topologyKey": {
           "type": "string"
         },
-        "type": {
-          "type": "string"
-        },
-        "optional": {
-          "type": "boolean"
+        "namespaceSelector": {
+          "$ref": "#/definitions/LabelSelector"
         }
       },
       "additionalProperties": false,
       "type": "object"
     },
-    "PipelineResult": {
-      "required": [
-        "name",
-        "description",
-        "value"
-      ],
+    "PodAntiAffinity": {
+      "properties": {
+        "requiredDuringSchedulingIgnoredDuringExecution": {
+          "items": {
+            "$ref": "#/definitions/PodAffinityTerm"
+          },
+          "type": "array"
+        },
+        "preferredDuringSchedulingIgnoredDuringExecution": {
+          "items": {
+            "$ref": "#/definitions/WeightedPodAffinityTerm"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "PodDNSConfig": {
+      "properties": {
+        "nameservers": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "searches": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "options": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/PodDNSConfigOption"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "PodDNSConfigOption": {
       "properties": {
         "name": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        },
-        "description": {
           "type": "string"
         },
         "value": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "items": {
-                "type": "string"
-              },
-              "type": "array"
-            }
-          ]
+          "type": "string"
         }
       },
       "additionalProperties": false,
       "type": "object"
     },
-    "PipelineSpec": {
+    "PodSecurityContext": {
       "properties": {
-        "description": {
-          "type": "string"
+        "seLinuxOptions": {
+          "$ref": "#/definitions/SELinuxOptions"
         },
-        "resources": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/PipelineDeclaredResource"
-          },
-          "type": "array"
+        "windowsOptions": {
+          "$ref": "#/definitions/WindowsSecurityContextOptions"
         },
-        "tasks": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/PipelineTask"
-          },
-          "type": "array"
-        },
-        "params": {
-          "items": {
-            "$ref": "#/definitions/ParamSpec"
-          },
-          "type": "array"
-        },
-        "workspaces": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/PipelineWorkspaceDeclaration"
-          },
-          "type": "array"
-        },
-        "results": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/PipelineResult"
-          },
-          "type": "array"
-        },
-        "finally": {
-          "items": {
-            "$ref": "#/definitions/PipelineTask"
-          },
-          "type": "array"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "PipelineTask": {
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "taskRef": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/TaskRef"
-        },
-        "taskSpec": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/EmbeddedTask"
-        },
-        "when": {
-          "items": {
-            "required": [
-              "input",
-              "operator",
-              "values"
-            ],
-            "properties": {
-              "input": {
-                "type": "string"
-              },
-              "operator": {
-                "type": "string"
-              },
-              "values": {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              }
-            },
-            "additionalProperties": false,
-            "type": "object"
-          },
-          "type": "array"
-        },
-        "retries": {
+        "runAsUser": {
           "type": "integer"
         },
-        "runAfter": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
+        "runAsGroup": {
+          "type": "integer"
         },
-        "resources": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/PipelineTaskResources"
-        },
-        "params": {
-          "items": {
-            "$ref": "#/definitions/Param"
-          },
-          "type": "array"
-        },
-        "matrix": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/Matrix"
-        },
-        "workspaces": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/WorkspacePipelineTaskBinding"
-          },
-          "type": "array"
-        },
-        "timeout": {
-          "pattern": "^[-+]?([0-9]*(\\.[0-9]*)?(ns|us|µs|μs|ms|s|m|h))+$",
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "PipelineTaskInputResource": {
-      "required": [
-        "name",
-        "resource"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "resource": {
-          "type": "string"
-        },
-        "from": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "PipelineTaskMetadata": {
-      "properties": {
-        "labels": {
-          "patternProperties": {
-            ".*": {
-              "type": "string"
-            }
-          },
-          "type": "object"
-        },
-        "annotations": {
-          "patternProperties": {
-            ".*": {
-              "type": "string"
-            }
-          },
-          "type": "object"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "PipelineTaskOutputResource": {
-      "required": [
-        "name",
-        "resource"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "resource": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "PipelineTaskResources": {
-      "properties": {
-        "inputs": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/PipelineTaskInputResource"
-          },
-          "type": "array"
-        },
-        "outputs": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/PipelineTaskOutputResource"
-          },
-          "type": "array"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "PipelineWorkspaceDeclaration": {
-      "required": [
-        "name"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "optional": {
+        "runAsNonRoot": {
           "type": "boolean"
+        },
+        "supplementalGroups": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "fsGroup": {
+          "type": "integer"
+        },
+        "sysctls": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/Sysctl"
+          },
+          "type": "array"
+        },
+        "fsGroupChangePolicy": {
+          "type": "string"
+        },
+        "seccompProfile": {
+          "$ref": "#/definitions/SeccompProfile"
         }
       },
       "additionalProperties": false,
@@ -1484,6 +1562,22 @@
         },
         "readOnly": {
           "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "PreferredSchedulingTerm": {
+      "required": [
+        "weight",
+        "preference"
+      ],
+      "properties": {
+        "weight": {
+          "type": "integer"
+        },
+        "preference": {
+          "$ref": "#/definitions/NodeSelectorTerm"
         }
       },
       "additionalProperties": false,
@@ -1552,6 +1646,16 @@
       "properties": {
         "type": {
           "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Provenance": {
+      "properties": {
+        "configSource": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ConfigSource"
         }
       },
       "additionalProperties": false,
@@ -1901,6 +2005,7 @@
         },
         "ports": {
           "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
             "$ref": "#/definitions/ContainerPort"
           },
           "type": "array"
@@ -1917,7 +2022,7 @@
           },
           "type": "array"
         },
-        "resources": {
+        "computeResources": {
           "$ref": "#/definitions/ResourceRequirements"
         },
         "volumeMounts": {
@@ -1933,6 +2038,7 @@
           "type": "array"
         },
         "livenessProbe": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/Probe"
         },
         "readinessProbe": {
@@ -1942,6 +2048,7 @@
           "$ref": "#/definitions/Probe"
         },
         "lifecycle": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/Lifecycle"
         },
         "terminationMessagePath": {
@@ -1978,6 +2085,30 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "SidecarState": {
+      "properties": {
+        "waiting": {
+          "$ref": "#/definitions/ContainerStateWaiting"
+        },
+        "running": {
+          "$ref": "#/definitions/ContainerStateRunning"
+        },
+        "terminated": {
+          "$ref": "#/definitions/ContainerStateTerminated"
+        },
+        "name": {
+          "type": "string"
+        },
+        "container": {
+          "type": "string"
+        },
+        "imageID": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "Step": {
       "required": [
         "name"
@@ -2004,13 +2135,6 @@
         "workingDir": {
           "type": "string"
         },
-        "ports": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/ContainerPort"
-          },
-          "type": "array"
-        },
         "envFrom": {
           "items": {
             "$schema": "http://json-schema.org/draft-04/schema#",
@@ -2025,7 +2149,7 @@
           },
           "type": "array"
         },
-        "resources": {
+        "computeResources": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/ResourceRequirements"
         },
@@ -2043,41 +2167,12 @@
           },
           "type": "array"
         },
-        "livenessProbe": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/Probe"
-        },
-        "readinessProbe": {
-          "$ref": "#/definitions/Probe"
-        },
-        "startupProbe": {
-          "$ref": "#/definitions/Probe"
-        },
-        "lifecycle": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/Lifecycle"
-        },
-        "terminationMessagePath": {
-          "type": "string"
-        },
-        "terminationMessagePolicy": {
-          "type": "string"
-        },
         "imagePullPolicy": {
           "type": "string"
         },
         "securityContext": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/SecurityContext"
-        },
-        "stdin": {
-          "type": "boolean"
-        },
-        "stdinOnce": {
-          "type": "boolean"
-        },
-        "tty": {
-          "type": "boolean"
         },
         "script": {
           "type": "string"
@@ -2116,14 +2211,35 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "StepTemplate": {
-      "required": [
-        "name"
-      ],
+    "StepState": {
       "properties": {
+        "waiting": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ContainerStateWaiting"
+        },
+        "running": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ContainerStateRunning"
+        },
+        "terminated": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ContainerStateTerminated"
+        },
         "name": {
           "type": "string"
         },
+        "container": {
+          "type": "string"
+        },
+        "imageID": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "StepTemplate": {
+      "properties": {
         "image": {
           "type": "string"
         },
@@ -2142,12 +2258,6 @@
         "workingDir": {
           "type": "string"
         },
-        "ports": {
-          "items": {
-            "$ref": "#/definitions/ContainerPort"
-          },
-          "type": "array"
-        },
         "envFrom": {
           "items": {
             "$ref": "#/definitions/EnvFromSource"
@@ -2160,7 +2270,7 @@
           },
           "type": "array"
         },
-        "resources": {
+        "computeResources": {
           "$ref": "#/definitions/ResourceRequirements"
         },
         "volumeMounts": {
@@ -2175,38 +2285,11 @@
           },
           "type": "array"
         },
-        "livenessProbe": {
-          "$ref": "#/definitions/Probe"
-        },
-        "readinessProbe": {
-          "$ref": "#/definitions/Probe"
-        },
-        "startupProbe": {
-          "$ref": "#/definitions/Probe"
-        },
-        "lifecycle": {
-          "$ref": "#/definitions/Lifecycle"
-        },
-        "terminationMessagePath": {
-          "type": "string"
-        },
-        "terminationMessagePolicy": {
-          "type": "string"
-        },
         "imagePullPolicy": {
           "type": "string"
         },
         "securityContext": {
           "$ref": "#/definitions/SecurityContext"
-        },
-        "stdin": {
-          "type": "boolean"
-        },
-        "stdinOnce": {
-          "type": "boolean"
-        },
-        "tty": {
-          "type": "boolean"
         }
       },
       "additionalProperties": false,
@@ -2228,6 +2311,22 @@
         },
         "secretRef": {
           "$ref": "#/definitions/LocalObjectReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Sysctl": {
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -2259,60 +2358,12 @@
         "apiVersion": {
           "type": "string"
         },
-        "bundle": {
-          "type": "string"
-        },
         "resolver": {
           "type": "string"
         },
         "params": {
           "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
             "$ref": "#/definitions/Param"
-          },
-          "type": "array"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "TaskResource": {
-      "required": [
-        "name",
-        "type"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "targetPath": {
-          "type": "string"
-        },
-        "optional": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "TaskResources": {
-      "properties": {
-        "inputs": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/TaskResource"
-          },
-          "type": "array"
-        },
-        "outputs": {
-          "items": {
-            "$ref": "#/definitions/TaskResource"
           },
           "type": "array"
         }
@@ -2341,6 +2392,473 @@
         },
         "description": {
           "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TaskRun": {
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "apiVersion": {
+          "type": "string"
+        },
+        "metadata": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ObjectMeta"
+        },
+        "spec": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TaskRunSpec"
+        },
+        "status": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TaskRunStatus"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TaskRunDebug": {
+      "properties": {
+        "breakpoint": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TaskRunList": {
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "apiVersion": {
+          "type": "string"
+        },
+        "metadata": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ListMeta"
+        },
+        "items": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/TaskRun"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TaskRunResult": {
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TaskRunSidecarSpec": {
+      "required": [
+        "name",
+        "computeResources"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "computeResources": {
+          "$ref": "#/definitions/ResourceRequirements"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TaskRunSpec": {
+      "required": [
+        "serviceAccountName"
+      ],
+      "properties": {
+        "debug": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TaskRunDebug"
+        },
+        "params": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/Param"
+          },
+          "type": "array"
+        },
+        "serviceAccountName": {
+          "type": "string"
+        },
+        "taskRef": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TaskRef"
+        },
+        "taskSpec": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TaskSpec"
+        },
+        "status": {
+          "type": "string"
+        },
+        "statusMessage": {
+          "type": "string"
+        },
+        "retries": {
+          "type": "integer"
+        },
+        "timeout": {
+          "pattern": "^[-+]?([0-9]*(\\.[0-9]*)?(ns|us|µs|μs|ms|s|m|h))+$",
+          "type": "string"
+        },
+        "podTemplate": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/Template"
+        },
+        "workspaces": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/WorkspaceBinding"
+          },
+          "type": "array"
+        },
+        "stepSpecs": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/TaskRunStepSpec"
+          },
+          "type": "array"
+        },
+        "sidecarSpecs": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/TaskRunSidecarSpec"
+          },
+          "type": "array"
+        },
+        "computeResources": {
+          "$ref": "#/definitions/ResourceRequirements"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TaskRunStatus": {
+      "required": [
+        "podName"
+      ],
+      "properties": {
+        "observedGeneration": {
+          "type": "integer"
+        },
+        "conditions": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/Condition"
+          },
+          "type": "array"
+        },
+        "annotations": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "podName": {
+          "type": "string"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "data-time"
+        },
+        "completionTime": {
+          "type": "string",
+          "format": "data-time"
+        },
+        "steps": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/StepState"
+          },
+          "type": "array"
+        },
+        "retriesStatus": {
+          "items": {
+            "$ref": "#/definitions/TaskRunStatus"
+          },
+          "type": "array"
+        },
+        "results": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/TaskRunResult"
+          },
+          "type": "array"
+        },
+        "sidecars": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/SidecarState"
+          },
+          "type": "array"
+        },
+        "taskSpec": {
+          "$ref": "#/definitions/TaskSpec"
+        },
+        "provenance": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/Provenance"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TaskRunStepSpec": {
+      "required": [
+        "name",
+        "computeResources"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "computeResources": {
+          "$ref": "#/definitions/ResourceRequirements"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TaskSpec": {
+      "properties": {
+        "params": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/ParamSpec"
+          },
+          "type": "array"
+        },
+        "description": {
+          "type": "string"
+        },
+        "steps": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/Step"
+          },
+          "type": "array"
+        },
+        "volumes": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/Volume"
+          },
+          "type": "array"
+        },
+        "stepTemplate": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/StepTemplate"
+        },
+        "sidecars": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/Sidecar"
+          },
+          "type": "array"
+        },
+        "workspaces": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/WorkspaceDeclaration"
+          },
+          "type": "array"
+        },
+        "results": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/TaskResult"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Template": {
+      "properties": {
+        "nodeSelector": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "env": {
+          "items": {
+            "$ref": "#/definitions/EnvVar"
+          },
+          "type": "array"
+        },
+        "tolerations": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/Toleration"
+          },
+          "type": "array"
+        },
+        "affinity": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/Affinity"
+        },
+        "securityContext": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/PodSecurityContext"
+        },
+        "volumes": {
+          "items": {
+            "$ref": "#/definitions/Volume"
+          },
+          "type": "array"
+        },
+        "runtimeClassName": {
+          "type": "string"
+        },
+        "automountServiceAccountToken": {
+          "type": "boolean"
+        },
+        "dnsPolicy": {
+          "type": "string"
+        },
+        "dnsConfig": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/PodDNSConfig"
+        },
+        "enableServiceLinks": {
+          "type": "boolean"
+        },
+        "priorityClassName": {
+          "type": "string"
+        },
+        "schedulerName": {
+          "type": "string"
+        },
+        "imagePullSecrets": {
+          "items": {
+            "$ref": "#/definitions/LocalObjectReference"
+          },
+          "type": "array"
+        },
+        "hostAliases": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/HostAlias"
+          },
+          "type": "array"
+        },
+        "hostNetwork": {
+          "type": "boolean"
+        },
+        "topologySpreadConstraints": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/TopologySpreadConstraint"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Toleration": {
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "operator": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "effect": {
+          "type": "string"
+        },
+        "tolerationSeconds": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TopologySpreadConstraint": {
+      "required": [
+        "maxSkew",
+        "topologyKey",
+        "whenUnsatisfiable"
+      ],
+      "properties": {
+        "maxSkew": {
+          "type": "integer"
+        },
+        "topologyKey": {
+          "type": "string"
+        },
+        "whenUnsatisfiable": {
+          "type": "string"
+        },
+        "labelSelector": {
+          "$ref": "#/definitions/LabelSelector"
+        },
+        "minDomains": {
+          "type": "integer"
+        },
+        "nodeAffinityPolicy": {
+          "type": "string"
+        },
+        "nodeTaintsPolicy": {
+          "type": "string"
+        },
+        "matchLabelKeys": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -2581,6 +3099,22 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "WeightedPodAffinityTerm": {
+      "required": [
+        "weight",
+        "podAffinityTerm"
+      ],
+      "properties": {
+        "weight": {
+          "type": "integer"
+        },
+        "podAffinityTerm": {
+          "$ref": "#/definitions/PodAffinityTerm"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "WindowsSecurityContextOptions": {
       "properties": {
         "gmsaCredentialSpecName": {
@@ -2594,6 +3128,43 @@
         },
         "hostProcess": {
           "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "WorkspaceBinding": {
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "subPath": {
+          "type": "string"
+        },
+        "volumeClaimTemplate": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/PersistentVolumeClaim"
+        },
+        "persistentVolumeClaim": {
+          "$ref": "#/definitions/PersistentVolumeClaimVolumeSource"
+        },
+        "emptyDir": {
+          "$ref": "#/definitions/EmptyDirVolumeSource"
+        },
+        "configMap": {
+          "$ref": "#/definitions/ConfigMapVolumeSource"
+        },
+        "secret": {
+          "$ref": "#/definitions/SecretVolumeSource"
+        },
+        "projected": {
+          "$ref": "#/definitions/ProjectedVolumeSource"
+        },
+        "csi": {
+          "$ref": "#/definitions/CSIVolumeSource"
         }
       },
       "additionalProperties": false,
@@ -2618,24 +3189,6 @@
         },
         "optional": {
           "type": "boolean"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "WorkspacePipelineTaskBinding": {
-      "required": [
-        "name"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "workspace": {
-          "type": "string"
-        },
-        "subPath": {
-          "type": "string"
         }
       },
       "additionalProperties": false,

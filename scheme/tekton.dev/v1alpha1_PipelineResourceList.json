@@ -1,26 +1,20 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "$ref": "#/definitions/ClusterTriggerBinding",
+  "$ref": "#/definitions/PipelineResourceList",
   "definitions": {
-    "ClusterTriggerBinding": {
+    "ListMeta": {
       "properties": {
-        "kind": {
+        "selfLink": {
           "type": "string"
         },
-        "apiVersion": {
+        "resourceVersion": {
           "type": "string"
         },
-        "metadata": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/ObjectMeta"
+        "continue": {
+          "type": "string"
         },
-        "spec": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/TriggerBindingSpec"
-        },
-        "status": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/TriggerBindingStatus"
+        "remainingItemCount": {
+          "type": "integer"
         }
       },
       "additionalProperties": false,
@@ -160,7 +154,92 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "Param": {
+    "PipelineResource": {
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "apiVersion": {
+          "type": "string"
+        },
+        "metadata": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ObjectMeta"
+        },
+        "spec": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/PipelineResourceSpec"
+        },
+        "status": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/PipelineResourceStatus"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "PipelineResourceList": {
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "apiVersion": {
+          "type": "string"
+        },
+        "metadata": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ListMeta"
+        },
+        "items": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/PipelineResource"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "PipelineResourceSpec": {
+      "required": [
+        "type",
+        "params"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "params": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/ResourceParam"
+          },
+          "type": "array"
+        },
+        "secrets": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/SecretParam"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "PipelineResourceStatus": {
+      "properties": {},
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ResourceParam": {
       "required": [
         "name",
         "value"
@@ -176,21 +255,23 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "TriggerBindingSpec": {
+    "SecretParam": {
+      "required": [
+        "fieldName",
+        "secretKey",
+        "secretName"
+      ],
       "properties": {
-        "params": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/Param"
-          },
-          "type": "array"
+        "fieldName": {
+          "type": "string"
+        },
+        "secretKey": {
+          "type": "string"
+        },
+        "secretName": {
+          "type": "string"
         }
       },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "TriggerBindingStatus": {
-      "properties": {},
       "additionalProperties": false,
       "type": "object"
     }

@@ -898,9 +898,6 @@
           },
           "type": "array"
         },
-        "clusterName": {
-          "type": "string"
-        },
         "managedFields": {
           "items": {
             "$schema": "http://json-schema.org/draft-04/schema#",

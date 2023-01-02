@@ -1562,9 +1562,6 @@
           },
           "type": "array"
         },
-        "clusterName": {
-          "type": "string"
-        },
         "managedFields": {
           "items": {
             "$schema": "http://json-schema.org/draft-04/schema#",
@@ -2084,6 +2081,9 @@
         "os": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/PodOS"
+        },
+        "hostUsers": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false,
@@ -2627,6 +2627,21 @@
         },
         "labelSelector": {
           "$ref": "#/definitions/LabelSelector"
+        },
+        "minDomains": {
+          "type": "integer"
+        },
+        "nodeAffinityPolicy": {
+          "type": "string"
+        },
+        "nodeTaintsPolicy": {
+          "type": "string"
+        },
+        "matchLabelKeys": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
