@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "$ref": "#/definitions/EventListener",
+  "$ref": "#/definitions/EventListenerList",
   "definitions": {
     "AWSElasticBlockStoreVolumeSource": {
       "required": [
@@ -694,6 +694,32 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "EventListenerList": {
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "apiVersion": {
+          "type": "string"
+        },
+        "metadata": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ListMeta"
+        },
+        "items": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/EventListener"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "EventListenerSpec": {
       "properties": {
         "serviceAccountName": {
@@ -1304,6 +1330,24 @@
         },
         "tcpSocket": {
           "$ref": "#/definitions/TCPSocketAction"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ListMeta": {
+      "properties": {
+        "selfLink": {
+          "type": "string"
+        },
+        "resourceVersion": {
+          "type": "string"
+        },
+        "continue": {
+          "type": "string"
+        },
+        "remainingItemCount": {
+          "type": "integer"
         }
       },
       "additionalProperties": false,

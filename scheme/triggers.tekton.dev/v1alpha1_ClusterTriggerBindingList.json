@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "$ref": "#/definitions/ClusterTriggerBinding",
+  "$ref": "#/definitions/ClusterTriggerBindingList",
   "definitions": {
     "ClusterTriggerBinding": {
       "properties": {
@@ -21,6 +21,50 @@
         "status": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/TriggerBindingStatus"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ClusterTriggerBindingList": {
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "apiVersion": {
+          "type": "string"
+        },
+        "metadata": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ListMeta"
+        },
+        "items": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/ClusterTriggerBinding"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ListMeta": {
+      "properties": {
+        "selfLink": {
+          "type": "string"
+        },
+        "resourceVersion": {
+          "type": "string"
+        },
+        "continue": {
+          "type": "string"
+        },
+        "remainingItemCount": {
+          "type": "integer"
         }
       },
       "additionalProperties": false,

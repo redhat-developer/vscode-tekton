@@ -1,8 +1,41 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "$ref": "#/definitions/ClusterTriggerBinding",
+  "$ref": "#/definitions/ClusterInterceptor",
   "definitions": {
-    "ClusterTriggerBinding": {
+    "Addressable": {
+      "properties": {
+        "url": {
+          "$ref": "#/definitions/URL"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ClientConfig": {
+      "properties": {
+        "caBundle": {
+          "type": "string",
+          "media": {
+            "binaryEncoding": "base64"
+          }
+        },
+        "url": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/URL"
+        },
+        "service": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ServiceReference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ClusterInterceptor": {
+      "required": [
+        "spec",
+        "status"
+      ],
       "properties": {
         "kind": {
           "type": "string"
@@ -16,11 +49,81 @@
         },
         "spec": {
           "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/TriggerBindingSpec"
+          "$ref": "#/definitions/ClusterInterceptorSpec"
         },
         "status": {
           "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/TriggerBindingStatus"
+          "$ref": "#/definitions/ClusterInterceptorStatus"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ClusterInterceptorSpec": {
+      "required": [
+        "clientConfig"
+      ],
+      "properties": {
+        "clientConfig": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ClientConfig"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ClusterInterceptorStatus": {
+      "properties": {
+        "observedGeneration": {
+          "type": "integer"
+        },
+        "conditions": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/Condition"
+          },
+          "type": "array"
+        },
+        "annotations": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "address": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/Addressable"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Condition": {
+      "required": [
+        "type",
+        "status"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string"
+        },
+        "lastTransitionTime": {
+          "type": "string",
+          "format": "data-time"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -160,36 +263,78 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "Param": {
+    "ServiceReference": {
       "required": [
         "name",
-        "value"
+        "namespace"
       ],
       "properties": {
         "name": {
           "type": "string"
         },
-        "value": {
+        "namespace": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "URL": {
+      "required": [
+        "Scheme",
+        "Opaque",
+        "User",
+        "Host",
+        "Path",
+        "RawPath",
+        "ForceQuery",
+        "RawQuery",
+        "Fragment",
+        "RawFragment"
+      ],
+      "properties": {
+        "Scheme": {
+          "type": "string"
+        },
+        "Opaque": {
+          "type": "string"
+        },
+        "User": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/Userinfo"
+        },
+        "Host": {
+          "type": "string"
+        },
+        "Path": {
+          "type": "string"
+        },
+        "RawPath": {
+          "type": "string"
+        },
+        "ForceQuery": {
+          "type": "boolean"
+        },
+        "RawQuery": {
+          "type": "string"
+        },
+        "Fragment": {
+          "type": "string"
+        },
+        "RawFragment": {
           "type": "string"
         }
       },
       "additionalProperties": false,
       "type": "object"
     },
-    "TriggerBindingSpec": {
-      "properties": {
-        "params": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/Param"
-          },
-          "type": "array"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "TriggerBindingStatus": {
+    "Userinfo": {
       "properties": {},
       "additionalProperties": false,
       "type": "object"

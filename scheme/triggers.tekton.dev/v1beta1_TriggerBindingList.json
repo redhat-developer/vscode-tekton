@@ -1,26 +1,20 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "$ref": "#/definitions/ClusterTriggerBinding",
+  "$ref": "#/definitions/TriggerBindingList",
   "definitions": {
-    "ClusterTriggerBinding": {
+    "ListMeta": {
       "properties": {
-        "kind": {
+        "selfLink": {
           "type": "string"
         },
-        "apiVersion": {
+        "resourceVersion": {
           "type": "string"
         },
-        "metadata": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/ObjectMeta"
+        "continue": {
+          "type": "string"
         },
-        "spec": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/TriggerBindingSpec"
-        },
-        "status": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/TriggerBindingStatus"
+        "remainingItemCount": {
+          "type": "integer"
         }
       },
       "additionalProperties": false,
@@ -171,6 +165,59 @@
         },
         "value": {
           "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TriggerBinding": {
+      "required": [
+        "spec"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "apiVersion": {
+          "type": "string"
+        },
+        "metadata": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ObjectMeta"
+        },
+        "spec": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TriggerBindingSpec"
+        },
+        "status": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TriggerBindingStatus"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TriggerBindingList": {
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "apiVersion": {
+          "type": "string"
+        },
+        "metadata": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ListMeta"
+        },
+        "items": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/TriggerBinding"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,

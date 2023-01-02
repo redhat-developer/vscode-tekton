@@ -364,6 +364,26 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "ConfigSource": {
+      "properties": {
+        "uri": {
+          "type": "string"
+        },
+        "digest": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "entryPoint": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "ContainerPort": {
       "required": [
         "containerPort"
@@ -437,6 +457,71 @@
         },
         "message": {
           "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "CustomRunResult": {
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "CustomRunStatus": {
+      "properties": {
+        "observedGeneration": {
+          "type": "integer"
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/definitions/Condition"
+          },
+          "type": "array"
+        },
+        "annotations": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "data-time"
+        },
+        "completionTime": {
+          "type": "string",
+          "format": "data-time"
+        },
+        "results": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/CustomRunResult"
+          },
+          "type": "array"
+        },
+        "retriesStatus": {
+          "items": {
+            "$ref": "#/definitions/CustomRunStatus"
+          },
+          "type": "array"
+        },
+        "extraFields": {
+          "properties": {},
+          "additionalProperties": true,
+          "type": "object"
         }
       },
       "additionalProperties": false,
@@ -1254,9 +1339,6 @@
           },
           "type": "array"
         },
-        "clusterName": {
-          "type": "string"
-        },
         "managedFields": {
           "items": {
             "$schema": "http://json-schema.org/draft-04/schema#",
@@ -1753,7 +1835,7 @@
         },
         "status": {
           "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/RunStatus"
+          "$ref": "#/definitions/CustomRunStatus"
         },
         "whenExpressions": {
           "items": {
@@ -1917,6 +1999,9 @@
         "finallyStartTime": {
           "type": "string",
           "format": "data-time"
+        },
+        "provenance": {
+          "$ref": "#/definitions/Provenance"
         }
       },
       "additionalProperties": false,
@@ -2464,6 +2549,16 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "Provenance": {
+      "properties": {
+        "configSource": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ConfigSource"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "Quantity": {
       "properties": {},
       "additionalProperties": false,
@@ -2585,71 +2680,6 @@
               "$ref": "#/definitions/Quantity"
             }
           },
-          "type": "object"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "RunResult": {
-      "required": [
-        "name",
-        "value"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "RunStatus": {
-      "properties": {
-        "observedGeneration": {
-          "type": "integer"
-        },
-        "conditions": {
-          "items": {
-            "$ref": "#/definitions/Condition"
-          },
-          "type": "array"
-        },
-        "annotations": {
-          "patternProperties": {
-            ".*": {
-              "type": "string"
-            }
-          },
-          "type": "object"
-        },
-        "startTime": {
-          "type": "string",
-          "format": "data-time"
-        },
-        "completionTime": {
-          "type": "string",
-          "format": "data-time"
-        },
-        "results": {
-          "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/RunResult"
-          },
-          "type": "array"
-        },
-        "retriesStatus": {
-          "items": {
-            "$ref": "#/definitions/RunStatus"
-          },
-          "type": "array"
-        },
-        "extraFields": {
-          "properties": {},
-          "additionalProperties": true,
           "type": "object"
         }
       },
@@ -3584,6 +3614,10 @@
         "taskSpec": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/TaskSpec"
+        },
+        "provenance": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/Provenance"
         }
       },
       "additionalProperties": false,
@@ -3665,6 +3699,12 @@
             }
           },
           "type": "object"
+        },
+        "env": {
+          "items": {
+            "$ref": "#/definitions/EnvVar"
+          },
+          "type": "array"
         },
         "tolerations": {
           "items": {
@@ -3793,6 +3833,21 @@
         },
         "labelSelector": {
           "$ref": "#/definitions/LabelSelector"
+        },
+        "minDomains": {
+          "type": "integer"
+        },
+        "nodeAffinityPolicy": {
+          "type": "string"
+        },
+        "nodeTaintsPolicy": {
+          "type": "string"
+        },
+        "matchLabelKeys": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,

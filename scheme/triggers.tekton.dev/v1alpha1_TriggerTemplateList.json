@@ -1,26 +1,20 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "$ref": "#/definitions/ClusterTriggerBinding",
+  "$ref": "#/definitions/TriggerTemplateList",
   "definitions": {
-    "ClusterTriggerBinding": {
+    "ListMeta": {
       "properties": {
-        "kind": {
+        "selfLink": {
           "type": "string"
         },
-        "apiVersion": {
+        "resourceVersion": {
           "type": "string"
         },
-        "metadata": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/ObjectMeta"
+        "continue": {
+          "type": "string"
         },
-        "spec": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/TriggerBindingSpec"
-        },
-        "status": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/TriggerBindingStatus"
+        "remainingItemCount": {
+          "type": "integer"
         }
       },
       "additionalProperties": false,
@@ -160,28 +154,70 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "Param": {
+    "ParamSpec": {
       "required": [
-        "name",
-        "value"
+        "name"
       ],
       "properties": {
         "name": {
           "type": "string"
         },
-        "value": {
+        "description": {
+          "type": "string"
+        },
+        "default": {
           "type": "string"
         }
       },
       "additionalProperties": false,
       "type": "object"
     },
-    "TriggerBindingSpec": {
+    "TriggerTemplate": {
+      "required": [
+        "spec"
+      ],
       "properties": {
-        "params": {
+        "kind": {
+          "type": "string"
+        },
+        "apiVersion": {
+          "type": "string"
+        },
+        "metadata": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ObjectMeta"
+        },
+        "spec": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TriggerTemplateSpec"
+        },
+        "status": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TriggerTemplateStatus"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TriggerTemplateList": {
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "apiVersion": {
+          "type": "string"
+        },
+        "metadata": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ListMeta"
+        },
+        "items": {
           "items": {
             "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/Param"
+            "$ref": "#/definitions/TriggerTemplate"
           },
           "type": "array"
         }
@@ -189,7 +225,28 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "TriggerBindingStatus": {
+    "TriggerTemplateSpec": {
+      "properties": {
+        "params": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/ParamSpec"
+          },
+          "type": "array"
+        },
+        "resourcetemplates": {
+          "items": {
+            "properties": {},
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TriggerTemplateStatus": {
       "properties": {},
       "additionalProperties": false,
       "type": "object"
