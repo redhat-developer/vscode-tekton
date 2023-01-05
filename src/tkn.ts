@@ -601,16 +601,18 @@ export class TknImpl implements Tkn {
     if (command.cliCommand.indexOf('tkn') >= 0) {
       const toolLocation = ToolsConfig.getToolLocation('tkn');
       if (toolLocation) {
-        // eslint-disable-next-line require-atomic-updates
         command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);
       }
     } else {
       const toolConfig = await ToolsConfig.detectOrDownload(command.cliCommand);
-      if (!toolConfig || toolConfig.error == ERR_CLUSTER_TIMED_OUT) {
-        return toolConfig.error;
+      if (toolConfig) {
+        if (toolConfig.error === ERR_CLUSTER_TIMED_OUT) {
+          return toolConfig.error;
+        }
+        if (toolConfig.location) {
+          command.cliCommand = command.cliCommand.replace(command.cliCommand, `"${toolConfig.location}"`).replace(new RegExp(`&& ${command.cliCommand}`, 'g'), `&& "${toolConfig.location}"`);
+        }
       }
-      // eslint-disable-next-line require-atomic-updates
-      command.cliCommand = command.cliCommand.replace(command.cliCommand, `"${toolConfig.location}"`).replace(new RegExp(`&& ${command.cliCommand}`, 'g'), `&& "${toolConfig.location}"`);
     }
     return command;
   }
