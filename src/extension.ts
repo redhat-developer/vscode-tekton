@@ -22,7 +22,7 @@ import { TektonItem } from './tekton/tektonitem';
 import { showPipelinePreview, registerPipelinePreviewContext } from './pipeline/pipeline-preview';
 import { k8sCommands } from './kubernetes';
 import { initializeTknEditing } from './yaml-support/tkn-editing';
-import { ToolsConfig } from './tools';
+import { ToolConfigResult, ToolsConfig } from './tools';
 import { TKN_RESOURCE_SCHEME, TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider } from './util/tekton-vfs';
 import { updateTektonResource } from './tekton/deploy';
 import { deleteFromExplorer, deleteFromCustom } from './commands/delete';
@@ -211,19 +211,7 @@ async function detectTknCli(): Promise<void> {
   setCommandContext(CommandContext.TknCli, false);
 
   // start detecting 'tkn' on extension start
-  const tknTool = await ToolsConfig.detectOrDownload('tkn');
-  if (!tknTool) {
-    await vscode.window.showInformationMessage(
-      `Cannot find Tkn Cli v${ToolsConfig.tool['tkn'].version}. Please download it and try again`);
-    return Promise.reject();
-  }
-
-  if (tknTool && tknTool.error === ERR_CLUSTER_TIMED_OUT) {
-    await vscode.window.showWarningMessage(
-      'The cluster took too long to respond. Please make sure the cluster is running and you can connect to it.');
-    return Promise.reject();
-  }
-
+  const tknTool = await detectCli('tkn');
   if (tknTool) {
     setCommandContext(CommandContext.TknCli, true);
     sendVersionToTelemetry('tkn.version', tknTool.location);
@@ -231,25 +219,28 @@ async function detectTknCli(): Promise<void> {
 }
 
 async function detectKubectlCli(): Promise<void> {
-  const toolName = 'kubectl';
-  const tool = await ToolsConfig.detectOrDownload('kubectl');
-  if (!tool) {
-    await vscode.window.showInformationMessage(
-      `Cannot find ${toolName} cli v${ToolsConfig.tool['tkn'].version}. Please download it and try again`);
-    return Promise.reject();
-  }
-
-  if (tool && tool.error === ERR_CLUSTER_TIMED_OUT) {
-    await vscode.window.showWarningMessage(
-      'The cluster took too long to respond. Please make sure the cluster is running and you can connect to it.');
-    return Promise.reject();
-  }
-
+  const tool = await detectCli('kubectl');
   if (tool) {
     sendVersionToTelemetry('kubectl.version', `${ToolsConfig.getToolLocation('kubectl')} -o json`);
   }
 }
 
+async function detectCli(cliName: string): Promise<ToolConfigResult> {
+  const tool = await ToolsConfig.detectOrDownload(cliName);
+  if (!tool) {
+    await vscode.window.showInformationMessage(
+      `Cannot find ${cliName} cli v${ToolsConfig.tool[cliName].version}. Please download it and try again`);
+    return undefined;
+  }
+
+  if (tool && tool.error === ERR_CLUSTER_TIMED_OUT) {
+    await vscode.window.showWarningMessage(
+      'The cluster took too long to respond. Please make sure the cluster is running and you can connect to it.');
+    return undefined;
+  }
+  return tool;
+}
+ 
 async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<void> {
   const telemetryProps: TelemetryProperties = {
     identifier: commandId,

@@ -580,22 +580,12 @@ export class TknImpl implements Tkn {
   }
 
   async executeWithOptions(command: CliCommand, opts?: SpawnOptions, fail?: boolean): Promise<CliExitData> {
-    if (command.cliCommand.indexOf('tkn') >= 0) {
-      const toolLocation = ToolsConfig.getToolLocation('tkn');
-      if (toolLocation) {
-        // eslint-disable-next-line require-atomic-updates
-        command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);
-      }
-    } else {
-      const toolConfig = await ToolsConfig.detectOrDownload(command.cliCommand);
-      if (!toolConfig || toolConfig.error == ERR_CLUSTER_TIMED_OUT) {
-        return {
-          error: toolConfig.error,
-          stdout: undefined
-        };
-      }
-      // eslint-disable-next-line require-atomic-updates
-      command.cliCommand = command.cliCommand.replace(command.cliCommand, `"${toolConfig.location}"`).replace(new RegExp(`&& ${command.cliCommand}`, 'g'), `&& "${toolConfig.location}"`);
+    const cleanedCommand = await this.createCliCommand(command);
+    if (typeof cleanedCommand === 'string') {
+      return {
+        error: cleanedCommand,
+        stdout: undefined
+      }; 
     }
 
     return cli.execute(command, opts ? opts : {})
@@ -604,6 +594,10 @@ export class TknImpl implements Tkn {
   }
 
   async execute(command: CliCommand, cwd?: string, fail = true): Promise<CliExitData> {
+    return this.executeWithOptions(command, cwd ? { cwd } : {}, fail);
+  }
+
+  async createCliCommand(command: CliCommand): Promise<CliCommand | string> {
     if (command.cliCommand.indexOf('tkn') >= 0) {
       const toolLocation = ToolsConfig.getToolLocation('tkn');
       if (toolLocation) {
@@ -613,18 +607,12 @@ export class TknImpl implements Tkn {
     } else {
       const toolConfig = await ToolsConfig.detectOrDownload(command.cliCommand);
       if (!toolConfig || toolConfig.error == ERR_CLUSTER_TIMED_OUT) {
-        return {
-          error: toolConfig.error,
-          stdout: undefined
-        };
+        return toolConfig.error;
       }
       // eslint-disable-next-line require-atomic-updates
       command.cliCommand = command.cliCommand.replace(command.cliCommand, `"${toolConfig.location}"`).replace(new RegExp(`&& ${command.cliCommand}`, 'g'), `&& "${toolConfig.location}"`);
     }
-
-    return cli.execute(command, cwd ? { cwd } : {})
-      .then(async (result) => result.error && fail ? Promise.reject(result.error) : result)
-      .catch((err) => fail ? Promise.reject(err) : Promise.resolve({ error: null, stdout: '', stderr: '' }));
+    return command;
   }
 
   executeWatch(command: CliCommand, cwd?: string): WatchProcess {
