@@ -6,7 +6,7 @@
 import { commands, TreeItemCollapsibleState } from 'vscode';
 import { CliExitData } from '../cli';
 import { Command } from '../cli-command';
-import { IS_TEKTON_CLUSTER_INACTIVE, IS_TEKTON_PIPELINES_INACTIVE } from '../constants';
+import { IS_CLUSTER_INACTIVE, IS_TEKTON_PIPELINES_INACTIVE } from '../constants';
 import { ContextType } from '../context-type';
 import { telemetryLog, telemetryLogError } from '../telemetry';
 import { tkn } from '../tkn';
@@ -15,11 +15,25 @@ import { clusterPipelineStatus } from './map-object';
 import { getStderrString } from './stderrstring';
 import { watchTektonResources } from './telemetry-watch-tekton-resource';
 import { watchResources } from './watchResources';
+import { ERR_CLUSTER_TIMED_OUT } from '../constants';
 
 export async function checkClusterStatus(extensionStartUpCheck?: boolean): Promise<TektonNode[]> {
-  const result: CliExitData = await tkn.execute(
-    Command.checkTekton(), process.cwd(), false
+  const result: CliExitData = await tkn.executeWithOptions(
+    Command.checkUserAuthentication(), 
+    {
+      timeout: 5000,
+      ...(process.cwd() && {cwd: process.cwd()})
+    }, false
   );
+  if (result.error && getStderrString(result.error) == ERR_CLUSTER_TIMED_OUT) {
+    disableWatchAndLogErrorTelemetry(
+      'Unable to connect to the cluster, is it down?',
+      'problem_connect_cluster',
+      extensionStartUpCheck
+    );
+    setPipelinesStatus(true, false);
+    return [];
+  }
   if (result.stdout.trim() === 'no') {
     return buildErrorNode(
       'The current user doesn\'t have the privileges to interact with tekton resources.',
@@ -41,9 +55,7 @@ export async function checkClusterStatus(extensionStartUpCheck?: boolean): Promi
       'problem_connect_cluster',
       extensionStartUpCheck
     );
-    setPipelinesStatus(true, true);
-    commands.executeCommand('setContext', 'tekton.pipeline', false);
-    commands.executeCommand('setContext', 'tekton.cluster', true);
+    setPipelinesStatus(true, false);
     return [];
   }
   if (result.error && getStderrString(result.error).indexOf('the server doesn\'t have a resource type \'pipeline\'') > -1) {
@@ -53,8 +65,6 @@ export async function checkClusterStatus(extensionStartUpCheck?: boolean): Promi
       extensionStartUpCheck
     );
     setPipelinesStatus(false, true);
-    commands.executeCommand('setContext', 'tekton.cluster', false);
-    commands.executeCommand('setContext', 'tekton.pipeline', true);
     return [];
   }
   setPipelinesStatus(false, false);
@@ -63,8 +73,10 @@ export async function checkClusterStatus(extensionStartUpCheck?: boolean): Promi
 }
 
 function setPipelinesStatus(isClusterInactive: boolean, isPipelinesInactive: boolean): void {
-  clusterPipelineStatus.set(IS_TEKTON_CLUSTER_INACTIVE, isClusterInactive);
-  clusterPipelineStatus.set(IS_TEKTON_PIPELINES_INACTIVE, isPipelinesInactive);
+  clusterPipelineStatus.set(IS_CLUSTER_INACTIVE, isClusterInactive);
+  clusterPipelineStatus.set(IS_TEKTON_PIPELINES_INACTIVE, isPipelinesInactive);  
+  commands.executeCommand('setContext', IS_CLUSTER_INACTIVE, isClusterInactive);
+  commands.executeCommand('setContext', IS_TEKTON_PIPELINES_INACTIVE, isPipelinesInactive);
 }
 
 function disableWatchAndLogErrorTelemetry(message: string, identifier: string, extensionStartUpCheck?: boolean): void {

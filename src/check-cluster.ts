@@ -25,8 +25,7 @@ export async function checkOpenShiftCluster(): Promise<clusterVersion> {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return JSON.parse(result?.stdout);
     }
-    return null;
-  } catch (err) {
-    return null;
-  }
+  // eslint-disable-next-line no-empty
+  } catch (err) {}
+  return null
 }

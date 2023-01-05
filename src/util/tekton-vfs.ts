@@ -106,13 +106,13 @@ export class TektonVFSProvider implements FileSystemProvider {
     if (taskRegex.test(newResourceName)) {
       newResourceName = newResourceName.replace(`${ContextType.TASK}/`, `${ContextType.TASK}.tekton/`);
     }
-    if (ToolsConfig.getTknLocation('kubectl')) {
+    if (ToolsConfig.getToolLocation('kubectl')) {
       return tkn.execute(newK8sCommand(`-o ${outputFormat} get ${newResourceName}`));
     }
   }
 
   async updateK8sResource(fsPath: string): Promise<CliExitData> {
-    if (ToolsConfig.getTknLocation('kubectl')) {
+    if (ToolsConfig.getToolLocation('kubectl')) {
       return await tkn.execute(newK8sCommand(`apply -f ${fsPath}`));
     }
   }

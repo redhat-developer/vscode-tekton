@@ -19,7 +19,7 @@ suite('ConditionRef provider', () => {
 
   setup(() => {
     tknExecute = sandbox.stub(tkn, 'execute');
-    sandbox.stub(ToolsConfig, 'getTknLocation').returns('kubectl');
+    sandbox.stub(ToolsConfig, 'getToolLocation').returns('kubectl');
   });
 
   teardown(() => {

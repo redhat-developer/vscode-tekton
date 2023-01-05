@@ -19,7 +19,7 @@ suite('Task provider', () => {
 
   setup(() => {
     execStub = sandbox.stub(tknCli, 'execute');
-    sandbox.stub(ToolsConfig, 'getTknLocation').returns('kubectl');
+    sandbox.stub(ToolsConfig, 'getToolLocation').returns('kubectl');
   });
 
   teardown(() => {

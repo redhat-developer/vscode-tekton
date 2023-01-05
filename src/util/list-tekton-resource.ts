@@ -18,7 +18,7 @@ export async function getResourceList(resource: string): Promise<TknPipeline[]> 
 }
 
 async function executeCommand(command: CliCommand): Promise<TknPipeline[]> {
-  if (!ToolsConfig.getTknLocation('kubectl')) return [];
+  if (!ToolsConfig.getToolLocation('kubectl')) return [];
   const result = await tkn.execute(command);
   let data: TknPipeline[] = [];
   try {

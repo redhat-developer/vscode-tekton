@@ -48,6 +48,7 @@ import { openContainerInTerminal } from './debugger/show-in-terminal';
 import { debugName, debugSessions, pipelineTriggerStatus } from './util/map-object';
 import { deleteDebugger } from './debugger/delete-debugger';
 import { bundleWizard } from './tekton/bundle-pipeline-task';
+import { ERR_CLUSTER_TIMED_OUT } from './constants';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
@@ -136,9 +137,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   detectTknCli().then(() => {
     triggerDetection();
   });
-  if (ToolsConfig.getTknLocation('kubectl')) {
+  detectKubectlCli().then(() => {
     checkClusterStatus(true); // watch Tekton resources when all required dependency are installed
-  }
+  });  
   getClusterVersions().then((version) => {
     const telemetryProps: TelemetryProperties = {
       identifier: 'cluster.version',
@@ -210,14 +211,42 @@ async function detectTknCli(): Promise<void> {
   setCommandContext(CommandContext.TknCli, false);
 
   // start detecting 'tkn' on extension start
-  const tknPath = await ToolsConfig.detectOrDownload('tkn');
-
-  if (tknPath) {
-    setCommandContext(CommandContext.TknCli, true);
-    sendVersionToTelemetry('tkn.version', tknPath);
+  const tknTool = await ToolsConfig.detectOrDownload('tkn');
+  if (!tknTool) {
+    await vscode.window.showInformationMessage(
+      `Cannot find Tkn Cli v${ToolsConfig.tool['tkn'].version}. Please download it and try again`);
+    return Promise.reject();
   }
-  if (ToolsConfig.getTknLocation('kubectl')) {
-    sendVersionToTelemetry('kubectl.version', `${ToolsConfig.getTknLocation('kubectl')} -o json`);
+
+  if (tknTool && tknTool.error === ERR_CLUSTER_TIMED_OUT) {
+    await vscode.window.showWarningMessage(
+      'The cluster took too long to respond. Please make sure the cluster is running and you can connect to it.');
+    return Promise.reject();
+  }
+
+  if (tknTool) {
+    setCommandContext(CommandContext.TknCli, true);
+    sendVersionToTelemetry('tkn.version', tknTool.location);
+  }  
+}
+
+async function detectKubectlCli(): Promise<void> {
+  const toolName = 'kubectl';
+  const tool = await ToolsConfig.detectOrDownload('kubectl');
+  if (!tool) {
+    await vscode.window.showInformationMessage(
+      `Cannot find ${toolName} cli v${ToolsConfig.tool['tkn'].version}. Please download it and try again`);
+    return Promise.reject();
+  }
+
+  if (tool && tool.error === ERR_CLUSTER_TIMED_OUT) {
+    await vscode.window.showWarningMessage(
+      'The cluster took too long to respond. Please make sure the cluster is running and you can connect to it.');
+    return Promise.reject();
+  }
+
+  if (tool) {
+    sendVersionToTelemetry('kubectl.version', `${ToolsConfig.getToolLocation('kubectl')} -o json`);
   }
 }
 
@@ -241,7 +270,7 @@ async function sendVersionToTelemetry(commandId: string, cmd: string): Promise<v
       } else {
         telemetryProps[key] = `v${value['major']}.${value['minor']}`;
       }
-    }
+    } 
     sendTknAndKubectlVersionToTelemetry(commandId, telemetryProps);
   }
 }
@@ -296,7 +325,7 @@ function expandMoreItem(context: number, parent: TektonNode, treeViewId: string)
 }
 
 function refreshTreeView(): void {
-  if (ToolsConfig.getTknLocation('kubectl')) {
+  if (ToolsConfig.getToolLocation('kubectl')) {
     checkClusterStatus(true);
   }
   pipelineExplorer.refresh();

@@ -35,8 +35,8 @@ suite('tool configuration', () => {
       sb.stub(CliImpl.prototype, 'execute').resolves(testData);
       sb.stub(fsex, 'pathExists').resolves(true);
 
-      const result: string = await ToolsConfig.getVersion('tkn');
-      assert.equal(result, '0.2.0');
+      const result = await ToolsConfig.getVersion('tkn');
+      assert.equal(result.version, '0.2.0');
     });
 
     test('returns version number with expected output when version number start with "v"', async () => {
@@ -44,8 +44,8 @@ suite('tool configuration', () => {
       sb.stub(CliImpl.prototype, 'execute').resolves(testData);
       sb.stub(fsex, 'pathExists').resolves(true);
 
-      const result: string = await ToolsConfig.getVersion('tkn');
-      assert.equal(result, '0.2.0');
+      const result = await ToolsConfig.getVersion('tkn');
+      assert.equal(result.version, '0.2.0');
     });
 
     test('returns version undefined for unexpected output', async () => {
@@ -53,8 +53,8 @@ suite('tool configuration', () => {
       sb.stub(CliImpl.prototype, 'execute').resolves(invalidData);
       sb.stub(fsex, 'pathExists').resolves(true);
 
-      const result: string = await ToolsConfig.getVersion('tkn');
-      assert.equal(result, undefined);
+      const result = await ToolsConfig.getVersion('tkn');
+      assert.equal(result.version, undefined);
     });
 
     test('returns version undefined for not existing tool', async () => {
@@ -62,8 +62,8 @@ suite('tool configuration', () => {
       sb.stub(CliImpl.prototype, 'execute').resolves(invalidData);
       sb.stub(fsex, 'pathExists').resolves(false);
 
-      const result: string = await ToolsConfig.getVersion('odo');
-      assert.equal(result, undefined);
+      const result = await ToolsConfig.getVersion('odo');
+      assert.equal(result.version, undefined);
     });
 
     test('returns version undefined for tool that does not support version parameter', async () => {
@@ -71,8 +71,8 @@ suite('tool configuration', () => {
       sb.stub(CliImpl.prototype, 'execute').resolves(invalidData);
       sb.stub(fsex, 'pathExists').resolves(true);
 
-      const result: string = await ToolsConfig.getVersion('tkn');
-      assert.equal(result, undefined);
+      const result = await ToolsConfig.getVersion('tkn');
+      assert.equal(result.version, undefined);
     });
   });
 

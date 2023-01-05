@@ -16,7 +16,7 @@ import * as yaml from 'js-yaml';
 import { Platform } from '../util/platform';
 import { getStderrString } from '../util/stderrstring';
 import { clusterPipelineStatus } from '../util/map-object';
-import { IS_TEKTON_CLUSTER_INACTIVE, IS_TEKTON_PIPELINES_INACTIVE } from '../constants';
+import { IS_CLUSTER_INACTIVE, IS_TEKTON_PIPELINES_INACTIVE } from '../constants';
 
 interface BundleType {
   imageDetail: string;
@@ -26,7 +26,7 @@ interface BundleType {
 }
 
 export async function bundleWizard(): Promise<void> {
-  if (clusterPipelineStatus.get(IS_TEKTON_CLUSTER_INACTIVE)) {
+  if (clusterPipelineStatus.get(IS_CLUSTER_INACTIVE)) {
     window.showWarningMessage('Please check that your cluster is working fine and try again.');
     return;
   }

@@ -9,7 +9,7 @@ import { ToolsConfig } from '../tools';
 
 
 export async function getTknConditionsSnippets(): Promise<string[]> {
-  if (!ToolsConfig.getTknLocation('kubectl')) return [];
+  if (!ToolsConfig.getToolLocation('kubectl')) return [];
   const result = await tkn.execute(Command.listConditions());
   let data = [];
   if (result.error) {

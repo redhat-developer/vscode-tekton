@@ -677,12 +677,12 @@
       {
         "view": "tektonPipelineExplorerView",
         "contents": "Cluster is not accessible. Use install tool to Start Cluster or any other cluster which is active. \n[Kind](https://kubernetes.io/docs/tasks/tools/#kind)\n[Minikube](https://kubernetes.io/docs/tasks/tools/#minikube)\n[Red Hat OpenShift Local](https://developers.redhat.com/products/openshift-local/overview)",
-        "when": "tekton.cluster"
+        "when": "tekton.cluster.inactive"
       },
       {
         "view": "tektonPipelineExplorerView",
-        "contents": "Tekton Pipeline Operator is not installed. Click the below button to see the documentation for getting started.\n[Tekton pipeline](https://tekton.dev/docs/getting-started/)\n[Tekton Trigger](https://tekton.dev/docs/triggers/install/)",
-        "when": "tekton.pipeline"
+        "contents": "Tekton Pipeline Operator is not installed. Click the below button to see the documentation for getting started.\n[Tekton pipeline](https://tekton.dev/docs/getting-started/)\n[Tekton Triggers](https://tekton.dev/docs/triggers/install/)",
+        "when": "tekton.pipelines.inactive"
       }
     ],
     "menus": {
