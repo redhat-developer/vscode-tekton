@@ -10,7 +10,7 @@ import * as stream from 'stream';
 import * as JStream from 'jstream';
 import * as events from 'events';
 import { ToolsConfig } from './tools';
-import { ERR_CLUSTER_TIMED_OUT } from './constants';
+import { DEFAULT_EXEC_TIMEOUT, ERR_CLUSTER_TIMED_OUT } from './constants';
 
 export interface CliExitData {
   readonly error: string | Error;
@@ -112,7 +112,7 @@ export class CliImpl implements Cli {
   }
 
   async execute(cmd: CliCommand, opts: SpawnOptions = {
-    timeout: 10000
+    timeout: DEFAULT_EXEC_TIMEOUT
   }): Promise<CliExitData> {
     return new Promise<CliExitData>((resolve) => {
       this.tknChannel.print(cliCommandToString(cmd));

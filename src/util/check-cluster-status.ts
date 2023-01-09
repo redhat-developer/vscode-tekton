@@ -6,7 +6,7 @@
 import { commands, TreeItemCollapsibleState } from 'vscode';
 import { CliExitData } from '../cli';
 import { Command } from '../cli-command';
-import { IS_CLUSTER_INACTIVE, IS_TEKTON_PIPELINES_INACTIVE } from '../constants';
+import { CHECK_USER_AUTHENTICATION_TIMEOUT, ERR_CLUSTER_TIMED_OUT, IS_CLUSTER_INACTIVE, IS_TEKTON_PIPELINES_INACTIVE } from '../constants';
 import { ContextType } from '../context-type';
 import { telemetryLog, telemetryLogError } from '../telemetry';
 import { tkn } from '../tkn';
@@ -15,13 +15,12 @@ import { clusterPipelineStatus } from './map-object';
 import { getStderrString } from './stderrstring';
 import { watchTektonResources } from './telemetry-watch-tekton-resource';
 import { watchResources } from './watchResources';
-import { ERR_CLUSTER_TIMED_OUT } from '../constants';
 
 export async function checkClusterStatus(extensionStartUpCheck?: boolean): Promise<TektonNode[]> {
   const result: CliExitData = await tkn.executeWithOptions(
     Command.checkUserAuthentication(), 
     {
-      timeout: 5000,
+      timeout: CHECK_USER_AUTHENTICATION_TIMEOUT,
       ...(process.cwd() && {cwd: process.cwd()})
     }, false
   );
