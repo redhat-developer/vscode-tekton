@@ -15,10 +15,6 @@ export function newK8sCommand(...k8sArguments: string[]): CliCommand {
   return createCliCommand('kubectl', ...k8sArguments);
 }
 
-export function newOcCommand(...OcArguments: string[]): CliCommand {
-  return createCliCommand('oc', ...OcArguments);
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function verbose(_target: unknown, key: string, descriptor: any): void {
   let fnKey: string | undefined;
@@ -45,8 +41,8 @@ function verbose(_target: unknown, key: string, descriptor: any): void {
 
 export class Command {
 
-  static printOcVersionJson(): CliCommand {
-    return newOcCommand('version', '-o', 'json');
+  static getOcpServerVersion(): CliCommand {
+    return newK8sCommand('get', 'clusteroperator/openshift-apiserver', '-o', 'json');
   }
 
   static kubectlVersion(): CliCommand {

@@ -13,24 +13,40 @@ interface Versions {
 }
 
 export async function getClusterVersions(): Promise<Versions> {
-  const result = await cli.execute(Command.printOcVersionJson());
-  const versions: Versions = {
-    kubernetes_Version: undefined,
-    openshift_Version: undefined
+  const ocpServerVersion = await getOcpServerVersion();
+  const kubectlVersion = await getK8sServerVersion();
+  return {
+    kubernetes_Version: kubectlVersion,
+    openshift_Version: ocpServerVersion
   };
-  if (!result.error) {
-    try {
-      const versionsJson = JSON.parse(result.stdout);
-      if (versionsJson?.serverVersion?.major && versionsJson?.serverVersion?.minor) {
-        versions.kubernetes_Version = `${versionsJson.serverVersion.major}.${versionsJson.serverVersion.minor}`;
-      }
-      if (versionsJson?.openshiftVersion) {
-        versions.openshift_Version = versionsJson.openshiftVersion;
-      }
+}
 
+async function getK8sServerVersion(): Promise<string> {
+  const kubectlVersion = await cli.execute(Command.kubectlVersion()); 
+  if (kubectlVersion.stdout) {
+    try {
+      const versionsJson = JSON.parse(kubectlVersion.stdout);
+      if (versionsJson?.serverVersion?.major && versionsJson?.serverVersion?.minor) {
+        return `${versionsJson.serverVersion.major}.${versionsJson.serverVersion.minor}`;
+      }
     } catch (err) {
       // ignore and return undefined
     }
   }
-  return versions;
+  return undefined;
+}
+
+async function getOcpServerVersion(): Promise<string> {
+  const result = await cli.execute(Command.getOcpServerVersion());
+  if (!result.error) {
+    try {
+      const versionsJson = JSON.parse(result.stdout);
+      if (versionsJson?.status?.versions?.[0]?.version) {
+        return versionsJson.status.versions[0].version;
+      }
+    } catch (err) {
+      // ignore and return undefined
+    }
+  }
+  return undefined;
 }
