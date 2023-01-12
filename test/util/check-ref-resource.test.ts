@@ -66,7 +66,7 @@ suite('Reference Task/ClusterTask', () => {
 
   setup(() => {
     execStub = sandbox.stub(TknImpl.prototype, 'execute').resolves();
-    sandbox.stub(ToolsConfig, 'getTknLocation').returns('kubectl');
+    sandbox.stub(ToolsConfig, 'getToolLocation').returns('kubectl');
   });
 
   teardown(() => {

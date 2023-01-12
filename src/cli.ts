@@ -10,6 +10,7 @@ import * as stream from 'stream';
 import * as JStream from 'jstream';
 import * as events from 'events';
 import { ToolsConfig } from './tools';
+import { DEFAULT_EXEC_TIMEOUT, ERR_CLUSTER_TIMED_OUT } from './constants';
 
 export interface CliExitData {
   readonly error: string | Error;
@@ -110,7 +111,9 @@ export class CliImpl implements Cli {
     this.tknChannel.show();
   }
 
-  async execute(cmd: CliCommand, opts: SpawnOptions = {}): Promise<CliExitData> {
+  async execute(cmd: CliCommand, opts: SpawnOptions = {
+    timeout: DEFAULT_EXEC_TIMEOUT
+  }): Promise<CliExitData> {
     return new Promise<CliExitData>((resolve) => {
       this.tknChannel.print(cliCommandToString(cmd));
       if (opts.windowsHide === undefined) {
@@ -121,7 +124,7 @@ export class CliImpl implements Cli {
       }
       const tkn = spawn(cmd.cliCommand, cmd.cliArguments, opts);
       let stdout = '';
-      let error: string | Error;
+      let error: string | Error = '';
       tkn.stdout.on('data', (data) => {
         stdout += data;
       });
@@ -136,6 +139,12 @@ export class CliImpl implements Cli {
       tkn.on('close', () => {
         resolve({ error, stdout });
       });
+      if (opts.timeout > 0) {
+        setTimeout(() => {
+          error += ERR_CLUSTER_TIMED_OUT;
+          tkn.kill();
+        }, opts.timeout);
+      }
     });
   }
 
@@ -152,7 +161,7 @@ export class CliImpl implements Cli {
   }
 
   executeWatchJSON(cmd: CliCommand, opts: SpawnOptions = {}): JSONWatchProcess {
-    const toolLocation = ToolsConfig.getTknLocation(cmd.cliCommand);
+    const toolLocation = ToolsConfig.getToolLocation(cmd.cliCommand);
     if (toolLocation) {
       // eslint-disable-next-line require-atomic-updates
       cmd.cliCommand = cmd.cliCommand.replace(cmd.cliCommand, `"${toolLocation}"`).replace(new RegExp(`&& ${cmd.cliCommand}`, 'g'), `&& "${toolLocation}"`);

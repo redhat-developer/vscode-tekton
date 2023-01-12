@@ -22,6 +22,9 @@ export async function showDiagnosticData(diagnostic: TektonNode, commandId?: str
     window.showInformationMessage(`No data available for ${diagnostic.getName()} to Diagnostic Data.`);
     return;
   }
+  if (!result || result.error) {
+    return;
+  }
   const data = JSON.parse(result.stdout);
   if (diagnostic.contextValue === ContextType.PIPELINERUN || diagnostic.contextValue === ContextType.PIPELINERUNCHILDNODE) {
     const taskRun = [];

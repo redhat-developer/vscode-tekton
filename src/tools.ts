@@ -11,9 +11,11 @@ import hasha = require('hasha');
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fsex from 'fs-extra';
-import { createCliCommand, cli } from './cli';
+import { createCliCommand, cli, CliCommand } from './cli';
 import semver = require('semver');
 import configData = require('./tools.json');
+import { getStderrString } from './util/stderrstring';
+import { ERR_CLUSTER_TIMED_OUT } from './constants';
 
 export class ToolsConfig {
 
@@ -46,48 +48,55 @@ export class ToolsConfig {
     ToolsConfig.tool = ToolsConfig.loadMetadata(configData, Platform.OS);
   }
 
-  static getTknLocation(cmd: string): string {
+  static getToolLocation(cmd: string): string {
     return ToolsConfig.tool[cmd]?.location;
   }
 
-  public static async detectOrDownload(cmd: string): Promise<string> {
+  /**
+   * Detect if the cmd executable exists locally and its version is valid, based on the version range defined by the toolsconfig.json.
+   * If the plugin is not able to retrieve the version (timed_out error), the user needs to be informed.
+   * If the plugin does not find any valid executable, it asks the user to download one
+   * If the plugin find a valid executable, it is used to execute the following commands
+   * 
+   * @param cmd name of the command to run. Used to identify the executable to use (kubectl or tkn)
+   * @returns the location of a valid executable or the error if unable to find it or undefined if no valid executable has been found or downloaded
+   */
+  public static async detectOrDownload(cmd: string): Promise<ToolConfigResult | undefined> {
 
-    let toolLocation: string = ToolsConfig.tool[cmd]?.location;
+    let toolResult: ToolConfigResult | undefined = undefined;
+    const toolLocation: string = ToolsConfig.tool[cmd]?.location;
+    if (toolLocation !== undefined) {
+      toolResult = {
+        location: toolLocation
+      };
+    }
 
-    if (toolLocation === undefined) {
+    if (toolResult === undefined) {
       let response: string;
       const toolCacheLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool[cmd].cmdFileName);
       const whichLocation = which(cmd);
       const toolLocations: string[] = [whichLocation ? whichLocation.stdout : null, toolCacheLocation];
-      toolLocation = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tool[cmd].versionRange, cmd);
-      const downloadVersion = `Download ${ToolsConfig.tool[cmd].version}`;
-
-      if (toolLocation) {
-        const currentVersion = await ToolsConfig.getVersion(toolLocation, cmd);
-        if (!semver.satisfies(currentVersion, `>=${ToolsConfig.tool[cmd].versionRange}`) && cmd !== 'kubectl') {
-          response = await vscode.window.showWarningMessage(`Detected unsupported tkn version: ${currentVersion}. Supported tkn version: ${ToolsConfig.tool[cmd].versionRangeLabel}.`, downloadVersion, 'Cancel');
-        }
-      }
-      if (await ToolsConfig.getVersion(toolCacheLocation, cmd) === ToolsConfig.tool[cmd].version && response !== 'Cancel') {
-        response = 'Cancel';
-        toolLocation = toolCacheLocation;
+      toolResult = await ToolsConfig.selectTool(toolLocations, ToolsConfig.tool[cmd].versionRange, cmd);
+      // when selecting the tool we got a timed out error. Something is wrong with the cluster.
+      if (toolResult && toolResult.error === ERR_CLUSTER_TIMED_OUT) {
+        return toolResult;
       }
 
-      if (toolLocation === undefined || response === downloadVersion) {
+      if (toolResult === undefined) {
         // otherwise request permission to download
         const toolDlLocation = path.resolve(Platform.getUserHomePath(), '.vs-tekton', ToolsConfig.tool[cmd].dlFileName);
-        const installRequest = `Download and install v${ToolsConfig.tool[cmd].version}`;
+        const installRequest = `Download and install ${cmd} v${ToolsConfig.tool[cmd].version}`;
 
-        if (response !== downloadVersion && cmd !== 'kubectl') {
+        if (cmd === 'tkn') {
           response = await vscode.window.showInformationMessage(
             `Cannot find Tekton CLI ${ToolsConfig.tool[cmd].versionRangeLabel} for interacting with Tekton Pipelines. Commands which requires Tekton CLI will be disabled.`, installRequest, 'Help', 'Cancel');
         }
-        if (response !== downloadVersion && cmd === 'kubectl') {
+        if (cmd === 'kubectl') {
           response = await vscode.window.showInformationMessage(
             `Cannot find ${ToolsConfig.tool[cmd].description} v${ToolsConfig.tool[cmd].version}.`, installRequest, 'Cancel');
         }
         await fsex.ensureDir(path.resolve(Platform.getUserHomePath(), '.vs-tekton'));
-        if (response === installRequest || response === downloadVersion) {
+        if (response === installRequest) {
           let action: string;
           do {
             action = undefined;
@@ -111,68 +120,106 @@ export class ToolsConfig {
 
           if (action !== 'Cancel') {
             if (toolDlLocation.endsWith('.zip') || toolDlLocation.endsWith('.tar.gz')) {
-              await Archive.unzip(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), ToolsConfig.tool[cmd].filePrefix);
-              await fsex.remove(toolDlLocation);
+              await ToolsConfig.unzipAndRemove(toolDlLocation, path.resolve(Platform.getUserHomePath(), '.vs-tekton'), cmd);
             } else if (toolDlLocation.endsWith('.gz')) {
-              await Archive.unzip(toolDlLocation, toolCacheLocation, ToolsConfig.tool[cmd].filePrefix);
-              await fsex.remove(toolDlLocation);
+              await ToolsConfig.unzipAndRemove(toolDlLocation, toolCacheLocation, cmd);
             } else {
               fsex.renameSync(toolDlLocation, toolCacheLocation);
             }
             if (Platform.OS !== 'win32') {
               await fsex.chmod(toolCacheLocation, '765');
             }
-            toolLocation = toolCacheLocation;
+            toolResult = {
+              location: toolCacheLocation,
+              version: ToolsConfig.tool[cmd].version
+            };
           }
         } else if (response === 'Help') {
           vscode.env.openExternal(vscode.Uri.parse('https://github.com/redhat-developer/vscode-tekton#dependencies'));
         }
       }
-      if (toolLocation) {
+      if (toolResult && toolResult.location) {
         // TODO: 
         // eslint-disable-next-line require-atomic-updates
-        ToolsConfig.tool[cmd].location = toolLocation;
+        ToolsConfig.tool[cmd].location = toolResult.location;
       }
     }
-    return toolLocation;
+    return toolResult;
   }
 
-  public static async getVersion(location: string, cmd?: string): Promise<string> {
-    let detectedVersion: string;
+  private static async unzipAndRemove(toolDlLocation: string, extractTo: string, cmd: string): Promise<void> {
+    await Archive.unzip(toolDlLocation, extractTo, ToolsConfig.tool[cmd].filePrefix);
+    await fsex.remove(toolDlLocation);
+  }
+
+  public static async getVersion(location: string, cmd?: string): Promise<ToolConfigResult | undefined> {
+    let detectedVersion: ToolConfigResult | undefined = undefined;
     if (await fsex.pathExists(location)) {
-      const version = new RegExp('^Client version:\\s[v]?([0-9]+\\.[0-9]+\\.[0-9]+)$');
       if (cmd === 'kubectl') {
-        const result = await cli.execute(createCliCommand(`"${location}"`, 'version', '-o', 'json'));
-        if (result.stdout) {
-          const jsonKubectlVersion = JSON.parse(result.stdout)['clientVersion'];
-          detectedVersion = `${jsonKubectlVersion['major']}.${jsonKubectlVersion['minor']}.0`;
-        }
+        detectedVersion = await this.getVersionInner(
+          (stdout) => {
+            const jsonKubectlVersion = JSON.parse(stdout)['clientVersion'];
+            return `${jsonKubectlVersion['major']}.${jsonKubectlVersion['minor']}.0`;
+          },
+          createCliCommand(`"${location}"`, 'version', '-o', 'json')
+        );
       } else {
-        const result = await cli.execute(createCliCommand(`"${location}"`, 'version'));
-        if (result.stdout) {
-          const toolVersion: string[] = result.stdout.trim().split('\n').filter((value) => {
-            return value.match(version);
-          }).map((value) => version.exec(value)[1]);
-          if (toolVersion.length) {
-            detectedVersion = toolVersion[0];
-          }
-        }
+        detectedVersion = await this.getVersionInner(
+          (stdout) => {
+            const version = new RegExp('^Client version:\\s[v]?([0-9]+\\.[0-9]+\\.[0-9]+)$');
+            const toolVersion: string[] = stdout.trim().split('\n').filter((value) => {
+              return value.match(version);
+            }).map((value) => version.exec(value)[1]);
+            if (toolVersion.length) {
+              return toolVersion[0];
+            }
+            return undefined;
+          },
+          createCliCommand(`"${location}"`, 'version')
+        );
       }
     }
     return detectedVersion;
   }
 
-  public static async selectTool(locations: string[], versionRange: string, cmd?: string): Promise<string> {
-    let result: string;
-    for (const location of locations) {
-      if (await fsex.pathExists(location)) {
-        const configVersion = await ToolsConfig.getVersion(location, cmd);
-        if (location && (semver.satisfies(configVersion, `>=${versionRange}`)) || semver.satisfies(configVersion, versionRange)) {
-          result = location;
-          break;
-        }
+  private static async getVersionInner(extractVersionFunc: (string) => string, cliCommand: CliCommand): Promise<ToolConfigResult> {
+    const result = await cli.execute(cliCommand);
+    if (result.error && getStderrString(result.error).indexOf(ERR_CLUSTER_TIMED_OUT) > -1) {
+      return {
+        error: ERR_CLUSTER_TIMED_OUT,
+      };
+    }
+    if (result.stdout) {
+      return {
+        version: extractVersionFunc(result.stdout),
       }
     }
-    return result;
+    return undefined;
   }
+
+  public static async selectTool(locations: string[], versionRange: string, cmd?: string): Promise<ToolConfigResult | undefined> {
+    for (const location of locations) {
+      if (location && await fsex.pathExists(location)) {
+        const toolVersionResult = await ToolsConfig.getVersion(location, cmd);
+        if (toolVersionResult) {
+          // if the command time out there is some issue with the cluster and we inform the user
+          if (toolVersionResult.error) {
+            return toolVersionResult;
+          }
+          if (semver.satisfies(toolVersionResult.version, `>=${versionRange}`) || semver.satisfies(toolVersionResult.version, versionRange)) {
+            return {
+              ...toolVersionResult,
+              location,              
+            };
+          }
+        }          
+      }      
+    }
+    return undefined;
+  }
+}
+export interface ToolConfigResult {
+  version?: string;
+  location?: string;
+  error?: string;
 }

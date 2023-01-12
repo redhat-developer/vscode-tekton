@@ -6,6 +6,7 @@
 import { commands, TreeItemCollapsibleState } from 'vscode';
 import { CliExitData } from '../cli';
 import { Command } from '../cli-command';
+import { CHECK_USER_AUTHENTICATION_TIMEOUT, ERR_CLUSTER_TIMED_OUT, IS_CLUSTER_INACTIVE, IS_TEKTON_PIPELINES_INACTIVE } from '../constants';
 import { ContextType } from '../context-type';
 import { telemetryLog, telemetryLogError } from '../telemetry';
 import { tkn } from '../tkn';
@@ -16,63 +17,89 @@ import { watchTektonResources } from './telemetry-watch-tekton-resource';
 import { watchResources } from './watchResources';
 
 export async function checkClusterStatus(extensionStartUpCheck?: boolean): Promise<TektonNode[]> {
-  const result: CliExitData = await tkn.execute(
-    Command.checkTekton(), process.cwd(), false
+  const result: CliExitData = await tkn.executeWithOptions(
+    Command.checkUserAuthentication(), 
+    {
+      timeout: CHECK_USER_AUTHENTICATION_TIMEOUT,
+      ...(process.cwd() && {cwd: process.cwd()})
+    }, false
   );
+  if (result.error && getStderrString(result.error) == ERR_CLUSTER_TIMED_OUT) {
+    disableWatchAndLogErrorTelemetry(
+      'Unable to connect to the cluster, is it down?',
+      'problem_connect_cluster',
+      extensionStartUpCheck
+    );
+    setPipelinesStatus(true, false);
+    return [];
+  }
   if (result.stdout.trim() === 'no') {
-    const tknPrivilegeMsg = 'The current user doesn\'t have the privileges to interact with tekton resources.';
-    const identifier = 'tekton_resource_privileges';
-    watchResources.disableWatch();
-    if (extensionStartUpCheck) {
-      telemetryLog(`${identifier}_startUp`, tknPrivilegeMsg);
-      return;
-    }
-    telemetryLog(identifier, tknPrivilegeMsg);
-    return [new TektonNodeImpl(null, tknPrivilegeMsg, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
+    return buildErrorNode(
+      'The current user doesn\'t have the privileges to interact with tekton resources.',
+      'tekton_resource_privileges',
+      extensionStartUpCheck
+    );
   }
   if (result.error && getStderrString(result.error).indexOf('You must be logged in to the server (Unauthorized)') > -1) {
-    const tknMessage = 'Please login to the server.';
-    const identifier = 'tekton_login';
-    watchResources.disableWatch();
-    if (extensionStartUpCheck) {
-      telemetryLog(`${identifier}_startUp`, tknMessage);
-      return;
-    }
-    telemetryLog(identifier, tknMessage);
-    return [new TektonNodeImpl(null, tknMessage, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)]
+    return buildErrorNode(
+      'Please login to the server.',
+      'tekton_login',
+      extensionStartUpCheck
+    );
   }
   const serverCheck = RegExp('Unable to connect to the server|The connection to the server localhost:8080 was refused');
   if (serverCheck.test(getStderrString(result.error))) {
-    const loginError = 'Unable to connect to OpenShift cluster, is it down?';
-    const identifier = 'problem_connect_cluster';
-    watchResources.disableWatch();
-    if (extensionStartUpCheck) {
-      telemetryLogError(`${identifier}_startUp`, loginError);
-      return;
-    }
-    telemetryLogError(identifier, loginError);
-    clusterPipelineStatus.set('tekton.cluster', true);
-    commands.executeCommand('setContext', 'tekton.pipeline', false);
-    commands.executeCommand('setContext', 'tekton.cluster', true);
+    disableWatchAndLogErrorTelemetry(
+      'Unable to connect to OpenShift cluster, is it down?',
+      'problem_connect_cluster',
+      extensionStartUpCheck
+    );
+    setPipelinesStatus(true, false);
     return [];
   }
   if (result.error && getStderrString(result.error).indexOf('the server doesn\'t have a resource type \'pipeline\'') > -1) {
-    const message = 'Please install the Pipelines Operator.';
-    const identifier = 'install_pipeline_operator';
-    watchResources.disableWatch();
-    if (extensionStartUpCheck) {
-      telemetryLog(`${identifier}_startUp`, message);
-      return;
-    }
-    telemetryLog(identifier, message);
-    clusterPipelineStatus.set('tekton.cluster', false);
-    clusterPipelineStatus.set('tekton.pipeline', true);
-    commands.executeCommand('setContext', 'tekton.cluster', false);
-    commands.executeCommand('setContext', 'tekton.pipeline', true);
+    disableWatchAndLogTelemetry(
+      'Please install the Pipelines Operator.',
+      'install_pipeline_operator',
+      extensionStartUpCheck
+    );
+    setPipelinesStatus(false, true);
     return [];
   }
-  clusterPipelineStatus.set('tekton.cluster', false);
-  clusterPipelineStatus.set('tekton.pipeline', false);
+  setPipelinesStatus(false, false);
   await watchTektonResources(extensionStartUpCheck);
   return null;
+}
+
+function setPipelinesStatus(isClusterInactive: boolean, isPipelinesInactive: boolean): void {
+  clusterPipelineStatus.set(IS_CLUSTER_INACTIVE, isClusterInactive);
+  clusterPipelineStatus.set(IS_TEKTON_PIPELINES_INACTIVE, isPipelinesInactive);  
+  commands.executeCommand('setContext', IS_CLUSTER_INACTIVE, isClusterInactive);
+  commands.executeCommand('setContext', IS_TEKTON_PIPELINES_INACTIVE, isPipelinesInactive);
+}
+
+function disableWatchAndLogErrorTelemetry(message: string, identifier: string, extensionStartUpCheck?: boolean): void {
+  watchResources.disableWatch();
+  if (extensionStartUpCheck) {
+    telemetryLogError(`${identifier}_startUp`, message);
+    return;
+  }
+  telemetryLogError(identifier, message);
+}
+
+function disableWatchAndLogTelemetry(message: string, identifier: string, extensionStartUpCheck?: boolean): void {
+  watchResources.disableWatch();
+  if (extensionStartUpCheck) {
+    telemetryLog(`${identifier}_startUp`, message);
+    return;
+  }
+  telemetryLog(identifier, message);
+}
+
+function buildErrorNode(message: string, identifier: string, extensionStartUpCheck?: boolean): (TektonNode[] | undefined) {
+  disableWatchAndLogTelemetry(message, identifier, extensionStartUpCheck);
+  if (extensionStartUpCheck) {
+    return undefined;
+  }
+  return [new TektonNodeImpl(null, message, ContextType.TKN_DOWN, this, TreeItemCollapsibleState.None)];
 }

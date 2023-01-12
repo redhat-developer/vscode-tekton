@@ -23,6 +23,8 @@ import { getPipelineList } from './util/list-tekton-resource';
 import { telemetryLog, telemetryLogError } from './telemetry';
 import { checkClusterStatus } from './util/check-cluster-status';
 import { treeRefresh } from './util/watchResources';
+import { SpawnOptions } from 'child_process';
+import { ERR_CLUSTER_TIMED_OUT } from './constants';
 
 
 const tektonResourceCount = {};
@@ -72,6 +74,7 @@ export interface Tkn {
   getRawTasks(): Promise<TknTask[]>;
   getClusterTasks(clustertask?: TektonNode): Promise<TektonNode[]>;
   getRawClusterTasks(): Promise<TknTask[]>;
+  executeWithOptions(command: CliCommand, opts?: SpawnOptions, fail?: boolean): Promise<CliExitData>;
   execute(command: CliCommand, cwd?: string, fail?: boolean): Promise<CliExitData>;
   // eslint-disable-next-line @typescript-eslint/ban-types
   executeWatch(command: CliCommand, opts?: {}): WatchProcess;
@@ -408,7 +411,7 @@ export class TknImpl implements Tkn {
   private async _getTriggerResource(trigerResource: TektonNode, command: CliCommand, triggerContextType: ContextType, triggerType: string): Promise<TektonNode[]> {
     let data: TknPipelineResource[] = [];
     const result = await this.execute(command, process.cwd(), false);
-    const triggerCheck = RegExp('undefinederror: the server doesn\'t have a resource type');
+    const triggerCheck = RegExp('error: the server doesn\'t have a resource type');
     if (triggerCheck.test(getStderrString(result.error))) {
       telemetryLogError(`tekton.list.${triggerType}`, result.error);
       return;
@@ -465,7 +468,7 @@ export class TknImpl implements Tkn {
 
   async getRawTasks(): Promise<TknTask[]> {
     let data: TknTask[] = [];
-    if (!ToolsConfig.getTknLocation('kubectl')) return null;
+    if (!ToolsConfig.getToolLocation('kubectl')) return null;
     const result = await this.execute(Command.listTasks());
     if (result.error) {
       console.error(result + 'Std.err when processing tasks');
@@ -525,7 +528,7 @@ export class TknImpl implements Tkn {
 
   async getRawClusterTasks(): Promise<TknTask[]> {
     let data: TknTask[] = [];
-    if (!ToolsConfig.getTknLocation('kubectl')) return null;
+    if (!ToolsConfig.getToolLocation('kubectl')) return null;
     const result = await this.execute(Command.listClusterTasks());
     if (result.error) {
       console.log(result + 'Std.err when processing tasks');
@@ -561,10 +564,11 @@ export class TknImpl implements Tkn {
   }
 
   async executeInTerminal(command: CliCommand, resourceName?: string, cwd: string = process.cwd(), name = 'Tekton'): Promise<void> {
-    let toolLocation = await ToolsConfig.detectOrDownload(command.cliCommand);
-    if (toolLocation) {
-      toolLocation = path.dirname(toolLocation);
+    const toolConfig = await ToolsConfig.detectOrDownload(command.cliCommand);
+    if (!toolConfig || toolConfig.error == ERR_CLUSTER_TIMED_OUT) {
+      return;
     }
+    const toolLocation = path.dirname(toolConfig.location);
     let terminal: Terminal;
     if (resourceName) {
       terminal = WindowUtil.createTerminal(`${name}:${resourceName}`, cwd, toolLocation);
@@ -575,28 +579,46 @@ export class TknImpl implements Tkn {
     terminal.show();
   }
 
-  async execute(command: CliCommand, cwd?: string, fail = true): Promise<CliExitData> {
-    if (command.cliCommand.indexOf('tkn') >= 0) {
-      const toolLocation = ToolsConfig.getTknLocation('tkn');
-      if (toolLocation) {
-        // eslint-disable-next-line require-atomic-updates
-        command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);
-      }
-    } else {
-      const toolLocation = await ToolsConfig.detectOrDownload(command.cliCommand);
-      if (toolLocation) {
-        // eslint-disable-next-line require-atomic-updates
-        command.cliCommand = command.cliCommand.replace(command.cliCommand, `"${toolLocation}"`).replace(new RegExp(`&& ${command.cliCommand}`, 'g'), `&& "${toolLocation}"`);
-      }
+  async executeWithOptions(command: CliCommand, opts?: SpawnOptions, fail?: boolean): Promise<CliExitData> {
+    const cleanedCommand = await this.createCliCommand(command);
+    if (typeof cleanedCommand === 'string') {
+      return {
+        error: cleanedCommand,
+        stdout: undefined
+      }; 
     }
 
-    return cli.execute(command, cwd ? { cwd } : {})
+    return cli.execute(command, opts ? opts : {})
       .then(async (result) => result.error && fail ? Promise.reject(result.error) : result)
       .catch((err) => fail ? Promise.reject(err) : Promise.resolve({ error: null, stdout: '', stderr: '' }));
   }
 
+  async execute(command: CliCommand, cwd?: string, fail = true): Promise<CliExitData> {
+    return this.executeWithOptions(command, cwd ? { cwd } : {}, fail);
+  }
+
+  async createCliCommand(command: CliCommand): Promise<CliCommand | string> {
+    if (command.cliCommand.indexOf('tkn') >= 0) {
+      const toolLocation = ToolsConfig.getToolLocation('tkn');
+      if (toolLocation) {
+        command.cliCommand = command.cliCommand.replace('tkn', `"${toolLocation}"`).replace(new RegExp('&& tkn', 'g'), `&& "${toolLocation}"`);
+      }
+    } else {
+      const toolConfig = await ToolsConfig.detectOrDownload(command.cliCommand);
+      if (toolConfig) {
+        if (toolConfig.error === ERR_CLUSTER_TIMED_OUT) {
+          return toolConfig.error;
+        }
+        if (toolConfig.location) {
+          command.cliCommand = command.cliCommand.replace(command.cliCommand, `"${toolConfig.location}"`).replace(new RegExp(`&& ${command.cliCommand}`, 'g'), `&& "${toolConfig.location}"`);
+        }
+      }
+    }
+    return command;
+  }
+
   executeWatch(command: CliCommand, cwd?: string): WatchProcess {
-    const toolLocation = ToolsConfig.getTknLocation(command.cliCommand);
+    const toolLocation = ToolsConfig.getToolLocation(command.cliCommand);
     if (toolLocation) {
       // eslint-disable-next-line require-atomic-updates
       command.cliCommand = command.cliCommand.replace(command.cliCommand, `"${toolLocation}"`).replace(new RegExp(`&& ${command.cliCommand}`, 'g'), `&& "${toolLocation}"`);

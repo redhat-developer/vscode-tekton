@@ -54,7 +54,7 @@ export async function watchTaskRunContainer(resourceName: string, resourceType: 
           for (const containerData of taskRunData.status.steps) {
             const debugTaskName = taskRunData.metadata.name;
             const checkDebugStatus = await tkn.execute(Command.isContainerStoppedOnDebug(containerData.container, taskRunData.status.podName, taskRunData.metadata.namespace), process.cwd(), false);
-            if (!debugSessions.get(debugTaskName)?.count && checkDebugStatus.stdout.trim() && checkDebugStatus.stdout.trim().length !== 0) {
+            if (!debugSessions.get(debugTaskName)?.count && checkDebugStatus.stdout && checkDebugStatus.stdout.trim() && checkDebugStatus.stdout.trim().length !== 0) {
               tkn.executeInTerminal(Command.loginToContainer(containerData.container, taskRunData.status.podName, taskRunData.metadata.namespace), debugTaskName);
               debugSessions.set(debugTaskName, {
                 count: true,

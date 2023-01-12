@@ -50,7 +50,7 @@ suite('Cli', () => {
     const result = await p;
 
     expect(spawnStub).calledWith(command.cliCommand, command.cliArguments, options);
-    expect(result).deep.equals({ error: undefined, stdout: stdout });
+    expect(result).deep.equals({ error: '', stdout: stdout });
   });
 
   test('execute passes errors into its exit data', async () => {

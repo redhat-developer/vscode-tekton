@@ -232,8 +232,8 @@ export class Command {
     return newTknCommand('taskrun', 'logs', name, '-f');
   }
 
-  static checkTekton(): CliCommand {
-    return newK8sCommand('auth', 'can-i', 'create', 'pipeline.tekton.dev', '&&', 'kubectl', 'get', 'pipeline.tekton.dev');
+  static checkUserAuthentication(): CliCommand {
+    return newK8sCommand('kubectl', 'get', 'pipeline.tekton.dev');
   }
 
   static hubInstallTask(name: string, version: string): CliCommand {

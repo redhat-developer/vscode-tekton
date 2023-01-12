@@ -60,7 +60,7 @@ suite('Tekton VFS Provider', () => {
       writeFileStub = sandbox.stub(fsx, 'writeFile');
       ensureFileStub = sandbox.stub(fsx, 'ensureFile');
       statStub = sandbox.stub(fsx, 'stat');
-      sandbox.stub(ToolsConfig, 'getTknLocation').returns('1.18.0');
+      sandbox.stub(ToolsConfig, 'getToolLocation').returns('1.18.0');
     });
 
     test('extractResourceAndFormat should return resource and format', () => {

@@ -38,7 +38,7 @@ suite('tkn', () => {
     sandbox.stub(telemetry, 'telemetryLogError');
     sandbox.stub(ToolsConfig, 'getVersion').resolves('0.2.0');
     execStubCli = sandbox.stub(CliImpl.prototype, 'execute').resolves();
-    sandbox.stub(ToolsConfig, 'getTknLocation').returns('kubectl');
+    sandbox.stub(ToolsConfig, 'getToolLocation').returns('kubectl');
   });
 
   teardown(() => {
@@ -112,7 +112,9 @@ suite('tkn', () => {
         state: undefined
       };
       toolsStub.restore();
-      toolsStub = sandbox.stub(ToolsConfig, 'detectOrDownload').resolves(path.join('segment1', 'segment2'));
+      toolsStub = sandbox.stub(ToolsConfig, 'detectOrDownload').resolves({
+        location: path.join('segment1', 'segment2')
+      });
       const ctStub = sandbox.stub(WindowUtil, 'createTerminal').returns(termFake);
       await tknCli.executeInTerminal(createCliCommand('tkn'));
       expect(termFake.show).calledOnce;
@@ -1121,16 +1123,16 @@ suite('tkn', () => {
 
   suite('getPipelineNodes', () => {
 
-    let execStub: sinon.SinonStub;
+    let execWithOptionsStub: sinon.SinonStub;
     let commandsStub: sinon.SinonStub;
 
     setup(() => {
       commandsStub = sandbox.stub(commands, 'executeCommand');
-      execStub = sandbox.stub(tknCli, 'execute');
+      execWithOptionsStub = sandbox.stub(tknCli, 'executeWithOptions');
     });
 
     test('show warning message if user doesn\'t have the privileges to interact with tekton resources', async () => {
-      execStub.onFirstCall().resolves({ error: undefined, stdout: 'no' });
+      execWithOptionsStub.onFirstCall().resolves({ error: undefined, stdout: 'no' });
       const result = await tknCli.getPipelineNodes();
       assert.equal(result[0].getName(), 'The current user doesn\'t have the privileges to interact with tekton resources.');
     });
@@ -1138,7 +1140,7 @@ suite('tkn', () => {
     test('show warning message if pipelines operator is not installed', async () => {
       commandsStub.onFirstCall().resolves(false);
       commandsStub.onSecondCall().resolves(true);
-      execStub.onFirstCall().resolves({ error: 'error: the server doesn\'t have a resource type \'pipeline\'', stdout: '' });
+      execWithOptionsStub.onFirstCall().resolves({ error: 'error: the server doesn\'t have a resource type \'pipeline\'', stdout: '' });
       await tknCli.getPipelineNodes();
       expect(commandsStub).calledTwice;
     });
