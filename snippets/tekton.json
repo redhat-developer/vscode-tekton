@@ -236,7 +236,7 @@
     "prefix": "TriggerTemplate",
     "description": "Create a TriggerTemplate Resource",
     "body": [
-      "apiVersion: tekton.dev/v1beta1",
+      "apiVersion: triggers.tekton.dev/v1beta1",
       "kind: TriggerTemplate",
       "metadata:",
       "  name: ${1:name}",
@@ -249,7 +249,7 @@
     "prefix": "TriggerBinding",
     "description": "Create a TriggerBinding Resource",
     "body": [
-      "apiVersion: tekton.dev/v1beta1",
+      "apiVersion: triggers.tekton.dev/v1beta1",
       "kind: TriggerBinding",
       "metadata:",
       "  name: ${1:name}",
@@ -263,7 +263,7 @@
     "prefix": "ClusterTriggerBinding",
     "description": "Create a ClusterTriggerBinding Resource",
     "body": [
-      "apiVersion: tekton.dev/v1beta1",
+      "apiVersion: triggers.tekton.dev/v1beta1",
       "kind: ClusterTriggerBinding",
       "metadata:",
       "  name: ${1:name}",
@@ -277,7 +277,7 @@
     "prefix": "EventListener",
     "description": "Create an EventListener Resource",
     "body": [
-      "apiVersion: tekton.dev/v1beta1",
+      "apiVersion: triggers.tekton.dev/v1beta1",
       "kind: EventListener",
       "metadata:",
       "  name: ${1:name}",
