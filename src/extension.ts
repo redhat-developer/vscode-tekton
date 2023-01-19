@@ -27,7 +27,6 @@ import { TKN_RESOURCE_SCHEME, TKN_RESOURCE_SCHEME_READONLY, tektonVfsProvider } 
 import { updateTektonResource } from './tekton/deploy';
 import { deleteFromExplorer, deleteFromCustom } from './commands/delete';
 import { addTrigger } from './tekton/trigger';
-import { triggerDetection } from './util/detection';
 import { showDiagnosticData } from './tekton/diagnostic';
 import { TriggerTemplate } from './tekton/triggertemplate';
 import { TektonHubTasksViewProvider } from './hub/hub-view';
@@ -35,7 +34,7 @@ import { registerLogDocumentProvider } from './util/log-in-editor';
 import { openPipelineRunTemplate, openTaskRunTemplate } from './tekton/generate-template';
 import sendTelemetry, { startTelemetry, telemetryLogError, TelemetryProperties } from './telemetry';
 import { cli, createCliCommand } from './cli';
-import { getVersion, tektonVersionType } from './util/tknversion';
+import { getVersion, tektonVersionType, TknVersion, version } from './util/tknversion';
 import { TektonNode } from './tree-view/tekton-node';
 import { checkClusterStatus } from './util/check-cluster-status';
 import { getClusterVersions } from './cluster-version';
@@ -49,9 +48,11 @@ import { debugName, debugSessions, pipelineTriggerStatus } from './util/map-obje
 import { deleteDebugger } from './debugger/delete-debugger';
 import { bundleWizard } from './tekton/bundle-pipeline-task';
 import { ERR_CLUSTER_TIMED_OUT } from './constants';
+import TektonCompletionItemProvider from './yaml-support/tkn-completion-item-provider';
 
 export let contextGlobalState: vscode.ExtensionContext;
 let k8sExplorer: k8s.ClusterExplorerV1 | undefined = undefined;
+let tektonCompletionProvider: TektonCompletionItemProvider | undefined = undefined;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 
@@ -134,8 +135,22 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   ];
   disposables.forEach((e) => context.subscriptions.push(e));
 
-  detectTknCli().then(() => {
-    triggerDetection();
+  detectTknCli().then(async () => {
+    const tknVersionType: TknVersion = await version();
+    setCommandContext(CommandContext.Trigger, tknVersionType && tknVersionType.trigger !== 'unknown');
+    tektonCompletionProvider = new TektonCompletionItemProvider(tknVersionType ? tknVersionType.pipeline : undefined);
+    tektonCompletionProvider.init().then((result) =>
+    {
+      if (!result.success)
+      {
+        console.log(`TektonCompletionItemProvider init failed: ${(result.error.message)}`);
+        vscode.window.showErrorMessage('Something went wrong when initializing tekton completion item provider. Please see the console for more infos!');
+      }   
+      else
+      {
+        context.subscriptions.push(vscode.languages.registerCompletionItemProvider(<vscode.DocumentFilter>{language: 'yaml'}, tektonCompletionProvider));
+      }
+    });
   });
   detectKubectlCli().then(() => {
     checkClusterStatus(true); // watch Tekton resources when all required dependency are installed
@@ -319,6 +334,9 @@ function refreshTreeView(): void {
   if (ToolsConfig.getToolLocation('kubectl')) {
     checkClusterStatus(true);
   }
+  if (ToolsConfig.getToolLocation('tkn')) {
+    updateTektonCompletionProvider();
+  }
   pipelineExplorer.refresh();
   debugName.clear();
   if (debugSessions && debugSessions.size !== 0) {
@@ -328,4 +346,12 @@ function refreshTreeView(): void {
   }
   debugSessions.clear();
   debugExplorer.refresh();
+}
+
+function updateTektonCompletionProvider(): void {
+  version().then((v) => {
+    if (tektonCompletionProvider) {
+      tektonCompletionProvider.update(v.pipeline)
+    }  
+  });  
 }

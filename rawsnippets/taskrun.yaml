@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: <pipelines_api_version>
 kind: TaskRun
 metadata:
   name: ${1:echo-hello-world-run}

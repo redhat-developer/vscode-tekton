@@ -137,12 +137,6 @@
         }
       }
     },
-    "snippets": [
-      {
-        "language": "yaml",
-        "path": "./snippets/tekton.json"
-      }
-    ],
     "keybindings": [
       {
         "command": "tekton.explorer.refresh",

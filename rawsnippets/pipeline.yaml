@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: <pipelines_api_version>
 kind: Pipeline
 metadata:
   name: ${1:app-deploy}

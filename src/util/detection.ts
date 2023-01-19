@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
+import * as semver from 'semver';
 import { CommandContext, setCommandContext } from '../commands';
 import { TknVersion, version } from './tknversion';
 
