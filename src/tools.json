@@ -4,7 +4,7 @@
     "vendor": "Google",
     "name": "kubectl",
     "version": "1.25.3",
-    "versionRange": "1.17.0 - 1.25.3",
+    "versionRange": "1.25.3",
     "versionRangeLabel": "v1.25.3",
     "dlFileName": "kubectl",
     "cmdFileName": "kubectl",
