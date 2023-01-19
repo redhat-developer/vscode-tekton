@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: <pipelines_api_version>
 kind: Task
 metadata:
   name: ${1}

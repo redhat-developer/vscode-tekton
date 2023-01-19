@@ -12,7 +12,6 @@ import * as path from 'path';
 import { generateScheme } from '../../src/yaml-support/tkn-yaml-scheme-generator';
 import { TestTextDocument } from '../text-document-mock';
 import * as tasksProvider from '../../src/yaml-support/tkn-tasks-provider';
-import * as conditionsProvider from '../../src/yaml-support/tkn-conditions-provider';
 import { TknTask } from '../../src/tekton';
 
 const expect = chai.expect;
@@ -25,7 +24,6 @@ suite('Pipeline scheme generator', () => {
 
   setup(() => {
     sandbox.stub(tasksProvider, 'getTknTasksSnippets').resolves([]);
-    sandbox.stub(conditionsProvider, 'getTknConditionsSnippets').resolves([]);
     getRawTasksStub = sandbox.stub(tasksProvider, 'getRawTasks');
     getRawTasksStub.resolves([]);
   });

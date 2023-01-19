@@ -16,7 +16,7 @@
     "prefix": "Task",
     "description": "Create a Tekton Task Resource",
     "body": [
-      "apiVersion: tekton.dev/v1beta1",
+      "apiVersion: <pipelines_api_version>",
       "kind: Task",
       "metadata:",
       "  name: ${1}",
@@ -44,7 +44,7 @@
     "prefix": "TaskRun",
     "description": "Create a Tekton TaskRun Resource",
     "body": [
-      "apiVersion: tekton.dev/v1beta1",
+      "apiVersion: <pipelines_api_version>",
       "kind: TaskRun",
       "metadata:",
       "  name: ${1:echo-hello-world-run}",
@@ -57,7 +57,7 @@
     "prefix": "Pipeline",
     "description": "Create a Tekton Pipeline Resource",
     "body": [
-      "apiVersion: tekton.dev/v1beta1",
+      "apiVersion: <pipelines_api_version>",
       "kind: Pipeline",
       "metadata:",
       "  name: ${1:app-deploy}",
@@ -177,7 +177,7 @@
     "prefix": "PipelineRun",
     "description": "Create a Tekton PipelineRun Resource",
     "body": [
-      "apiVersion: tekton.dev/v1beta1",
+      "apiVersion: <pipelines_api_version>",
       "kind: PipelineRun",
       "metadata:",
       "  name: ${1:foo-run}",
