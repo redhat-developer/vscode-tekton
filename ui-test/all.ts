@@ -4,6 +4,9 @@
  *-----------------------------------------------------------------------------------------------*/
 import * as taskTest from './suite/task-test';
 import * as tektonViewTest from './suite/tekton-view-test';
+import * as extensionActivityTest from './public-suite/extension-activity-test';
+import * as commandPaletteTest from './public-suite/command-palette-test';
+import * as extensionViewTest from './public-suite/extension-view-test';
 
 describe('VSCode Tekton UI Tests Suite', () => {
   const clusterUrl = process.env.CLUSTER_URL || 'https://api.openshift4.cluster.adapters-crs-qe.com:6443';
@@ -12,5 +15,9 @@ describe('VSCode Tekton UI Tests Suite', () => {
 
   tektonViewTest.tektonViewTest(clusterUrl, username, password);
   taskTest.taskTest(clusterUrl, username, password);
+
+  commandPaletteTest.commandPaletteTest()
+  extensionActivityTest.extensionActivityTest();
+  extensionViewTest.extensionViewTest();
 });
 
