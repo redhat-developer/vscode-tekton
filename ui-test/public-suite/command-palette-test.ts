@@ -8,16 +8,14 @@ import { expect } from 'chai';
 export function commandPaletteTest() : void{
 
   describe('Tekton Command Palette Test', () => {
-    let driver: WebDriver;
 
     before(async function() {
-      this.timeout(200000);
-      driver = VSBrowser.instance.driver;
+      this.timeout(100000);
       await new EditorView().closeAllEditors();
     });
 
     it('Search Tekton', async function(){
-      this.timeout(300000);
+      this.timeout(100000);
       await new Workbench().openCommandPrompt();
       const paletteInput = await InputBox.create();
       await paletteInput.setText('> tekton');
@@ -27,7 +25,7 @@ export function commandPaletteTest() : void{
     });
 
     after(async function() {
-      this.timeout(200000);
+      this.timeout(100000);
       await new EditorView().closeAllEditors();
     });
   });
