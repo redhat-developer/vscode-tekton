@@ -2,9 +2,8 @@
  *  Copyright (c) Red Hat, Inc. All rights reserved.
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
-import { SideBarView, ActivityBar, WebDriver, VSBrowser, EditorView, Workbench } from 'vscode-extension-tester';
+import { SideBarView, ActivityBar, EditorView } from 'vscode-extension-tester';
 import { expect } from 'chai';
-import { viewHasItems } from '../common/conditions';
 import { views } from '../common/constants';
 
 export function extensionActivityTest() : void{
@@ -12,18 +11,18 @@ export function extensionActivityTest() : void{
   describe('Tekton Activity Test', () => {
 
     before(async function() {
-      this.timeout(100000);
+      this.timeout(20000);
       await new EditorView().closeAllEditors();
     });
 
     it('Check Tekton Pipelines Exists', async function(){
-      this.timeout(100000);
+      this.timeout(20000);
       const tektonPip = await new ActivityBar().getViewControl(views.TEKTON_TITLE);
       expect(tektonPip).not.undefined;
     });
 
     it('Check Tekton View Categories', async function(){
-      this.timeout(100000);
+      this.timeout(20000);
       await (await new ActivityBar().getViewControl(views.TEKTON_TITLE)).openView();
       const tektonCats = await new SideBarView().getContent().getSections();
       expect(tektonCats.length).equals(3);
@@ -31,7 +30,7 @@ export function extensionActivityTest() : void{
     });
 
     it('Check Tekton Pipelines Actions', async function(){
-      this.timeout(100000);
+      this.timeout(20000);
       await (await new ActivityBar().getViewControl(views.TEKTON_TITLE)).openView();
       const tektonPipSection = await new SideBarView().getContent().getSection(views.TEKTON_TITLE);
       await tektonPipSection.expand();
@@ -42,7 +41,7 @@ export function extensionActivityTest() : void{
     });
 
     after(async function() {
-      this.timeout(100000);
+      this.timeout(20000);
       await new EditorView().closeAllEditors();
     });
   });
