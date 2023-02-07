@@ -1059,7 +1059,7 @@
     "watch:webview": "webpack-cli -w --mode development",
     "generate:hub-client": "openapi-generator-cli generate -i https://raw.githubusercontent.com/tektoncd/hub/main/api/gen/http/openapi3.json -g typescript-axios -o src/tekton-hub-client --additional-properties=supportsES6=true",
     "ui-test": "extest setup-and-run ./out/ui-test/all.js",
-    "public-ui-test": "extest setup-and-run ./out/ui-test/publicAllTests.js -c max"
+    "public-ui-test": "extest setup-and-run ./out/ui-test/public-suite/all-public.js"
   },
   "devDependencies": {
     "@babel/core": "7.19.6",

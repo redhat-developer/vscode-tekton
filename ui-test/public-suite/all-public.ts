@@ -3,8 +3,12 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  *-----------------------------------------------------------------------------------------------*/
 
-import { dummyTest } from './suite/dummy-test';
+import * as extensionActivityTest from './extension-activity-test';
+import * as commandPaletteTest from './command-palette-test';
+import * as extensionViewTest from './extension-view-test';
 
 describe('VSCode Tekton Public UI Tests Suite', () => {
-  dummyTest();
+  commandPaletteTest.commandPaletteTest()
+  extensionActivityTest.extensionActivityTest();
+  extensionViewTest.extensionViewTest();
 });

@@ -16,4 +16,5 @@ export namespace commands {
 
 export namespace views {
   export const TEKTON_TITLE = 'Tekton Pipelines';
+  export const TEKTON_CATS = [TEKTON_TITLE, 'Debug Sessions', 'TektonHub'];
 }
