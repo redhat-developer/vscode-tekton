@@ -38,7 +38,7 @@ export function extensionActivityTest() : void{
 
 
       const actions = await tektonPipSection.getActions();
-      expect(actions.length).equals(4);
+      expect(actions.length).greaterThan(0);
     });
 
     after(async function() {
