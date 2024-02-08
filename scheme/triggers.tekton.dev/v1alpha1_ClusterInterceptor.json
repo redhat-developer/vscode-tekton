@@ -4,8 +4,17 @@
   "definitions": {
     "Addressable": {
       "properties": {
+        "name": {
+          "type": "string"
+        },
         "url": {
           "$ref": "#/definitions/URL"
+        },
+        "CACerts": {
+          "type": "string"
+        },
+        "audience": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -95,6 +104,12 @@
         "address": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/Addressable"
+        },
+        "addresses": {
+          "items": {
+            "$ref": "#/definitions/Addressable"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -293,6 +308,7 @@
         "Host",
         "Path",
         "RawPath",
+        "OmitHost",
         "ForceQuery",
         "RawQuery",
         "Fragment",
@@ -317,6 +333,9 @@
         },
         "RawPath": {
           "type": "string"
+        },
+        "OmitHost": {
+          "type": "boolean"
         },
         "ForceQuery": {
           "type": "boolean"

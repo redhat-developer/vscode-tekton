@@ -506,7 +506,7 @@
           },
           "type": "array"
         },
-        "resourcetemplates": {
+        "resourceTemplates": {
           "items": {
             "properties": {},
             "additionalProperties": true,
@@ -526,6 +526,7 @@
         "Host",
         "Path",
         "RawPath",
+        "OmitHost",
         "ForceQuery",
         "RawQuery",
         "Fragment",
@@ -550,6 +551,9 @@
         },
         "RawPath": {
           "type": "string"
+        },
+        "OmitHost": {
+          "type": "boolean"
         },
         "ForceQuery": {
           "type": "boolean"

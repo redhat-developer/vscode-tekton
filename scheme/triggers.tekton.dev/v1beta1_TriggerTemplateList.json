@@ -234,7 +234,7 @@
           },
           "type": "array"
         },
-        "resourcetemplates": {
+        "resourceTemplates": {
           "items": {
             "properties": {},
             "additionalProperties": true,
