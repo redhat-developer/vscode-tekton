@@ -181,27 +181,47 @@
         },
         "whenExpressions": {
           "items": {
-            "required": [
-              "input",
-              "operator",
-              "values"
-            ],
-            "properties": {
-              "input": {
-                "type": "string"
-              },
-              "operator": {
-                "type": "string"
-              },
-              "values": {
-                "items": {
-                  "type": "string"
+            "oneOf": [
+              {
+                "required": [
+                  "input",
+                  "operator",
+                  "values"
+                ],
+                "properties": {
+                  "input": {
+                    "type": "string"
+                  },
+                  "operator": {
+                    "enum": [
+                      "in",
+                      "notin"
+                    ],
+                    "type": "string"
+                  },
+                  "values": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
                 },
-                "type": "array"
+                "additionalProperties": false,
+                "type": "object"
+              },
+              {
+                "required": [
+                  "cel"
+                ],
+                "properties": {
+                  "cel": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "type": "object"
               }
-            },
-            "additionalProperties": false,
-            "type": "object"
+            ]
           },
           "type": "array"
         }
@@ -604,6 +624,9 @@
           },
           "type": "array"
         },
+        "displayName": {
+          "type": "string"
+        },
         "description": {
           "type": "string"
         },
@@ -656,7 +679,14 @@
           "type": "string"
         },
         "sizeLimit": {
-          "$ref": "#/definitions/Quantity"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
         }
       },
       "additionalProperties": false,
@@ -764,6 +794,94 @@
             "type": "string"
           },
           "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "FeatureFlags": {
+      "required": [
+        "DisableAffinityAssistant",
+        "DisableCredsInit",
+        "RunningInEnvWithInjectedSidecars",
+        "RequireGitSSHSecretKnownHosts",
+        "EnableTektonOCIBundles",
+        "ScopeWhenExpressionsToTask",
+        "EnableAPIFields",
+        "SendCloudEventsForRuns",
+        "AwaitSidecarReadiness",
+        "EnforceNonfalsifiability",
+        "EnableKeepPodOnCancel",
+        "VerificationNoMatchPolicy",
+        "EnableProvenanceInStatus",
+        "ResultExtractionMethod",
+        "MaxResultSize",
+        "SetSecurityContext",
+        "Coschedule",
+        "EnableCELInWhenExpression",
+        "EnableStepActions",
+        "EnableParamEnum"
+      ],
+      "properties": {
+        "DisableAffinityAssistant": {
+          "type": "boolean"
+        },
+        "DisableCredsInit": {
+          "type": "boolean"
+        },
+        "RunningInEnvWithInjectedSidecars": {
+          "type": "boolean"
+        },
+        "RequireGitSSHSecretKnownHosts": {
+          "type": "boolean"
+        },
+        "EnableTektonOCIBundles": {
+          "type": "boolean"
+        },
+        "ScopeWhenExpressionsToTask": {
+          "type": "boolean"
+        },
+        "EnableAPIFields": {
+          "type": "string"
+        },
+        "SendCloudEventsForRuns": {
+          "type": "boolean"
+        },
+        "AwaitSidecarReadiness": {
+          "type": "boolean"
+        },
+        "EnforceNonfalsifiability": {
+          "type": "string"
+        },
+        "EnableKeepPodOnCancel": {
+          "type": "boolean"
+        },
+        "VerificationNoMatchPolicy": {
+          "type": "string"
+        },
+        "EnableProvenanceInStatus": {
+          "type": "boolean"
+        },
+        "ResultExtractionMethod": {
+          "type": "string"
+        },
+        "MaxResultSize": {
+          "type": "integer"
+        },
+        "SetSecurityContext": {
+          "type": "boolean"
+        },
+        "Coschedule": {
+          "type": "string"
+        },
+        "EnableCELInWhenExpression": {
+          "type": "boolean"
+        },
+        "EnableStepActions": {
+          "type": "boolean"
+        },
+        "EnableParamEnum": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false,
@@ -1007,6 +1125,21 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "IncludeParams": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "params": {
+          "items": {
+            "$ref": "#/definitions/Param"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "IntOrString": {
       "required": [
         "Type",
@@ -1179,6 +1312,13 @@
         "params": {
           "items": {
             "$ref": "#/definitions/Param"
+          },
+          "type": "array"
+        },
+        "include": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/IncludeParams"
           },
           "type": "array"
         }
@@ -1459,6 +1599,12 @@
               "type": "array"
             }
           ]
+        },
+        "enum": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -1545,7 +1691,8 @@
           "$ref": "#/definitions/TypedLocalObjectReference"
         },
         "dataSourceRef": {
-          "$ref": "#/definitions/TypedLocalObjectReference"
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TypedObjectReference"
         }
       },
       "additionalProperties": false,
@@ -1565,7 +1712,14 @@
         "capacity": {
           "patternProperties": {
             ".*": {
-              "$ref": "#/definitions/Quantity"
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "type": "object"
@@ -1580,7 +1734,14 @@
         "allocatedResources": {
           "patternProperties": {
             ".*": {
-              "$ref": "#/definitions/Quantity"
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "type": "object"
@@ -1706,28 +1867,6 @@
         },
         "apiVersion": {
           "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "PipelineResourceResult": {
-      "required": [
-        "key",
-        "value"
-      ],
-      "properties": {
-        "key": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        },
-        "resourceName": {
-          "type": "string"
-        },
-        "type": {
-          "type": "integer"
         }
       },
       "additionalProperties": false,
@@ -1880,27 +2019,47 @@
         },
         "whenExpressions": {
           "items": {
-            "required": [
-              "input",
-              "operator",
-              "values"
-            ],
-            "properties": {
-              "input": {
-                "type": "string"
-              },
-              "operator": {
-                "type": "string"
-              },
-              "values": {
-                "items": {
-                  "type": "string"
+            "oneOf": [
+              {
+                "required": [
+                  "input",
+                  "operator",
+                  "values"
+                ],
+                "properties": {
+                  "input": {
+                    "type": "string"
+                  },
+                  "operator": {
+                    "enum": [
+                      "in",
+                      "notin"
+                    ],
+                    "type": "string"
+                  },
+                  "values": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
                 },
-                "type": "array"
+                "additionalProperties": false,
+                "type": "object"
+              },
+              {
+                "required": [
+                  "cel"
+                ],
+                "properties": {
+                  "cel": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "type": "object"
               }
-            },
-            "additionalProperties": false,
-            "type": "object"
+            ]
           },
           "type": "array"
         }
@@ -2043,6 +2202,14 @@
         },
         "provenance": {
           "$ref": "#/definitions/Provenance"
+        },
+        "spanContext": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
         }
       },
       "additionalProperties": false,
@@ -2059,27 +2226,47 @@
         },
         "whenExpressions": {
           "items": {
-            "required": [
-              "input",
-              "operator",
-              "values"
-            ],
-            "properties": {
-              "input": {
-                "type": "string"
-              },
-              "operator": {
-                "type": "string"
-              },
-              "values": {
-                "items": {
-                  "type": "string"
+            "oneOf": [
+              {
+                "required": [
+                  "input",
+                  "operator",
+                  "values"
+                ],
+                "properties": {
+                  "input": {
+                    "type": "string"
+                  },
+                  "operator": {
+                    "enum": [
+                      "in",
+                      "notin"
+                    ],
+                    "type": "string"
+                  },
+                  "values": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
                 },
-                "type": "array"
+                "additionalProperties": false,
+                "type": "object"
+              },
+              {
+                "required": [
+                  "cel"
+                ],
+                "properties": {
+                  "cel": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "type": "object"
               }
-            },
-            "additionalProperties": false,
-            "type": "object"
+            ]
           },
           "type": "array"
         }
@@ -2089,6 +2276,9 @@
     },
     "PipelineSpec": {
       "properties": {
+        "displayName": {
+          "type": "string"
+        },
         "description": {
           "type": "string"
         },
@@ -2141,6 +2331,12 @@
         "name": {
           "type": "string"
         },
+        "displayName": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
         "taskRef": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/TaskRef"
@@ -2151,27 +2347,47 @@
         },
         "when": {
           "items": {
-            "required": [
-              "input",
-              "operator",
-              "values"
-            ],
-            "properties": {
-              "input": {
-                "type": "string"
-              },
-              "operator": {
-                "type": "string"
-              },
-              "values": {
-                "items": {
-                  "type": "string"
+            "oneOf": [
+              {
+                "required": [
+                  "input",
+                  "operator",
+                  "values"
+                ],
+                "properties": {
+                  "input": {
+                    "type": "string"
+                  },
+                  "operator": {
+                    "enum": [
+                      "in",
+                      "notin"
+                    ],
+                    "type": "string"
+                  },
+                  "values": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
                 },
-                "type": "array"
+                "additionalProperties": false,
+                "type": "object"
+              },
+              {
+                "required": [
+                  "cel"
+                ],
+                "properties": {
+                  "cel": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "type": "object"
               }
-            },
-            "additionalProperties": false,
-            "type": "object"
+            ]
           },
           "type": "array"
         },
@@ -2207,6 +2423,15 @@
         },
         "timeout": {
           "pattern": "^[-+]?([0-9]*(\\.[0-9]*)?(ns|us|µs|μs|ms|s|m|h))+$",
+          "type": "string"
+        },
+        "pipelineRef": {
+          "$ref": "#/definitions/PipelineRef"
+        },
+        "pipelineSpec": {
+          "$ref": "#/definitions/PipelineSpec"
+        },
+        "onError": {
           "type": "string"
         }
       },
@@ -2595,13 +2820,16 @@
         "configSource": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/ConfigSource"
+        },
+        "refSource": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/RefSource"
+        },
+        "featureFlags": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/FeatureFlags"
         }
       },
-      "additionalProperties": false,
-      "type": "object"
-    },
-    "Quantity": {
-      "properties": {},
       "additionalProperties": false,
       "type": "object"
     },
@@ -2670,6 +2898,56 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "Ref": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "resolver": {
+          "type": "string"
+        },
+        "params": {
+          "items": {
+            "$ref": "#/definitions/Param"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "RefSource": {
+      "properties": {
+        "uri": {
+          "type": "string"
+        },
+        "digest": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "entryPoint": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ResourceClaim": {
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "ResourceFieldSelector": {
       "required": [
         "resource"
@@ -2682,8 +2960,14 @@
           "type": "string"
         },
         "divisor": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/Quantity"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
         }
       },
       "additionalProperties": false,
@@ -2710,7 +2994,14 @@
         "limits": {
           "patternProperties": {
             ".*": {
-              "$ref": "#/definitions/Quantity"
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "type": "object"
@@ -2718,10 +3009,46 @@
         "requests": {
           "patternProperties": {
             ".*": {
-              "$ref": "#/definitions/Quantity"
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "type": "object"
+        },
+        "claims": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/ResourceClaim"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "RunResult": {
+      "required": [
+        "key",
+        "value"
+      ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "resourceName": {
+          "type": "string"
+        },
+        "type": {
+          "type": "integer"
         }
       },
       "additionalProperties": false,
@@ -3095,27 +3422,47 @@
         },
         "whenExpressions": {
           "items": {
-            "required": [
-              "input",
-              "operator",
-              "values"
-            ],
-            "properties": {
-              "input": {
-                "type": "string"
-              },
-              "operator": {
-                "type": "string"
-              },
-              "values": {
-                "items": {
-                  "type": "string"
+            "oneOf": [
+              {
+                "required": [
+                  "input",
+                  "operator",
+                  "values"
+                ],
+                "properties": {
+                  "input": {
+                    "type": "string"
+                  },
+                  "operator": {
+                    "enum": [
+                      "in",
+                      "notin"
+                    ],
+                    "type": "string"
+                  },
+                  "values": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
                 },
-                "type": "array"
+                "additionalProperties": false,
+                "type": "object"
+              },
+              {
+                "required": [
+                  "cel"
+                ],
+                "properties": {
+                  "cel": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "type": "object"
               }
-            },
-            "additionalProperties": false,
-            "type": "object"
+            ]
           },
           "type": "array"
         }
@@ -3247,6 +3594,23 @@
         },
         "stderrConfig": {
           "$ref": "#/definitions/StepOutputConfig"
+        },
+        "ref": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/Ref"
+        },
+        "params": {
+          "items": {
+            "$ref": "#/definitions/Param"
+          },
+          "type": "array"
+        },
+        "results": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/StepResult"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -3255,6 +3619,32 @@
     "StepOutputConfig": {
       "properties": {
         "path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "StepResult": {
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "properties": {
+          "patternProperties": {
+            ".*": {
+              "$ref": "#/definitions/PropertySpec"
+            }
+          },
+          "type": "object"
+        },
+        "description": {
           "type": "string"
         }
       },
@@ -3283,6 +3673,13 @@
         },
         "imageID": {
           "type": "string"
+        },
+        "results": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/TaskRunResult"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -3528,6 +3925,19 @@
         },
         "description": {
           "type": "string"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ]
         }
       },
       "additionalProperties": false,
@@ -3634,13 +4044,12 @@
         "resourcesResult": {
           "items": {
             "$schema": "http://json-schema.org/draft-04/schema#",
-            "$ref": "#/definitions/PipelineResourceResult"
+            "$ref": "#/definitions/RunResult"
           },
           "type": "array"
         },
         "taskResults": {
           "items": {
-            "$schema": "http://json-schema.org/draft-04/schema#",
             "$ref": "#/definitions/TaskRunResult"
           },
           "type": "array"
@@ -3659,6 +4068,14 @@
         "provenance": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/Provenance"
+        },
+        "spanContext": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
         }
       },
       "additionalProperties": false,
@@ -3690,6 +4107,9 @@
             "$ref": "#/definitions/ParamSpec"
           },
           "type": "array"
+        },
+        "displayName": {
+          "type": "string"
         },
         "description": {
           "type": "string"
@@ -3908,6 +4328,29 @@
           "type": "string"
         },
         "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TypedObjectReference": {
+      "required": [
+        "apiGroup",
+        "kind",
+        "name"
+      ],
+      "properties": {
+        "apiGroup": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "namespace": {
           "type": "string"
         }
       },
