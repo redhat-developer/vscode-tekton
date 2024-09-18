@@ -25,8 +25,14 @@
     },
     "Addressable": {
       "properties": {
+        "name": {
+          "type": "string"
+        },
         "url": {
           "$ref": "#/definitions/URL"
+        },
+        "CACerts": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
@@ -195,6 +201,18 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "ClaimSource": {
+      "properties": {
+        "resourceClaimName": {
+          "type": "string"
+        },
+        "resourceClaimTemplateName": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "Condition": {
       "required": [
         "type",
@@ -343,6 +361,13 @@
         "resources": {
           "$ref": "#/definitions/ResourceRequirements"
         },
+        "resizePolicy": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/ContainerResizePolicy"
+          },
+          "type": "array"
+        },
         "volumeMounts": {
           "items": {
             "$schema": "http://json-schema.org/draft-04/schema#",
@@ -421,6 +446,22 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "ContainerResizePolicy": {
+      "required": [
+        "resourceName",
+        "restartPolicy"
+      ],
+      "properties": {
+        "resourceName": {
+          "type": "string"
+        },
+        "restartPolicy": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "CustomResource": {
       "properties": {},
       "additionalProperties": false,
@@ -483,8 +524,14 @@
           "type": "string"
         },
         "sizeLimit": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/Quantity"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
         }
       },
       "additionalProperties": false,
@@ -592,6 +639,12 @@
         },
         "resources": {
           "$ref": "#/definitions/ResourceRequirements"
+        },
+        "resizePolicy": {
+          "items": {
+            "$ref": "#/definitions/ContainerResizePolicy"
+          },
+          "type": "array"
         },
         "volumeMounts": {
           "items": {
@@ -782,6 +835,12 @@
         "address": {
           "$schema": "http://json-schema.org/draft-04/schema#",
           "$ref": "#/definitions/Addressable"
+        },
+        "addresses": {
+          "items": {
+            "$ref": "#/definitions/Addressable"
+          },
+          "type": "array"
         },
         "configuration": {
           "$schema": "http://json-schema.org/draft-04/schema#",
@@ -1716,7 +1775,8 @@
           "$ref": "#/definitions/TypedLocalObjectReference"
         },
         "dataSourceRef": {
-          "$ref": "#/definitions/TypedLocalObjectReference"
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TypedObjectReference"
         }
       },
       "additionalProperties": false,
@@ -1885,6 +1945,34 @@
       ],
       "properties": {
         "conditionType": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "PodResourceClaim": {
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/ClaimSource"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "PodSchedulingGate": {
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
           "type": "string"
         }
       },
@@ -2076,7 +2164,14 @@
         "overhead": {
           "patternProperties": {
             ".*": {
-              "$ref": "#/definitions/Quantity"
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "type": "object"
@@ -2097,6 +2192,20 @@
         },
         "hostUsers": {
           "type": "boolean"
+        },
+        "schedulingGates": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/PodSchedulingGate"
+          },
+          "type": "array"
+        },
+        "resourceClaims": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/PodResourceClaim"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -2208,11 +2317,6 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "Quantity": {
-      "properties": {},
-      "additionalProperties": false,
-      "type": "object"
-    },
     "QuobyteVolumeSource": {
       "required": [
         "registry",
@@ -2278,6 +2382,18 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "ResourceClaim": {
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "ResourceFieldSelector": {
       "required": [
         "resource"
@@ -2290,7 +2406,14 @@
           "type": "string"
         },
         "divisor": {
-          "$ref": "#/definitions/Quantity"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
         }
       },
       "additionalProperties": false,
@@ -2301,7 +2424,14 @@
         "limits": {
           "patternProperties": {
             ".*": {
-              "$ref": "#/definitions/Quantity"
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "type": "object"
@@ -2309,10 +2439,24 @@
         "requests": {
           "patternProperties": {
             ".*": {
-              "$ref": "#/definitions/Quantity"
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "type": "object"
+        },
+        "claims": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/ResourceClaim"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -2721,7 +2865,7 @@
           },
           "type": "array"
         },
-        "resourcetemplates": {
+        "resourceTemplates": {
           "items": {
             "properties": {},
             "additionalProperties": true,
@@ -2753,6 +2897,29 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "TypedObjectReference": {
+      "required": [
+        "apiGroup",
+        "kind",
+        "name"
+      ],
+      "properties": {
+        "apiGroup": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "URL": {
       "required": [
         "Scheme",
@@ -2761,6 +2928,7 @@
         "Host",
         "Path",
         "RawPath",
+        "OmitHost",
         "ForceQuery",
         "RawQuery",
         "Fragment",
@@ -2785,6 +2953,9 @@
         },
         "RawPath": {
           "type": "string"
+        },
+        "OmitHost": {
+          "type": "boolean"
         },
         "ForceQuery": {
           "type": "boolean"

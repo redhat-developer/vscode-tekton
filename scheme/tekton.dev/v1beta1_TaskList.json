@@ -316,7 +316,14 @@
           "type": "string"
         },
         "sizeLimit": {
-          "$ref": "#/definitions/Quantity"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
         }
       },
       "additionalProperties": false,
@@ -957,6 +964,32 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "Param": {
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "ParamSpec": {
       "required": [
         "name"
@@ -992,6 +1025,12 @@
               "type": "array"
             }
           ]
+        },
+        "enum": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -1026,7 +1065,8 @@
           "$ref": "#/definitions/TypedLocalObjectReference"
         },
         "dataSourceRef": {
-          "$ref": "#/definitions/TypedLocalObjectReference"
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/TypedObjectReference"
         }
       },
       "additionalProperties": false,
@@ -1164,11 +1204,6 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "Quantity": {
-      "properties": {},
-      "additionalProperties": false,
-      "type": "object"
-    },
     "QuobyteVolumeSource": {
       "required": [
         "registry",
@@ -1234,6 +1269,37 @@
       "additionalProperties": false,
       "type": "object"
     },
+    "Ref": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "resolver": {
+          "type": "string"
+        },
+        "params": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/Param"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ResourceClaim": {
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "ResourceFieldSelector": {
       "required": [
         "resource"
@@ -1246,8 +1312,14 @@
           "type": "string"
         },
         "divisor": {
-          "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/Quantity"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
         }
       },
       "additionalProperties": false,
@@ -1258,7 +1330,14 @@
         "limits": {
           "patternProperties": {
             ".*": {
-              "$ref": "#/definitions/Quantity"
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "type": "object"
@@ -1266,10 +1345,24 @@
         "requests": {
           "patternProperties": {
             ".*": {
-              "$ref": "#/definitions/Quantity"
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "type": "object"
+        },
+        "claims": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/ResourceClaim"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -1709,6 +1802,23 @@
         },
         "stderrConfig": {
           "$ref": "#/definitions/StepOutputConfig"
+        },
+        "ref": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "$ref": "#/definitions/Ref"
+        },
+        "params": {
+          "items": {
+            "$ref": "#/definitions/Param"
+          },
+          "type": "array"
+        },
+        "results": {
+          "items": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "$ref": "#/definitions/StepResult"
+          },
+          "type": "array"
         }
       },
       "additionalProperties": false,
@@ -1717,6 +1827,32 @@
     "StepOutputConfig": {
       "properties": {
         "path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "StepResult": {
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "properties": {
+          "patternProperties": {
+            ".*": {
+              "$ref": "#/definitions/PropertySpec"
+            }
+          },
+          "type": "object"
+        },
+        "description": {
           "type": "string"
         }
       },
@@ -1970,6 +2106,19 @@
         },
         "description": {
           "type": "string"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ]
         }
       },
       "additionalProperties": false,
@@ -1987,6 +2136,9 @@
             "$ref": "#/definitions/ParamSpec"
           },
           "type": "array"
+        },
+        "displayName": {
+          "type": "string"
         },
         "description": {
           "type": "string"
@@ -2048,6 +2200,29 @@
           "type": "string"
         },
         "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TypedObjectReference": {
+      "required": [
+        "apiGroup",
+        "kind",
+        "name"
+      ],
+      "properties": {
+        "apiGroup": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "namespace": {
           "type": "string"
         }
       },
