@@ -1063,7 +1063,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.19.6",
-    "@openapitools/openapi-generator-cli": "^2.3.5",
+    "@openapitools/openapi-generator-cli": "^2.6.0",
     "@popperjs/core": "^2.9.2",
     "@types/byline": "^4.2.31",
     "@types/chai": "^4.1.7",
